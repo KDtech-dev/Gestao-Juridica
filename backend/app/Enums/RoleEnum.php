@@ -7,7 +7,6 @@ enum RoleEnum: string
     case ADMIN = 'admin';
     case ADVOGADO = 'advogado';
     case FUNCIONARIO = 'funcionario';
-    case CLIENTE = 'cliente';
 
     public function label(): string
     {
@@ -15,7 +14,6 @@ enum RoleEnum: string
             self::ADMIN => 'Administrador',
             self::ADVOGADO => 'Advogado',
             self::FUNCIONARIO => 'Funcionário',
-            self::CLIENTE => 'Cliente',
         };
     }
 }

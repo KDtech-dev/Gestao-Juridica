@@ -11,18 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('publications', function (Blueprint $table) {
-    $table->id();
 
-    $table->string('title');
-    $table->string('slug')->unique();
-    $table->text('content');
-    $table->text('excerpt')->nullable();
-
-    $table->boolean('published')->default(false);
-
-    $table->timestamps();
-});
+        Schema::create('publicacaoes', function (Blueprint $table) {
+            $table->id();
+            $table->string('titulo');
+            $table->text('descricao');
+            $table->string('url')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('publications');
+        Schema::dropIfExists('publicacaoes');
     }
 };

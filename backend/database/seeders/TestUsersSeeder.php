@@ -52,17 +52,5 @@ class TestUsersSeeder extends Seeder
 
         $funcionario->syncRoles([RoleEnum::FUNCIONARIO->value]);
 
-        $cliente = User::updateOrCreate(
-            ['email' => 'cliente@example.com'],
-            [
-                'id' => $snowflake->next(),
-                'name' => 'cliente Teste',
-                'password' => Hash::make('123456'),
-                'cpf' => '12345678906',
-
-            ]
-        );
-
-        $cliente->syncRoles([RoleEnum::CLIENTE->value]);
     }
 }
