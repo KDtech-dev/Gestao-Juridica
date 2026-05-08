@@ -9,19 +9,24 @@
     "start": "next start",
     "lint": "eslint",
     "deploy": "gh-pages -d out",
-    "deploy:gh": "npm run build:gh && gh-pages -d out"
+    "deploy:gh": "npm run build:gh && gh-pages -d out",
+    "format": "prettier --write ."
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.2",
     "@iconify/react": "^6.0.2",
     "@mui/material": "^7.3.9",
     "@mui/system": "^7.3.9",
     "axios": "^1.13.6",
     "next": "16.2.0",
+    "next-intl": "^4.11.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "recharts": "^3.8.1"
+    "react-hook-form": "^7.75.0",
+    "recharts": "^3.8.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -34,6 +39,7 @@
     "eslint-config-next": "16.2.0",
     "gh-pages": "^6.3.0",
     "postcss": "^8.5.8",
+    "prettier": "^3.8.3",
     "tailwindcss": "^4.2.2",
     "typescript": "^5"
   }

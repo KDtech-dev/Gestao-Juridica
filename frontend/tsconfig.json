@@ -18,9 +18,8 @@
         "name": "next"
       }
     ],
-    "baseUrl": "./src",
     "paths": {
-      "@/*": ["*"],
+      "@/*": ["./src/*"],
       "@context/*": ["./src/context/*"]
     }
   },
@@ -31,6 +30,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/components/modals./BaseModaltsx"  ],
+  ],
   "exclude": ["node_modules"]
 }
