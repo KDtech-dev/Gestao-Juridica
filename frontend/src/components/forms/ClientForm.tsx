@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, TextField } from "@mui/material";
+import { Box, MenuItem, TextField } from "@mui/material";
 
 export function ClientForm() {
   return (
@@ -13,17 +13,28 @@ export function ClientForm() {
         },
         gap: 2,
       }}
-    >
+      >
+        <Box sx={{ gridColumn: "1 / -1" }}>
+          <TextField fullWidth label="Nome / Razão Social" />
+        </Box>
+
+      <TextField fullWidth label="CPF / CNPJ" />
+      <TextField fullWidth label="E-mail" />
+      <TextField fullWidth label="Telefone" />
+
+      <TextField fullWidth label="Pessoa de Contato" />
+
+      <TextField select fullWidth label="Status" defaultValue="ativo">
+        <MenuItem value="ativo">Ativo</MenuItem>
+        <MenuItem value="inativo">Inativo</MenuItem>
+      </TextField>
+
       <Box sx={{ gridColumn: "1 / -1" }}>
-        <TextField fullWidth label="Nome / Razão Social *" />
+        <TextField fullWidth label="Endereço Completo" />
       </Box>
 
-      <TextField fullWidth label="CPF / CNPJ *" />
-      <TextField fullWidth label="E-mail *" />
-      <TextField fullWidth label="Telefone *" />
-
       <Box sx={{ gridColumn: "1 / -1" }}>
-        <TextField fullWidth label="Endereço" />
+        <TextField multiline rows={3} fullWidth label="Observações" />
       </Box>
     </Box>
   );

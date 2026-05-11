@@ -94,10 +94,10 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               variant="contained"
-              endIcon={<Icon icon="mdi:whatsapp" />}
+              startIcon={<Icon icon="mdi:whatsapp" />}
               sx={{
-                bgcolor: "#a16207",
-                "&:hover": { bgcolor: "#854d0e" },
+                bgcolor: "#05a13e",
+                "&:hover": { bgcolor: "#05a13ec5" },
               }}
             >
               Conversar pelo WhatsApp
@@ -157,10 +157,10 @@ export function Footer() {
               variant="contained"
               fullWidth
               onClick={enviarWhatsApp}
+              startIcon={<Icon icon="mdi:whatsapp" />}
               sx={{
-                bgcolor: "#0f172a",
-                color: "text.secondary",
-                "&:hover": { bgcolor: "#020617" },
+                bgcolor: "#05a13e",
+                "&:hover": { bgcolor: "#05a13ec5" },
               }}
             >
               Conversar pelo WhatsApp

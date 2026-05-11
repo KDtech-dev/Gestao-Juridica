@@ -26,9 +26,7 @@ import {
   updateUser,
 } from "@/services/userService";
 import UserTable from "@/components/users/UserTable";
-import UserFormModal, {
-  type UserFormSubmitPayload,
-} from "@/components/users/UserFormModal";
+import UserModal, { type UserFormSubmitPayload } from "@/components/modals/UserModal";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 
 type SnackbarState = {
@@ -103,11 +101,6 @@ export default function AdminUsersView() {
   }, [search, typeFilter, isAdmin]);
 
   const canManage = isAdmin;
-
-  const handleOpenCreate = () => {
-    setEditing(null);
-    setFormOpen(true);
-  };
 
   const handleEdit = (user: User) => {
     setEditing(user);
@@ -262,7 +255,10 @@ export default function AdminUsersView() {
                   startIcon={
                     <Icon icon="mdi:account-plus-outline" width={20} />
                   }
-                  onClick={handleOpenCreate}
+                  onClick={() => {
+                    setEditing(null);
+                    setFormOpen(true);
+                  }}
                   disabled={loading}
                   sx={{
                     textTransform: "none",
@@ -376,7 +372,7 @@ export default function AdminUsersView() {
         </Container>
       </Box>
 
-      <UserFormModal
+      <UserModal
         open={formOpen}
         onClose={() => setFormOpen(false)}
         initialData={editing}

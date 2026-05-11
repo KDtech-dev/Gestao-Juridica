@@ -22,12 +22,14 @@ import {
 import { Icon } from "@iconify/react";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { Modal } from "@/components/ModalAntigo";
 import { useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { useNotifications } from "@/context/NotificationsContext";
 import { ClientStatus, listTrackedClients } from "@/data/cases";
 import { useAuth } from "@/hooks/useAuth";
+import { NewClientModal } from "@/components/modals/NewClientModal";
+import { EditClientModal } from "@/components/modals/EditClientModal";
+import { NewCaseModal } from "@/components/modals/NewCaseModal";
 
 function statusStyles(status: ClientStatus) {
   if (status === "Ativo") {
@@ -359,22 +361,19 @@ export default function ClientesView() {
         </Container>
       </Box>
 
-      <Modal
+      <NewClientModal
         open={open}
         onClose={handleCloseNewClientModal}
-        variant="newClient"
         onSubmit={handleNewClientSubmit}
       />
-      <Modal
+      <NewCaseModal
         open={caseOpen}
         onClose={handleCloseNewCaseModal}
-        variant="newCase"
         onSubmit={handleNewCaseSubmit}
       />
-      <Modal
+      <EditClientModal
         open={editClientOpen}
         onClose={handleCloseEditClientModal}
-        variant="editClient"
         onSubmit={handleEditClientSubmit}
       />
     </Box>

@@ -158,9 +158,13 @@ export default function ThemeRegistry({
   }, [themeMode]);
   React.useEffect(() => {
     document.documentElement.setAttribute("data-theme", resolvedMode);
+
+    document.documentElement.classList.toggle("dark", resolvedMode === "dark");
   }, [resolvedMode]);
 
   const theme = React.useMemo(() => {
+    const isDark = resolvedMode === "dark";
+
     return createTheme({
       palette: {
         mode: resolvedMode,
@@ -171,6 +175,26 @@ export default function ThemeRegistry({
 
         secondary: {
           main: "#06b6d4",
+        },
+
+        background: isDark
+          ? {
+              default: "#111827",
+              paper: "#1f2937",
+            }
+          : {
+              default: "#f8fafc",
+              paper: "#ffffff",
+            },
+      },
+
+      components: {
+        MuiCssBaseline: {
+          styleOverrides: {
+            body: {
+              backgroundColor: isDark ? "#111827" : "#f8fafc",
+            },
+          },
         },
       },
     });

@@ -1,6 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, Button, Typography, Box } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import { BRANDING } from "@/configs/branding";
 
 interface BaseModalProps {
@@ -9,6 +10,10 @@ interface BaseModalProps {
   title: string;
   children: React.ReactNode;
   onSubmit?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
+  confirmDisabled?: boolean;
 }
 
 export function BaseModal({
@@ -17,12 +22,19 @@ export function BaseModal({
   title,
   children,
   onSubmit,
+  confirmText,
+  cancelText,
+  maxWidth = "lg",
+  confirmDisabled = false,
 }: BaseModalProps) {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="lg"
+      maxWidth={maxWidth}
       fullWidth
       PaperProps={{
         sx: {
@@ -34,7 +46,6 @@ export function BaseModal({
     >
       <DialogContent sx={{ p: 0 }}>
         <Box sx={{ display: "flex", height: "100%" }}>
-          {/* 🔥 IMAGEM */}
           <Box
             sx={{
               width: { xs: 0, md: "40%" },
@@ -73,27 +84,25 @@ export function BaseModal({
             </Box>
           </Box>
 
-          {/* ✅ LADO DIREITO (CORRETO) */}
           <Box
             sx={{
               width: { xs: "100%", md: "60%" },
               display: "flex",
               flexDirection: "column",
-              bgcolor: "#fff",
+              bgcolor: "background.paper",
             }}
           >
-            {/* HEADER */}
             <Box
               sx={{
                 px: 3,
                 py: 2,
-                borderBottom: "1px solid #ddd",
+                borderBottom: "1px solid",
+                borderColor: "divider",
               }}
             >
               <Typography fontWeight={700}>{title}</Typography>
             </Box>
 
-            {/* CONTENT */}
             <Box
               sx={{
                 px: 3,
@@ -105,23 +114,27 @@ export function BaseModal({
               {children}
             </Box>
 
-            {/* FOOTER */}
             <Box
               sx={{
                 px: 3,
                 py: 2,
-                borderTop: "1px solid #ddd",
+                borderTop: "1px solid",
+                borderColor: "divider",
                 display: "flex",
                 justifyContent: "flex-end",
                 gap: 1,
               }}
             >
-              <Button onClick={onClose}>
-                {BRANDING.modal?.cancelText || "Cancelar"}
+              <Button onClick={onClose} color={isDark ? "inherit" : "primary"}>
+                {cancelText ?? BRANDING.modal?.cancelText ?? "Cancelar"}
               </Button>
 
-              <Button onClick={onSubmit ?? onClose} variant="contained">
-                {BRANDING.modal?.confirmText || "Salvar"}
+              <Button
+                onClick={onSubmit ?? onClose}
+                variant="contained"
+                disabled={confirmDisabled}
+              >
+                {confirmText ?? BRANDING.modal?.confirmText ?? "Salvar"}
               </Button>
             </Box>
           </Box>

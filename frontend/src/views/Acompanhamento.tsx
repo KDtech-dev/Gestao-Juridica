@@ -15,9 +15,9 @@ import {
 import { Icon } from "@iconify/react";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { Modal } from "@/components/ModalAntigo";
 import { useState } from "react";
 import { useNotifications } from "@/context/NotificationsContext";
+import { EditCaseModal } from "@/components/modals/EditCaseModal";
 
 type Props = {
   clientName: string;
@@ -343,10 +343,9 @@ export default function AcompanhamentoView({
           </Box>
         </Container>
       </Box>
-      <Modal
+      <EditCaseModal
         open={editCaseOpen}
         onClose={handleCloseEditCaseModal}
-        variant="editCase"
         onSubmit={handleEditCaseSubmit}
       />
     </Box>

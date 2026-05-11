@@ -160,7 +160,7 @@ export default function HomeView() {
       >
         <Container>
           <Typography variant="h4" textAlign="center" mb={4}>
-            Áreas de Atuação
+            Especialidades
           </Typography>
 
           <Stack

@@ -28,6 +28,7 @@ import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { clearNumber, formatCpf, formatTelefone } from "@/@core/format";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { useLanguage } from "@/context/LanguageContext";
+import { ChangePasswordModal } from "@/components/modals/ChangePasswordModal";
 const practiceAreasOptions = [
   "Direito Civil",
   "Direito Trabalhista",
@@ -59,7 +60,9 @@ export default function ProfileView() {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const handleOpenPrivacy = () => setPrivacyOpen(true);
   const handleClosePrivacy = () => setPrivacyOpen(false);
-  const handleChangePassword = () => {};
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const handleChangePassword = () => setChangePasswordOpen(true);
+  const handleCloseChangePassword = () => setChangePasswordOpen(false);
 
   const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -392,11 +395,11 @@ export default function ProfileView() {
                                     renderInput={(params) => (
                                       <TextField
                                         {...params}
-                                        label="Áreas de Atuação"
+                                        label="Especialidades"
                                         placeholder={
                                           field.value?.length
                                             ? ""
-                                            : "Selecione as áreas"
+                                            : "Selecione as especialidades"
                                         }
                                       />
                                     )}
@@ -415,6 +418,10 @@ export default function ProfileView() {
                         onOpenPrivacy={handleOpenPrivacy}
                         onClosePrivacy={handleClosePrivacy}
                         onOpenChangePassword={handleChangePassword}
+                      />
+                      <ChangePasswordModal
+                        open={changePasswordOpen}
+                        onClose={handleCloseChangePassword}
                       />
                     </Box>
                   </Box>

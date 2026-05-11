@@ -12,10 +12,11 @@ import {
 import { Icon } from "@iconify/react";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { Modal } from "@/components/ModalAntigo";
 import { CalendarCard } from "@/components/CalendarCard";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { useNotifications } from "@/context/NotificationsContext";
+import { NewAppointmentModal } from "@/components/modals/NewAppointmentModal";
+import { EditAppointmentModal } from "@/components/modals/EditAppointmentModal";
 
 type EventStatus = "Confirmado" | "Pendente";
 
@@ -520,17 +521,15 @@ export default function AgendaView() {
         </Container>
       </Box>
 
-      <Modal
+      <NewAppointmentModal
         open={open}
         onClose={handleCloseNewAppointmentModal}
-        variant="newAppointment"
         onSubmit={handleNewAppointmentSubmit}
       />
 
-      <Modal
+      <EditAppointmentModal
         open={openEdit}
         onClose={() => setOpenEdit(false)}
-        variant="editAppointment"
         //event={selectedEvent}
         onSubmit={() => {}}
       />
