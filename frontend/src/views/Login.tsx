@@ -43,43 +43,46 @@ export default function LoginView() {
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading, redirectByRole, setAuth } = useAuth();
+  const {
+    isAuthenticated,
+    loading: authLoading,
+    redirectByRole,
+    setAuth,
+  } = useAuth();
   const t = labels;
 
-const handleLogin = async () => {
-  if (loading) return;
-  setError(null);
-  setLoading(true);
+  const handleLogin = async () => {
+    if (loading) return;
+    setError(null);
+    setLoading(true);
 
-  const parsed = loginSchema.safeParse({ identifier, password });
+    const parsed = loginSchema.safeParse({ identifier, password });
 
-  if (!parsed.success) {
-    setError(parsed.error.issues[0].message);
+    if (!parsed.success) {
+      setError(parsed.error.issues[0].message);
+      setLoading(false);
+      return;
+    }
+
+    const { data, error } = await handleRequest(() => postLogin(parsed.data));
+
+    if (error || !data) {
+      setError(error || "Erro ao realizar login");
+      setLoading(false);
+      return;
+    }
+
+    setAuth(data.user, data.token);
+
+    const roles: string[] = Array.isArray(data.user?.roles)
+      ? data.user.roles
+      : Object.values(data.user?.roles ?? {});
+
+    const route = getRouteByRole(roles);
+
+    router.replace(route || "/agenda");
     setLoading(false);
-    return;
-  }
-
-  const { data, error } = await handleRequest(() =>
-    postLogin(parsed.data)
-  );
-
-  if (error || !data) {
-    setError(error || "Erro ao realizar login");
-    setLoading(false);
-    return;
-  }
-
-  setAuth(data.user, data.token);
-
-  const roles: string[] = Array.isArray(data.user?.roles)
-    ? data.user.roles
-    : Object.values(data.user?.roles ?? {});
-
-  const route = getRouteByRole(roles);
-
-  router.replace(route || "/dashboard");
-  setLoading(false);
-};
+  };
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -153,106 +156,106 @@ const handleLogin = async () => {
             }}
           >
             <Stack spacing={2}>
-            <Box>
-              <Typography
-                fontSize="1.35rem"
-                fontWeight={700}
-                color="text.primary"
-              >
-                {t.title}
-              </Typography>
-              <Typography color="text.secondary" fontSize="0.88rem">
-                {t.subtitle}
-              </Typography>
-            </Box>
-
-            <TextField
-              label={t.identifier}
-              fullWidth
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter") return;
-                e.preventDefault();
-                passwordRef.current?.focus();
-              }}
-              disabled={loading}
-            />
-
-            <TextField
-              label={t.password}
-              type="password"
-              fullWidth
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              inputRef={passwordRef}
-              disabled={loading}
-            />
-
-            <Stack direction="row" justifyContent="space-between">
-              <Typography fontSize="0.82rem" color="text.secondary">
-                {t.remember}
-              </Typography>
-              <Button
-                component={Link}
-                href="/forgot-password"
-                sx={{ textTransform: "none", p: 0, minWidth: "auto" }}
-              >
-                <Typography fontSize="0.82rem" color="#2563eb">
-                  {t.forgot}
+              <Box>
+                <Typography
+                  fontSize="1.35rem"
+                  fontWeight={700}
+                  color="text.primary"
+                >
+                  {t.title}
                 </Typography>
-              </Button>
-            </Stack>
+                <Typography color="text.secondary" fontSize="0.88rem">
+                  {t.subtitle}
+                </Typography>
+              </Box>
 
-            <Button
-              variant="contained"
-              type="submit"
-              disabled={loading}
-              sx={{
-                py: 1.1,
-                textTransform: "none",
-                borderRadius: "10px",
-                fontWeight: 600,
-              }}
-            >
-              {loading ? (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <CircularProgress size={18} color="inherit" />
-                  <span>Entrando...</span>
-                </Box>
-              ) : (
-                t.login
-              )}
-            </Button>
+              <TextField
+                label={t.identifier}
+                fullWidth
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter") return;
+                  e.preventDefault();
+                  passwordRef.current?.focus();
+                }}
+                disabled={loading}
+              />
 
-            {error ? (
-              <Alert severity="error" variant="outlined">
-                {error}
-              </Alert>
-            ) : null}
+              <TextField
+                label={t.password}
+                type="password"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                inputRef={passwordRef}
+                disabled={loading}
+              />
 
-            <Divider />
+              <Stack direction="row" justifyContent="space-between">
+                <Typography fontSize="0.82rem" color="text.secondary">
+                  {t.remember}
+                </Typography>
+                <Button
+                  component={Link}
+                  href="/forgot-password"
+                  sx={{ textTransform: "none", p: 0, minWidth: "auto" }}
+                >
+                  <Typography fontSize="0.82rem" color="#2563eb">
+                    {t.forgot}
+                  </Typography>
+                </Button>
+              </Stack>
 
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a
-              href="/"
-              style={{
-                textDecoration: "none",
-                color: "inherit",
-              }}
-            >
-              <Typography
-                textAlign="center"
-                fontSize="0.86rem"
+              <Button
+                variant="contained"
+                type="submit"
+                disabled={loading}
                 sx={{
-                  textDecoration: "none",
-                  color: "text.secondary",
+                  py: 1.1,
+                  textTransform: "none",
+                  borderRadius: "10px",
+                  fontWeight: 600,
                 }}
               >
-                {t.back}
-              </Typography>
-            </a>
-          </Stack>
+                {loading ? (
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <CircularProgress size={18} color="inherit" />
+                    <span>Entrando...</span>
+                  </Box>
+                ) : (
+                  t.login
+                )}
+              </Button>
+
+              {error ? (
+                <Alert severity="error" variant="outlined">
+                  {error}
+                </Alert>
+              ) : null}
+
+              <Divider />
+
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+              <a
+                href="/"
+                style={{
+                  textDecoration: "none",
+                  color: "inherit",
+                }}
+              >
+                <Typography
+                  textAlign="center"
+                  fontSize="0.86rem"
+                  sx={{
+                    textDecoration: "none",
+                    color: "text.secondary",
+                  }}
+                >
+                  {t.back}
+                </Typography>
+              </a>
+            </Stack>
           </Box>
         </Paper>
       </Box>

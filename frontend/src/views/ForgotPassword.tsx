@@ -36,7 +36,7 @@ export default function ForgotPasswordView() {
     setLoading(true);
 
     const { error } = await handleRequest(() =>
-      getAxios().post("/auth/forgot-password", { email })
+      getAxios().post("/auth/forgot-password", { email }),
     );
 
     if (error) {
@@ -49,7 +49,15 @@ export default function ForgotPasswordView() {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center", bgcolor: "background.default", p: 2 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        bgcolor: "background.default",
+        p: 2,
+      }}
+    >
       <Paper
         elevation={0}
         sx={{
@@ -96,7 +104,12 @@ export default function ForgotPasswordView() {
             variant="contained"
             onClick={handleSubmit}
             disabled={!email || loading}
-            sx={{ textTransform: "none", py: 1.05, borderRadius: "10px", fontWeight: 600 }}
+            sx={{
+              textTransform: "none",
+              py: 1.05,
+              borderRadius: "10px",
+              fontWeight: 600,
+            }}
           >
             {t.send}
           </Button>

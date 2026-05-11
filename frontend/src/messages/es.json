@@ -1,0 +1,27 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar"
+  },
+
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "button": "Acceder"
+    }
+  },
+
+  "dashboard": {
+    "welcome": "Bienvenido al sistema"
+  },
+
+  "clients": {
+    "title": "Clientes",
+    "newClient": "Nuevo cliente",
+    "search": "Buscar cliente"
+  }
+}

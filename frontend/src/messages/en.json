@@ -1,0 +1,27 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit"
+  },
+
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "button": "Sign In"
+    }
+  },
+
+  "dashboard": {
+    "welcome": "Welcome to the system"
+  },
+
+  "clients": {
+    "title": "Clients",
+    "newClient": "New client",
+    "search": "Search client"
+  }
+}

@@ -5,37 +5,36 @@ import ThemeRegistry from "@/theme/ThemeRegistry";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthGate from "@/components/auth/AuthGate";
+import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
-    title: "Advocacia Gestão - Sistema de Gestão Jurídica",
-    description:
-        "Sistema de gestão jurídica para advogados e escritórios de advocacia, com controle de clientes, processos e prazos.",
+  title: "Advocacia Gestão - Sistema de Gestão Jurídica",
+  description:
+    "Sistema de gestão jurídica para advogados e escritórios de advocacia, com controle de clientes, processos e prazos.",
 };
 
 export default function RootLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    return (
-        <html lang="pt-br">
-            <body style={{ margin: 0 }}>
-                <ThemeRegistry>
-                    <AuthProvider>
-                        <NotificationsProvider>
-                            <Box
-                                display="flex"
-                                flexDirection="column"
-                                minHeight="100vh"
-                            >
-                                <Box component="main" flex={1}>
-                                    <AuthGate>{children}</AuthGate>
-                                </Box>
-                            </Box>
-                        </NotificationsProvider>
-                    </AuthProvider>
-                </ThemeRegistry>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="pt-BR">
+      <body style={{ margin: 0 }}>
+        <ThemeRegistry>
+          <LanguageProvider>
+            <AuthProvider>
+              <NotificationsProvider>
+                <Box display="flex" flexDirection="column" minHeight="100vh">
+                  <Box component="main" flex={1}>
+                    <AuthGate>{children}</AuthGate>
+                  </Box>
+                </Box>
+              </NotificationsProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </ThemeRegistry>
+      </body>
+    </html>
+  );
 }
