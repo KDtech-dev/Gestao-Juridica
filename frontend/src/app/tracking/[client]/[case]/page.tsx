@@ -25,7 +25,6 @@ export default async function TrackingDetailPage({
         status="Pendente"
         nextHearing="-"
         lawyerName="-"
-        role={client === "cliente" ? "cliente" : "advogado"}
       />
     );
   }
@@ -38,7 +37,6 @@ export default async function TrackingDetailPage({
       status={item.status}
       nextHearing={item.nextHearing}
       lawyerName={item.lawyerName}
-      role={client === "cliente" ? "cliente" : "advogado"}
     />
   );
 }
