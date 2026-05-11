@@ -25,7 +25,6 @@ export default async function AcompanhamentoDetalhePage({
         status="Pendente"
         nextHearing="-"
         lawyerName="-"
-        role={cliente === "cliente" ? "cliente" : "advogado"}
       />
     );
   }
@@ -38,7 +37,6 @@ export default async function AcompanhamentoDetalhePage({
       status={item.status}
       nextHearing={item.nextHearing}
       lawyerName={item.lawyerName}
-      role={cliente === "cliente" ? "cliente" : "advogado"}
     />
   );
 }
