@@ -26,7 +26,9 @@ import {
   updateUser,
 } from "@/services/userService";
 import UserTable from "@/components/users/UserTable";
-import UserModal, { type UserFormSubmitPayload } from "@/components/modals/UserModal";
+import UserModal, {
+  type UserFormSubmitPayload,
+} from "@/components/modals/UserModal";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 
 type SnackbarState = {

@@ -15,7 +15,9 @@ type Feedback = {
 const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Informe a senha atual."),
-    newPassword: z.string().min(6, "A nova senha deve ter pelo menos 6 caracteres."),
+    newPassword: z
+      .string()
+      .min(6, "A nova senha deve ter pelo menos 6 caracteres."),
     confirmPassword: z.string().min(1, "Confirme a nova senha."),
   })
   .superRefine(({ newPassword, confirmPassword }, ctx) => {
@@ -40,7 +42,9 @@ export function ChangePasswordModal({ open, onClose }: Props) {
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [saving, setSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<
-    Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>
+    Partial<
+      Record<"currentPassword" | "newPassword" | "confirmPassword", string>
+    >
   >({});
 
   const passwordsMismatch = useMemo(
@@ -185,7 +189,10 @@ export function ChangePasswordModal({ open, onClose }: Props) {
           onChange={(event) => {
             setCurrentPassword(event.target.value);
             if (fieldErrors.currentPassword) {
-              setFieldErrors((prev) => ({ ...prev, currentPassword: undefined }));
+              setFieldErrors((prev) => ({
+                ...prev,
+                currentPassword: undefined,
+              }));
             }
           }}
           fullWidth
@@ -215,7 +222,10 @@ export function ChangePasswordModal({ open, onClose }: Props) {
           onChange={(event) => {
             setConfirmPassword(event.target.value);
             if (fieldErrors.confirmPassword) {
-              setFieldErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+              setFieldErrors((prev) => ({
+                ...prev,
+                confirmPassword: undefined,
+              }));
             }
           }}
           fullWidth

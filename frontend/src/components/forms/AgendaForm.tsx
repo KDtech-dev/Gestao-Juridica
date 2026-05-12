@@ -1,6 +1,12 @@
 "use client";
 
-import { Box, TextField, Button, MenuItem, InputAdornment } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button,
+  MenuItem,
+  InputAdornment,
+} from "@mui/material";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 
@@ -17,8 +23,8 @@ export function AppointmentForm() {
         },
         gap: 2,
       }}
-      >
-        <Box sx={{ gridColumn: "1 / -1" }}>
+    >
+      <Box sx={{ gridColumn: "1 / -1" }}>
         <TextField fullWidth label="Título do Compromisso *" />
       </Box>
 

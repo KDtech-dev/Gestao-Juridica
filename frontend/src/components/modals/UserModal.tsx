@@ -167,7 +167,9 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
         cpf: isEdit ? undefined : normalizeCpf(form.cpf),
         phone: form.phone.trim() || undefined,
         oabNumber:
-          form.type === "advogado" ? form.oabNumber.trim() || undefined : undefined,
+          form.type === "advogado"
+            ? form.oabNumber.trim() || undefined
+            : undefined,
         areas:
           form.type === "advogado"
             ? form.areas.length
@@ -227,10 +229,11 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
         <TextField
           label="Nome"
           value={form.name}
-          onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, name: e.target.value }))
+          }
           onBlur={() => setTouched((p) => ({ ...p, name: true }))}
           error={!!touched.name && !form.name.trim()}
-          
           fullWidth
         />
 
@@ -249,7 +252,9 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
           <TextField
             label="CPF"
             value={form.cpf}
-            onChange={(e) => setForm((prev) => ({ ...prev, cpf: e.target.value }))}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, cpf: e.target.value }))
+            }
             onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
             error={cpfInvalid}
             fullWidth
@@ -259,7 +264,9 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
         <TextField
           label="Telefone"
           value={form.phone}
-          onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, phone: e.target.value }))
+          }
           fullWidth
         />
 
@@ -341,9 +348,14 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               type="password"
               value={form.confirmPassword}
               onChange={(e) =>
-                setForm((prev) => ({ ...prev, confirmPassword: e.target.value }))
+                setForm((prev) => ({
+                  ...prev,
+                  confirmPassword: e.target.value,
+                }))
               }
-              onBlur={() => setTouched((p) => ({ ...p, confirmPassword: true }))}
+              onBlur={() =>
+                setTouched((p) => ({ ...p, confirmPassword: true }))
+              }
               error={passwordMismatch}
               fullWidth
               autoComplete="new-password"

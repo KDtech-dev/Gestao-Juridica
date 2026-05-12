@@ -13,10 +13,10 @@ export function ClientForm() {
         },
         gap: 2,
       }}
-      >
-        <Box sx={{ gridColumn: "1 / -1" }}>
-          <TextField fullWidth label="Nome / Razão Social" />
-        </Box>
+    >
+      <Box sx={{ gridColumn: "1 / -1" }}>
+        <TextField fullWidth label="Nome / Razão Social" />
+      </Box>
 
       <TextField fullWidth label="CPF / CNPJ" />
       <TextField fullWidth label="E-mail" />
