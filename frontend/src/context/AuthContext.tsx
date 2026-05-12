@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import auth from "@/configs/auth";
+import { authStorage } from "@/configs/axios";
 import { getRouteByRole } from "@/utils/redirectByRole";
 
 export type AuthUser = {
@@ -24,7 +25,7 @@ type AuthContextValue = {
   loading: boolean;
   isAuthenticated: boolean;
   hasRole: (role: string) => boolean;
-  setAuth: (userData: AuthUser, token: string) => void;
+  setAuth: (userData: AuthUser, token: string, remember?: boolean) => void;
   logout: () => void;
   redirectByRole: () => void;
 };
@@ -62,9 +63,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const token = localStorage.getItem(auth.storageTokenKeyName);
+    const token = authStorage.get();
     const storedUser = safeParseUser(
-      localStorage.getItem(auth.userDataKeyName),
+      localStorage.getItem(auth.userDataKeyName) ??
+        sessionStorage.getItem(auth.userDataKeyName),
     );
 
     const nextUser = token && storedUser ? storedUser : null;
@@ -81,19 +83,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [user],
   );
 
-  const setAuth = useCallback((userData: AuthUser, token: string) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(auth.storageTokenKeyName, token);
-      localStorage.setItem(auth.userDataKeyName, JSON.stringify(userData));
-    }
-    setUser(userData);
-    setLoading(false);
-  }, []);
+  const setAuth = useCallback(
+    (userData: AuthUser, token: string, remember = true) => {
+      if (typeof window !== "undefined") {
+        const targetStorage = remember ? localStorage : sessionStorage;
+        const otherStorage = remember ? sessionStorage : localStorage;
+
+        authStorage.set(token, remember);
+        targetStorage.setItem(auth.userDataKeyName, JSON.stringify(userData));
+        otherStorage.removeItem(auth.userDataKeyName);
+      }
+      setUser(userData);
+      setLoading(false);
+    },
+    [],
+  );
 
   const logout = useCallback(() => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem(auth.storageTokenKeyName);
+      authStorage.set(null);
       localStorage.removeItem(auth.userDataKeyName);
+      sessionStorage.removeItem(auth.userDataKeyName);
     }
     setUser(null);
     setLoading(false);

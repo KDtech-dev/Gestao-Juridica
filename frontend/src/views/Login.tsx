@@ -10,10 +10,14 @@ import {
   Divider,
   Alert,
   CircularProgress,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { loginSchema } from "@/schemas/auth.schema";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { LoginInput, loginSchema } from "@/schemas/auth.schema";
 import { postLogin } from "@/api/apiAuth";
 import { handleRequest } from "@/configs/handleRequest";
 import { useAuth } from "@/hooks/useAuth";
@@ -37,8 +41,6 @@ const labels = {
 } as const;
 
 export default function LoginView() {
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -50,21 +52,27 @@ export default function LoginView() {
     setAuth,
   } = useAuth();
   const t = labels;
+  const {
+    control,
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      identifier: "",
+      password: "",
+      remember: false,
+    },
+  });
+  const { ref: passwordFieldRef, ...passwordField } = register("password");
 
-  const handleLogin = async () => {
+  const handleLogin = async (formData: LoginInput) => {
     if (loading) return;
     setError(null);
     setLoading(true);
 
-    const parsed = loginSchema.safeParse({ identifier, password });
-
-    if (!parsed.success) {
-      setError(parsed.error.issues[0].message);
-      setLoading(false);
-      return;
-    }
-
-    const { data, error } = await handleRequest(() => postLogin(parsed.data));
+    const { data, error } = await handleRequest(() => postLogin(formData));
 
     if (error || !data) {
       setError(error || "Erro ao realizar login");
@@ -72,14 +80,13 @@ export default function LoginView() {
       return;
     }
 
-    setAuth(data.user, data.token);
-
     const roles: string[] = Array.isArray(data.user?.roles)
       ? data.user.roles
       : Object.values(data.user?.roles ?? {});
 
     const route = getRouteByRole(roles);
 
+    setAuth(data.user, data.token, formData.remember);
     router.replace(route || "/agenda");
     setLoading(false);
   };
@@ -148,13 +155,7 @@ export default function LoginView() {
             bgcolor: "background.paper",
           }}
         >
-          <Box
-            component="form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleLogin();
-            }}
-          >
+          <Box component="form" onSubmit={handleSubmit(handleLogin)}>
             <Stack spacing={2}>
               <Box>
                 <Typography
@@ -172,30 +173,65 @@ export default function LoginView() {
               <TextField
                 label={t.identifier}
                 fullWidth
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
+                {...register("identifier")}
                 onKeyDown={(e) => {
                   if (e.key !== "Enter") return;
                   e.preventDefault();
                   passwordRef.current?.focus();
                 }}
                 disabled={loading}
+                error={!!errors.identifier}
+                helperText={errors.identifier?.message}
               />
 
               <TextField
                 label={t.password}
                 type="password"
                 fullWidth
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                inputRef={passwordRef}
+                {...passwordField}
+                inputRef={(element) => {
+                  passwordFieldRef(element);
+                  passwordRef.current = element;
+                }}
                 disabled={loading}
+                error={!!errors.password}
+                helperText={errors.password?.message}
               />
 
-              <Stack direction="row" justifyContent="space-between">
-                <Typography fontSize="0.82rem" color="text.secondary">
-                  {t.remember}
-                </Typography>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                gap={2}
+              >
+                <Controller
+                  name="remember"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={field.value}
+                          onBlur={field.onBlur}
+                          onChange={(event) =>
+                            field.onChange(event.target.checked)
+                          }
+                          inputRef={field.ref}
+                          disabled={loading}
+                          size="small"
+                        />
+                      }
+                      label={t.remember}
+                      sx={{
+                        color: "text.secondary",
+                        m: 0,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "0.82rem",
+                        },
+                      }}
+                    />
+                  )}
+                />
                 <Button
                   component={Link}
                   href="/forgot-password"

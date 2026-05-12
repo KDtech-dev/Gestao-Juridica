@@ -15,9 +15,11 @@ export function AuthGate({ children }: Props) {
   const { loading, isAuthenticated } = useAuth();
 
   const isPublicRoute = useMemo(() => {
-    // Keep this list minimal per requirements.
-    // If you later want /forgot-password to be public, add it here.
-    return pathname === "/" || pathname === "/login";
+    return (
+      pathname === "/" ||
+      pathname === "/login" ||
+      pathname === "/forgot-password"
+    );
   }, [pathname]);
 
   useEffect(() => {

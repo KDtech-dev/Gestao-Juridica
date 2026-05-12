@@ -18,13 +18,21 @@ if (typeof window === "undefined") {
 
 export const authStorage = {
   get(): string | null {
-    return localStorage.getItem(auth.storageTokenKeyName);
+    return (
+      localStorage.getItem(auth.storageTokenKeyName) ??
+      sessionStorage.getItem(auth.storageTokenKeyName)
+    );
   },
-  set(token: string | null): void {
+  set(token: string | null, remember = true): void {
     if (token) {
-      localStorage.setItem(auth.storageTokenKeyName, token);
+      const targetStorage = remember ? localStorage : sessionStorage;
+      const otherStorage = remember ? sessionStorage : localStorage;
+
+      targetStorage.setItem(auth.storageTokenKeyName, token);
+      otherStorage.removeItem(auth.storageTokenKeyName);
     } else {
       localStorage.removeItem(auth.storageTokenKeyName);
+      sessionStorage.removeItem(auth.storageTokenKeyName);
     }
   },
 };
