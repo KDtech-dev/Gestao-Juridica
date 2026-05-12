@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\PublicationController;
 
+
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [PasswordController::class, 'sendResetLinkEmail']);

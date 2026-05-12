@@ -4,6 +4,7 @@ import { Dialog, DialogContent, Button, Typography, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { BRANDING } from "@/configs/branding";
 
+
 interface BaseModalProps {
   open: boolean;
   onClose: () => void;
