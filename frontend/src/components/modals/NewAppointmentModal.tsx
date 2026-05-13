@@ -1,25 +1,47 @@
 "use client";
 
 import { BaseModal } from "@/components/modals/BaseModal";
-import { AppointmentForm } from "@/components/forms/AgendaForm";
+import {
+  AppointmentForm,
+  AppointmentFormValues,
+} from "@/components/forms/AgendaForm";
+import { AppointmentPayload } from "@/services/appointmentService";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (payload: AppointmentPayload) => void;
+  initialValues?: Partial<AppointmentFormValues>;
+  submitting?: boolean;
 };
 
-export function NewAppointmentModal({ open, onClose, onSubmit }: Props) {
+const formId = "new-appointment-form";
+
+export function NewAppointmentModal({
+  open,
+  onClose,
+  onSubmit,
+  initialValues,
+  submitting = false,
+}: Props) {
   return (
     <BaseModal
       open={open}
       onClose={onClose}
       title="Novo Compromisso"
-      confirmText="Agendar Compromisso"
-      onSubmit={onSubmit}
+      confirmText={submitting ? "Agendando..." : "Agendar Compromisso"}
+      confirmFormId={formId}
+      confirmType="submit"
+      confirmDisabled={submitting}
       maxWidth="lg"
     >
-      <AppointmentForm />
+      <AppointmentForm
+        key={initialValues?.startsAt?.toISOString() ?? "new-appointment"}
+        id={formId}
+        initialValues={initialValues}
+        disabled={submitting}
+        onSubmit={onSubmit}
+      />
     </BaseModal>
   );
 }

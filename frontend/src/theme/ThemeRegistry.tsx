@@ -4,8 +4,11 @@ import * as React from "react";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useServerInsertedHTML } from "next/navigation";
 import type { EmotionCache } from "@emotion/cache";
+import { ptBR } from "date-fns/locale/pt-BR";
 
 export type ThemeMode = "light" | "dark" | "system";
 
@@ -212,9 +215,14 @@ export default function ThemeRegistry({
         }}
       >
         <ThemeProvider theme={theme}>
-          <CssBaseline />
+          <LocalizationProvider
+            dateAdapter={AdapterDateFns}
+            adapterLocale={ptBR}
+          >
+            <CssBaseline />
 
-          {children}
+            {children}
+          </LocalizationProvider>
         </ThemeProvider>
       </ThemeModeContext.Provider>
     </CacheProvider>

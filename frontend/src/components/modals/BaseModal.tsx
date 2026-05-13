@@ -10,6 +10,8 @@ interface BaseModalProps {
   title: string;
   children: React.ReactNode;
   onSubmit?: () => void;
+  confirmFormId?: string;
+  confirmType?: "button" | "submit";
   confirmText?: string;
   cancelText?: string;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
@@ -22,6 +24,8 @@ export function BaseModal({
   title,
   children,
   onSubmit,
+  confirmFormId,
+  confirmType = "button",
   confirmText,
   cancelText,
   maxWidth = "lg",
@@ -130,7 +134,11 @@ export function BaseModal({
               </Button>
 
               <Button
-                onClick={onSubmit ?? onClose}
+                onClick={
+                  confirmType === "submit" ? undefined : (onSubmit ?? onClose)
+                }
+                type={confirmType}
+                form={confirmFormId}
                 variant="contained"
                 disabled={confirmDisabled}
               >

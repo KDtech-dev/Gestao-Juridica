@@ -38,6 +38,10 @@ class User extends Authenticatable
         'cpf',
         'role',
         'phone',
+        'contact_name',
+        'client_status',
+        'address',
+        'notes',
         'is_active',
         'oab_number',
         'areas',
@@ -77,6 +81,7 @@ class User extends Authenticatable
 
         return match ($roleName) {
             'admin' => RoleEnum::ADMIN,
+            'advogado' => RoleEnum::ADVOGADO,
             'funcionario' => RoleEnum::FUNCIONARIO,
             'cliente' => RoleEnum::CLIENTE,
 
@@ -92,8 +97,18 @@ class User extends Authenticatable
     {
         return $this->hasRole('funcionario');
     }
+    public function isAdvogado(): bool
+    {
+        return $this->hasRole('advogado');
+    }
     public function isCliente(): bool
     {
         return $this->hasRole('cliente');
+    }
+
+    public function lawyerAppointments()
+    {
+        return $this->belongsToMany(Appointment::class, 'appointment_lawyer', 'lawyer_id', 'appointment_id')
+            ->withTimestamps();
     }
 }

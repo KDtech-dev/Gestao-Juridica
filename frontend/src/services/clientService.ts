@@ -1,13 +1,6 @@
-import axios from "axios";
-import { getPublicApiOrigin } from "@/configs/apiUrl";
+import { getAxios } from "@/configs/axios";
 
-const baseURL = getPublicApiOrigin();
-
-const api = axios.create({
-  baseURL,
-  headers: { "Content-Type": "application/json" },
-  withCredentials: true,
-});
+const api = getAxios();
 
 export type Client = {
   id?: number | string;
@@ -26,17 +19,17 @@ export async function listClients(params?: {
   search?: string;
   status?: string;
 }) {
-  const res = await api.get("/api/clients", { params });
+  const res = await api.get("/clients", { params });
   return res.data;
 }
 
 export async function getClient(id: number | string) {
-  const res = await api.get(`/api/clients/${id}`);
+  const res = await api.get(`/clients/${id}`);
   return res.data;
 }
 
 export async function createClient(payload: Partial<Client>) {
-  const res = await api.post("/api/clients", payload);
+  const res = await api.post("/clients", payload);
   return res.data;
 }
 
@@ -44,12 +37,12 @@ export async function updateClient(
   id: number | string,
   payload: Partial<Client>,
 ) {
-  const res = await api.put(`/api/clients/${id}`, payload);
+  const res = await api.put(`/clients/${id}`, payload);
   return res.data;
 }
 
 export async function deleteClient(id: number | string) {
-  const res = await api.delete(`/api/clients/${id}`);
+  const res = await api.delete(`/clients/${id}`);
   return res.data;
 }
 

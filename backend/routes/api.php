@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PasswordController;
 use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\PublicationController;
+use App\Http\Controllers\Api\AppointmentController;
+use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\LawyerController;
 
 
 Route::prefix('auth')->group(function () {
@@ -24,6 +27,12 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('posts', [PublicationController::class, 'store']);
     Route::put('posts/{id}', [PublicationController::class, 'update']);
     Route::delete('posts/{id}', [PublicationController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum', 'role:admin|advogado|funcionario'])->group(function () {
+    Route::apiResource('appointments', AppointmentController::class);
+    Route::apiResource('clients', ClientController::class);
+    Route::get('lawyers', [LawyerController::class, 'index']);
 });
 
 // 🌍 ROTAS PÚBLICAS (SEM LOGIN)
