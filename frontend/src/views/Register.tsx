@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { getPublicApiOrigin } from "@/configs/apiUrl";
+import { toast } from "@/utils/toast";
 
 type CsvResult = {
   row: number;
@@ -18,12 +19,10 @@ export default function RegisterView() {
   const [phone, setPhone] = useState("");
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
   const [csvResults, setCsvResults] = useState<CsvResult[] | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMessage(null);
     setCsvResults(null);
 
     try {
@@ -45,9 +44,9 @@ export default function RegisterView() {
 
         const data = await res.json();
         if (!res.ok) {
-          setMessage(data.message || "Erro ao enviar CSV");
+          toast.error(data.message || "Erro ao enviar CSV");
         } else {
-          setMessage(data.message || "CSV processado");
+          toast.success(data.message || "CSV processado");
           setCsvResults(data.results || null);
         }
       } else {
@@ -66,13 +65,13 @@ export default function RegisterView() {
 
         const data = await res.json();
         if (!res.ok) {
-          setMessage(data.message || "Erro ao cadastrar");
+          toast.error(data.message || "Erro ao cadastrar");
         } else {
-          setMessage(data.message || "Cadastro realizado com sucesso");
+          toast.success(data.message || "Cadastro realizado com sucesso");
         }
       }
-    } catch (err) {
-      setMessage("Erro de conexão");
+    } catch {
+      toast.error("Erro de conexão");
     } finally {
       setLoading(false);
     }
@@ -160,9 +159,6 @@ export default function RegisterView() {
           </span>
         </div>
       </form>
-
-      {message ? <p className="mt-4 text-sm">{message}</p> : null}
-
       {csvResults && (
         <div className="mt-6">
           <h2 className="font-semibold">Resultados do CSV</h2>

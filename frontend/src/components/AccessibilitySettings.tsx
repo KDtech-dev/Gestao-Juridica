@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { ThemeMode, useThemeMode } from "@/theme/ThemeRegistry";
 import { ThemeModeSelector } from "./ThemeModeSelector";
+import { toast } from "@/utils/toast";
 
 export function AccessibilitySettings() {
   const { themeMode, setThemeMode } = useThemeMode();
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const updateAndNotify = () => {
-    setSnackbarOpen(true);
+    toast.success("Preferência visual atualizada.");
   };
   const handleThemeModeChange = (mode: ThemeMode) => {
     setThemeMode(mode);

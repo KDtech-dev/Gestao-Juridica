@@ -21,6 +21,29 @@ function ReviewItem({ label, value }: { label: string; value: string }) {
   );
 }
 
+function ReviewHtml({ label, value }: { label: string; value: string }) {
+  return (
+    <Box>
+      <Typography fontSize="0.8rem" color="text.secondary" mb={0.6}>
+        {label}
+      </Typography>
+      <Box
+        sx={{
+          border: "1px solid",
+          borderColor: "divider",
+          borderRadius: "10px",
+          p: 1.4,
+          bgcolor: "background.default",
+          color: "text.primary",
+          "& p": { mt: 0, mb: 1 },
+          "& p:last-child": { mb: 0 },
+        }}
+        dangerouslySetInnerHTML={{ __html: value || "-" }}
+      />
+    </Box>
+  );
+}
+
 export function StepRevisao({ data, isEn = false }: Props) {
   return (
     <Stack spacing={1.4}>
@@ -35,20 +58,30 @@ export function StepRevisao({ data, isEn = false }: Props) {
       >
         <Stack spacing={1.1}>
           <ReviewItem label={isEn ? "Title" : "Título"} value={data.titulo} />
-          <ReviewItem label={isEn ? "Type" : "Tipo"} value={data.tipo} />
           <ReviewItem
-            label={isEn ? "Client" : "Cliente"}
-            value={data.cliente}
+            label={isEn ? "Category" : "Categoria"}
+            value={data.categoria}
           />
           <ReviewItem
-            label={isEn ? "Process" : "Processo"}
-            value={data.processo}
+            label={isEn ? "Banner image" : "Imagem do banner"}
+            value={data.bannerImage}
           />
-          <ReviewItem label={isEn ? "Date" : "Data"} value={data.data} />
-          <ReviewItem
-            label={isEn ? "Responsible" : "Responsável"}
-            value={data.responsavel}
-          />
+          {data.bannerImage ? (
+            <Box
+              component="img"
+              src={data.bannerImage}
+              alt={data.titulo}
+              sx={{
+                width: "100%",
+                maxHeight: 220,
+                objectFit: "cover",
+                borderRadius: "10px",
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            />
+          ) : null}
+          <ReviewItem label={isEn ? "Author" : "Autor"} value={data.autor} />
         </Stack>
       </Paper>
 
@@ -62,9 +95,9 @@ export function StepRevisao({ data, isEn = false }: Props) {
         }}
       >
         <Stack spacing={1.1}>
-          <ReviewItem label={isEn ? "Summary" : "Resumo"} value={data.resumo} />
-          <ReviewItem
-            label={isEn ? "Full content" : "Conteúdo completo"}
+          <ReviewHtml label={isEn ? "Summary" : "Resumo"} value={data.resumo} />
+          <ReviewHtml
+            label={isEn ? "Publication text" : "Texto da publicação"}
             value={data.conteudo}
           />
           <ReviewItem

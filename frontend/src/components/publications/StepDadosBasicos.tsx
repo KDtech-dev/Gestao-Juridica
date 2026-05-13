@@ -1,24 +1,18 @@
 "use client";
 
-import { Autocomplete, Grid, MenuItem, Stack, TextField } from "@mui/material";
-import { cases, listTrackedClients } from "@/data/cases";
-import { BasicErrors, PublicacaoFormData, TipoPublicacao } from "./types";
+import { Grid, Stack, TextField } from "@mui/material";
+import { PublicacaoFormData, PublicationErrors } from "./types";
+import { HtmlTextEditor } from "./HtmlTextEditor";
 
 type Props = {
   isEn?: boolean;
   data: PublicacaoFormData;
-  errors: BasicErrors;
+  errors: PublicationErrors;
   onChange: <K extends keyof PublicacaoFormData>(
     field: K,
     value: PublicacaoFormData[K],
   ) => void;
 };
-
-const tipos: TipoPublicacao[] = [
-  "Atualização de Caso",
-  "Comunicado ao Cliente",
-  "Notícia Jurídica",
-];
 
 export function StepDadosBasicos({
   isEn = false,
@@ -26,11 +20,6 @@ export function StepDadosBasicos({
   errors,
   onChange,
 }: Props) {
-  const clients = listTrackedClients();
-  const processosDoCliente = cases
-    .filter((item) => (data.cliente ? item.clientName === data.cliente : true))
-    .map((item) => item.processNumber);
-
   return (
     <Stack spacing={2}>
       <Grid container spacing={2}>
@@ -47,80 +36,55 @@ export function StepDadosBasicos({
 
         <Grid size={{ xs: 12, md: 6 }}>
           <TextField
-            select
             fullWidth
-            label={isEn ? "Type" : "Tipo"}
-            value={data.tipo}
-            onChange={(event) =>
-              onChange("tipo", event.target.value as TipoPublicacao)
-            }
-            error={Boolean(errors.tipo)}
-            helperText={errors.tipo}
-          >
-            {tipos.map((tipo) => (
-              <MenuItem key={tipo} value={tipo}>
-                {tipo}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Autocomplete
-            options={clients.map((client) => client.name)}
-            value={data.cliente || null}
-            onChange={(_, value) => {
-              onChange("cliente", value || "");
-              onChange("processo", "");
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={isEn ? "Client" : "Cliente"}
-                error={Boolean(errors.cliente)}
-                helperText={errors.cliente}
-              />
-            )}
+            label={isEn ? "Category" : "Categoria"}
+            value={data.categoria}
+            onChange={(event) => onChange("categoria", event.target.value)}
+            error={Boolean(errors.categoria)}
+            helperText={errors.categoria}
           />
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Autocomplete
-            options={processosDoCliente}
-            value={data.processo || null}
-            onChange={(_, value) => onChange("processo", value || "")}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label={isEn ? "Process" : "Processo"}
-                error={Boolean(errors.processo)}
-                helperText={errors.processo}
-              />
-            )}
+          <TextField
+            fullWidth
+            label={isEn ? "Banner image URL" : "Imagem do banner"}
+            value={data.bannerImage}
+            onChange={(event) => onChange("bannerImage", event.target.value)}
+            error={Boolean(errors.bannerImage)}
+            helperText={errors.bannerImage || "Use uma URL completa da imagem."}
           />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
-            type="date"
-            label={isEn ? "Date" : "Data"}
-            slotProps={{ inputLabel: { shrink: true } }}
-            value={data.data}
-            onChange={(event) => onChange("data", event.target.value)}
-            error={Boolean(errors.data)}
-            helperText={errors.data}
+            label={isEn ? "Author name" : "Nome do autor"}
+            value={data.autor}
+            onChange={(event) => onChange("autor", event.target.value)}
+            error={Boolean(errors.autor)}
+            helperText={errors.autor}
           />
         </Grid>
 
-        <Grid size={{ xs: 12, md: 3 }}>
-          <TextField
-            fullWidth
-            label={isEn ? "Responsible" : "Responsável"}
-            value={data.responsavel}
-            onChange={(event) => onChange("responsavel", event.target.value)}
-            error={Boolean(errors.responsavel)}
-            helperText={errors.responsavel}
+        <Grid size={{ xs: 12 }}>
+          <HtmlTextEditor
+            label={isEn ? "Summary" : "Resumo"}
+            value={data.resumo}
+            onChange={(value) => onChange("resumo", value)}
+            error={errors.resumo}
+            minRows={4}
+            helperText={`${data.resumo.length}/2000 caracteres`}
+          />
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <HtmlTextEditor
+            label={isEn ? "Publication text" : "Texto da publicação"}
+            value={data.conteudo}
+            onChange={(value) => onChange("conteudo", value)}
+            error={errors.conteudo}
+            minRows={8}
           />
         </Grid>
       </Grid>

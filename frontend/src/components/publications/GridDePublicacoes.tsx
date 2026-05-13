@@ -64,7 +64,11 @@ export function GridDePublicacoes({
   }, [PUBLICACOES_PER_PAGE, boundedPage, isControlled, publicacoes]);
 
   return (
-    <Container component="section" maxWidth="xl" sx={{ mb: 8 }}>
+    <Container
+      component="section"
+      maxWidth={false}
+      sx={{ mb: 8, maxWidth: { lg: 1680, xl: 1840 } }}
+    >
       <Box sx={{ minHeight: 300 }}>
         <Typography
           variant="h4"
@@ -84,14 +88,14 @@ export function GridDePublicacoes({
 
         <Grid
           container
-          columns={{ xs: 12, sm: 12, md: 12, lg: 12, xl: 20 }}
+          columns={{ xs: 12, sm: 12, md: 12, lg: 16, xl: 16 }}
           spacing={3}
           justifyContent="center"
           alignItems="stretch"
         >
           {publicacoesPaginadas.map((publicacao) => (
             <Grid
-              size={{ xs: 12, sm: 6, md: 4, lg: 3, xl: 4 }}
+              size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
               key={publicacao.id}
             >
               <CardPublicacao publicacao={publicacao} />

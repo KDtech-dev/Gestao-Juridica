@@ -276,7 +276,7 @@ export default function HomeView() {
         bgcolor="background.default"
       >
         <GridDePublicacoes
-          publicacoes={publicacoes.slice(0, 3)}
+          publicacoes={publicacoes.slice(0, 4)}
           title="Publicações Recentes"
           subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
         />

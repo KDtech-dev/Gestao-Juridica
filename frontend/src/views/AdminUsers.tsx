@@ -1,14 +1,12 @@
 "use client";
 
 import {
-  Alert,
   Box,
   Button,
   Container,
   InputAdornment,
   MenuItem,
   Paper,
-  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -31,21 +29,7 @@ import UserModal, {
   type UserFormSubmitPayload,
 } from "@/components/modals/UserModal";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
-
-type SnackbarState = {
-  open: boolean;
-  severity: "success" | "error";
-  message: string;
-};
-
-function extractApiErrorMessage(err: unknown): string | null {
-  if (!err || typeof err !== "object") return null;
-  const maybeErr = err as { response?: { data?: unknown } };
-  const data = maybeErr.response?.data;
-  if (!data || typeof data !== "object") return null;
-  const record = data as Record<string, unknown>;
-  return typeof record.message === "string" ? record.message : null;
-}
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 
 export default function AdminUsersView() {
   const { hasRole } = useAuth();
@@ -65,17 +49,6 @@ export default function AdminUsersView() {
   const [deleting, setDeleting] = useState<User | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const [snackbar, setSnackbar] = useState<SnackbarState>({
-    open: false,
-    severity: "success",
-    message: "",
-  });
-
-  const openSnackbar = (severity: SnackbarState["severity"], message: string) =>
-    setSnackbar({ open: true, severity, message });
-
-  const closeSnackbar = () => setSnackbar((p) => ({ ...p, open: false }));
-
   const loadUsers = async () => {
     setLoading(true);
     try {
@@ -86,9 +59,9 @@ export default function AdminUsersView() {
       });
       setUsers(res.items);
     } catch (err) {
-      const message =
-        extractApiErrorMessage(err) || "Não foi possível carregar usuários.";
-      openSnackbar("error", message);
+      toast.error(
+        formatToastErrorMessage(err, "Não foi possível carregar usuários."),
+      );
     } finally {
       setLoading(false);
     }
@@ -120,14 +93,14 @@ export default function AdminUsersView() {
     setDeleteLoading(true);
     try {
       await deleteUser(deleting.id);
-      openSnackbar("success", "Usuário excluído.");
+      toast.success("Usuário excluído.");
       setConfirmOpen(false);
       setDeleting(null);
       await loadUsers();
     } catch (err) {
-      const message =
-        extractApiErrorMessage(err) || "Não foi possível excluir usuário.";
-      openSnackbar("error", message);
+      toast.error(
+        formatToastErrorMessage(err, "Não foi possível excluir usuário."),
+      );
     } finally {
       setDeleteLoading(false);
     }
@@ -143,8 +116,7 @@ export default function AdminUsersView() {
     );
     try {
       await updateUser(user.id, { active: nextActive });
-      openSnackbar(
-        "success",
+      toast.success(
         nextActive ? "Usuário ativado." : "Usuário desativado.",
       );
     } catch (err) {
@@ -154,9 +126,9 @@ export default function AdminUsersView() {
           String(u.id) === String(user.id) ? { ...u, active: user.active } : u,
         ),
       );
-      const message =
-        extractApiErrorMessage(err) || "Não foi possível atualizar status.";
-      openSnackbar("error", message);
+      toast.error(
+        formatToastErrorMessage(err, "Não foi possível atualizar status."),
+      );
     } finally {
       setBusyIds((prev) => prev.filter((id) => String(id) !== String(user.id)));
     }
@@ -182,12 +154,12 @@ export default function AdminUsersView() {
           active: payload.active,
           password: payload.password,
         });
-        openSnackbar("success", submitLabel);
+        toast.success(submitLabel);
         await loadUsers();
       } catch (err) {
-        const message =
-          extractApiErrorMessage(err) || "Não foi possível atualizar usuário.";
-        openSnackbar("error", message);
+        toast.error(
+          formatToastErrorMessage(err, "Não foi possível atualizar usuário."),
+        );
         throw err;
       } finally {
         setBusyIds((prev) =>
@@ -209,12 +181,12 @@ export default function AdminUsersView() {
           position: payload.position,
           active: payload.active,
         });
-        openSnackbar("success", submitLabel);
+        toast.success(submitLabel);
         await loadUsers();
       } catch (err) {
-        const message =
-          extractApiErrorMessage(err) || "Não foi possível criar usuário.";
-        openSnackbar("error", message);
+        toast.error(
+          formatToastErrorMessage(err, "Não foi possível criar usuário."),
+        );
         throw err;
       } finally {
         setBusyIds((prev) => prev.filter((id) => String(id) !== "new"));
@@ -400,21 +372,6 @@ export default function AdminUsersView() {
         onConfirm={handleConfirmDelete}
       />
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={2600}
-        onClose={closeSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
-          onClose={closeSnackbar}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

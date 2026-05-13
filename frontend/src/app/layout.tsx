@@ -6,6 +6,7 @@ import { NotificationsProvider } from "@/context/NotificationsContext";
 import { AuthProvider } from "@/context/AuthContext";
 import AuthGate from "@/components/auth/AuthGate";
 import { LanguageProvider } from "@/context/LanguageContext";
+import ToastProvider from "@/components/ToastProvider";
 
 export const metadata: Metadata = {
   title: "Advocacia Gestão - Sistema de Gestão Jurídica",
@@ -30,6 +31,7 @@ export default function RootLayout({
                     <AuthGate>{children}</AuthGate>
                   </Box>
                 </Box>
+                <ToastProvider />
               </NotificationsProvider>
             </AuthProvider>
           </LanguageProvider>

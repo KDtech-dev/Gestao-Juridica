@@ -14,6 +14,7 @@ export type PublicacaoItem = {
   tipo: "Atualização de Caso" | "Comunicado ao Cliente" | "Notícia Jurídica";
   categoria: string;
   autor: string;
+  authorEmail?: string;
   data: string;
   readTime: string;
   cliente: string;
@@ -35,6 +36,7 @@ export const publicacoes: PublicacaoItem[] = [
     tipo: "Notícia Jurídica",
     categoria: "Tributário",
     autor: "Dra. Elena Silva",
+    authorEmail: "teste@email.com",
     data: "29 Mar 2026",
     readTime: "6 min",
     cliente: "Acme Corporation",
@@ -65,6 +67,7 @@ export const publicacoes: PublicacaoItem[] = [
     tipo: "Comunicado ao Cliente",
     categoria: "Contratos",
     autor: "Dr. Roberto Alves",
+    authorEmail: "advogado@example.com",
     data: "27 Mar 2026",
     readTime: "5 min",
     cliente: "TechStart Inc.",
@@ -90,10 +93,57 @@ export const publicacoes: PublicacaoItem[] = [
     tipo: "Atualização de Caso",
     categoria: "Compliance",
     autor: "Dra. Ana Costa",
+    authorEmail: "advogado@example.com",
     data: "25 Mar 2026",
     readTime: "7 min",
     cliente: "Maria Oliveira",
     processo: "1234567-11.2025.8.26.0001",
+    anexos: [],
+  },
+  {
+    id: "p4",
+    slug: "lgpd-gestao-de-riscos-em-contratos",
+    titulo: "LGPD: gestão de riscos em contratos com fornecedores",
+    resumo:
+      "Pontos de atenção para cláusulas de proteção de dados, auditoria e responsabilidade compartilhada.",
+    bannerImage:
+      "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1400&q=80",
+    conteudoHtml:
+      "<p>Contratos com fornecedores que tratam dados pessoais precisam delimitar responsabilidades, bases legais e procedimentos de resposta a incidentes.</p><p>Também é recomendável prever auditorias, padrões mínimos de segurança e evidências de conformidade.</p>",
+    tipo: "Notícia Jurídica",
+    categoria: "LGPD",
+    autor: "Dr. Marcos Santos",
+    authorEmail: "funcionario@example.com",
+    data: "22 Mar 2026",
+    readTime: "6 min",
+    cliente: "DataPrime Ltda.",
+    processo: "4567890-22.2025.8.26.0100",
+    anexos: [
+      {
+        id: "a4",
+        nome: "Checklist-LGPD.pdf",
+        url: "/docs/checklist-lgpd.pdf",
+      },
+    ],
+  },
+  {
+    id: "p5",
+    slug: "recuperacao-de-creditos-estrategias",
+    titulo: "Recuperação de créditos: estratégias para reduzir inadimplência",
+    resumo:
+      "Como combinar negociação, garantias contratuais e medidas judiciais para preservar caixa.",
+    bannerImage:
+      "https://images.unsplash.com/photo-1554224154-26032ffc0d07?auto=format&fit=crop&w=1400&q=80",
+    conteudoHtml:
+      "<p>A recuperação de créditos eficiente começa pela análise documental e pela classificação do risco de cada devedor.</p><p>Medidas extrajudiciais bem conduzidas podem preservar relacionamento comercial, enquanto garantias e ações judiciais devem ser usadas com estratégia.</p>",
+    tipo: "Comunicado ao Cliente",
+    categoria: "Empresarial",
+    autor: "Dra. Elena Silva",
+    authorEmail: "teste@email.com",
+    data: "20 Mar 2026",
+    readTime: "5 min",
+    cliente: "Grupo Horizonte",
+    processo: "7654321-33.2025.8.26.0003",
     anexos: [],
   },
 ];

@@ -1,16 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Alert, Stack, TextField, Typography } from "@mui/material";
+import { Stack, TextField, Typography } from "@mui/material";
 import { BaseModal } from "@/components/modals/BaseModal";
 import auth from "@/configs/auth";
 import { getPublicApiOrigin } from "@/configs/apiUrl";
 import { z } from "zod";
-
-type Feedback = {
-  severity: "success" | "error" | "info";
-  message: string;
-};
+import { toast } from "@/utils/toast";
 
 const changePasswordSchema = z
   .object({
@@ -39,7 +35,6 @@ export function ChangePasswordModal({ open, onClose }: Props) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [saving, setSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<
     Partial<
@@ -69,7 +64,6 @@ export function ChangePasswordModal({ open, onClose }: Props) {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
-    setFeedback(null);
     setSaving(false);
     setFieldErrors({});
   };
@@ -102,15 +96,11 @@ export function ChangePasswordModal({ open, onClose }: Props) {
         }
       }
       setFieldErrors(nextErrors);
-      setFeedback({
-        severity: "error",
-        message: "Revise os campos destacados.",
-      });
+      toast.error("Revise os campos destacados.");
       return;
     }
 
     setSaving(true);
-    setFeedback(null);
     setFieldErrors({});
 
     try {
@@ -133,10 +123,7 @@ export function ChangePasswordModal({ open, onClose }: Props) {
       });
       const data = await response.json();
       if (response.ok) {
-        setFeedback({
-          severity: "success",
-          message: data?.message ?? "Senha atualizada com sucesso.",
-        });
+        toast.success(data?.message ?? "Senha atualizada com sucesso.");
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
@@ -144,18 +131,13 @@ export function ChangePasswordModal({ open, onClose }: Props) {
         const fallbackMessage = "Não foi possível atualizar a senha.";
         const serverMessage =
           data?.message || extractErrorMessage(data?.errors) || fallbackMessage;
-        setFeedback({
-          severity: "error",
-          message: serverMessage,
-        });
+        toast.error(serverMessage);
       }
     } catch (error) {
       console.error(error);
-      setFeedback({
-        severity: "error",
-        message:
-          "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
-      });
+      toast.error(
+        "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
+      );
     } finally {
       setSaving(false);
     }
@@ -177,10 +159,6 @@ export function ChangePasswordModal({ open, onClose }: Props) {
             Mantenha sua conta segura escolhendo uma senha forte.
           </Typography>
         </Stack>
-
-        {feedback ? (
-          <Alert severity={feedback.severity}>{feedback.message}</Alert>
-        ) : null}
 
         <TextField
           label="Senha atual"

@@ -1,0 +1,20 @@
+import { z } from "zod";
+
+export const publicationSchema = z.object({
+  titulo: z.string().trim().min(1, "Informe o título."),
+  categoria: z.string().trim().min(1, "Informe a categoria."),
+  bannerImage: z
+    .string()
+    .trim()
+    .min(1, "Informe a URL da imagem do banner.")
+    .url("Informe uma URL válida para a imagem do banner."),
+  autor: z.string().trim().min(1, "Informe o nome do autor."),
+  resumo: z
+    .string()
+    .trim()
+    .min(1, "Informe o resumo.")
+    .max(2000, "O resumo deve ter no máximo 2000 caracteres."),
+  conteudo: z.string().trim().min(1, "Informe o texto da publicação."),
+});
+
+export type PublicationInput = z.infer<typeof publicationSchema>;

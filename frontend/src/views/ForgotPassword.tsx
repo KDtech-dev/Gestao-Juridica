@@ -12,6 +12,7 @@ import { useState } from "react";
 import { handleRequest } from "@/configs/handleRequest";
 import { getAxios } from "@/configs/axios";
 import Link from "next/link";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 
 const labels = {
   title: "Recuperar senha",
@@ -26,13 +27,9 @@ const labels = {
 export default function ForgotPasswordView() {
   const t = labels;
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    setMessage(null);
-    setError(null);
     setLoading(true);
 
     const { error } = await handleRequest(() =>
@@ -40,9 +37,9 @@ export default function ForgotPasswordView() {
     );
 
     if (error) {
-      setError(t.error);
+      toast.error(formatToastErrorMessage(error, t.error));
     } else {
-      setMessage(t.success);
+      toast.success(t.success);
     }
 
     setLoading(false);
@@ -88,17 +85,6 @@ export default function ForgotPasswordView() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
-          {message && (
-            <Typography color="primary" fontSize="0.86rem">
-              {message}
-            </Typography>
-          )}
-          {error && (
-            <Typography color="error" fontSize="0.86rem">
-              {error}
-            </Typography>
-          )}
 
           <Button
             variant="contained"

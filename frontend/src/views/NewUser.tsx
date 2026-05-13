@@ -1,19 +1,16 @@
 "use client";
 
 import {
-  Alert,
   Autocomplete,
   Box,
   Button,
   Container,
   FormControl,
-  FormControlLabel,
   InputLabel,
   MenuItem,
   Paper,
   Select,
   Stack,
-  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -30,6 +27,7 @@ import {
   type NewUserInput,
   type NewUserPayload,
 } from "@/schemas/user.schema";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 
 const practiceAreaOptions = [
   "Direito Civil",
@@ -49,15 +47,6 @@ type FormErrors = Partial<Record<keyof FormState, string>>;
 
 function normalizeCpf(value: string): string {
   return value.replace(/\D/g, "").slice(0, 11);
-}
-
-function extractApiErrorMessage(err: unknown): string | null {
-  if (!err || typeof err !== "object") return null;
-  const maybeErr = err as { response?: { data?: unknown } };
-  const data = maybeErr.response?.data;
-  if (!data || typeof data !== "object") return null;
-  const record = data as Record<string, unknown>;
-  return typeof record.message === "string" ? record.message : null;
 }
 
 function getValidationErrors(payload: NewUserInput): FormErrors {
@@ -111,7 +100,6 @@ export default function NewUserView() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const canSubmit = useMemo(() => {
     return newUserSchema.safeParse(form).success;
@@ -148,13 +136,15 @@ export default function NewUserView() {
     if (!parsed.success || loading) return;
 
     setLoading(true);
-    setError(null);
 
     try {
       await createUser(toCreatePayload(parsed.data));
+      toast.success("Usuário criado.");
       router.push("/admin/users");
     } catch (err) {
-      setError(extractApiErrorMessage(err) || "Não foi possível criar usuário.");
+      toast.error(
+        formatToastErrorMessage(err, "Não foi possível criar usuário."),
+      );
     } finally {
       setLoading(false);
     }
@@ -224,8 +214,6 @@ export default function NewUserView() {
                 elevation={0}
               >
                 <Stack spacing={3}>
-                  {error ? <Alert severity="error">{error}</Alert> : null}
-
                   <Box
                     sx={{
                       display: "grid",

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Alert,
   Box,
   Button,
   Container,
@@ -14,88 +13,207 @@ import {
 } from "@mui/material";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { StepDadosBasicos } from "@/components/publications/StepDadosBasicos";
-import { StepConteudo } from "@/components/publications/StepConteudo";
 import { StepRevisao } from "@/components/publications/StepRevisao";
+import ConfirmDialog from "@/components/users/ConfirmDialog";
 import {
-  BasicErrors,
-  ContentErrors,
   PublicacaoFormData,
+  PublicationErrors,
 } from "@/components/publications/types";
 import { findPublicacaoBySlug } from "@/data/publicacoes";
+import { toast } from "@/utils/toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
+import {
+  buildPublicacaoFromForm,
+  getStoredPublicacoes,
+  saveStoredPublicacao,
+} from "@/utils/publicationsStorage";
+import { publicationSchema } from "@/schemas/publication.schema";
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
-  tipo: "",
-  cliente: "",
-  processo: "",
-  data: "",
-  responsavel: "",
+  categoria: "",
+  bannerImage: "",
+  autor: "",
   resumo: "",
   conteudo: "",
   anexos: [],
 };
+
+function getFormSnapshot(form: PublicacaoFormData) {
+  return JSON.stringify({
+    ...form,
+    anexos: form.anexos.map((file) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+    })),
+  });
+}
 
 type Props = {
   editSlug?: string;
 };
 
 export default function NewPublicationView({ editSlug }: Props) {
-  const steps = ["Dados Básicos", "Conteúdo", "Revisão"];
+  const { user } = useAuth();
+  const router = useRouter();
+  const steps = ["Dados da Publicação", "Revisão"];
   const editItem = useMemo(
-    () => (editSlug ? findPublicacaoBySlug(editSlug) : undefined),
+    () => {
+      if (!editSlug) return undefined;
+
+      return (
+        getStoredPublicacoes().find((item) => item.slug === editSlug) ??
+        findPublicacaoBySlug(editSlug)
+      );
+    },
     [editSlug],
   );
   const isEditMode = Boolean(editItem);
   const initialResolvedForm = useMemo<PublicacaoFormData>(() => {
-    if (!editItem) return initialForm;
+    if (!editItem) {
+      return {
+        ...initialForm,
+        autor: user?.name ?? "",
+      };
+    }
     return {
       titulo: editItem.titulo,
-      tipo: editItem.tipo,
-      cliente: editItem.cliente,
-      processo: editItem.processo,
-      data: "",
-      responsavel: editItem.autor,
+      categoria: editItem.categoria,
+      bannerImage: editItem.bannerImage,
+      autor: editItem.autor,
       resumo: editItem.resumo,
-      conteudo: editItem.conteudoHtml.replace(/<[^>]*>/g, " ").trim(),
+      conteudo: editItem.conteudoHtml,
       anexos: [],
     };
-  }, [editItem]);
+  }, [editItem, user?.name]);
   const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState<PublicacaoFormData>(initialResolvedForm);
-  const [basicErrors, setBasicErrors] = useState<BasicErrors>({});
-  const [contentErrors, setContentErrors] = useState<ContentErrors>({});
-  const [published, setPublished] = useState(false);
+  const [initialSnapshot] = useState(() =>
+    getFormSnapshot(initialResolvedForm),
+  );
+  const [errors, setErrors] = useState<PublicationErrors>({});
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const allowNavigationRef = useRef(false);
+
+  const hasUnsavedChanges = useMemo(
+    () => getFormSnapshot(form) !== initialSnapshot,
+    [form, initialSnapshot],
+  );
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return;
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [hasUnsavedChanges]);
+
+  useEffect(() => {
+    const currentHref = window.location.href;
+
+    const requestLeave = (href: string) => {
+      if (allowNavigationRef.current || !hasUnsavedChanges) return false;
+
+      setPendingHref(href);
+      setLeaveDialogOpen(true);
+      return true;
+    };
+
+    const handleClick = (event: MouseEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const anchor = (event.target as HTMLElement | null)?.closest("a[href]");
+
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+      if (anchor.target && anchor.target !== "_self") return;
+
+      const nextUrl = new URL(anchor.href, window.location.href);
+      const currentUrl = new URL(window.location.href);
+
+      if (nextUrl.origin !== currentUrl.origin) return;
+      if (nextUrl.href === currentUrl.href) return;
+
+      if (requestLeave(nextUrl.href)) {
+        event.preventDefault();
+      }
+    };
+
+    const handlePopState = () => {
+      if (allowNavigationRef.current || !hasUnsavedChanges) return;
+
+      const nextHref = window.location.href;
+      window.history.pushState(null, "", currentHref);
+      requestLeave(nextHref);
+    };
+
+    document.addEventListener("click", handleClick, true);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      document.removeEventListener("click", handleClick, true);
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [hasUnsavedChanges]);
 
   const handleChange = <K extends keyof PublicacaoFormData>(
     field: K,
     value: PublicacaoFormData[K],
   ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const validateForm = () => {
+    const parsed = publicationSchema.safeParse(form);
+
+    if (parsed.success) {
+      setErrors({});
+      return true;
+    }
+
+    const nextErrors: PublicationErrors = {};
+
+    for (const issue of parsed.error.issues) {
+      const key = issue.path[0];
+
+      if (typeof key === "string" && key !== "anexos") {
+        nextErrors[key as keyof PublicationErrors] = issue.message;
+      }
+    }
+
+    setErrors(nextErrors);
+    toast.error("Revise os campos destacados.");
+
+    return false;
   };
 
   const validateStep = () => {
     if (activeStep === 0) {
-      const errors: BasicErrors = {};
-      if (!form.titulo.trim()) errors.titulo = "Informe o título.";
-      if (!form.tipo) errors.tipo = "Selecione o tipo.";
-      if (!form.cliente) errors.cliente = "Selecione o cliente.";
-      if (!form.processo) errors.processo = "Selecione o processo.";
-      if (!form.data) errors.data = "Selecione a data.";
-      if (!form.responsavel.trim())
-        errors.responsavel = "Informe o responsável.";
-      setBasicErrors(errors);
-      return Object.keys(errors).length === 0;
+      return validateForm();
     }
-    if (activeStep === 1) {
-      const errors: ContentErrors = {};
-      if (!form.resumo.trim()) errors.resumo = "Informe o resumo.";
-      if (!form.conteudo.trim())
-        errors.conteudo = "Informe o conteúdo completo.";
-      setContentErrors(errors);
-      return Object.keys(errors).length === 0;
-    }
+
     return true;
   };
 
@@ -107,7 +225,44 @@ export default function NewPublicationView({ editSlug }: Props) {
   const prevStep = () => setActiveStep((prev) => Math.max(prev - 1, 0));
 
   const publish = () => {
-    setPublished(true);
+    if (!validateForm()) {
+      setActiveStep(0);
+      return;
+    }
+
+    const publicacao = buildPublicacaoFromForm(form, user, editItem);
+
+    saveStoredPublicacao(publicacao);
+
+    toast.success(
+      isEditMode ? "Publicação atualizada." : "Publicação adicionada.",
+    );
+    router.push("/publicacoes");
+  };
+
+  const requestCancel = () => {
+    if (!hasUnsavedChanges) {
+      router.push("/publicacoes");
+      return;
+    }
+
+    setPendingHref(`${window.location.origin}/publicacoes`);
+    setLeaveDialogOpen(true);
+  };
+
+  const confirmLeave = () => {
+    const href = pendingHref ?? `${window.location.origin}/publicacoes`;
+    const url = new URL(href, window.location.href);
+
+    allowNavigationRef.current = true;
+    setLeaveDialogOpen(false);
+
+    if (url.origin === window.location.origin) {
+      router.push(`${url.pathname}${url.search}${url.hash}`);
+      return;
+    }
+
+    window.location.href = url.href;
   };
 
   return (
@@ -156,18 +311,11 @@ export default function NewPublicationView({ editSlug }: Props) {
             {activeStep === 0 && (
               <StepDadosBasicos
                 data={form}
-                errors={basicErrors}
+                errors={errors}
                 onChange={handleChange}
               />
             )}
-            {activeStep === 1 && (
-              <StepConteudo
-                data={form}
-                errors={contentErrors}
-                onChange={handleChange}
-              />
-            )}
-            {activeStep === 2 && <StepRevisao data={form} />}
+            {activeStep === 1 && <StepRevisao data={form} />}
 
             <Stack
               direction="row"
@@ -175,17 +323,31 @@ export default function NewPublicationView({ editSlug }: Props) {
               alignItems="center"
               mt={3}
             >
-              <Button
-                variant="outlined"
-                onClick={prevStep}
-                disabled={activeStep === 0}
-                sx={{
-                  textTransform: "none",
-                  borderColor: "divider",
-                }}
-              >
-                Voltar
-              </Button>
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="outlined"
+                  color="inherit"
+                  onClick={requestCancel}
+                  sx={{
+                    textTransform: "none",
+                    borderColor: "divider",
+                  }}
+                >
+                  Cancelar
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  onClick={prevStep}
+                  disabled={activeStep === 0}
+                  sx={{
+                    textTransform: "none",
+                    borderColor: "divider",
+                  }}
+                >
+                  Voltar
+                </Button>
+              </Stack>
 
               {activeStep < steps.length - 1 ? (
                 <Button
@@ -207,16 +369,21 @@ export default function NewPublicationView({ editSlug }: Props) {
               )}
             </Stack>
           </Paper>
-
-          {published && (
-            <Alert severity="success" sx={{ mt: 2, borderRadius: "12px" }}>
-              {isEditMode
-                ? "Alterações prontas para envio. Quando integrar com o back-end, aqui será feita a atualização."
-                : "Publicação pronta para envio. Quando integrar com o back-end, aqui será feita a requisição."}
-            </Alert>
-          )}
         </Container>
       </Box>
+
+      <ConfirmDialog
+        open={leaveDialogOpen}
+        title="Sair sem salvar?"
+        description="Os dados preenchidos nesta publicação não serão salvos se você sair desta tela."
+        confirmText="Sair sem salvar"
+        cancelText="Continuar editando"
+        onConfirm={confirmLeave}
+        onClose={() => {
+          setLeaveDialogOpen(false);
+          setPendingHref(null);
+        }}
+      />
     </Box>
   );
 }

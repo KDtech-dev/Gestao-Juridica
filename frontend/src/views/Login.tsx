@@ -8,7 +8,6 @@ import {
   Stack,
   Paper,
   Divider,
-  Alert,
   CircularProgress,
   Checkbox,
   FormControlLabel,
@@ -23,6 +22,7 @@ import { handleRequest } from "@/configs/handleRequest";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { getRouteByRole } from "@/utils/redirectByRole";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 
 const labels = {
   brand: "Central jurídica",
@@ -41,7 +41,6 @@ const labels = {
 } as const;
 
 export default function LoginView() {
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
@@ -69,13 +68,12 @@ export default function LoginView() {
 
   const handleLogin = async (formData: LoginInput) => {
     if (loading) return;
-    setError(null);
     setLoading(true);
 
     const { data, error } = await handleRequest(() => postLogin(formData));
 
     if (error || !data) {
-      setError(error || "Erro ao realizar login");
+      toast.error(formatToastErrorMessage(error, "Erro ao realizar login."));
       setLoading(false);
       return;
     }
@@ -263,12 +261,6 @@ export default function LoginView() {
                   t.login
                 )}
               </Button>
-
-              {error ? (
-                <Alert severity="error" variant="outlined">
-                  {error}
-                </Alert>
-              ) : null}
 
               <Divider />
 
