@@ -28,7 +28,10 @@ function escapeHtml(value: string) {
 }
 
 function stripHtml(value: string) {
-  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  return value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function formatPublicationDate(date: Date) {
@@ -87,7 +90,8 @@ export function buildPublicacaoFromForm(
     slug,
     titulo: form.titulo.trim(),
     resumo: stripHtml(form.resumo),
-    bannerImage: form.bannerImage || existing?.bannerImage || DEFAULT_BANNER_IMAGE,
+    bannerImage:
+      form.bannerImage || existing?.bannerImage || DEFAULT_BANNER_IMAGE,
     conteudoHtml: form.conteudo.includes("<")
       ? form.conteudo
       : form.conteudo

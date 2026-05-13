@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Box, Button, Container, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Icon } from "@iconify/react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
@@ -227,9 +234,7 @@ export function PublicacoesHeroSlider({
                   borderRadius: 999,
                   cursor: "pointer",
                   bgcolor:
-                    index === activeIndex
-                      ? "#fff"
-                      : "rgba(255,255,255,0.48)",
+                    index === activeIndex ? "#fff" : "rgba(255,255,255,0.48)",
                   transition: "0.2s ease",
                 }}
               />

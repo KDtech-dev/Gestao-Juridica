@@ -250,9 +250,7 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
           <TextField
             label="CPF"
             value={form.cpf}
-            onChange={(e) =>
-              updateForm("cpf", normalizeCpf(e.target.value))
-            }
+            onChange={(e) => updateForm("cpf", normalizeCpf(e.target.value))}
             onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
             error={!!getFieldError("cpf")}
             helperText={getFieldError("cpf")}
@@ -284,9 +282,7 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
             <TextField
               label="OAB"
               value={form.oabNumber}
-              onChange={(e) =>
-                updateForm("oabNumber", e.target.value)
-              }
+              onChange={(e) => updateForm("oabNumber", e.target.value)}
               fullWidth
             />
 
@@ -296,10 +292,7 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               options={practiceAreaOptions}
               value={form.areas}
               onChange={(_, value) =>
-                updateForm(
-                  "areas",
-                  value.map((v) => String(v)).filter(Boolean),
-                )
+                updateForm("areas", value.map((v) => String(v)).filter(Boolean))
               }
               renderInput={(params) => (
                 <TextField
@@ -352,9 +345,7 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               label="Confirmar senha"
               type="password"
               value={form.confirmPassword}
-              onChange={(e) =>
-                updateForm("confirmPassword", e.target.value)
-              }
+              onChange={(e) => updateForm("confirmPassword", e.target.value)}
               onBlur={() =>
                 setTouched((p) => ({ ...p, confirmPassword: true }))
               }

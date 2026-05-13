@@ -59,8 +59,7 @@ export function formatToastErrorMessage(
   error: unknown,
   fallbackMessage = "Erro inesperado. Tente novamente.",
 ) {
-  const message =
-    typeof error === "string" ? error : getApiErrorMessage(error);
+  const message = typeof error === "string" ? error : getApiErrorMessage(error);
 
   return message || fallbackMessage;
 }

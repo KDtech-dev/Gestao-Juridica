@@ -116,9 +116,7 @@ export default function AdminUsersView() {
     );
     try {
       await updateUser(user.id, { active: nextActive });
-      toast.success(
-        nextActive ? "Usuário ativado." : "Usuário desativado.",
-      );
+      toast.success(nextActive ? "Usuário ativado." : "Usuário desativado.");
     } catch (err) {
       // rollback
       setUsers((prev) =>
@@ -371,7 +369,6 @@ export default function AdminUsersView() {
         }}
         onConfirm={handleConfirmDelete}
       />
-
     </Box>
   );
 }

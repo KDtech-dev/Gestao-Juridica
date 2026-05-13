@@ -8,7 +8,8 @@ import { getRouteByRole } from "@/utils/redirectByRole";
 
 export function Header() {
   const { isAuthenticated, user, loading } = useAuth();
-  const accessHref = isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
+  const accessHref =
+    isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
 
   return (
     <Box

@@ -62,17 +62,14 @@ export default function NewPublicationView({ editSlug }: Props) {
   const { user } = useAuth();
   const router = useRouter();
   const steps = ["Dados da Publicação", "Revisão"];
-  const editItem = useMemo(
-    () => {
-      if (!editSlug) return undefined;
+  const editItem = useMemo(() => {
+    if (!editSlug) return undefined;
 
-      return (
-        getStoredPublicacoes().find((item) => item.slug === editSlug) ??
-        findPublicacaoBySlug(editSlug)
-      );
-    },
-    [editSlug],
-  );
+    return (
+      getStoredPublicacoes().find((item) => item.slug === editSlug) ??
+      findPublicacaoBySlug(editSlug)
+    );
+  }, [editSlug]);
   const isEditMode = Boolean(editItem);
   const initialResolvedForm = useMemo<PublicacaoFormData>(() => {
     if (!editItem) {

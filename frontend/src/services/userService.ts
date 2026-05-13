@@ -78,9 +78,7 @@ function normalizeUser(raw: unknown): User {
 
   const typeRaw = obj.type ?? obj.user_type ?? typeFromRoles;
   const type: UserType =
-    typeRaw === "admin" ||
-    typeRaw === "advogado" ||
-    typeRaw === "funcionario"
+    typeRaw === "admin" || typeRaw === "advogado" || typeRaw === "funcionario"
       ? typeRaw
       : "funcionario";
 

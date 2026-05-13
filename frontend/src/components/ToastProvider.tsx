@@ -2,10 +2,7 @@
 
 import { Alert, Snackbar } from "@mui/material";
 import { useEffect, useState } from "react";
-import {
-  subscribeToToasts,
-  type ToastMessage,
-} from "@/utils/toast";
+import { subscribeToToasts, type ToastMessage } from "@/utils/toast";
 
 const DEFAULT_AUTO_HIDE_DURATION = 3200;
 

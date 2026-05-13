@@ -248,11 +248,7 @@ export default function PublicationsView() {
                   >
                     {post.titulo}
                   </Typography>
-                  <Typography
-                    color="text.secondary"
-                    fontSize="0.9rem"
-                    mb={1.2}
-                  >
+                  <Typography color="text.secondary" fontSize="0.9rem" mb={1.2}>
                     {post.resumo}
                   </Typography>
 

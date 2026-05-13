@@ -234,9 +234,11 @@ export default function NewUserView() {
                           const nextForm: FormState = {
                             ...form,
                             type: next,
-                            oabNumber: next === "advogado" ? form.oabNumber : "",
+                            oabNumber:
+                              next === "advogado" ? form.oabNumber : "",
                             areas: next === "advogado" ? form.areas : [],
-                            position: next === "funcionario" ? form.position : "",
+                            position:
+                              next === "funcionario" ? form.position : "",
                           };
                           setForm(nextForm);
                           setFormErrors(getValidationErrors(nextForm));
@@ -281,7 +283,6 @@ export default function NewUserView() {
                       fullWidth
                     />
 
-                    
                     {form.type === "advogado" ? (
                       <>
                         <TextField
@@ -319,9 +320,7 @@ export default function NewUserView() {
                       label="Senha"
                       type="password"
                       value={form.password}
-                      onChange={(e) =>
-                        updateForm("password", e.target.value)
-                      }
+                      onChange={(e) => updateForm("password", e.target.value)}
                       onBlur={() =>
                         setTouched((p) => ({ ...p, password: true }))
                       }
@@ -332,13 +331,13 @@ export default function NewUserView() {
                       helperText={getFieldError("password")}
                       autoComplete="new-password"
                       fullWidth
-                    /><TextField
+                    />
+                    <TextField
                       label="Telefone"
                       value={form.phone}
                       onChange={(e) => updateForm("phone", e.target.value)}
                       fullWidth
                     />
-
 
                     <TextField
                       label="Confirmar senha"
@@ -363,8 +362,6 @@ export default function NewUserView() {
                     alignItems={{ xs: "stretch", sm: "center" }}
                     gap={1.5}
                   >
-                    
-
                     <Stack direction={{ xs: "column", sm: "row" }} gap={1}>
                       <Button
                         component={Link}

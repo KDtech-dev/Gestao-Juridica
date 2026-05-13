@@ -211,7 +211,10 @@ const PublicacoesView = () => {
       }}
     >
       <Header />
-      <PublicacoesHeroSlider publicacoes={publicacoes} searchCard={searchCard} />
+      <PublicacoesHeroSlider
+        publicacoes={publicacoes}
+        searchCard={searchCard}
+      />
 
       <Box id="publicacoes-lista" py={8} sx={{ scrollMarginTop: "80px" }}>
         {publicacoesFiltradas.length > 0 ? (

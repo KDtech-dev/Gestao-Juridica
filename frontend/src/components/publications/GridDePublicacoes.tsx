@@ -130,7 +130,11 @@ export function GridDePublicacoes({
         )}
 
         {!hideVerMais && (
-          <Box display="flex" justifyContent="center" sx={{ my: { xs: 5, md: 8 } }}>
+          <Box
+            display="flex"
+            justifyContent="center"
+            sx={{ my: { xs: 5, md: 8 } }}
+          >
             <Button
               variant="contained"
               color="primary"
