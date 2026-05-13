@@ -29,7 +29,7 @@ export function PublicacaoDetailBanner({
       <Container maxWidth="lg">
         <Button
           component={Link}
-          href="/publicacoes?origem=home"
+          href="/posts"
           variant="outlined"
           startIcon={<Icon icon="mdi:arrow-left" />}
           sx={{

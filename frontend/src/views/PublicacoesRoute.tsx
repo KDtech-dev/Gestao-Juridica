@@ -4,20 +4,13 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { useAuth } from "@/hooks/useAuth";
 import PublicationsView from "@/views/Publications";
 import PublicacoesView from "@/views/Publicacoes";
-
-function getPublicacoesMode() {
-  if (typeof window === "undefined") return true;
-
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("modo") === "interna") return false;
-  if (params.get("origem") === "home") return true;
-
-  return true;
-}
+import { usePathname } from "next/navigation";
 
 export default function PublicacoesRouteView() {
   const { isAuthenticated, loading } = useAuth();
-  const showPublicSite = getPublicacoesMode();
+  const pathname = usePathname();
+
+  const isPublicRoute = pathname === "/posts";
 
   if (loading) {
     return (
@@ -40,9 +33,13 @@ export default function PublicacoesRouteView() {
     );
   }
 
-  return isAuthenticated && !showPublicSite ? (
-    <PublicationsView />
-  ) : (
-    <PublicacoesView />
-  );
+  if (isPublicRoute) {
+    return <PublicacoesView />;
+  }
+
+  if (isAuthenticated) {
+    return <PublicationsView />;
+  }
+
+  return <PublicacoesView />;
 }

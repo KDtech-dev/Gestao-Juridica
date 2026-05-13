@@ -205,14 +205,12 @@ export function SidebarDashboard({ activeKey }: Props) {
     );
   }
 
-  // Avoid rendering a "default" menu when auth hasn't loaded a user.
   if (!user) return null;
 
   const isClient = hasRole("cliente");
   const isAdmin = hasRole("admin");
 
   let translatedMainItems = mainItems.map((item) => {
-    // Ajustes específicos para visão do cliente (legado)
     if (item.key === "clientes" && isClient) {
       return { ...item, label: "Meus Casos", href: "/meu-caso" };
     }
@@ -228,7 +226,6 @@ export function SidebarDashboard({ activeKey }: Props) {
     });
   }
 
-  // Se for cliente, mostrar apenas os itens permitidos
   if (isClient) {
     translatedMainItems = translatedMainItems.filter((it) =>
       ["clientes", "publicacoes"].includes(it.key),
