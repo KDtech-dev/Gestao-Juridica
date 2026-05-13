@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('anexos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('publicacao_id')->nullable()->constrained('publicacoes')->nullOnDelete();
-            $table->foreignId('casos_id')->nullable()->constrained('casos')->nullOnDelete();
+            // $table->foreignId('publicacao_id')->nullable()->constrained('publicacoes')->nullOnDelete();
+            //  $table->foreignId('casos_id')->nullable()->constrained('casos')->nullOnDelete();
             $table->string('descricao')->nullable();
             $table->string('arquivo')->nullable();
             $table->string('nome_arquivo')->nullable();

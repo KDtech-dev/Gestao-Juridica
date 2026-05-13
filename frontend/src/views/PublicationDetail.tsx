@@ -1,89 +1,47 @@
-"use client";
-
 import { Box, Container, Stack } from "@mui/material";
-import { HeaderDashboard } from "@/components/HeaderADM";
-import { SidebarDashboard } from "@/components/Sidebar";
-import { PublicacaoHeader } from "@/components/publications/PublicacaoHeader";
-import { PublicacaoConteudo } from "@/components/publications/PublicacaoConteudo";
-import { PublicacaoAnexos } from "@/components/publications/PublicacaoAnexos";
-import { PublicacaoItem } from "@/data/publicacoes";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { PublicacaoAnexosCard } from "@/components/publications/PublicacaoAnexosCard";
+import { PublicacaoDetailBanner } from "@/components/publications/PublicacaoDetailBanner";
+import { PublicacaoResumoCard } from "@/components/publications/PublicacaoResumoCard";
+import { PublicacaoTextoCard } from "@/components/publications/PublicacaoTextoCard";
+import type { PublicacaoItem } from "@/data/publicacoes";
 
 type Props = {
   publicacao: PublicacaoItem;
-  canManage?: boolean;
 };
 
-export default function PublicationDetailView({
-  publicacao,
-  canManage,
-}: Props) {
-  const { hasRole } = useAuth();
-  const router = useRouter();
-  const canManageFromRole = hasRole("admin") || hasRole("advogado");
-  const effectiveCanManage = canManage ?? canManageFromRole;
-
+export default function PublicationDetailView({ publicacao }: Props) {
   return (
     <Box
       sx={{
         bgcolor: "background.default",
         minHeight: "100vh",
-        display: "block",
+        color: "text.primary",
       }}
     >
-      <SidebarDashboard activeKey="publicacoes" />
+      <Header isAuthenticated={false} userName="Diego" />
 
-      <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
-        <HeaderDashboard />
+      <PublicacaoDetailBanner publicacao={publicacao} />
 
-        <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
-          <PublicacaoHeader
-            canManage={effectiveCanManage}
-            onEdit={() => router.push(`/publicacoes/editar/${publicacao.slug}`)}
-            onDelete={() => {
-              if (typeof window === "undefined") return;
-              const confirmed = window.confirm(
-                "Tem certeza que deseja excluir esta publicação?",
-              );
-              if (!confirmed) return;
-              router.push("/publicacoes");
-            }}
-            onShare={async () => {
-              if (typeof window === "undefined") return;
+      <Box
+        sx={{
+          height: { xs: 32, md: 48 },
+          bgcolor: "background.paper",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      />
 
-              const url = window.location.href;
-              const nav = window.navigator as Navigator & {
-                share?: (data: ShareData) => Promise<void>;
-                clipboard?: {
-                  writeText: (text: string) => Promise<void>;
-                };
-              };
+      <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
+        <Stack spacing={3}>
+          <PublicacaoTextoCard publicacao={publicacao} />
+          <PublicacaoResumoCard publicacao={publicacao} />
+          <PublicacaoAnexosCard publicacao={publicacao} />
+        </Stack>
+      </Container>
 
-              if (typeof nav.share === "function") {
-                await nav.share({
-                  title: publicacao.titulo,
-                  text: publicacao.resumo,
-                  url,
-                });
-                return;
-              }
-              if (nav.clipboard?.writeText) {
-                await nav.clipboard.writeText(url);
-                window.alert("Link copiado para a área de transferência.");
-                return;
-              }
-
-              window.prompt("Copie este link:", url);
-            }}
-          />
-
-          <Stack spacing={2}>
-            <PublicacaoConteudo publicacao={publicacao} />
-            <PublicacaoAnexos publicacao={publicacao} />
-          </Stack>
-        </Container>
-      </Box>
+      <Footer />
     </Box>
   );
 }

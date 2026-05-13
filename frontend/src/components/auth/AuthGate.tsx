@@ -15,10 +15,16 @@ export function AuthGate({ children }: Props) {
   const { loading, isAuthenticated } = useAuth();
 
   const isPublicRoute = useMemo(() => {
+    const isPublicacaoDetail =
+      pathname.startsWith("/publicacoes/") &&
+      !pathname.startsWith("/publicacoes/nova") &&
+      !pathname.startsWith("/publicacoes/editar");
+
     return (
       pathname === "/" ||
       pathname === "/login" ||
-      pathname === "/forgot-password"
+      pathname === "/publicacoes" ||
+      isPublicacaoDetail
     );
   }, [pathname]);
 
@@ -26,13 +32,12 @@ export function AuthGate({ children }: Props) {
     if (loading) return;
     if (isPublicRoute) return;
     if (!isAuthenticated) {
-      router.replace("/login");
+      router.replace("/");
     }
   }, [isAuthenticated, isPublicRoute, loading, router]);
 
   if (isPublicRoute) return children;
 
-  // While resolving auth or redirecting, keep private UI hidden to avoid flicker.
   if (loading || !isAuthenticated) {
     return (
       <Box

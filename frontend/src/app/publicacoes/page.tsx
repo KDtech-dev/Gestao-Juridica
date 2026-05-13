@@ -1,5 +1,5 @@
-import PublicationsView from "@/views/Publications";
+import PublicacoesView from "@/views/Publicacoes";
 
 export default function PublicacoesPage() {
-  return <PublicationsView />;
+  return <PublicacoesView />;
 }

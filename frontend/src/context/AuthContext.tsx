@@ -105,9 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem(auth.userDataKeyName);
       sessionStorage.removeItem(auth.userDataKeyName);
     }
+
     setUser(null);
     setLoading(false);
-    router.replace("/login");
+
+    router.replace("/");
   }, [router]);
 
   const redirectByRole = useCallback(() => {

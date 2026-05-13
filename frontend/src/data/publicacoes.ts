@@ -9,6 +9,7 @@ export type PublicacaoItem = {
   slug: string;
   titulo: string;
   resumo: string;
+  bannerImage: string;
   conteudoHtml: string;
   tipo: "Atualização de Caso" | "Comunicado ao Cliente" | "Notícia Jurídica";
   categoria: string;
@@ -27,6 +28,8 @@ export const publicacoes: PublicacaoItem[] = [
     titulo: "Reforma Tributária: impactos práticos para empresas em 2026",
     resumo:
       "Entenda como as mudanças afetam contratos, fluxo de caixa e planejamento fiscal do seu negócio.",
+    bannerImage:
+      "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1400&q=80",
     conteudoHtml:
       "<p>A reforma tributária traz novos cenários para empresas de médio e grande porte, exigindo revisão de contratos, políticas internas e estratégias de compliance.</p><p>No curto prazo, é fundamental mapear riscos operacionais e adequar cláusulas que tratam de repasse de custos e equilíbrio econômico-financeiro.</p><p>Também recomendamos revisar políticas de faturamento e rotina de auditoria fiscal para mitigar passivos.</p>",
     tipo: "Notícia Jurídica",
@@ -55,6 +58,8 @@ export const publicacoes: PublicacaoItem[] = [
     titulo: "Cláusulas críticas em contratos B2B que reduzem risco jurídico",
     resumo:
       "Checklist objetivo para fortalecer segurança contratual e diminuir passivos em operações recorrentes.",
+    bannerImage:
+      "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1400&q=80",
     conteudoHtml:
       "<p>Contratos B2B bem estruturados reduzem disputas e melhoram previsibilidade financeira.</p><p>As cláusulas de limitação de responsabilidade, SLA e confidencialidade devem ser revisadas de forma integrada ao modelo de negócio.</p>",
     tipo: "Comunicado ao Cliente",
@@ -78,6 +83,8 @@ export const publicacoes: PublicacaoItem[] = [
     titulo: "Compliance interno: como estruturar políticas que funcionam",
     resumo:
       "Boas práticas para adoção de políticas internas, auditoria de processos e treinamento de equipes.",
+    bannerImage:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=80",
     conteudoHtml:
       "<p>Programas de compliance eficientes combinam governança, treinamento recorrente e trilha de evidências.</p><p>A definição clara de papéis e indicadores ajuda na execução e no monitoramento contínuo.</p>",
     tipo: "Atualização de Caso",

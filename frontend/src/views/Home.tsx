@@ -2,7 +2,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Chip,
   Container,
   Grid,
@@ -12,9 +11,9 @@ import {
 } from "@mui/material";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { PostCard } from "@/components/PostCard";
-import Link from "next/link";
 import { publicacoes } from "@/data/publicacoes";
+import { HomeCard } from "@/components/HomeCard";
+import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 
 export default function HomeView() {
   const areas = [
@@ -33,42 +32,6 @@ export default function HomeView() {
     { value: "1.200+", label: "Clientes Atendidos" },
     { value: "R$ 50M+", label: "Economizados" },
     { value: "98%", label: "Taxa de Sucesso" },
-  ];
-
-  const posts = [
-    {
-      title: "Entendendo as Mudanças Tributárias em 2026",
-      description:
-        "Um guia completo sobre as novas regulamentações fiscais que afetam médias e grandes empresas.",
-      category: "Direito Tributário",
-      date: "20 de Outubro, 2025",
-      author: "Dra. Elena Silva",
-      image:
-        "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80",
-      href: `/publicacoes/${publicacoes[0]?.slug || ""}`,
-    },
-    {
-      title: "Direito do Trabalho: Políticas de Trabalho Remoto",
-      description:
-        "Considerações essenciais para empregadores ao elaborar acordos permanentes.",
-      category: "Direito Trabalhista",
-      date: "15 de Outubro, 2025",
-      author: "Dr. Roberto Alves",
-      image:
-        "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=800&q=80",
-      href: `/publicacoes/${publicacoes[1]?.slug || ""}`,
-    },
-    {
-      title: "Propriedade Intelectual na Era da IA",
-      description:
-        "Como proteger seus ativos digitais e lidar com disputas envolvendo tecnologia.",
-      category: "Propriedade Intelectual",
-      date: "10 de Outubro, 2025",
-      author: "Dr. Marcos Santos",
-      image:
-        "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
-      href: `/publicacoes/${publicacoes[2]?.slug || ""}`,
-    },
   ];
 
   const lawyers = [
@@ -108,31 +71,7 @@ export default function HomeView() {
           py: 10,
         }}
       >
-        <Container maxWidth="lg">
-          <Box maxWidth={600}>
-            <Typography variant="h3" fontWeight="bold" mb={3}>
-              Direito Tributário e Empresarial
-            </Typography>
-
-            <Typography variant="h6" sx={{ opacity: 0.8 }} mb={4}>
-              Especialistas em soluções jurídicas corporativas...
-            </Typography>
-
-            <Stack direction="row" spacing={2}>
-              <Button component={Link} href="#contato" variant="contained">
-                Consulta Gratuita
-              </Button>
-              <Button
-                component={Link}
-                href="/login"
-                variant="outlined"
-                sx={{ color: "#fff", borderColor: "#fff" }}
-              >
-                Acompanhe seu Caso
-              </Button>
-            </Stack>
-          </Box>
-        </Container>
+        <HomeCard />
       </Box>
       <Box py={8} bgcolor="background.paper">
         <Container>
@@ -336,44 +275,11 @@ export default function HomeView() {
         py={10}
         bgcolor="background.default"
       >
-        <Container>
-          <Box textAlign="center" mb={6}>
-            <Typography variant="h4" fontWeight="bold">
-              Publicações Recentes
-            </Typography>
-
-            <Typography color="text.secondary" mt={1}>
-              Mantenha-se atualizado com nossos artigos sobre as últimas
-              mudanças na legislação e jurisprudência.
-            </Typography>
-          </Box>
-
-          <Stack
-            direction="row"
-            flexWrap="nowrap"
-            gap={3}
-            justifyContent="flex-start"
-            sx={{ overflowX: "auto", px: 1, pb: 1 }}
-          >
-            {posts.map((post, i) => (
-              <Box
-                key={i}
-                sx={{
-                  width: { xs: "100%", md: "32%" },
-                  flex: "0 0 auto",
-                }}
-              >
-                <PostCard post={post} />
-              </Box>
-            ))}
-          </Stack>
-
-          <Box textAlign="center" mt={4}>
-            <Button component={Link} href="/publicacoes" variant="contained">
-              Ver todas as publicações
-            </Button>
-          </Box>
-        </Container>
+        <GridDePublicacoes
+          publicacoes={publicacoes.slice(0, 3)}
+          title="Publicações Recentes"
+          subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
+        />
       </Box>
       <Box id="contato" bgcolor="background.default">
         <Footer />
