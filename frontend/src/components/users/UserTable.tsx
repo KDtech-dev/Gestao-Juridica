@@ -31,6 +31,12 @@ function getInitials(name: string): string {
   return (first + second).toUpperCase();
 }
 
+function getUserTypeLabel(type: User["type"]): string {
+  if (type === "admin") return "Administrador";
+  if (type === "advogado") return "Advogado";
+  return "Funcionário";
+}
+
 function compare(a: unknown, b: unknown): number {
   if (a == null && b == null) return 0;
   if (a == null) return -1;
@@ -262,7 +268,7 @@ export function UserTable({
                         {u.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" noWrap>
-                        {u.type === "advogado" ? "Advogado" : "Funcionário"}
+                        {getUserTypeLabel(u.type)}
                       </Typography>
                     </Box>
                   </Stack>
@@ -275,14 +281,16 @@ export function UserTable({
                 </TableCell>
                 <TableCell sx={bodyCellStyle}>
                   <Typography sx={{ textTransform: "capitalize" }}>
-                    {u.type === "advogado" ? "Advogado" : "Funcionário"}
+                    {getUserTypeLabel(u.type)}
                   </Typography>
                 </TableCell>
                 <TableCell sx={bodyCellStyle}>
                   <Typography noWrap>
                     {u.type === "advogado"
                       ? u.oabNumber || "—"
-                      : u.position || "—"}
+                      : u.type === "funcionario"
+                        ? u.position || "—"
+                        : "—"}
                   </Typography>
                 </TableCell>
                 <TableCell sx={bodyCellStyle}>

@@ -14,6 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
@@ -247,20 +248,18 @@ export default function AdminUsersView() {
                   Usuários
                 </Typography>
                 <Typography color="text.secondary" fontSize="0.95rem">
-                  Gerencie contas de advogados e funcionários.
+                  Gerencie contas de administradores, advogados e funcionários.
                 </Typography>
               </Box>
 
               {canManage ? (
                 <Button
+                  component={Link}
+                  href="/admin/users/new"
                   variant="contained"
                   startIcon={
                     <Icon icon="mdi:account-plus-outline" width={20} />
                   }
-                  onClick={() => {
-                    setEditing(null);
-                    setFormOpen(true);
-                  }}
                   disabled={loading}
                   sx={{
                     textTransform: "none",
@@ -354,6 +353,7 @@ export default function AdminUsersView() {
                     }}
                   >
                     <MenuItem value="all">Todos</MenuItem>
+                    <MenuItem value="admin">Administrador</MenuItem>
                     <MenuItem value="advogado">Advogado</MenuItem>
                     <MenuItem value="funcionario">Funcionário</MenuItem>
                   </TextField>

@@ -13,7 +13,9 @@ class UsuarioController extends Controller
 {
     private function isTeamUser(User $user): bool
     {
-        return $user->hasRole('advogado') || $user->hasRole('funcionario');
+        return $user->hasRole('admin')
+            || $user->hasRole('advogado')
+            || $user->hasRole('funcionario');
     }
 
     private function parseAreas(?string $areas): array
@@ -29,9 +31,11 @@ class UsuarioController extends Controller
     private function serializeUser(User $user): array
     {
         $roles = $user->getRoleNames()->values()->all();
-        $type = in_array('advogado', $roles, true)
-            ? 'advogado'
-            : (in_array('funcionario', $roles, true) ? 'funcionario' : null);
+        $type = in_array('admin', $roles, true)
+            ? 'admin'
+            : (in_array('advogado', $roles, true)
+                ? 'advogado'
+                : (in_array('funcionario', $roles, true) ? 'funcionario' : null));
 
         return [
             'id' => $user->id,
@@ -63,10 +67,10 @@ class UsuarioController extends Controller
 
         $query = User::query()->with('roles');
 
-        if ($type === 'advogado' || $type === 'funcionario') {
+        if ($type === 'admin' || $type === 'advogado' || $type === 'funcionario') {
             $query->role($type);
         } else {
-            $query->whereHas('roles', fn ($q) => $q->whereIn('name', ['advogado', 'funcionario']));
+            $query->whereHas('roles', fn ($q) => $q->whereIn('name', ['admin', 'advogado', 'funcionario']));
         }
 
         if ($search !== '') {
@@ -123,7 +127,7 @@ class UsuarioController extends Controller
         }
 
         $validated = $request->validate([
-            'type' => ['required', Rule::in(['advogado', 'funcionario'])],
+            'type' => ['required', Rule::in(['admin', 'advogado', 'funcionario'])],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'cpf' => ['required', 'string', 'regex:/^\\d{11}$/', 'unique:users,cpf'],
@@ -182,7 +186,7 @@ class UsuarioController extends Controller
         }
 
         $validated = $request->validate([
-            'type' => ['sometimes', Rule::in(['advogado', 'funcionario'])],
+            'type' => ['sometimes', Rule::in(['admin', 'advogado', 'funcionario'])],
             'name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'email', 'max:255', Rule::unique('users', 'email')->ignore($usuario->id)],
             'cpf' => ['sometimes', 'string', 'regex:/^\\d{11}$/', Rule::unique('users', 'cpf')->ignore($usuario->id)],
@@ -196,7 +200,11 @@ class UsuarioController extends Controller
         ]);
 
         $typeToSync = $validated['type'] ?? null;
-        $nextType = $typeToSync ?? ($usuario->hasRole('advogado') ? 'advogado' : 'funcionario');
+        $nextType = $typeToSync ?? (
+            $usuario->hasRole('admin')
+                ? 'admin'
+                : ($usuario->hasRole('advogado') ? 'advogado' : 'funcionario')
+        );
 
         if ($nextType === 'funcionario') {
             $position = array_key_exists('position', $validated) ? $validated['position'] : $usuario->position;
@@ -223,6 +231,12 @@ class UsuarioController extends Controller
         if ($typeToSync === 'funcionario') {
             $validated['oab_number'] = null;
             $validated['areas'] = null;
+        }
+
+        if ($typeToSync === 'admin') {
+            $validated['oab_number'] = null;
+            $validated['areas'] = null;
+            $validated['position'] = null;
         }
 
         unset($validated['type']);

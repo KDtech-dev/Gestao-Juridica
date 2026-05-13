@@ -5,7 +5,7 @@ import { getAxios } from "@/configs/axios";
 // Reuse the shared axios instance (adds Bearer token + honors Next rewrites).
 const api = getAxios();
 
-export type UserType = "advogado" | "funcionario";
+export type UserType = "admin" | "advogado" | "funcionario";
 
 export type User = {
   id: number | string;
@@ -45,11 +45,13 @@ function normalizeUser(raw: unknown): User {
   const obj = asRecord(raw);
 
   const roles = toArray(obj.roles ?? obj.role_names ?? obj.role);
-  const typeFromRoles = roles.includes("advogado")
-    ? "advogado"
-    : roles.includes("funcionario")
-      ? "funcionario"
-      : undefined;
+  const typeFromRoles = roles.includes("admin")
+    ? "admin"
+    : roles.includes("advogado")
+      ? "advogado"
+      : roles.includes("funcionario")
+        ? "funcionario"
+        : undefined;
 
   const rawAreas = obj.areas ?? obj.practice_areas;
   const areas = Array.isArray(rawAreas)
@@ -76,7 +78,9 @@ function normalizeUser(raw: unknown): User {
 
   const typeRaw = obj.type ?? obj.user_type ?? typeFromRoles;
   const type: UserType =
-    typeRaw === "advogado" || typeRaw === "funcionario"
+    typeRaw === "admin" ||
+    typeRaw === "advogado" ||
+    typeRaw === "funcionario"
       ? typeRaw
       : "funcionario";
 

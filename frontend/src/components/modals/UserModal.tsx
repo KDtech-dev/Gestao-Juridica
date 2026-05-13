@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import type { User, UserType } from "@/services/userService";
 import { BaseModal } from "@/components/modals/BaseModal";
+import { userModalSchema } from "@/schemas/user.schema";
 
 const practiceAreaOptions = [
   "Direito Civil",
@@ -43,14 +44,10 @@ type FormState = {
   confirmPassword: string;
   changePassword: boolean;
 };
+type FormErrors = Partial<Record<keyof FormState, string>>;
 
 function normalizeCpf(value: string): string {
   return value.replace(/\D/g, "").slice(0, 11);
-}
-
-function validateEmail(value: string): boolean {
-  if (!value.trim()) return false;
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
 function initialFormFromUser(initial?: Partial<User> | null): FormState {
@@ -69,6 +66,19 @@ function initialFormFromUser(initial?: Partial<User> | null): FormState {
     confirmPassword: "",
     changePassword: false,
   };
+}
+
+function getValidationErrors(form: FormState, isEdit: boolean): FormErrors {
+  const parsed = userModalSchema.safeParse({ ...form, isEdit });
+  if (parsed.success) return {};
+
+  return parsed.error.issues.reduce<FormErrors>((acc, issue) => {
+    const field = issue.path[0];
+    if (typeof field === "string" && !acc[field as keyof FormState]) {
+      acc[field as keyof FormState] = issue.message;
+    }
+    return acc;
+  }, {});
 }
 
 export type UserFormSubmitPayload = {
@@ -98,46 +108,31 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
   );
   const [loading, setLoading] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   useEffect(() => {
     if (!open) return;
     setForm(initialFormFromUser(initialData));
     setTouched({});
+    setFormErrors({});
     setLoading(false);
   }, [open, initialData]);
 
-  const passwordMismatch =
-    (isEdit ? form.changePassword : true) &&
-    form.confirmPassword.length > 0 &&
-    form.password !== form.confirmPassword;
-
-  const cpfInvalid = useMemo(() => {
-    if (isEdit) return false;
-    if (!touched.cpf) return false;
-    const digits = normalizeCpf(form.cpf);
-    return digits.length !== 11;
-  }, [form.cpf, isEdit, touched.cpf]);
-
-  const emailInvalid = useMemo(() => {
-    if (!touched.email) return false;
-    return !validateEmail(form.email);
-  }, [form.email, touched.email]);
-
   const canSubmit = useMemo(() => {
-    if (!form.name.trim()) return false;
-    if (!validateEmail(form.email)) return false;
-    if (!isEdit) {
-      if (normalizeCpf(form.cpf).length !== 11) return false;
-      if (form.password.length < 6) return false;
-      if (form.password !== form.confirmPassword) return false;
-    }
-    if (isEdit && form.changePassword) {
-      if (form.password.length < 6) return false;
-      if (form.password !== form.confirmPassword) return false;
-    }
-    if (form.type === "funcionario" && !form.position.trim()) return false;
-    return true;
+    return userModalSchema.safeParse({ ...form, isEdit }).success;
   }, [form, isEdit]);
+
+  const getFieldError = (field: keyof FormState) =>
+    touched[field] ? formErrors[field] : undefined;
+
+  const updateForm = <Field extends keyof FormState>(
+    field: Field,
+    value: FormState[Field],
+  ) => {
+    const nextForm = { ...form, [field]: value };
+    setForm(nextForm);
+    setFormErrors(getValidationErrors(nextForm, isEdit));
+  };
 
   const title = isEdit ? "Editar usuário" : "Novo usuário";
 
@@ -156,7 +151,9 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
       password: true,
       confirmPassword: true,
     }));
-    if (!canSubmit) return;
+    const validationErrors = getValidationErrors(form, isEdit);
+    setFormErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     setLoading(true);
     try {
@@ -212,16 +209,19 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
             value={form.type}
             onChange={(e) => {
               const next = e.target.value as UserType;
-              setForm((prev) => ({
-                ...prev,
+              const nextForm: FormState = {
+                ...form,
                 type: next,
-                oabNumber: next === "advogado" ? prev.oabNumber : "",
-                areas: next === "advogado" ? prev.areas : [],
-                position: next === "funcionario" ? prev.position : "",
-              }));
+                oabNumber: next === "advogado" ? form.oabNumber : "",
+                areas: next === "advogado" ? form.areas : [],
+                position: next === "funcionario" ? form.position : "",
+              };
+              setForm(nextForm);
+              setFormErrors(getValidationErrors(nextForm, isEdit));
             }}
           >
             <MenuItem value="advogado">Advogado</MenuItem>
+            <MenuItem value="admin">Administrador</MenuItem>
             <MenuItem value="funcionario">Funcionário</MenuItem>
           </Select>
         </FormControl>
@@ -229,22 +229,20 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
         <TextField
           label="Nome"
           value={form.name}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, name: e.target.value }))
-          }
+          onChange={(e) => updateForm("name", e.target.value)}
           onBlur={() => setTouched((p) => ({ ...p, name: true }))}
-          error={!!touched.name && !form.name.trim()}
+          error={!!getFieldError("name")}
+          helperText={getFieldError("name")}
           fullWidth
         />
 
         <TextField
           label="E-mail"
           value={form.email}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, email: e.target.value }))
-          }
+          onChange={(e) => updateForm("email", e.target.value)}
           onBlur={() => setTouched((p) => ({ ...p, email: true }))}
-          error={emailInvalid}
+          error={!!getFieldError("email")}
+          helperText={getFieldError("email")}
           fullWidth
         />
 
@@ -253,10 +251,11 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
             label="CPF"
             value={form.cpf}
             onChange={(e) =>
-              setForm((prev) => ({ ...prev, cpf: e.target.value }))
+              updateForm("cpf", normalizeCpf(e.target.value))
             }
             onBlur={() => setTouched((p) => ({ ...p, cpf: true }))}
-            error={cpfInvalid}
+            error={!!getFieldError("cpf")}
+            helperText={getFieldError("cpf")}
             fullWidth
           />
         ) : null}
@@ -264,11 +263,21 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
         <TextField
           label="Telefone"
           value={form.phone}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, phone: e.target.value }))
-          }
+          onChange={(e) => updateForm("phone", e.target.value)}
           fullWidth
         />
+
+        {form.type === "funcionario" ? (
+          <TextField
+            label="Cargo/Função"
+            value={form.position}
+            onChange={(e) => updateForm("position", e.target.value)}
+            onBlur={() => setTouched((p) => ({ ...p, position: true }))}
+            error={!!getFieldError("position")}
+            helperText={getFieldError("position")}
+            fullWidth
+          />
+        ) : null}
 
         {form.type === "advogado" ? (
           <>
@@ -276,7 +285,7 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               label="OAB"
               value={form.oabNumber}
               onChange={(e) =>
-                setForm((prev) => ({ ...prev, oabNumber: e.target.value }))
+                updateForm("oabNumber", e.target.value)
               }
               fullWidth
             />
@@ -287,10 +296,10 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               options={practiceAreaOptions}
               value={form.areas}
               onChange={(_, value) =>
-                setForm((prev) => ({
-                  ...prev,
-                  areas: value.map((v) => String(v)).filter(Boolean),
-                }))
+                updateForm(
+                  "areas",
+                  value.map((v) => String(v)).filter(Boolean),
+                )
               }
               renderInput={(params) => (
                 <TextField
@@ -309,14 +318,16 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               control={
                 <Switch
                   checked={form.changePassword}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
+                  onChange={(e) => {
+                    const nextForm = {
+                      ...form,
                       changePassword: e.target.checked,
                       password: "",
                       confirmPassword: "",
-                    }))
-                  }
+                    };
+                    setForm(nextForm);
+                    setFormErrors(getValidationErrors(nextForm, isEdit));
+                  }}
                 />
               }
               label="Definir nova senha"
@@ -330,16 +341,10 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               label="Senha"
               type="password"
               value={form.password}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, password: e.target.value }))
-              }
+              onChange={(e) => updateForm("password", e.target.value)}
               onBlur={() => setTouched((p) => ({ ...p, password: true }))}
-              error={
-                (!!touched.password &&
-                  form.password.length > 0 &&
-                  form.password.length < 6) ||
-                passwordMismatch
-              }
+              error={!!getFieldError("password")}
+              helperText={getFieldError("password")}
               autoComplete="new-password"
             />
 
@@ -348,15 +353,13 @@ export function UserModal({ open, onClose, onSubmit, initialData }: Props) {
               type="password"
               value={form.confirmPassword}
               onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  confirmPassword: e.target.value,
-                }))
+                updateForm("confirmPassword", e.target.value)
               }
               onBlur={() =>
                 setTouched((p) => ({ ...p, confirmPassword: true }))
               }
-              error={passwordMismatch}
+              error={!!getFieldError("confirmPassword")}
+              helperText={getFieldError("confirmPassword")}
               fullWidth
               autoComplete="new-password"
             />
