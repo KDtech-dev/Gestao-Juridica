@@ -3,13 +3,13 @@
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
+import { useAuth } from "@/hooks/useAuth";
+import { getRouteByRole } from "@/utils/redirectByRole";
 
-type Props = {
-  isAuthenticated?: boolean;
-  userName?: string;
-};
+export function Header() {
+  const { isAuthenticated, user, loading } = useAuth();
+  const accessHref = isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
 
-export function Header({ isAuthenticated = false, userName }: Props) {
   return (
     <Box
       sx={{
@@ -39,29 +39,57 @@ export function Header({ isAuthenticated = false, userName }: Props) {
             </Box>
           </Stack>
 
-          {!isAuthenticated ? (
-            <Stack direction="row" spacing={2}>
-              <Link href="/login">
-                <Button
-                  variant="contained"
-                  sx={{
-                    bgcolor: "primary.main",
-                    borderRadius: "999px",
-                    px: 3,
-                    "&:hover": { bgcolor: "primary.dark" },
-                  }}
-                >
-                  Login
-                </Button>
-              </Link>
+          <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center">
+            <Stack
+              component="nav"
+              direction="row"
+              spacing={{ xs: 0.5, sm: 1 }}
+              alignItems="center"
+            >
+              <Button
+                component={Link}
+                href="/publicacoes?origem=home"
+                variant="text"
+                sx={{
+                  color: "text.primary",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  px: { xs: 1, sm: 1.5 },
+                }}
+              >
+                Publicações
+              </Button>
+              <Button
+                component={Link}
+                href="/#equipe"
+                variant="text"
+                sx={{
+                  color: "text.primary",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  px: { xs: 1, sm: 1.5 },
+                }}
+              >
+                Equipe
+              </Button>
             </Stack>
-          ) : (
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography fontWeight="medium">
-                {userName || "Usuário"}
-              </Typography>
-            </Stack>
-          )}
+
+            {!loading && (
+              <Button
+                component={Link}
+                href={accessHref}
+                variant="contained"
+                sx={{
+                  bgcolor: "primary.main",
+                  borderRadius: "999px",
+                  px: 3,
+                  "&:hover": { bgcolor: "primary.dark" },
+                }}
+              >
+                {isAuthenticated ? "Acessar" : "Login"}
+              </Button>
+            )}
+          </Stack>
         </Stack>
       </Container>
     </Box>

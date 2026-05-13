@@ -5,8 +5,16 @@ import { useAuth } from "@/hooks/useAuth";
 import PublicationsView from "@/views/Publications";
 import PublicacoesView from "@/views/Publicacoes";
 
+function shouldShowPublicSite() {
+  if (typeof window === "undefined") return false;
+
+  const params = new URLSearchParams(window.location.search);
+  return params.get("origem") === "home";
+}
+
 export default function PublicacoesRouteView() {
   const { isAuthenticated, loading } = useAuth();
+  const showPublicSite = shouldShowPublicSite();
 
   if (loading) {
     return (
@@ -29,5 +37,9 @@ export default function PublicacoesRouteView() {
     );
   }
 
-  return isAuthenticated ? <PublicationsView /> : <PublicacoesView />;
+  return isAuthenticated && !showPublicSite ? (
+    <PublicationsView />
+  ) : (
+    <PublicacoesView />
+  );
 }

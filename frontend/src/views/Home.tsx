@@ -63,7 +63,7 @@ export default function HomeView() {
 
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>
-      <Header isAuthenticated={false} userName="Diego" />
+      <Header />
       <Box
         sx={{
           background: "linear-gradient(to right, #0f172a, #1e293b, #1e3a8a)",
@@ -200,7 +200,13 @@ export default function HomeView() {
             </Grid>
           </Grid>
 
-          <Box textAlign="center" mt={{ xs: 7, md: 9 }} mb={4}>
+          <Box
+            id="equipe"
+            sx={{ scrollMarginTop: "80px" }}
+            textAlign="center"
+            mt={{ xs: 7, md: 9 }}
+            mb={4}
+          >
             <Typography variant="h4" fontWeight="bold">
               Nossa Equipe
             </Typography>
@@ -279,6 +285,7 @@ export default function HomeView() {
           publicacoes={publicacoes.slice(0, 4)}
           title="Publicações Recentes"
           subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
+          verMaisHref="/publicacoes?origem=home"
         />
       </Box>
       <Box id="contato" bgcolor="background.default">

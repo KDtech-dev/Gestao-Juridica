@@ -24,6 +24,7 @@ type GridDePublicacoesProps = {
   controlledPageCount?: number;
   onPageChange?: (page: number) => void;
   clientPageSize?: number;
+  verMaisHref?: string;
 };
 
 export function GridDePublicacoes({
@@ -35,6 +36,7 @@ export function GridDePublicacoes({
   controlledPageCount,
   onPageChange,
   clientPageSize,
+  verMaisHref = "/publicacoes",
 }: GridDePublicacoesProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -132,7 +134,7 @@ export function GridDePublicacoes({
             <Button
               variant="contained"
               color="primary"
-              onClick={() => router.push("/publicacoes")}
+              onClick={() => router.push(verMaisHref)}
               sx={{ textTransform: "none" }}
             >
               Ver mais publicações

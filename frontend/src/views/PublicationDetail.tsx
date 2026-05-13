@@ -20,7 +20,7 @@ export default function PublicationDetailView({ publicacao }: Props) {
         color: "text.primary",
       }}
     >
-      <Header isAuthenticated={false} userName="Diego" />
+      <Header />
 
       <PublicacaoDetailBanner publicacao={publicacao} />
 
