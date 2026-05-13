@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Chip,
   Container,
   IconButton,
   InputAdornment,
@@ -20,26 +19,76 @@ import {
 import { Icon } from "@iconify/react";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { BaseModal } from "@/components/modals/BaseModal";
-import { CaseForm } from "@/components/forms/CaseForm";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useNotifications } from "@/context/NotificationsContext";
-import { cases, type CaseItem } from "@/data/cases";
+import {
+  CasePayload,
+  LegalCase,
+  createCase,
+  listCases,
+} from "@/services/caseService";
+import { NewCaseModal } from "@/components/modals/NewCaseModal";
+import { getApiErrorMessage } from "@/configs/ApiError";
 
 export default function CasesView() {
   const [caseOpen, setCaseOpen] = useState(false);
+  const [cases, setCases] = useState<LegalCase[]>([]);
+  const [loadingCases, setLoadingCases] = useState(true);
+  const [casesError, setCasesError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [submittingCase, setSubmittingCase] = useState(false);
   const { addNotification } = useNotifications();
 
   const handleOpenNewCaseModal = () => setCaseOpen(true);
   const handleCloseNewCaseModal = () => setCaseOpen(false);
 
-  const handleNewCaseSubmit = () =>
-    addNotification({
-      title: "Novo caso criado",
-      description: "Um novo caso foi adicionado.",
-    });
+  useEffect(() => {
+    let active = true;
+
+    async function loadCases() {
+      try {
+        setLoadingCases(true);
+        setCasesError(null);
+        const data = await listCases({ limit: 100, search });
+        if (active) setCases(data.items);
+      } catch (err) {
+        if (active) setCasesError(getApiErrorMessage(err));
+      } finally {
+        if (active) setLoadingCases(false);
+      }
+    }
+
+    const id = window.setTimeout(() => {
+      void loadCases();
+    }, 250);
+
+    return () => {
+      active = false;
+      window.clearTimeout(id);
+    };
+  }, [search]);
+
+  const handleNewCaseSubmit = async (payload: CasePayload) => {
+    try {
+      setSubmittingCase(true);
+      const created = await createCase(payload);
+      setCases((current) => [created, ...current]);
+      setCaseOpen(false);
+      addNotification({
+        title: "Novo caso criado",
+        description: "Um novo caso foi adicionado.",
+      });
+    } catch (err) {
+      addNotification({
+        title: "Erro ao criar caso",
+        description: getApiErrorMessage(err),
+      });
+    } finally {
+      setSubmittingCase(false);
+    }
+  };
 
   return (
     <Box
@@ -114,6 +163,8 @@ export default function CasesView() {
                 placeholder={
                   "Buscar por título, número do processo ou cliente..."
                 }
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
                 sx={{
                   width: { xs: "100%", sm: 550 },
                   "& .MuiOutlinedInput-root": {
@@ -174,52 +225,79 @@ export default function CasesView() {
               </TableHead>
 
               <TableBody>
-                {cases.map((caseItem) => {
-                  return (
-                    <TableRow key={caseItem.caseSlug}>
-                      <TableCell sx={rowCellStyle}>
-                        <Typography fontWeight={600} color="text.primary">
-                          {caseItem.clientName}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={rowCellStyle}>
-                        <Typography color="text.primary">
-                          {caseItem.caseTitle}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={rowCellStyle}>
-                        <Typography color="text.secondary">
-                          {caseItem.processNumber}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={rowCellStyle}>
-                        <Typography color="text.primary">
-                          {caseItem.nextHearing}
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={rowCellStyle}>
-                        <Typography color="text.primary">
-                          {caseItem.lawyerName}
-                        </Typography>
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          ...rowCellStyle,
-                          textAlign: "right",
-                          pr: 2,
-                        }}
-                      >
-                        <IconButton
-                          sx={actionBtnStyle}
-                          component={Link}
-                          href={`/acompanhamento/${caseItem.clientSlug}/${caseItem.caseSlug}`}
+                {loadingCases && (
+                  <TableRow>
+                    <TableCell colSpan={6} sx={rowCellStyle}>
+                      <Typography color="text.secondary">
+                        Carregando casos...
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loadingCases && casesError && (
+                  <TableRow>
+                    <TableCell colSpan={6} sx={rowCellStyle}>
+                      <Typography color="error">{casesError}</Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loadingCases && !casesError && cases.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} sx={rowCellStyle}>
+                      <Typography color="text.secondary">
+                        Nenhum caso encontrado.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loadingCases &&
+                  !casesError &&
+                  cases.map((caseItem) => {
+                    return (
+                      <TableRow key={caseItem.id}>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography fontWeight={600} color="text.primary">
+                            {caseItem.clientName}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.primary">
+                            {caseItem.title}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.secondary">
+                            {caseItem.processNumber || "-"}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.primary">
+                            {caseItem.nextHearing || "Sem audiência definida"}
+                          </Typography>
+                        </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.primary">
+                            {caseItem.lawyerName || "-"}
+                          </Typography>
+                        </TableCell>
+                        <TableCell
+                          sx={{
+                            ...rowCellStyle,
+                            textAlign: "right",
+                            pr: 2,
+                          }}
                         >
-                          <Icon icon="mdi:eye-outline" width={19} />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          <IconButton
+                            sx={actionBtnStyle}
+                            component={Link}
+                            href={`/acompanhamento/${caseItem.clientSlug}/${caseItem.caseSlug}`}
+                          >
+                            <Icon icon="mdi:eye-outline" width={19} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
 
@@ -268,14 +346,12 @@ export default function CasesView() {
         </Container>
       </Box>
 
-      <BaseModal
+      <NewCaseModal
         open={caseOpen}
         onClose={handleCloseNewCaseModal}
-        title="Novo Caso"
         onSubmit={handleNewCaseSubmit}
-      >
-        <CaseForm />
-      </BaseModal>
+        submitting={submittingCase}
+      />
     </Box>
   );
 }

@@ -62,7 +62,7 @@ export function Header() {
               </Button>
               <Button
                 component={Link}
-                href="/#equipe"
+                href="/equipe"
                 variant="text"
                 sx={{
                   color: "text.primary",

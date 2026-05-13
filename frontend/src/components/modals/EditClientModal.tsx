@@ -2,12 +2,15 @@
 
 import { BaseModal } from "@/components/modals/BaseModal";
 import { ClientForm } from "@/components/forms/ClientForm";
+import { Client } from "@/services/clientService";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (payload?: Partial<Client>) => void;
 };
+
+const formId = "edit-client-form";
 
 export function EditClientModal({ open, onClose, onSubmit }: Props) {
   return (
@@ -16,10 +19,11 @@ export function EditClientModal({ open, onClose, onSubmit }: Props) {
       onClose={onClose}
       title="Editar Cliente"
       confirmText="Salvar Alterações"
-      onSubmit={onSubmit}
+      confirmFormId={formId}
+      confirmType="submit"
       maxWidth="lg"
     >
-      <ClientForm />
+      <ClientForm id={formId} onSubmit={onSubmit} />
     </BaseModal>
   );
 }

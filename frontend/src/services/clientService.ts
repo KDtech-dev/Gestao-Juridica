@@ -10,6 +10,8 @@ export type Client = {
   phone?: string;
   contactName?: string;
   status?: "Ativo" | "Inativo" | "Prospect";
+  address?: string;
+  notes?: string;
   slug?: string;
 };
 
@@ -46,10 +48,12 @@ export async function deleteClient(id: number | string) {
   return res.data;
 }
 
-export default {
+const clientService = {
   listClients,
   getClient,
   createClient,
   updateClient,
   deleteClient,
 };
+
+export default clientService;

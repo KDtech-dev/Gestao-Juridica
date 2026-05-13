@@ -15,6 +15,9 @@ class LegalCase extends Model
         'client_id',
         'assigned_lawyer_id',
         'title',
+        'process_number',
+        'practice_area',
+        'next_hearing',
         'description',
         'status',
     ];

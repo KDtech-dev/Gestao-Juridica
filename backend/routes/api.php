@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PublicationController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\LawyerController;
+use App\Http\Controllers\Api\CaseController;
 
 
 Route::prefix('auth')->group(function () {
@@ -32,6 +33,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin|advogado|funcionario'])->group(function () {
     Route::apiResource('appointments', AppointmentController::class);
     Route::apiResource('clients', ClientController::class);
+    Route::apiResource('cases', CaseController::class)->only(['index', 'store', 'show']);
     Route::get('lawyers', [LawyerController::class, 'index']);
 });
 

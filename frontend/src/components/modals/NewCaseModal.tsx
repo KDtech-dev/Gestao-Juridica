@@ -2,24 +2,40 @@
 
 import { BaseModal } from "@/components/modals/BaseModal";
 import { CaseForm } from "@/components/forms/CaseForm";
+import { CasePayload } from "@/services/caseService";
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (payload: CasePayload) => void;
+  submitting?: boolean;
 };
 
-export function NewCaseModal({ open, onClose, onSubmit }: Props) {
+const formId = "new-case-form";
+
+export function NewCaseModal({
+  open,
+  onClose,
+  onSubmit,
+  submitting = false,
+}: Props) {
   return (
     <BaseModal
       open={open}
       onClose={onClose}
       title="Novo Caso"
-      confirmText="Criar Caso"
-      onSubmit={onSubmit}
+      confirmText={submitting ? "Criando..." : "Criar Caso"}
+      confirmFormId={formId}
+      confirmType="submit"
+      confirmDisabled={submitting}
       maxWidth="lg"
     >
-      <CaseForm />
+      <CaseForm
+        key={open ? "new-case-open" : "new-case-closed"}
+        id={formId}
+        disabled={submitting}
+        onSubmit={onSubmit}
+      />
     </BaseModal>
   );
 }

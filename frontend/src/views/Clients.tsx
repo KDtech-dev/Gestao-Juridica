@@ -25,13 +25,14 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { useState, type MouseEvent } from "react";
 import Link from "next/link";
 import { useNotifications } from "@/context/NotificationsContext";
-import { ClientStatus, listTrackedClients } from "@/data/cases";
-import { useAuth } from "@/hooks/useAuth";
 import { NewClientModal } from "@/components/modals/NewClientModal";
 import { EditClientModal } from "@/components/modals/EditClientModal";
 import { NewCaseModal } from "@/components/modals/NewCaseModal";
+import useClients, { Client } from "@/hooks/useClients";
+import { getApiErrorMessage } from "@/configs/ApiError";
+import { CasePayload, createCase } from "@/services/caseService";
 
-function statusStyles(status: ClientStatus) {
+function statusStyles(status?: Client["status"]) {
   if (status === "Ativo") {
     return { color: "#047857", bg: "#b8ead2" };
   }
@@ -42,15 +43,17 @@ function statusStyles(status: ClientStatus) {
 }
 
 export default function ClientesView() {
-  const { hasRole } = useAuth();
   const [open, setOpen] = useState(false);
   const [editClientOpen, setEditClientOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const menuOpen = Boolean(anchorEl);
   const [caseOpen, setCaseOpen] = useState(false);
-  const clients = listTrackedClients();
+  const [submittingClient, setSubmittingClient] = useState(false);
+  const [submittingCase, setSubmittingCase] = useState(false);
+  const { clients, loading, error, total, search, setSearch, createClient } =
+    useClients(1, 100);
   const { addNotification } = useNotifications();
-  const statusLabel = (status: ClientStatus) => status;
+  const statusLabel = (status?: Client["status"]) => status ?? "Ativo";
   const handleOpenNewClientModal = () => setOpen(true);
   const handleCloseNewClientModal = () => setOpen(false);
   const handleOpenMenu = (e: MouseEvent<HTMLElement>) =>
@@ -60,17 +63,41 @@ export default function ClientesView() {
   const handleCloseNewCaseModal = () => setCaseOpen(false);
   const handleOpenEditClientModal = () => setEditClientOpen(true);
   const handleCloseEditClientModal = () => setEditClientOpen(false);
-  const handleNewClientSubmit = () =>
-    addNotification({
-      title: "Novo cliente cadastrado",
-      description: "O cliente foi adicionado com sucesso.",
-    });
-  const handleNewCaseSubmit = () => {
-    setCaseOpen(false);
-    addNotification({
-      title: "Novo caso criado",
-      description: "Um novo caso foi adicionado no painel.",
-    });
+  const handleNewClientSubmit = async (payload: Partial<Client>) => {
+    try {
+      setSubmittingClient(true);
+      await createClient(payload);
+      setOpen(false);
+      addNotification({
+        title: "Novo cliente cadastrado",
+        description: "O cliente foi adicionado com sucesso.",
+      });
+    } catch (err) {
+      addNotification({
+        title: "Erro ao cadastrar cliente",
+        description: getApiErrorMessage(err),
+      });
+    } finally {
+      setSubmittingClient(false);
+    }
+  };
+  const handleNewCaseSubmit = async (payload: CasePayload) => {
+    try {
+      setSubmittingCase(true);
+      await createCase(payload);
+      setCaseOpen(false);
+      addNotification({
+        title: "Novo caso criado",
+        description: "Um novo caso foi adicionado no painel.",
+      });
+    } catch (err) {
+      addNotification({
+        title: "Erro ao criar caso",
+        description: getApiErrorMessage(err),
+      });
+    } finally {
+      setSubmittingCase(false);
+    }
   };
   const handleEditClientSubmit = () =>
     addNotification({
@@ -180,6 +207,8 @@ export default function ClientesView() {
             >
               <TextField
                 placeholder={"Buscar por nome, documento ou e-mail..."}
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
                 sx={{
                   width: { xs: "100%", sm: 450 },
                   "& .MuiOutlinedInput-root": {
@@ -239,79 +268,106 @@ export default function ClientesView() {
               </TableHead>
 
               <TableBody>
-                {clients.map((client) => {
-                  const { color, bg } = statusStyles(client.status);
+                {loading && (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={rowCellStyle}>
+                      <Typography color="text.secondary">
+                        Carregando clientes...
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loading && error && (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={rowCellStyle}>
+                      <Typography color="error">{error}</Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loading && !error && clients.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={rowCellStyle}>
+                      <Typography color="text.secondary">
+                        Nenhum cliente encontrado.
+                      </Typography>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {!loading &&
+                  !error &&
+                  clients.map((client) => {
+                    const { color, bg } = statusStyles(client.status);
 
-                  return (
-                    <TableRow key={client.slug}>
-                      <TableCell sx={rowCellStyle}>
-                        <Typography
-                          fontWeight={600}
-                          color="text.primary"
-                          mb={0.3}
-                        >
-                          {client.name}
-                        </Typography>
-                        <Typography color="text.secondary" fontSize="0.86rem">
-                          Contato: {client.contactName}
-                        </Typography>
-                      </TableCell>
+                    return (
+                      <TableRow key={client.id ?? client.slug}>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography
+                            fontWeight={600}
+                            color="text.primary"
+                            mb={0.3}
+                          >
+                            {client.name}
+                          </Typography>
+                          <Typography color="text.secondary" fontSize="0.86rem">
+                            Contato: {client.contactName || "-"}
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell sx={rowCellStyle}>
-                        <Typography color="text.primary">
-                          {client.email}
-                        </Typography>
-                        <Typography color="text.secondary" fontSize="0.86rem">
-                          {client.phone}
-                        </Typography>
-                      </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.primary">
+                            {client.email || "-"}
+                          </Typography>
+                          <Typography color="text.secondary" fontSize="0.86rem">
+                            {client.phone || "-"}
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell sx={rowCellStyle}>
-                        <Typography color="text.secondary">
-                          {client.cpfCnpj}
-                        </Typography>
-                      </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.secondary">
+                            {client.cpfCnpj || "-"}
+                          </Typography>
+                        </TableCell>
 
-                      <TableCell sx={rowCellStyle}>
-                        <Chip
-                          label={statusLabel(client.status)}
+                        <TableCell sx={rowCellStyle}>
+                          <Chip
+                            label={statusLabel(client.status)}
+                            sx={{
+                              bgcolor: bg,
+                              color,
+                              fontWeight: 500,
+                            }}
+                          />
+                        </TableCell>
+
+                        <TableCell
                           sx={{
-                            bgcolor: bg,
-                            color,
-                            fontWeight: 500,
+                            ...rowCellStyle,
+                            textAlign: "right",
+                            pr: 2,
                           }}
-                        />
-                      </TableCell>
-
-                      <TableCell
-                        sx={{
-                          ...rowCellStyle,
-                          textAlign: "right",
-                          pr: 2,
-                        }}
-                      >
-                        <IconButton
-                          sx={actionBtnStyle}
-                          component={Link}
-                          href={`/acompanhamento/${client.slug}`}
                         >
-                          <Icon icon="mdi:eye-outline" width={19} />
-                        </IconButton>
-                        <>
                           <IconButton
                             sx={actionBtnStyle}
-                            onClick={handleOpenEditClientModal}
+                            component={Link}
+                            href={`/acompanhamento/${client.slug}`}
                           >
-                            <Icon icon="mdi:pencil-outline" width={19} />
+                            <Icon icon="mdi:eye-outline" width={19} />
                           </IconButton>
-                          <IconButton sx={actionBtnStyle}>
-                            <Icon icon="mdi:trash-can-outline" width={19} />
-                          </IconButton>
-                        </>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          <>
+                            <IconButton
+                              sx={actionBtnStyle}
+                              onClick={handleOpenEditClientModal}
+                            >
+                              <Icon icon="mdi:pencil-outline" width={19} />
+                            </IconButton>
+                            <IconButton sx={actionBtnStyle}>
+                              <Icon icon="mdi:trash-can-outline" width={19} />
+                            </IconButton>
+                          </>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
 
@@ -327,7 +383,7 @@ export default function ClientesView() {
               }}
             >
               <Typography color="text.secondary" fontSize="0.95rem">
-                Mostrando 1 até 6 de 6 registros
+                {`Mostrando ${clients.length ? 1 : 0} até ${clients.length} de ${total} registros`}
               </Typography>
 
               <Stack direction="row" spacing={1}>
@@ -365,11 +421,13 @@ export default function ClientesView() {
         open={open}
         onClose={handleCloseNewClientModal}
         onSubmit={handleNewClientSubmit}
+        submitting={submittingClient}
       />
       <NewCaseModal
         open={caseOpen}
         onClose={handleCloseNewCaseModal}
         onSubmit={handleNewCaseSubmit}
+        submitting={submittingCase}
       />
       <EditClientModal
         open={editClientOpen}

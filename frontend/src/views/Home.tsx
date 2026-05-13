@@ -1,6 +1,5 @@
 "use client";
 import {
-  Avatar,
   Box,
   Chip,
   Container,
@@ -14,51 +13,15 @@ import { Footer } from "@/components/Footer";
 import { publicacoes } from "@/data/publicacoes";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
+import { LawyerCarousel } from "@/components/team/LawyerCarousel";
+import { teamLawyers, teamSpecialties } from "@/data/team";
 
 export default function HomeView() {
-  const areas = [
-    "Direito Tributário",
-    "Direito Empresarial",
-    "Direito Trabalhista",
-    "Direito Civil",
-    "Direito Digital",
-    "Direito Imobiliário",
-    "Direito de Família",
-    "Direito Penal",
-  ];
-
   const stats = [
     { value: "25+", label: "Anos de Experiência" },
     { value: "1.200+", label: "Clientes Atendidos" },
     { value: "R$ 50M+", label: "Economizados" },
     { value: "98%", label: "Taxa de Sucesso" },
-  ];
-
-  const lawyers = [
-    {
-      name: "Dra. Elena Silva",
-      role: "Especialista em Direito Tributário",
-      description:
-        "Atua há mais de 15 anos com planejamento tributário e defesa fiscal.",
-      areas: ["Tributário", "Empresarial"],
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
-    },
-    {
-      name: "Dr. Roberto Alves",
-      role: "Especialista em Direito Trabalhista",
-      description:
-        "Experiência em relações corporativas e gestão de passivos trabalhistas.",
-      areas: ["Trabalhista"],
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
-    },
-    {
-      name: "Dr. Marcos Santos",
-      role: "Especialista em Direito Digital",
-      description:
-        "Focado em proteção de dados, LGPD e contratos tecnológicos.",
-      areas: ["Digital", "Contratos"],
-      image: "https://randomuser.me/api/portraits/men/45.jpg",
-    },
   ];
 
   return (
@@ -108,7 +71,7 @@ export default function HomeView() {
             gap={2}
             justifyContent="center"
           >
-            {areas.map((area, i) => (
+            {teamSpecialties.map((area, i) => (
               <Box
                 key={i}
                 sx={{
@@ -203,76 +166,11 @@ export default function HomeView() {
           <Box
             id="equipe"
             sx={{ scrollMarginTop: "80px" }}
-            textAlign="center"
             mt={{ xs: 7, md: 9 }}
             mb={4}
           >
-            <Typography variant="h4" fontWeight="bold">
-              Nossa Equipe
-            </Typography>
-            <Typography color="text.secondary" mt={1}>
-              Uma equipe multidisciplinar, focada em resultados práticos.
-            </Typography>
+            <LawyerCarousel lawyers={teamLawyers} />
           </Box>
-
-          <Grid container spacing={3}>
-            {lawyers.map((lawyer) => (
-              <Grid key={lawyer.name} size={{ xs: 12, md: 4 }}>
-                <Paper
-                  sx={{
-                    p: 3,
-                    borderRadius: 4,
-                    bgcolor: "background.default",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
-                    transition: "transform 0.18s ease, box-shadow 0.18s ease",
-                    "&:hover": {
-                      transform: "translateY(-2px) scale(1.01)",
-                      boxShadow: "0 12px 30px rgba(15,23,42,0.14)",
-                    },
-                  }}
-                >
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar
-                      src={lawyer.image}
-                      alt={lawyer.name}
-                      sx={{ width: 56, height: 56 }}
-                    />
-                    <Box sx={{ minWidth: 0 }}>
-                      <Typography fontWeight={800} noWrap>
-                        {lawyer.name}
-                      </Typography>
-                      <Typography color="text.secondary" fontSize="0.92rem">
-                        {lawyer.role}
-                      </Typography>
-                    </Box>
-                  </Stack>
-
-                  <Typography
-                    color="text.secondary"
-                    mt={2}
-                    fontSize="0.95rem"
-                    lineHeight={1.65}
-                  >
-                    {lawyer.description}
-                  </Typography>
-
-                  <Stack direction="row" flexWrap="wrap" gap={1} mt={2.2}>
-                    {lawyer.areas.map((area) => (
-                      <Chip
-                        key={area}
-                        label={area}
-                        size="small"
-                        variant="outlined"
-                        sx={{ borderRadius: 2 }}
-                      />
-                    ))}
-                  </Stack>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
         </Container>
       </Box>
       <Box
