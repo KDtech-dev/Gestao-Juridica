@@ -285,7 +285,7 @@ export default function HomeView() {
           publicacoes={publicacoes.slice(0, 4)}
           title="Publicações Recentes"
           subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
-          verMaisHref="/publicacoes?origem=home"
+          verMaisHref="/posts"
         />
       </Box>
       <Box id="contato" bgcolor="background.default">

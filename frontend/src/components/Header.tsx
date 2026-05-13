@@ -49,7 +49,7 @@ export function Header() {
             >
               <Button
                 component={Link}
-                href="/publicacoes?origem=home"
+                href="/posts"
                 variant="text"
                 sx={{
                   color: "text.primary",
