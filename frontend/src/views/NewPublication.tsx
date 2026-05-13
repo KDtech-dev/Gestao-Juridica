@@ -237,21 +237,22 @@ export default function NewPublicationView({ editSlug }: Props) {
     toast.success(
       isEditMode ? "Publicação atualizada." : "Publicação adicionada.",
     );
-    router.push("/publicacoes");
+    router.push("/publicacoes?modo=interna");
   };
 
   const requestCancel = () => {
     if (!hasUnsavedChanges) {
-      router.push("/publicacoes");
+      router.push("/publicacoes?modo=interna");
       return;
     }
 
-    setPendingHref(`${window.location.origin}/publicacoes`);
+    setPendingHref(`${window.location.origin}/publicacoes?modo=interna`);
     setLeaveDialogOpen(true);
   };
 
   const confirmLeave = () => {
-    const href = pendingHref ?? `${window.location.origin}/publicacoes`;
+    const href =
+      pendingHref ?? `${window.location.origin}/publicacoes?modo=interna`;
     const url = new URL(href, window.location.href);
 
     allowNavigationRef.current = true;

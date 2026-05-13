@@ -32,7 +32,7 @@ const mainItems: NavItem[] = [
     key: "publicacoes",
     label: "Publicações",
     icon: "mdi:newspaper-variant-outline",
-    href: "/publicacoes",
+    href: "/publicacoes?modo=interna",
   },
   {
     key: "cases",

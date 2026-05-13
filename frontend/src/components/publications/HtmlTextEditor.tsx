@@ -123,7 +123,7 @@ export function HtmlTextEditor({
         error={Boolean(error)}
         helperText={error || helperText}
         inputRef={inputRef}
-        placeholder="<p>Digite seu texto em HTML...</p>"
+        placeholder="Digite seu texto"
       />
     </Box>
   );

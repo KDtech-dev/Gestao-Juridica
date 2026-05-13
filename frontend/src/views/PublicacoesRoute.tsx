@@ -5,16 +5,19 @@ import { useAuth } from "@/hooks/useAuth";
 import PublicationsView from "@/views/Publications";
 import PublicacoesView from "@/views/Publicacoes";
 
-function shouldShowPublicSite() {
-  if (typeof window === "undefined") return false;
+function getPublicacoesMode() {
+  if (typeof window === "undefined") return true;
 
   const params = new URLSearchParams(window.location.search);
-  return params.get("origem") === "home";
+  if (params.get("modo") === "interna") return false;
+  if (params.get("origem") === "home") return true;
+
+  return true;
 }
 
 export default function PublicacoesRouteView() {
   const { isAuthenticated, loading } = useAuth();
-  const showPublicSite = shouldShowPublicSite();
+  const showPublicSite = getPublicacoesMode();
 
   if (loading) {
     return (
