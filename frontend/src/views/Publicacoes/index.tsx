@@ -210,7 +210,7 @@ const PublicacoesView = () => {
         color: "text.primary",
       }}
     >
-      <Header />
+      <Header isAuthenticated={false} userName="Diego" />
       <PublicacoesHeroSlider
         publicacoes={publicacoes}
         searchCard={searchCard}
