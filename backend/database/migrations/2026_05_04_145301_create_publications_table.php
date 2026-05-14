@@ -11,12 +11,16 @@ return new class extends Migration
         Schema::create('publicacoes', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('titulo');
+            $table->foreignUuid('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
             $table->foreignId('categoria_id')->nullable()->constrained('categorias')->nullOnDelete();
             $table->string('imagem_caminho')->nullable();
             $table->string('autor');
             $table->text('resumo')->nullable();
             $table->text('conteudo')->nullable();
             $table->enum('status', ['rascunho', 'publicado', 'arquivado'])->default('rascunho');
+
             $table->timestamp('publicado_em')->nullable();
             $table->timestamps();
         });

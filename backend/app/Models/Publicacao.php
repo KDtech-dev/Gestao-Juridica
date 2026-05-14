@@ -15,6 +15,7 @@ class Publicacao extends Model
 
     protected $fillable = [
         'titulo',
+        'user_id',
         'categoria_id',
         'imagem_caminho',
         'autor',
@@ -35,5 +36,10 @@ class Publicacao extends Model
     public function categoria()
     {
         return $this->belongsTo(Categoria::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
