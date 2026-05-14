@@ -10,8 +10,8 @@ class CreateCasesTable extends Migration
     {
         Schema::create('cases', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('client_id');
-            $table->unsignedBigInteger('assigned_lawyer_id')->nullable();
+            $table->uuid('client_id');
+            $table->uuid('assigned_lawyer_id')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('status')->default('open');

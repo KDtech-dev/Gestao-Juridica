@@ -6,26 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-
-        Schema::create('publicacaoes', function (Blueprint $table) {
-            $table->id();
+        Schema::create('publicacoes', function (Blueprint $table) {
+            $table->uuid('id')->primary();
             $table->string('titulo');
-            $table->text('descricao');
-            $table->string('url')->nullable();
+            $table->foreignId('categoria_id')->nullable()->constrained('categorias')->nullOnDelete();
+            $table->string('imagem_caminho')->nullable();
+            $table->string('autor');
+            $table->text('resumo')->nullable();
+            $table->text('conteudo')->nullable();
+            $table->enum('status', ['rascunho', 'publicado', 'arquivado'])->default('rascunho');
+            $table->timestamp('publicado_em')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
+        Schema::dropIfExists('publicacoes');
         Schema::dropIfExists('publicacaoes');
     }
 };
