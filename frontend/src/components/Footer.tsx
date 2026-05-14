@@ -1,69 +1,10 @@
 "use client";
-import { useState } from "react";
-import {
-  Box,
-  Container,
-  Typography,
-  Stack,
-  TextField,
-  Button,
-} from "@mui/material";
+import { Box, Container, Typography, Stack, Button } from "@mui/material";
 import { Icon } from "@iconify/react";
 export function Footer() {
-  const inputStyle = {
-    "& .MuiInputBase-input": {
-      color: "#fff",
-    },
-    "& .MuiInputLabel-root": {
-      color: "rgba(255,255,255,0.7)",
-    },
-    "& .MuiInputLabel-root.Mui-focused": {
-      color: "#2563eb",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "rgba(255,255,255,0.3)",
-      },
-      "&:hover fieldset": {
-        borderColor: "#fff",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#2563eb",
-      },
-    },
-  };
-  const [form, setForm] = useState({
-    nome: "",
-    telefone: "",
-    email: "",
-    empresa: "",
-    mensagem: "",
-  });
   const mensagem = `Olá, gostaria de agendar uma consulta jurídica.`;
   const telefone = "5533999377986";
-  const handleChange = (campo: string, valor: string) => {
-    setForm((prev) => ({
-      ...prev,
-      [campo]: valor,
-    }));
-  };
-  const montarMensagem = () => {
-    return encodeURIComponent(
-      `Olá, gostaria de agendar uma consulta jurídica.\n\n` +
-        `Nome: ${form.nome}\n` +
-        `Telefone: ${form.telefone}\n` +
-        `E-mail: ${form.email}\n` +
-        `Empresa: ${form.empresa}\n` +
-        `Mensagem: ${form.mensagem}`,
-    );
-  };
-  const enviarWhatsApp = () => {
-    const mensagem = montarMensagem();
 
-    const url = `https://wa.me/${telefone}?text=${mensagem}`;
-
-    window.open(url, "_blank");
-  };
   return (
     <Box
       sx={{
@@ -103,69 +44,6 @@ export function Footer() {
               Conversar pelo WhatsApp
             </Button>
           </Box>
-
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <TextField
-                label="Nome"
-                fullWidth
-                size="small"
-                value={form.nome}
-                onChange={(e) => handleChange("nome", e.target.value)}
-                sx={inputStyle}
-              />
-              <TextField
-                label="Telefone"
-                fullWidth
-                size="small"
-                value={form.telefone}
-                onChange={(e) => handleChange("telefone", e.target.value)}
-                sx={inputStyle}
-              />
-            </Stack>
-
-            <Stack direction="row" spacing={2}>
-              <TextField
-                label="E-mail"
-                fullWidth
-                size="small"
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-                sx={inputStyle}
-              />
-              <TextField
-                label="Empresa"
-                fullWidth
-                size="small"
-                value={form.empresa}
-                onChange={(e) => handleChange("empresa", e.target.value)}
-                sx={inputStyle}
-              />
-            </Stack>
-
-            <TextField
-              label="Como podemos te ajudar?"
-              multiline
-              rows={3}
-              fullWidth
-              value={form.mensagem}
-              onChange={(e) => handleChange("mensagem", e.target.value)}
-              sx={inputStyle}
-            />
-
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={enviarWhatsApp}
-              startIcon={<Icon icon="mdi:whatsapp" />}
-              sx={{
-                bgcolor: "#05a13e",
-                "&:hover": { bgcolor: "#05a13ec5" },
-              }}
-            >
-              Conversar pelo WhatsApp
-            </Button>
-          </Stack>
         </Stack>
       </Container>
 

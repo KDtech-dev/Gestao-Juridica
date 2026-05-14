@@ -73,8 +73,7 @@ export default function TeamView() {
               Advogados
             </Typography>
             <Typography color="text.secondary">
-              {filteredLawyers.length} profissional
-              {filteredLawyers.length === 1 ? "" : "ais"}
+              {filteredLawyers.length} profissionais
             </Typography>
           </Stack>
 
