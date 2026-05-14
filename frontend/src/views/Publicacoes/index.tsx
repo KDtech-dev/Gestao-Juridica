@@ -215,6 +215,7 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
       }}
     >
       <Header />
+
       <PublicacoesHeroSlider
         publicacoes={publicacoes}
         searchCard={searchCard}
