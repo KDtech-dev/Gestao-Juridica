@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePublicacaoRequest;
+use App\Http\Requests\UpdatePublicacaoRequest;
 use App\Services\PublicacaoService;
 use App\Strategies\PublicacaoAdminStrategy;
-use Illuminate\Http\Request;
 
 class PublicacaoController extends Controller
 {
@@ -32,20 +33,22 @@ class PublicacaoController extends Controller
         );
     }
 
-    public function store(Request $request)
+    public function store(StorePublicacaoRequest $request)
     {
         $publicacao = $this->service->createPublicacao(
-            $request->all()
+            $request->validated()
         );
 
         return response()->json($publicacao, 201);
     }
 
-    public function update(Request $request, string $id)
-    {
+    public function update(
+        UpdatePublicacaoRequest $request,
+        string $id
+    ) {
         $publicacao = $this->service->updatePublicacao(
             $id,
-            $request->all()
+            $request->validated()
         );
 
         return response()->json($publicacao);

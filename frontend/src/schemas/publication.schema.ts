@@ -15,6 +15,9 @@ export const publicationSchema = z.object({
     .min(1, "Informe o resumo.")
     .max(2000, "O resumo deve ter no máximo 2000 caracteres."),
   conteudo: z.string().trim().min(1, "Informe o texto da publicação."),
+  status: z.enum(["rascunho", "publicado", "arquivado"], {
+    message: "Informe um status válido.",
+  }),
 });
 
 export type PublicationInput = z.infer<typeof publicationSchema>;

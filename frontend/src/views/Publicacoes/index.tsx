@@ -16,7 +16,7 @@ import { Icon } from "@iconify/react";
 import { useMemo, useState } from "react";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { PublicacoesHeroSlider } from "@/components/publications/PublicacoesHeroSlider";
-import { publicacoes } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 function normalizeSearch(value: string) {
   return value
@@ -26,7 +26,11 @@ function normalizeSearch(value: string) {
     .trim();
 }
 
-const PublicacoesView = () => {
+type PublicacoesViewProps = {
+  publicacoes: PublicacaoItem[];
+};
+
+const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
   const [titleFilter, setTitleFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [appliedFilters, setAppliedFilters] = useState({
@@ -36,7 +40,7 @@ const PublicacoesView = () => {
 
   const categorias = useMemo(
     () => Array.from(new Set(publicacoes.map((item) => item.categoria))).sort(),
-    [],
+    [publicacoes],
   );
 
   const publicacoesFiltradas = useMemo(() => {
@@ -51,7 +55,7 @@ const PublicacoesView = () => {
 
       return matchesTitle && matchesCategory;
     });
-  }, [appliedFilters]);
+  }, [appliedFilters, publicacoes]);
 
   const handleSearch = () => {
     setAppliedFilters({
@@ -210,7 +214,7 @@ const PublicacoesView = () => {
         color: "text.primary",
       }}
     >
-      <Header isAuthenticated={false} userName="Diego" />
+      <Header />
       <PublicacoesHeroSlider
         publicacoes={publicacoes}
         searchCard={searchCard}

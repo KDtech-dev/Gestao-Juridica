@@ -1,3 +1,5 @@
+import type { StatusPublicacao } from "@/api/publicacoes/types";
+
 export type PublicacaoFormData = {
   titulo: string;
   categoria: string;
@@ -5,6 +7,7 @@ export type PublicacaoFormData = {
   autor: string;
   resumo: string;
   conteudo: string;
+  status: StatusPublicacao;
   anexos: File[];
 };
 

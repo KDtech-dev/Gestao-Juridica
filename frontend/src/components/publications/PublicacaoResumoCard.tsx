@@ -1,7 +1,7 @@
 "use client";
 
 import { Paper, Typography } from "@mui/material";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type PublicacaoResumoCardProps = {
   publicacao: PublicacaoItem;

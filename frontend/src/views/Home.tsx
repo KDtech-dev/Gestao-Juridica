@@ -10,13 +10,17 @@ import {
 } from "@mui/material";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { publicacoes } from "@/data/publicacoes";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { LawyerCarousel } from "@/components/team/LawyerCarousel";
 import { teamLawyers, teamSpecialties } from "@/data/team";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
-export default function HomeView() {
+type HomeViewProps = {
+  publicacoes: PublicacaoItem[];
+};
+
+export default function HomeView({ publicacoes }: HomeViewProps) {
   const stats = [
     { value: "25+", label: "Anos de Experiência" },
     { value: "1.200+", label: "Clientes Atendidos" },
@@ -173,19 +177,21 @@ export default function HomeView() {
           </Box>
         </Container>
       </Box>
-      <Box
-        id="publicacoes"
-        sx={{ scrollMarginTop: "80px" }}
-        py={10}
-        bgcolor="background.default"
-      >
-        <GridDePublicacoes
-          publicacoes={publicacoes.slice(0, 4)}
-          title="Publicações Recentes"
-          subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
-          verMaisHref="/posts"
-        />
-      </Box>
+      {publicacoes.length > 0 ? (
+        <Box
+          id="publicacoes"
+          sx={{ scrollMarginTop: "80px" }}
+          py={10}
+          bgcolor="background.default"
+        >
+          <GridDePublicacoes
+            publicacoes={publicacoes.slice(0, 4)}
+            title="Publicações Recentes"
+            subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
+            verMaisHref="/posts"
+          />
+        </Box>
+      ) : null}
       <Box id="contato" bgcolor="background.default">
         <Footer />
       </Box>

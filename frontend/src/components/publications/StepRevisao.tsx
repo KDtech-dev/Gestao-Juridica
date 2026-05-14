@@ -44,6 +44,12 @@ function ReviewHtml({ label, value }: { label: string; value: string }) {
   );
 }
 
+const statusLabels: Record<PublicacaoFormData["status"], string> = {
+  rascunho: "Rascunho",
+  publicado: "Publicado",
+  arquivado: "Arquivado",
+};
+
 export function StepRevisao({ data, isEn = false }: Props) {
   return (
     <Stack spacing={1.4}>
@@ -82,6 +88,7 @@ export function StepRevisao({ data, isEn = false }: Props) {
             />
           ) : null}
           <ReviewItem label={isEn ? "Author" : "Autor"} value={data.autor} />
+          <ReviewItem label="Status" value={statusLabels[data.status]} />
         </Stack>
       </Paper>
 

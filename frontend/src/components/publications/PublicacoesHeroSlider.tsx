@@ -12,7 +12,7 @@ import {
 import { Icon } from "@iconify/react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type PublicacoesHeroSliderProps = {
   publicacoes: PublicacaoItem[];

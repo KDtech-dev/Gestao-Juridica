@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type CardPublicacaoProps = {
   publicacao: PublicacaoItem;

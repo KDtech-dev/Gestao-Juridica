@@ -1,8 +1,13 @@
 import PublicationDetailView from "@/views/PublicationDetail";
-import { findPublicacaoBySlug, publicacoes } from "@/data/publicacoes";
+import {
+  getPublicacaoPublicaBySlug,
+  getPublicacoesPublicas,
+} from "@/api/publicacoes/apiPublicacoes";
 import { notFound } from "next/navigation";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const publicacoes = await getPublicacoesPublicas();
+
   return publicacoes.map((item) => ({ slug: item.slug }));
 }
 
@@ -12,7 +17,7 @@ export default async function PublicacaoDetalhePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const publicacao = findPublicacaoBySlug(slug);
+  const publicacao = await getPublicacaoPublicaBySlug(slug);
 
   if (!publicacao) {
     notFound();

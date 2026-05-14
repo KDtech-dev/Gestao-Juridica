@@ -1,5 +1,8 @@
 import PublicacoesRouteView from "@/views/PublicacoesRoute";
+import { getPublicacoesPublicas } from "@/api/publicacoes/apiPublicacoes";
 
-export default function PostsPage() {
-  return <PublicacoesRouteView />;
+export default async function PostsPage() {
+  const publicacoesPublicas = await getPublicacoesPublicas();
+
+  return <PublicacoesRouteView publicacoesPublicas={publicacoesPublicas} />;
 }

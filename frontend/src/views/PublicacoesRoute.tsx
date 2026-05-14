@@ -5,8 +5,15 @@ import { useAuth } from "@/hooks/useAuth";
 import PublicationsView from "@/views/Publications";
 import PublicacoesView from "@/views/Publicacoes";
 import { usePathname } from "next/navigation";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
-export default function PublicacoesRouteView() {
+type PublicacoesRouteViewProps = {
+  publicacoesPublicas: PublicacaoItem[];
+};
+
+export default function PublicacoesRouteView({
+  publicacoesPublicas,
+}: PublicacoesRouteViewProps) {
   const { isAuthenticated, loading } = useAuth();
   const pathname = usePathname();
 
@@ -34,12 +41,12 @@ export default function PublicacoesRouteView() {
   }
 
   if (isPublicRoute) {
-    return <PublicacoesView />;
+    return <PublicacoesView publicacoes={publicacoesPublicas} />;
   }
 
   if (isAuthenticated) {
     return <PublicationsView />;
   }
 
-  return <PublicacoesView />;
+  return <PublicacoesView publicacoes={publicacoesPublicas} />;
 }

@@ -2,7 +2,7 @@
 
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type PublicacaoTextoCardProps = {
   publicacao: PublicacaoItem;

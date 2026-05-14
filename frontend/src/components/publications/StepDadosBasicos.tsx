@@ -1,8 +1,14 @@
 "use client";
 
-import { Grid, Stack, TextField } from "@mui/material";
+import { Grid, MenuItem, Stack, TextField } from "@mui/material";
 import { PublicacaoFormData, PublicationErrors } from "./types";
 import { HtmlTextEditor } from "./HtmlTextEditor";
+
+const STATUS_OPTIONS = [
+  { value: "rascunho", label: "Rascunho" },
+  { value: "publicado", label: "Publicado" },
+  { value: "arquivado", label: "Arquivado" },
+] as const;
 
 type Props = {
   isEn?: boolean;
@@ -65,6 +71,29 @@ export function StepDadosBasicos({
             error={Boolean(errors.autor)}
             helperText={errors.autor}
           />
+        </Grid>
+
+        <Grid size={{ xs: 12, md: 6 }}>
+          <TextField
+            select
+            fullWidth
+            label="Status"
+            value={data.status}
+            onChange={(event) =>
+              onChange("status", event.target.value as PublicacaoFormData["status"])
+            }
+            error={Boolean(errors.status)}
+            helperText={
+              errors.status ||
+              "Somente publicações com status publicado aparecem em posts."
+            }
+          >
+            {STATUS_OPTIONS.map((status) => (
+              <MenuItem key={status.value} value={status.value}>
+                {status.label}
+              </MenuItem>
+            ))}
+          </TextField>
         </Grid>
 
         <Grid size={{ xs: 12 }}>

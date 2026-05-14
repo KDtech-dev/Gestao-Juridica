@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { CardPublicacao } from "@/components/publications/CardPublicacao";
 
 type GridDePublicacoesProps = {

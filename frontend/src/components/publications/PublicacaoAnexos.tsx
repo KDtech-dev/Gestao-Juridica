@@ -2,7 +2,7 @@
 
 import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type Props = {
   publicacao: PublicacaoItem;

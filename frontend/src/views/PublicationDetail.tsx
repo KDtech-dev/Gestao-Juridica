@@ -5,7 +5,7 @@ import { PublicacaoAnexosCard } from "@/components/publications/PublicacaoAnexos
 import { PublicacaoDetailBanner } from "@/components/publications/PublicacaoDetailBanner";
 import { PublicacaoResumoCard } from "@/components/publications/PublicacaoResumoCard";
 import { PublicacaoTextoCard } from "@/components/publications/PublicacaoTextoCard";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type Props = {
   publicacao: PublicacaoItem;

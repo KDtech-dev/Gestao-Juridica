@@ -4,21 +4,21 @@ namespace App\Enums;
 
 enum StatusPublicacao: string
 {
-    case Rascunho   = 'rascunho';
-    case Publicado  = 'publicado';
-    case Arquivado  = 'arquivado';
+    case RASCUNHO   = 'rascunho';
+    case PUBLICADO  = 'publicado';
+    case ARQUIVADO  = 'arquivado';
 
     public function label(): string
     {
         return match ($this) {
-            self::Rascunho  => 'Rascunho',
-            self::Publicado => 'Publicado',
-            self::Arquivado => 'Arquivado',
+            self::RASCUNHO  => 'Rascunho',
+            self::PUBLICADO => 'Publicado',
+            self::ARQUIVADO => 'Arquivado',
         };
     }
 
     public function isPublicado(): bool
     {
-        return $this === self::Publicado;
+        return $this === self::PUBLICADO;
     }
 }

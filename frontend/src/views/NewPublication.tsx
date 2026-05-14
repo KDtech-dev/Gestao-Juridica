@@ -21,7 +21,6 @@ import {
   PublicacaoFormData,
   PublicationErrors,
 } from "@/components/publications/types";
-import { findPublicacaoBySlug } from "@/data/publicacoes";
 import { toast } from "@/utils/toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
@@ -31,6 +30,12 @@ import {
   saveStoredPublicacao,
 } from "@/utils/publicationsStorage";
 import { publicationSchema } from "@/schemas/publication.schema";
+import {
+  atualizarPublicacaoClient,
+  buscarPublicacaoClient,
+  criarPublicacaoClient,
+} from "@/api/publicacoes/apiPublicacoesClient";
+import type { PublicacaoItem, PublicacaoPayload } from "@/api/publicacoes/types";
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
@@ -39,6 +44,7 @@ const initialForm: PublicacaoFormData = {
   autor: "",
   resumo: "",
   conteudo: "",
+  status: "publicado",
   anexos: [],
 };
 
@@ -54,6 +60,26 @@ function getFormSnapshot(form: PublicacaoFormData) {
   });
 }
 
+function isBackendPublicationId(id?: string) {
+  return Boolean(
+    id?.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    ),
+  );
+}
+
+function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
+  return {
+    titulo: form.titulo.trim(),
+    categoria_id: null,
+    imagem_caminho: form.bannerImage.trim() || null,
+    autor: form.autor.trim(),
+    resumo: form.resumo.trim() || null,
+    conteudo: form.conteudo.trim() || null,
+    status: form.status,
+  };
+}
+
 type Props = {
   editSlug?: string;
 };
@@ -62,14 +88,17 @@ export default function NewPublicationView({ editSlug }: Props) {
   const { user } = useAuth();
   const router = useRouter();
   const steps = ["Dados da Publicação", "Revisão"];
-  const editItem = useMemo(() => {
+  const [fetchedEditItem, setFetchedEditItem] = useState<
+    PublicacaoItem | undefined
+  >();
+  const localEditItem = useMemo(() => {
     if (!editSlug) return undefined;
 
     return (
-      getStoredPublicacoes().find((item) => item.slug === editSlug) ??
-      findPublicacaoBySlug(editSlug)
+      getStoredPublicacoes().find((item) => item.slug === editSlug)
     );
   }, [editSlug]);
+  const editItem = fetchedEditItem ?? localEditItem;
   const isEditMode = Boolean(editItem);
   const initialResolvedForm = useMemo<PublicacaoFormData>(() => {
     if (!editItem) {
@@ -85,16 +114,19 @@ export default function NewPublicationView({ editSlug }: Props) {
       autor: editItem.autor,
       resumo: editItem.resumo,
       conteudo: editItem.conteudoHtml,
+      status: editItem.status ?? "publicado",
       anexos: [],
     };
   }, [editItem, user?.name]);
   const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState<PublicacaoFormData>(initialResolvedForm);
-  const [initialSnapshot] = useState(() =>
+  const [initialSnapshot, setInitialSnapshot] = useState(() =>
     getFormSnapshot(initialResolvedForm),
   );
   const [errors, setErrors] = useState<PublicationErrors>({});
+  const [submitting, setSubmitting] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [savingDraftOnLeave, setSavingDraftOnLeave] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const allowNavigationRef = useRef(false);
 
@@ -102,6 +134,37 @@ export default function NewPublicationView({ editSlug }: Props) {
     () => getFormSnapshot(form) !== initialSnapshot,
     [form, initialSnapshot],
   );
+
+  useEffect(() => {
+    if (!editSlug || localEditItem) return;
+
+    const id =
+      editSlug.match(
+        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+      )?.[0] ?? editSlug;
+    let active = true;
+
+    buscarPublicacaoClient(id)
+      .then((publicacao) => {
+        if (active) {
+          setFetchedEditItem(publicacao);
+        }
+      })
+      .catch(() => {
+        if (active) {
+          setFetchedEditItem(undefined);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [editSlug, localEditItem]);
+
+  useEffect(() => {
+    setForm(initialResolvedForm);
+    setInitialSnapshot(getFormSnapshot(initialResolvedForm));
+  }, [initialResolvedForm]);
 
   useEffect(() => {
     if (!hasUnsavedChanges) return;
@@ -221,20 +284,63 @@ export default function NewPublicationView({ editSlug }: Props) {
 
   const prevStep = () => setActiveStep((prev) => Math.max(prev - 1, 0));
 
-  const publish = () => {
+  const publish = async () => {
+    if (submitting) return;
+
     if (!validateForm()) {
       setActiveStep(0);
       return;
     }
 
-    const publicacao = buildPublicacaoFromForm(form, user, editItem);
+    setSubmitting(true);
 
-    saveStoredPublicacao(publicacao);
+    try {
+      const payload = buildPublicacaoPayload(form);
+      const publicacao =
+        isEditMode && isBackendPublicationId(editItem?.id)
+          ? await atualizarPublicacaoClient(editItem?.id ?? "", payload)
+          : await criarPublicacaoClient(payload);
 
-    toast.success(
-      isEditMode ? "Publicação atualizada." : "Publicação adicionada.",
-    );
-    router.push("/publicacoes?modo=interna");
+      saveStoredPublicacao({
+        ...buildPublicacaoFromForm(form, user, editItem),
+        ...publicacao,
+        authorEmail: undefined,
+      });
+
+      toast.success(
+        form.status === "publicado"
+          ? "Publicação salva e disponível em posts."
+          : "Publicação salva.",
+      );
+      router.push("/publicacoes?modo=interna");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Erro ao salvar publicação.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const saveDraft = async () => {
+    const draftForm: PublicacaoFormData = {
+      ...form,
+      titulo: form.titulo.trim() || "Rascunho sem título",
+      autor: form.autor.trim() || user?.name || "Autor não informado",
+      status: "rascunho",
+    };
+    const payload = buildPublicacaoPayload(draftForm);
+    const publicacao =
+      isEditMode && isBackendPublicationId(editItem?.id)
+        ? await atualizarPublicacaoClient(editItem?.id ?? "", payload)
+        : await criarPublicacaoClient(payload);
+
+    saveStoredPublicacao({
+      ...buildPublicacaoFromForm(draftForm, user, editItem),
+      ...publicacao,
+      status: "rascunho",
+      authorEmail: undefined,
+    });
   };
 
   const requestCancel = () => {
@@ -247,13 +353,33 @@ export default function NewPublicationView({ editSlug }: Props) {
     setLeaveDialogOpen(true);
   };
 
-  const confirmLeave = () => {
+  const confirmLeave = async () => {
+    if (savingDraftOnLeave) return;
+
     const href =
       pendingHref ?? `${window.location.origin}/publicacoes?modo=interna`;
     const url = new URL(href, window.location.href);
 
+    if (hasUnsavedChanges) {
+      setSavingDraftOnLeave(true);
+
+      try {
+        await saveDraft();
+        toast.success("Publicação enviada para rascunhos.");
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Não foi possível enviar a publicação para rascunhos.",
+        );
+        setSavingDraftOnLeave(false);
+        return;
+      }
+    }
+
     allowNavigationRef.current = true;
     setLeaveDialogOpen(false);
+    setSavingDraftOnLeave(false);
 
     if (url.origin === window.location.origin) {
       router.push(`${url.pathname}${url.search}${url.hash}`);
@@ -360,9 +486,14 @@ export default function NewPublicationView({ editSlug }: Props) {
                   variant="contained"
                   color="success"
                   onClick={publish}
+                  disabled={submitting}
                   sx={{ textTransform: "none" }}
                 >
-                  {isEditMode ? "Salvar Alterações" : "Publicar"}
+                  {submitting
+                    ? "Salvando..."
+                    : isEditMode
+                      ? "Salvar Alterações"
+                      : "Salvar Publicação"}
                 </Button>
               )}
             </Stack>
@@ -372,12 +503,14 @@ export default function NewPublicationView({ editSlug }: Props) {
 
       <ConfirmDialog
         open={leaveDialogOpen}
-        title="Sair sem salvar?"
-        description="Os dados preenchidos nesta publicação não serão salvos se você sair desta tela."
-        confirmText="Sair sem salvar"
+        title="Enviar para rascunhos?"
+        description="Ao sair desta tela, a publicação será salva como rascunho para você continuar depois."
+        confirmText="Enviar para rascunhos"
         cancelText="Continuar editando"
+        loading={savingDraftOnLeave}
         onConfirm={confirmLeave}
         onClose={() => {
+          if (savingDraftOnLeave) return;
           setLeaveDialogOpen(false);
           setPendingHref(null);
         }}

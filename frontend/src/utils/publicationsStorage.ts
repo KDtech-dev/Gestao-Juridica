@@ -2,7 +2,7 @@
 
 import type { AuthUser } from "@/context/AuthContext";
 import type { PublicacaoFormData } from "@/components/publications/types";
-import type { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 const STORAGE_KEY = "lawmanager-user-publications";
 const DEFAULT_BANNER_IMAGE =
@@ -106,6 +106,7 @@ export function buildPublicacaoFromForm(
     authorEmail: user?.email || existing?.authorEmail,
     data: existing?.data ?? formatPublicationDate(now),
     readTime: estimateReadTime(form.conteudo),
+    status: form.status,
     cliente: existing?.cliente || "Não informado",
     processo: existing?.processo || "Não informado",
     anexos: existing?.anexos ?? [],

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Card, Chip, Divider, Stack, Typography } from "@mui/material";
-import { PublicacaoItem } from "@/data/publicacoes";
+import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type Props = {
   publicacao: PublicacaoItem;

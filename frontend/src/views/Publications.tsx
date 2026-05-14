@@ -5,21 +5,30 @@ import {
   Button,
   Chip,
   Container,
+  IconButton,
   InputAdornment,
   Paper,
   Stack,
+  Tab,
+  Tabs,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
+import ConfirmDialog from "@/components/users/ConfirmDialog";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { publicacoes as posts, type PublicacaoItem } from "@/data/publicacoes";
+import { useEffect, useMemo, useState } from "react";
+import type { PublicacaoItem, StatusPublicacao } from "@/api/publicacoes/types";
 import { useAuth } from "@/hooks/useAuth";
-import type { AuthUser } from "@/context/AuthContext";
-import { getStoredPublicacoes } from "@/utils/publicationsStorage";
+import {
+  atualizarPublicacaoClient,
+  deletarPublicacaoClient,
+  listarPublicacoesClient,
+} from "@/api/publicacoes/apiPublicacoesClient";
+import { toast } from "@/utils/toast";
 
 function normalize(value: string) {
   return value
@@ -29,43 +38,74 @@ function normalize(value: string) {
     .trim();
 }
 
-function isOwnPublication(post: PublicacaoItem, user: AuthUser | null) {
-  if (!user) return false;
+const STATUS_TABS: Array<{ value: StatusPublicacao; label: string }> = [
+  { value: "publicado", label: "Publicadas" },
+  { value: "rascunho", label: "Rascunhos" },
+  { value: "arquivado", label: "Arquivadas" },
+];
 
-  const userEmail = normalize(user.email);
-  const userName = normalize(user.name);
-
-  return (
-    Boolean(post.authorEmail && normalize(post.authorEmail) === userEmail) ||
-    normalize(post.autor) === userName
-  );
-}
+const statusLabels: Record<StatusPublicacao, string> = {
+  publicado: "Publicado",
+  rascunho: "Rascunho",
+  arquivado: "Arquivado",
+};
 
 export default function PublicationsView() {
-  const { hasRole, user } = useAuth();
+  const { hasRole } = useAuth();
   const [search, setSearch] = useState("");
-  const [storedPosts] = useState<PublicacaoItem[]>(() =>
-    getStoredPublicacoes(),
-  );
+  const [posts, setPosts] = useState<PublicacaoItem[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [activeStatus, setActiveStatus] =
+    useState<StatusPublicacao>("publicado");
+  const [deleteTarget, setDeleteTarget] = useState<PublicacaoItem | null>(null);
+  const [processingPostId, setProcessingPostId] = useState<string | null>(null);
   const canManagePublications = hasRole("admin") || hasRole("advogado");
-  const allPosts = useMemo(() => {
-    const storedSlugs = new Set(storedPosts.map((post) => post.slug));
 
-    return [
-      ...storedPosts,
-      ...posts.filter((post) => !storedSlugs.has(post.slug)),
-    ];
-  }, [storedPosts]);
-  const ownPosts = useMemo(
-    () => allPosts.filter((post) => isOwnPublication(post, user)),
-    [allPosts, user],
-  );
+  useEffect(() => {
+    let active = true;
+
+    const loadPublicacoes = async () => {
+      setLoadingPosts(true);
+      setLoadError(null);
+
+      try {
+        const data = await listarPublicacoesClient();
+
+        if (active) {
+          setPosts(data);
+        }
+      } catch (error) {
+        if (active) {
+          setLoadError(
+            error instanceof Error
+              ? error.message
+              : "Não foi possível carregar as publicações.",
+          );
+        }
+      } finally {
+        if (active) {
+          setLoadingPosts(false);
+        }
+      }
+    };
+
+    loadPublicacoes();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const filteredPosts = useMemo(() => {
     const term = normalize(search);
+    const postsByStatus = posts.filter(
+      (post) => (post.status ?? "publicado") === activeStatus,
+    );
 
-    if (!term) return ownPosts;
+    if (!term) return postsByStatus;
 
-    return ownPosts.filter((post) =>
+    return postsByStatus.filter((post) =>
       [
         post.titulo,
         post.categoria,
@@ -76,7 +116,75 @@ export default function PublicationsView() {
         post.processo,
       ].some((value) => normalize(value).includes(term)),
     );
-  }, [ownPosts, search]);
+  }, [activeStatus, posts, search]);
+
+  const statusCounts = useMemo(() => {
+    return STATUS_TABS.reduce(
+      (acc, status) => ({
+        ...acc,
+        [status.value]: posts.filter(
+          (post) => (post.status ?? "publicado") === status.value,
+        ).length,
+      }),
+      {} as Record<StatusPublicacao, number>,
+    );
+  }, [posts]);
+
+  const archivePost = async (post: PublicacaoItem) => {
+    if (processingPostId) return;
+
+    setProcessingPostId(post.id);
+
+    try {
+      const updated = await atualizarPublicacaoClient(post.id, {
+        status: "arquivado",
+      });
+
+      setPosts((current) =>
+        current.map((item) =>
+          item.id === post.id
+            ? {
+                ...item,
+                ...updated,
+                status: "arquivado",
+              }
+            : item,
+        ),
+      );
+      toast.success("Publicação arquivada.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível arquivar a publicação.",
+      );
+    } finally {
+      setProcessingPostId(null);
+    }
+  };
+
+  const confirmDeletePost = async () => {
+    if (!deleteTarget || processingPostId) return;
+
+    setProcessingPostId(deleteTarget.id);
+
+    try {
+      await deletarPublicacaoClient(deleteTarget.id);
+      setPosts((current) =>
+        current.filter((item) => item.id !== deleteTarget.id),
+      );
+      setDeleteTarget(null);
+      toast.success("Publicação deletada.");
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível deletar a publicação.",
+      );
+    } finally {
+      setProcessingPostId(null);
+    }
+  };
 
   return (
     <Box
@@ -135,6 +243,30 @@ export default function PublicationsView() {
               mb: 2,
             }}
           >
+            <Tabs
+              value={activeStatus}
+              onChange={(_, value: StatusPublicacao) => setActiveStatus(value)}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{
+                mb: 2,
+                minHeight: 38,
+                "& .MuiTab-root": {
+                  minHeight: 38,
+                  textTransform: "none",
+                  fontWeight: 700,
+                },
+              }}
+            >
+              {STATUS_TABS.map((status) => (
+                <Tab
+                  key={status.value}
+                  value={status.value}
+                  label={`${status.label} (${statusCounts[status.value] ?? 0})`}
+                />
+              ))}
+            </Tabs>
+
             <TextField
               fullWidth
               value={search}
@@ -156,7 +288,23 @@ export default function PublicationsView() {
             />
           </Paper>
 
-          {filteredPosts.length === 0 ? (
+          {loadingPosts ? (
+            <Paper
+              sx={{
+                p: { xs: 3, md: 4 },
+                borderRadius: "16px",
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "background.paper",
+                boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
+                textAlign: "center",
+              }}
+            >
+              <Typography color="text.secondary" fontSize="0.9rem">
+                Carregando publicações...
+              </Typography>
+            </Paper>
+          ) : filteredPosts.length === 0 ? (
             <Paper
               sx={{
                 p: { xs: 3, md: 4 },
@@ -177,14 +325,18 @@ export default function PublicationsView() {
               >
                 {search
                   ? "Nenhuma publicação encontrada"
-                  : "Você ainda não criou publicações"}
+                  : loadError
+                    ? "Não foi possível carregar publicações"
+                    : `Nenhuma publicação em ${STATUS_TABS.find((tab) => tab.value === activeStatus)?.label.toLowerCase()}.`}
               </Typography>
               <Typography color="text.secondary" fontSize="0.9rem" mt={0.5}>
-                {search
-                  ? "Tente buscar por outro título, categoria ou cliente."
-                  : canManagePublications
-                    ? "Crie sua primeira publicação para ela aparecer nesta lista."
-                    : "Quando houver publicações vinculadas ao seu usuário, elas aparecerão aqui."}
+                {loadError
+                  ? loadError
+                  : search
+                    ? "Tente buscar por outro título, categoria ou cliente."
+                    : canManagePublications
+                      ? "Crie ou altere o status de uma publicação para ela aparecer aqui."
+                      : "Quando houver publicações vinculadas ao seu usuário, elas aparecerão aqui."}
               </Typography>
 
               {canManagePublications && !search ? (
@@ -236,7 +388,8 @@ export default function PublicationsView() {
                       }}
                     />
                     <Typography color="text.secondary" fontSize="0.82rem">
-                      {post.data} • {post.readTime}
+                      {statusLabels[post.status ?? "publicado"]} • {post.data} •{" "}
+                      {post.readTime}
                     </Typography>
                   </Stack>
 
@@ -260,18 +413,60 @@ export default function PublicationsView() {
                     <Typography color="text.secondary" fontSize="0.84rem">
                       Por {post.autor}
                     </Typography>
-                    <Button
-                      component={Link}
-                      href={`/publicacoes/editar/${post.slug}`}
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        textTransform: "none",
-                        borderColor: "divider",
-                      }}
-                    >
-                      Editar
-                    </Button>
+                    <Stack direction="row" spacing={0.5}>
+                      <Tooltip title="Editar publicação">
+                        <IconButton
+                          component={Link}
+                          href={`/publicacoes/editar/${post.slug}`}
+                          aria-label="Editar publicação"
+                          size="small"
+                          sx={{
+                            border: "1px solid",
+                            borderColor: "divider",
+                          }}
+                        >
+                          <Icon icon="mdi:pencil-outline" width={19} />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Arquivar publicação">
+                        <span>
+                          <IconButton
+                            aria-label="Arquivar publicação"
+                            size="small"
+                            disabled={
+                              post.status === "arquivado" ||
+                              processingPostId === post.id
+                            }
+                            onClick={() => archivePost(post)}
+                            sx={{
+                              border: "1px solid",
+                              borderColor: "divider",
+                            }}
+                          >
+                            <Icon icon="mdi:archive-outline" width={19} />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+
+                      <Tooltip title="Deletar publicação">
+                        <span>
+                          <IconButton
+                            aria-label="Deletar publicação"
+                            size="small"
+                            disabled={processingPostId === post.id}
+                            onClick={() => setDeleteTarget(post)}
+                            sx={{
+                              border: "1px solid",
+                              borderColor: "divider",
+                              color: "error.main",
+                            }}
+                          >
+                            <Icon icon="mdi:trash-can-outline" width={19} />
+                          </IconButton>
+                        </span>
+                      </Tooltip>
+                    </Stack>
                   </Stack>
                 </Paper>
               ))}
@@ -279,6 +474,24 @@ export default function PublicationsView() {
           )}
         </Container>
       </Box>
+
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        title="Deletar publicação?"
+        description={
+          deleteTarget
+            ? `A publicação "${deleteTarget.titulo}" será deletada permanentemente. Essa ação não pode ser desfeita.`
+            : undefined
+        }
+        confirmText="Deletar publicação"
+        cancelText="Cancelar"
+        loading={Boolean(deleteTarget && processingPostId === deleteTarget.id)}
+        onConfirm={confirmDeletePost}
+        onClose={() => {
+          if (processingPostId) return;
+          setDeleteTarget(null);
+        }}
+      />
     </Box>
   );
 }

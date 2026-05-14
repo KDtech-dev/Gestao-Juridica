@@ -1,9 +1,4 @@
 import NewPublicationView from "@/views/NewPublication";
-import { publicacoes } from "@/data/publicacoes";
-
-export function generateStaticParams() {
-  return publicacoes.map((item) => ({ slug: item.slug }));
-}
 
 export default async function EditarPublicacaoPage({
   params,
