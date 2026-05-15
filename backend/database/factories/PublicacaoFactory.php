@@ -30,7 +30,7 @@ class PublicacaoFactory extends Factory
             'resumo'         => $this->faker->paragraph(2),
             'conteudo'       => $this->faker->paragraphs(5, true),
             'status'         => $status,
-            'publicado_em'   => $status === StatusPublicacao::Publicado
+            'publicado_em'   => $status === StatusPublicacao::PUBLICADO
                 ? $this->faker->dateTimeBetween('-1 year', 'now')
                 : null,
         ];
@@ -39,7 +39,7 @@ class PublicacaoFactory extends Factory
     public function publicado(): static
     {
         return $this->state(fn () => [
-            'status'        => StatusPublicacao::Publicado,
+            'status'        => StatusPublicacao::PUBLICADO,
             'publicado_em'  => now(),
         ]);
     }
@@ -47,7 +47,7 @@ class PublicacaoFactory extends Factory
     public function rascunho(): static
     {
         return $this->state(fn () => [
-            'status'        => StatusPublicacao::Rascunho,
+            'status'        => StatusPublicacao::RASCUNHO,
             'publicado_em'  => null,
         ]);
     }
@@ -55,7 +55,7 @@ class PublicacaoFactory extends Factory
     public function arquivado(): static
     {
         return $this->state(fn () => [
-            'status'        => StatusPublicacao::Arquivado,
+            'status'        => StatusPublicacao::ARQUIVADO,
             'publicado_em'  => null,
         ]);
     }
