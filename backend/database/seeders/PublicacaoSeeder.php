@@ -20,17 +20,17 @@ class PublicacaoSeeder extends Seeder
         }
 
         Publicacao::factory()
-            ->count(10)
+            ->count(15)
             ->publicado()
             ->create();
 
         Publicacao::factory()
-            ->count(5)
+            ->count(15)
             ->rascunho()
             ->create();
 
         Publicacao::factory()
-            ->count(3)
+            ->count(13)
             ->arquivado()
             ->create();
     }
