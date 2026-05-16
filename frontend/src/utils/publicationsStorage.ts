@@ -85,13 +85,15 @@ export function buildPublicacaoFromForm(
   const slug = existing?.slug ?? titleSlug;
   const now = new Date();
 
+  const bannerImage =
+    typeof form.bannerImage === "string" ? form.bannerImage : "";
+
   return {
     id: existing?.id ?? `local-${Date.now()}`,
     slug,
     titulo: form.titulo.trim(),
     resumo: stripHtml(form.resumo),
-    bannerImage:
-      form.bannerImage || existing?.bannerImage || DEFAULT_BANNER_IMAGE,
+    bannerImage: bannerImage || existing?.bannerImage || DEFAULT_BANNER_IMAGE,
     conteudoHtml: form.conteudo.includes("<")
       ? form.conteudo
       : form.conteudo

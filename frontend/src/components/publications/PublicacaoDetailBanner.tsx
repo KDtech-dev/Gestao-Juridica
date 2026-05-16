@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type PublicacaoDetailBannerProps = {
   publicacao: PublicacaoItem;
@@ -12,6 +13,8 @@ type PublicacaoDetailBannerProps = {
 export function PublicacaoDetailBanner({
   publicacao,
 }: PublicacaoDetailBannerProps) {
+  const t = useTranslations("public.publicationDetail");
+
   return (
     <Box
       component="section"
@@ -43,7 +46,7 @@ export function PublicacaoDetailBanner({
             },
           }}
         >
-          Voltar para publicações
+          {t("backToPublications")}
         </Button>
 
         <Box maxWidth={820}>
@@ -74,7 +77,9 @@ export function PublicacaoDetailBanner({
           >
             <Stack direction="row" spacing={0.75} alignItems="center">
               <Icon icon="mdi:account-outline" width={18} />
-              <Typography variant="body2">Por {publicacao.autor}</Typography>
+              <Typography variant="body2">
+                {t("byAuthor", { author: publicacao.autor })}
+              </Typography>
             </Stack>
             <Stack direction="row" spacing={0.75} alignItems="center">
               <Icon icon="mdi:calendar-month-outline" width={18} />

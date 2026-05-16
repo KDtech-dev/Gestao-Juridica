@@ -3,6 +3,7 @@
 import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type PublicacaoAnexosCardProps = {
   publicacao: PublicacaoItem;
@@ -11,6 +12,8 @@ type PublicacaoAnexosCardProps = {
 export function PublicacaoAnexosCard({
   publicacao,
 }: PublicacaoAnexosCardProps) {
+  const t = useTranslations("public.publicationDetail");
+
   return (
     <Paper
       elevation={3}
@@ -22,14 +25,12 @@ export function PublicacaoAnexosCard({
       <Stack direction="row" alignItems="center" spacing={1} mb={2}>
         <Icon icon="mdi:paperclip" width={22} />
         <Typography variant="h6" fontWeight={800}>
-          Anexos
+          {t("attachments")}
         </Typography>
       </Stack>
 
       {publicacao.anexos.length === 0 ? (
-        <Typography color="text.secondary">
-          Esta publicação não possui anexos disponíveis.
-        </Typography>
+        <Typography color="text.secondary">{t("noAttachments")}</Typography>
       ) : (
         <Stack spacing={1.5}>
           {publicacao.anexos.map((anexo, index) => (
@@ -59,7 +60,7 @@ export function PublicacaoAnexosCard({
                       {anexo.nome}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Documento da publicação
+                      {t("publicationDocument")}
                     </Typography>
                   </Box>
                 </Stack>
@@ -73,7 +74,7 @@ export function PublicacaoAnexosCard({
                   startIcon={<Icon icon="mdi:download" />}
                   sx={{ textTransform: "none", borderColor: "divider" }}
                 >
-                  Download
+                  {t("download")}
                 </Button>
               </Stack>
               {index < publicacao.anexos.length - 1 && (

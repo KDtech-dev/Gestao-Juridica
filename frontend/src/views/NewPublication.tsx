@@ -37,7 +37,11 @@ import {
 } from "@/api/publicacoes/apiPublicacoesClient";
 import { listarCategoriasClient } from "@/api/categorias/apiCategoriasClient";
 import type { CategoriaOption } from "@/api/categorias/types";
-import type { PublicacaoItem, PublicacaoPayload } from "@/api/publicacoes/types";
+import type {
+  PublicacaoItem,
+  PublicacaoPayload,
+} from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
@@ -54,6 +58,15 @@ const initialForm: PublicacaoFormData = {
 function getFormSnapshot(form: PublicacaoFormData) {
   return JSON.stringify({
     ...form,
+    bannerImage:
+      form.bannerImage instanceof File
+        ? {
+            name: form.bannerImage.name,
+            size: form.bannerImage.size,
+            type: form.bannerImage.type,
+            lastModified: form.bannerImage.lastModified,
+          }
+        : form.bannerImage,
     anexos: form.anexos.map((file) => ({
       name: file.name,
       size: file.size,
@@ -75,7 +88,10 @@ function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
   return {
     titulo: form.titulo.trim(),
     categoria_id: form.categoriaId || null,
-    imagem_caminho: form.bannerImage.trim() || null,
+    imagem_caminho:
+      typeof form.bannerImage === "string"
+        ? form.bannerImage.trim() || null
+        : null,
     autor: form.autor.trim(),
     resumo: form.resumo.trim() || null,
     conteudo: form.conteudo.trim() || null,
@@ -86,7 +102,9 @@ function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
 function buildPublicacaoRequestBody(form: PublicacaoFormData) {
   const payload = buildPublicacaoPayload(form);
 
-  if (form.anexos.length === 0) return payload;
+  if (form.anexos.length === 0 && !(form.bannerImage instanceof File)) {
+    return payload;
+  }
 
   const body = new FormData();
 
@@ -100,6 +118,10 @@ function buildPublicacaoRequestBody(form: PublicacaoFormData) {
     body.append("anexos[]", file);
   });
 
+  if (form.bannerImage instanceof File) {
+    body.append("imagem", form.bannerImage);
+  }
+
   return body;
 }
 
@@ -110,15 +132,17 @@ type Props = {
 export default function NewPublicationView({ editSlug }: Props) {
   const { user } = useAuth();
   const router = useRouter();
-  const steps = ["Dados da Publicação", "Revisão"];
+  const t = useTranslations("internal.publicationForm");
+  const categoriesErrorMessage = t("errors.categories");
+  const steps = [t("steps.data"), t("steps.review")];
   const [fetchedEditItem, setFetchedEditItem] = useState<
     PublicacaoItem | undefined
   >();
   const localEditItem = useMemo(() => {
     if (!editSlug) return undefined;
 
-    return (
-      getStoredPublicacoes().find((item) => item.slug === editSlug)
+    return getStoredPublicacoes().find(
+      (item) => item.slug === editSlug || item.id === editSlug,
     );
   }, [editSlug]);
   const editItem = fetchedEditItem ?? localEditItem;
@@ -204,9 +228,7 @@ export default function NewPublicationView({ editSlug }: Props) {
       .catch((error) => {
         if (active) {
           toast.error(
-            error instanceof Error
-              ? error.message
-              : "Não foi possível carregar as categorias.",
+            error instanceof Error ? error.message : categoriesErrorMessage,
           );
         }
       })
@@ -219,7 +241,7 @@ export default function NewPublicationView({ editSlug }: Props) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [categoriesErrorMessage]);
 
   useEffect(() => {
     if (!form.categoria || form.categoriaId || categorias.length === 0) return;
@@ -331,12 +353,14 @@ export default function NewPublicationView({ editSlug }: Props) {
       const key = issue.path[0];
 
       if (typeof key === "string" && key !== "anexos") {
-        nextErrors[key as keyof PublicationErrors] = issue.message;
+        nextErrors[key as keyof PublicationErrors] = t(
+          `validation.${key as keyof PublicationErrors}`,
+        );
       }
     }
 
     setErrors(nextErrors);
-    toast.error("Revise os campos destacados.");
+    toast.error(t("validation.reviewFields"));
 
     return false;
   };
@@ -381,14 +405,12 @@ export default function NewPublicationView({ editSlug }: Props) {
 
       toast.success(
         form.status === "publicado"
-          ? "Publicação salva e disponível em posts."
-          : "Publicação salva.",
+          ? t("toast.savedPublished")
+          : t("toast.saved"),
       );
       router.push("/publicacoes?modo=interna");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Erro ao salvar publicação.",
-      );
+      toast.error(error instanceof Error ? error.message : t("errors.save"));
     } finally {
       setSubmitting(false);
     }
@@ -397,8 +419,8 @@ export default function NewPublicationView({ editSlug }: Props) {
   const saveDraft = async () => {
     const draftForm: PublicacaoFormData = {
       ...form,
-      titulo: form.titulo.trim() || "Rascunho sem título",
-      autor: form.autor.trim() || user?.name || "Autor não informado",
+      titulo: form.titulo.trim() || t("draft.untitled"),
+      autor: form.autor.trim() || user?.name || t("draft.unknownAuthor"),
       status: "rascunho",
     };
     const payload = buildPublicacaoRequestBody(draftForm);
@@ -437,13 +459,9 @@ export default function NewPublicationView({ editSlug }: Props) {
 
       try {
         await saveDraft();
-        toast.success("Publicação enviada para rascunhos.");
+        toast.success(t("toast.draftSent"));
       } catch (error) {
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Não foi possível enviar a publicação para rascunhos.",
-        );
+        toast.error(error instanceof Error ? error.message : t("errors.draft"));
         setSavingDraftOnLeave(false);
         return;
       }
@@ -477,12 +495,10 @@ export default function NewPublicationView({ editSlug }: Props) {
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
           <Box mb={2.2}>
             <Typography variant="h4" fontWeight={700} color="text.primary">
-              {isEditMode ? "Editar Publicação" : "Nova Publicação"}
+              {isEditMode ? t("title.edit") : t("title.new")}
             </Typography>
             <Typography color="text.secondary" fontSize="0.94rem">
-              {isEditMode
-                ? "Atualize os dados da publicação em etapas."
-                : "Preencha os dados da publicação em etapas."}
+              {isEditMode ? t("subtitle.edit") : t("subtitle.new")}
             </Typography>
           </Box>
 
@@ -531,7 +547,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                     borderColor: "divider",
                   }}
                 >
-                  Cancelar
+                  {t("actions.cancel")}
                 </Button>
 
                 <Button
@@ -543,7 +559,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                     borderColor: "divider",
                   }}
                 >
-                  Voltar
+                  {t("actions.back")}
                 </Button>
               </Stack>
 
@@ -553,7 +569,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                   onClick={nextStep}
                   sx={{ textTransform: "none" }}
                 >
-                  Próximo
+                  {t("actions.next")}
                 </Button>
               ) : (
                 <Button
@@ -564,10 +580,10 @@ export default function NewPublicationView({ editSlug }: Props) {
                   sx={{ textTransform: "none" }}
                 >
                   {submitting
-                    ? "Salvando..."
+                    ? t("actions.saving")
                     : isEditMode
-                      ? "Salvar Alterações"
-                      : "Salvar Publicação"}
+                      ? t("actions.saveChanges")
+                      : t("actions.savePublication")}
                 </Button>
               )}
             </Stack>
@@ -577,10 +593,10 @@ export default function NewPublicationView({ editSlug }: Props) {
 
       <ConfirmDialog
         open={leaveDialogOpen}
-        title="Enviar para rascunhos?"
-        description="Ao sair desta tela, a publicação será salva como rascunho para você continuar depois."
-        confirmText="Enviar para rascunhos"
-        cancelText="Continuar editando"
+        title={t("leaveDialog.title")}
+        description={t("leaveDialog.description")}
+        confirmText={t("leaveDialog.confirm")}
+        cancelText={t("leaveDialog.cancel")}
         loading={savingDraftOnLeave}
         onConfirm={confirmLeave}
         onClose={() => {

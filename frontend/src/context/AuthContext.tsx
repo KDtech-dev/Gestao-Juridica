@@ -18,6 +18,7 @@ export type AuthUser = {
   name: string;
   email: string;
   roles: string[];
+  idioma?: "pt" | "en" | "es" | null;
 };
 
 type AuthContextValue = {
@@ -50,7 +51,18 @@ function safeParseUser(raw: string | null): AuthUser | null {
       typeof parsed.email !== "string"
     )
       return null;
-    return { id: parsed.id, name: parsed.name, email: parsed.email, roles };
+    const idioma =
+      parsed.idioma === "pt" || parsed.idioma === "en" || parsed.idioma === "es"
+        ? parsed.idioma
+        : null;
+
+    return {
+      id: parsed.id,
+      name: parsed.name,
+      email: parsed.email,
+      roles,
+      idioma,
+    };
   } catch {
     return null;
   }

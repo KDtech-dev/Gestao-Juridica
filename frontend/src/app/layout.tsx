@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import AuthGate from "@/components/auth/AuthGate";
 import { LanguageProvider } from "@/context/LanguageContext";
 import ToastProvider from "@/components/ToastProvider";
+import { PublicI18nProvider } from "@/context/PublicI18nProvider";
 
 export const metadata: Metadata = {
   title: "Advocacia Gestão - Sistema de Gestão Jurídica",
@@ -25,14 +26,16 @@ export default function RootLayout({
         <ThemeRegistry>
           <LanguageProvider>
             <AuthProvider>
-              <NotificationsProvider>
-                <Box display="flex" flexDirection="column" minHeight="100vh">
-                  <Box component="main" flex={1}>
-                    <AuthGate>{children}</AuthGate>
+              <PublicI18nProvider>
+                <NotificationsProvider>
+                  <Box display="flex" flexDirection="column" minHeight="100vh">
+                    <Box component="main" flex={1}>
+                      <AuthGate>{children}</AuthGate>
+                    </Box>
                   </Box>
-                </Box>
-                <ToastProvider />
-              </NotificationsProvider>
+                  <ToastProvider />
+                </NotificationsProvider>
+              </PublicI18nProvider>
             </AuthProvider>
           </LanguageProvider>
         </ThemeRegistry>

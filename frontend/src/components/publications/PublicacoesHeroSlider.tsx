@@ -13,6 +13,7 @@ import { Icon } from "@iconify/react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type PublicacoesHeroSliderProps = {
   publicacoes: PublicacaoItem[];
@@ -23,6 +24,7 @@ export function PublicacoesHeroSlider({
   publicacoes,
   searchCard,
 }: PublicacoesHeroSliderProps) {
+  const t = useTranslations("public.publications");
   const slides = useMemo(() => publicacoes.slice(0, 5), [publicacoes]);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -155,7 +157,7 @@ export function PublicacoesHeroSlider({
               size="large"
               sx={{ textTransform: "none", fontWeight: 800 }}
             >
-              Ler publicação
+              {t("readPublication")}
             </Button>
           </Stack>
         </Box>
@@ -187,7 +189,7 @@ export function PublicacoesHeroSlider({
           >
             <IconButton
               onClick={goToPrevious}
-              aria-label="Publicação anterior"
+              aria-label={t("previousPublication")}
               sx={{
                 color: "#fff",
                 border: "1px solid rgba(255,255,255,0.42)",
@@ -199,7 +201,7 @@ export function PublicacoesHeroSlider({
             </IconButton>
             <IconButton
               onClick={goToNext}
-              aria-label="Próxima publicação"
+              aria-label={t("nextPublication")}
               sx={{
                 color: "#fff",
                 border: "1px solid rgba(255,255,255,0.42)",
@@ -225,7 +227,9 @@ export function PublicacoesHeroSlider({
               <Box
                 component="button"
                 key={publicacao.id}
-                aria-label={`Ir para ${publicacao.titulo}`}
+                aria-label={t("goToPublication", {
+                  title: publicacao.titulo,
+                })}
                 onClick={() => setActiveIndex(index)}
                 sx={{
                   width: index === activeIndex ? 34 : 10,

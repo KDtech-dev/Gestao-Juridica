@@ -31,11 +31,15 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
     public function create(array $data)
     {
         $anexos = $data['anexos'] ?? [];
+        $imagem = $data['imagem'] ?? null;
         unset($data['anexos']);
+        unset($data['imagem']);
 
         $data['user_id'] = Auth::id();
 
         $this->handlePublishedAt($data);
+
+        $this->storeImagem($data, $imagem);
 
         $publicacao = Publicacao::create($data);
 
@@ -51,7 +55,9 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
     public function update(string $id, array $data)
     {
         $anexos = $data['anexos'] ?? [];
+        $imagem = $data['imagem'] ?? null;
         unset($data['anexos']);
+        unset($data['imagem']);
 
         $publicacao = Publicacao::query()
             ->where('user_id', Auth::id())
@@ -59,6 +65,8 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
             ->firstOrFail();
 
         $this->handlePublishedAt($data, $publicacao);
+
+        $this->storeImagem($data, $imagem);
 
         $publicacao->update($data);
 
@@ -123,5 +131,16 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
                 'url' => Storage::disk('public')->url($path),
             ]);
         }
+    }
+
+    private function storeImagem(array &$data, mixed $imagem): void
+    {
+        if (!$imagem) {
+            return;
+        }
+
+        $path = $imagem->store('publicacoes/banners', 'public');
+
+        $data['imagem_caminho'] = Storage::disk('public')->url($path);
     }
 }

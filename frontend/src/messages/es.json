@@ -19,6 +19,150 @@
     "welcome": "Bienvenido al sistema"
   },
 
+  "internal": {
+    "publications": {
+      "title": "Publicaciones",
+      "subtitle": "Gestiona las publicaciones creadas por ti.",
+      "add": "Añadir publicación",
+      "searchPlaceholder": "Buscar en tus publicaciones...",
+      "loading": "Cargando publicaciones...",
+      "byAuthor": "Por {author}",
+      "tabs": {
+        "publicado": "Publicadas",
+        "rascunho": "Borradores",
+        "arquivado": "Archivadas"
+      },
+      "status": {
+        "publicado": "Publicado",
+        "rascunho": "Borrador",
+        "arquivado": "Archivado"
+      },
+      "empty": {
+        "searchTitle": "No se encontraron publicaciones",
+        "loadTitle": "No fue posible cargar publicaciones",
+        "statusTitle": "No hay publicaciones en {status}.",
+        "searchSubtitle": "Intenta buscar por otro título, categoría o cliente.",
+        "manageSubtitle": "Crea o cambia el estado de una publicación para que aparezca aquí.",
+        "userSubtitle": "Cuando haya publicaciones vinculadas a tu usuario, aparecerán aquí."
+      },
+      "actions": {
+        "edit": "Editar publicación",
+        "archive": "Archivar publicación",
+        "delete": "Eliminar publicación"
+      },
+      "toast": {
+        "archived": "Publicación archivada.",
+        "deleted": "Publicación eliminada."
+      },
+      "errors": {
+        "load": "No fue posible cargar las publicaciones.",
+        "archive": "No fue posible archivar la publicación.",
+        "delete": "No fue posible eliminar la publicación."
+      },
+      "deleteDialog": {
+        "title": "¿Eliminar publicación?",
+        "description": "La publicación \"{title}\" se eliminará permanentemente. Esta acción no se puede deshacer.",
+        "confirm": "Eliminar publicación",
+        "cancel": "Cancelar"
+      }
+    },
+    "publicationForm": {
+      "title": {
+        "new": "Nueva publicación",
+        "edit": "Editar publicación"
+      },
+      "subtitle": {
+        "new": "Completa los datos de la publicación por etapas.",
+        "edit": "Actualiza los datos de la publicación por etapas."
+      },
+      "steps": {
+        "data": "Datos de la publicación",
+        "review": "Revisión"
+      },
+      "actions": {
+        "cancel": "Cancelar",
+        "back": "Volver",
+        "next": "Siguiente",
+        "saving": "Guardando...",
+        "saveChanges": "Guardar cambios",
+        "savePublication": "Guardar publicación"
+      },
+      "fields": {
+        "title": "Título",
+        "category": "Categoría",
+        "categoriesLoading": "Cargando categorías...",
+        "categoryHelper": "Categoría vinculada al registro del backend.",
+        "bannerImage": "Imagen del banner",
+        "bannerImageHelper": "Sube una imagen para aparecer en el banner y en los posts.",
+        "author": "Nombre del autor",
+        "statusHelper": "Solo las publicaciones con estado publicado aparecen en posts.",
+        "summary": "Resumen",
+        "summaryCounter": "{count}/2000 caracteres",
+        "content": "Texto de la publicación",
+        "attachment": "Adjunto de la publicación",
+        "attachmentHelper": "PDF, DOC, DOCX, JPG o PNG hasta 10 MB.",
+        "statusOptions": {
+          "rascunho": "Borrador",
+          "publicado": "Publicado",
+          "arquivado": "Archivado"
+        }
+      },
+      "review": {
+        "title": "Título",
+        "category": "Categoría",
+        "bannerImage": "Imagen del banner",
+        "author": "Autor",
+        "status": "Estado",
+        "summary": "Resumen",
+        "content": "Texto de la publicación",
+        "attachments": "Adjuntos",
+        "noAttachments": "Sin adjuntos",
+        "statusOptions": {
+          "rascunho": "Borrador",
+          "publicado": "Publicado",
+          "arquivado": "Archivado"
+        }
+      },
+      "imageInput": {
+        "title": "Suelta los archivos aquí.",
+        "prefix": "Suelta los archivos aquí o haz clic en",
+        "browse": "buscar",
+        "suffix": "para elegir archivos."
+      },
+      "validation": {
+        "titulo": "Informa el título.",
+        "categoria": "Informa la categoría.",
+        "categoriaId": "Selecciona una categoría.",
+        "bannerImage": "Informa la imagen del banner.",
+        "autor": "Informa el nombre del autor.",
+        "resumo": "Informa el resumen.",
+        "conteudo": "Informa el texto de la publicación.",
+        "status": "Informa un estado válido.",
+        "reviewFields": "Revisa los campos destacados."
+      },
+      "toast": {
+        "savedPublished": "Publicación guardada y disponible en posts.",
+        "saved": "Publicación guardada.",
+        "draftSent": "Publicación enviada a borradores."
+      },
+      "errors": {
+        "categories": "No fue posible cargar las categorías.",
+        "save": "Error al guardar la publicación.",
+        "draft": "No fue posible enviar la publicación a borradores."
+      },
+      "draft": {
+        "untitled": "Borrador sin título",
+        "unknownAuthor": "Autor no informado"
+      },
+      "leaveDialog": {
+        "title": "¿Enviar a borradores?",
+        "description": "Al salir de esta pantalla, la publicación se guardará como borrador para que puedas continuar después.",
+        "confirm": "Enviar a borradores",
+        "cancel": "Seguir editando"
+      }
+    }
+  },
+
   "clients": {
     "title": "Clientes",
     "newClient": "Nuevo cliente",
@@ -39,6 +183,45 @@
       "logout": "Salir",
       "perfil": "Mi perfil",
       "sair": "Salir"
+    }
+  },
+
+  "public": {
+    "header": {
+      "brand": "Central jurídica",
+      "subtitle": "Abogacía & Consultoría",
+      "publications": "Publicaciones",
+      "team": "Equipo",
+      "access": "Acceder",
+      "login": "Login"
+    },
+    "publications": {
+      "sectionTitle": "Publicaciones",
+      "sectionSubtitle": "Noticias jurídicas, análisis práctico y contenidos del despacho",
+      "searchTitle": "Buscar publicaciones",
+      "searchSubtitle": "Encuentra contenidos por título o categoría.",
+      "titlePlaceholder": "Título de la publicación",
+      "categoryPlaceholder": "Categoría",
+      "allCategories": "Todas las categorías",
+      "searchAction": "Buscar",
+      "clearFilters": "Limpiar filtros",
+      "emptyTitle": "No se encontraron publicaciones",
+      "emptySubtitle": "Intenta buscar por otro título o categoría.",
+      "loading": "Cargando publicaciones...",
+      "readPublication": "Leer publicación",
+      "seeMore": "Ver más publicaciones",
+      "previousPublication": "Publicación anterior",
+      "nextPublication": "Siguiente publicación",
+      "goToPublication": "Ir a {title}"
+    },
+    "publicationDetail": {
+      "backToPublications": "Volver a publicaciones",
+      "byAuthor": "Por {author}",
+      "summary": "Resumen",
+      "attachments": "Adjuntos",
+      "noAttachments": "Esta publicación no tiene adjuntos disponibles.",
+      "publicationDocument": "Documento de la publicación",
+      "download": "Descargar"
     }
   },
 

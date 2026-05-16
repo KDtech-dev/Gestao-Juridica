@@ -19,6 +19,150 @@
     "welcome": "Welcome to the system"
   },
 
+  "internal": {
+    "publications": {
+      "title": "Publications",
+      "subtitle": "Manage the publications created by you.",
+      "add": "Add publication",
+      "searchPlaceholder": "Search your publications...",
+      "loading": "Loading publications...",
+      "byAuthor": "By {author}",
+      "tabs": {
+        "publicado": "Published",
+        "rascunho": "Drafts",
+        "arquivado": "Archived"
+      },
+      "status": {
+        "publicado": "Published",
+        "rascunho": "Draft",
+        "arquivado": "Archived"
+      },
+      "empty": {
+        "searchTitle": "No publications found",
+        "loadTitle": "Could not load publications",
+        "statusTitle": "No publications in {status}.",
+        "searchSubtitle": "Try searching by another title, category, or client.",
+        "manageSubtitle": "Create or change a publication status for it to appear here.",
+        "userSubtitle": "When there are publications linked to your user, they will appear here."
+      },
+      "actions": {
+        "edit": "Edit publication",
+        "archive": "Archive publication",
+        "delete": "Delete publication"
+      },
+      "toast": {
+        "archived": "Publication archived.",
+        "deleted": "Publication deleted."
+      },
+      "errors": {
+        "load": "Could not load publications.",
+        "archive": "Could not archive the publication.",
+        "delete": "Could not delete the publication."
+      },
+      "deleteDialog": {
+        "title": "Delete publication?",
+        "description": "The publication \"{title}\" will be permanently deleted. This action cannot be undone.",
+        "confirm": "Delete publication",
+        "cancel": "Cancel"
+      }
+    },
+    "publicationForm": {
+      "title": {
+        "new": "New Publication",
+        "edit": "Edit Publication"
+      },
+      "subtitle": {
+        "new": "Fill in the publication data step by step.",
+        "edit": "Update the publication data step by step."
+      },
+      "steps": {
+        "data": "Publication Data",
+        "review": "Review"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "back": "Back",
+        "next": "Next",
+        "saving": "Saving...",
+        "saveChanges": "Save Changes",
+        "savePublication": "Save Publication"
+      },
+      "fields": {
+        "title": "Title",
+        "category": "Category",
+        "categoriesLoading": "Loading categories...",
+        "categoryHelper": "Category linked to the backend registry.",
+        "bannerImage": "Banner image",
+        "bannerImageHelper": "Upload an image to appear in the banner and posts.",
+        "author": "Author name",
+        "statusHelper": "Only publications with published status appear in posts.",
+        "summary": "Summary",
+        "summaryCounter": "{count}/2000 characters",
+        "content": "Publication text",
+        "attachment": "Publication attachment",
+        "attachmentHelper": "PDF, DOC, DOCX, JPG, or PNG up to 10 MB.",
+        "statusOptions": {
+          "rascunho": "Draft",
+          "publicado": "Published",
+          "arquivado": "Archived"
+        }
+      },
+      "review": {
+        "title": "Title",
+        "category": "Category",
+        "bannerImage": "Banner image",
+        "author": "Author",
+        "status": "Status",
+        "summary": "Summary",
+        "content": "Publication text",
+        "attachments": "Attachments",
+        "noAttachments": "No attachments",
+        "statusOptions": {
+          "rascunho": "Draft",
+          "publicado": "Published",
+          "arquivado": "Archived"
+        }
+      },
+      "imageInput": {
+        "title": "Drop files here.",
+        "prefix": "Drop files here or click",
+        "browse": "browse",
+        "suffix": "to choose files."
+      },
+      "validation": {
+        "titulo": "Enter the title.",
+        "categoria": "Enter the category.",
+        "categoriaId": "Select a category.",
+        "bannerImage": "Add the banner image.",
+        "autor": "Enter the author name.",
+        "resumo": "Enter the summary.",
+        "conteudo": "Enter the publication text.",
+        "status": "Enter a valid status.",
+        "reviewFields": "Review the highlighted fields."
+      },
+      "toast": {
+        "savedPublished": "Publication saved and available in posts.",
+        "saved": "Publication saved.",
+        "draftSent": "Publication sent to drafts."
+      },
+      "errors": {
+        "categories": "Could not load categories.",
+        "save": "Error saving publication.",
+        "draft": "Could not send the publication to drafts."
+      },
+      "draft": {
+        "untitled": "Untitled draft",
+        "unknownAuthor": "Unknown author"
+      },
+      "leaveDialog": {
+        "title": "Send to drafts?",
+        "description": "When leaving this screen, the publication will be saved as a draft so you can continue later.",
+        "confirm": "Send to drafts",
+        "cancel": "Keep editing"
+      }
+    }
+  },
+
   "clients": {
     "title": "Clients",
     "newClient": "New client",
@@ -39,6 +183,45 @@
       "logout": "Logout",
       "perfil": "My Profile",
       "sair": "Logout"
+    }
+  },
+
+  "public": {
+    "header": {
+      "brand": "Legal hub",
+      "subtitle": "Law Firm & Consulting",
+      "publications": "Publications",
+      "team": "Team",
+      "access": "Open",
+      "login": "Login"
+    },
+    "publications": {
+      "sectionTitle": "Publications",
+      "sectionSubtitle": "Legal news, practical analysis, and firm insights",
+      "searchTitle": "Find Publications",
+      "searchSubtitle": "Find content by title or category.",
+      "titlePlaceholder": "Publication title",
+      "categoryPlaceholder": "Category",
+      "allCategories": "All categories",
+      "searchAction": "Search",
+      "clearFilters": "Clear filters",
+      "emptyTitle": "No publications found",
+      "emptySubtitle": "Try searching by another title or category.",
+      "loading": "Loading publications...",
+      "readPublication": "Read publication",
+      "seeMore": "See more publications",
+      "previousPublication": "Previous publication",
+      "nextPublication": "Next publication",
+      "goToPublication": "Go to {title}"
+    },
+    "publicationDetail": {
+      "backToPublications": "Back to publications",
+      "byAuthor": "By {author}",
+      "summary": "Summary",
+      "attachments": "Attachments",
+      "noAttachments": "This publication has no attachments available.",
+      "publicationDocument": "Publication document",
+      "download": "Download"
     }
   },
 

@@ -1,14 +1,17 @@
 import { z } from "zod";
 
+const fileSchema = z.custom<File>(
+  (value) => typeof File !== "undefined" && value instanceof File,
+);
+
 export const publicationSchema = z.object({
   titulo: z.string().trim().min(1, "Informe o título."),
   categoria: z.string().trim().min(1, "Informe a categoria."),
   categoriaId: z.string().trim().min(1, "Selecione uma categoria."),
-  bannerImage: z
-    .string()
-    .trim()
-    .min(1, "Informe a URL da imagem do banner.")
-    .url("Informe uma URL válida para a imagem do banner."),
+  bannerImage: z.union([
+    fileSchema,
+    z.string().trim().min(1, "Informe a imagem do banner."),
+  ]),
   autor: z.string().trim().min(1, "Informe o nome do autor."),
   resumo: z
     .string()

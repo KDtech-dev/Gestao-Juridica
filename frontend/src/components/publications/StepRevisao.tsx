@@ -2,6 +2,8 @@
 
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import { PublicacaoFormData } from "./types";
+import { useTranslations } from "next-intl";
+import { useEffect, useMemo } from "react";
 
 type Props = {
   data: PublicacaoFormData;
@@ -44,13 +46,21 @@ function ReviewHtml({ label, value }: { label: string; value: string }) {
   );
 }
 
-const statusLabels: Record<PublicacaoFormData["status"], string> = {
-  rascunho: "Rascunho",
-  publicado: "Publicado",
-  arquivado: "Arquivado",
-};
+export function StepRevisao({ data }: Props) {
+  const t = useTranslations("internal.publicationForm.review");
+  const imagePreview = useMemo(() => {
+    if (!data.bannerImage) return "";
+    if (typeof data.bannerImage === "string") return data.bannerImage;
 
-export function StepRevisao({ data, isEn = false }: Props) {
+    return URL.createObjectURL(data.bannerImage);
+  }, [data.bannerImage]);
+
+  useEffect(() => {
+    if (!imagePreview || typeof data.bannerImage === "string") return;
+
+    return () => URL.revokeObjectURL(imagePreview);
+  }, [data.bannerImage, imagePreview]);
+
   return (
     <Stack spacing={1.4}>
       <Paper
@@ -63,19 +73,20 @@ export function StepRevisao({ data, isEn = false }: Props) {
         }}
       >
         <Stack spacing={1.1}>
-          <ReviewItem label={isEn ? "Title" : "Título"} value={data.titulo} />
+          <ReviewItem label={t("title")} value={data.titulo} />
+          <ReviewItem label={t("category")} value={data.categoria} />
           <ReviewItem
-            label={isEn ? "Category" : "Categoria"}
-            value={data.categoria}
+            label={t("bannerImage")}
+            value={
+              data.bannerImage instanceof File
+                ? data.bannerImage.name
+                : data.bannerImage
+            }
           />
-          <ReviewItem
-            label={isEn ? "Banner image" : "Imagem do banner"}
-            value={data.bannerImage}
-          />
-          {data.bannerImage ? (
+          {imagePreview ? (
             <Box
               component="img"
-              src={data.bannerImage}
+              src={imagePreview}
               alt={data.titulo}
               sx={{
                 width: "100%",
@@ -87,8 +98,11 @@ export function StepRevisao({ data, isEn = false }: Props) {
               }}
             />
           ) : null}
-          <ReviewItem label={isEn ? "Author" : "Autor"} value={data.autor} />
-          <ReviewItem label="Status" value={statusLabels[data.status]} />
+          <ReviewItem label={t("author")} value={data.autor} />
+          <ReviewItem
+            label={t("status")}
+            value={t(`statusOptions.${data.status}`)}
+          />
         </Stack>
       </Paper>
 
@@ -102,19 +116,14 @@ export function StepRevisao({ data, isEn = false }: Props) {
         }}
       >
         <Stack spacing={1.1}>
-          <ReviewHtml label={isEn ? "Summary" : "Resumo"} value={data.resumo} />
-          <ReviewHtml
-            label={isEn ? "Publication text" : "Texto da publicação"}
-            value={data.conteudo}
-          />
+          <ReviewHtml label={t("summary")} value={data.resumo} />
+          <ReviewHtml label={t("content")} value={data.conteudo} />
           <ReviewItem
-            label={isEn ? "Attachments" : "Anexos"}
+            label={t("attachments")}
             value={
               data.anexos.length > 0
                 ? data.anexos.map((a) => a.name).join(", ")
-                : isEn
-                  ? "No attachments"
-                  : "Nenhum anexo"
+                : t("noAttachments")
             }
           />
         </Stack>

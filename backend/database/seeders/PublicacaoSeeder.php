@@ -16,7 +16,7 @@ class PublicacaoSeeder extends Seeder
         }
 
         if (Categoria::count() === 0) {
-            Categoria::factory()->count(5)->create();
+            $this->call(CategoriaSeeder::class);
         }
 
         Publicacao::factory()

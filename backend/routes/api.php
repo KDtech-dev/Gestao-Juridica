@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\CompromissoController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PublicacaoController;
+use App\Http\Controllers\Api\CategoriaController;
 
 
 Route::prefix('auth')->group(function () {
@@ -47,6 +48,11 @@ Route::prefix('posts')->group(function () {
         'show'
     ]);
 });
+
+Route::get('categorias', [
+    CategoriaController::class,
+    'index'
+]);
 
 Route::middleware('auth:sanctum')->group(function () {
 

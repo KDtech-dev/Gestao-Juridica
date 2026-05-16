@@ -4,7 +4,7 @@ export type PublicacaoFormData = {
   titulo: string;
   categoria: string;
   categoriaId: string;
-  bannerImage: string;
+  bannerImage: File | string;
   autor: string;
   resumo: string;
   conteudo: string;

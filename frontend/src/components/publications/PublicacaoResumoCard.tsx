@@ -2,6 +2,7 @@
 
 import { Paper, Typography } from "@mui/material";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type PublicacaoResumoCardProps = {
   publicacao: PublicacaoItem;
@@ -10,6 +11,8 @@ type PublicacaoResumoCardProps = {
 export function PublicacaoResumoCard({
   publicacao,
 }: PublicacaoResumoCardProps) {
+  const t = useTranslations("public.publicationDetail");
+
   return (
     <Paper
       elevation={3}
@@ -19,7 +22,7 @@ export function PublicacaoResumoCard({
       }}
     >
       <Typography variant="h6" fontWeight={800} mb={1.5}>
-        Resumo
+        {t("summary")}
       </Typography>
       <Typography color="text.secondary" lineHeight={1.8}>
         {publicacao.resumo}

@@ -17,6 +17,7 @@ import { useMemo, useState } from "react";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { PublicacoesHeroSlider } from "@/components/publications/PublicacoesHeroSlider";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 function normalizeSearch(value: string) {
   return value
@@ -31,6 +32,7 @@ type PublicacoesViewProps = {
 };
 
 const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
+  const t = useTranslations("public.publications");
   const [titleFilter, setTitleFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [appliedFilters, setAppliedFilters] = useState({
@@ -93,20 +95,20 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
         fontWeight={800}
         sx={{ color: "primary.main", fontSize: "1.2rem", mb: 0.4 }}
       >
-        Localizar Publicações
+        {t("searchTitle")}
       </Typography>
       <Typography
         textAlign="center"
         sx={{ color: "text.secondary", fontSize: "0.78rem", mb: 1.5 }}
       >
-        Encontre conteúdos por título ou categoria.
+        {t("searchSubtitle")}
       </Typography>
 
       <Stack spacing={1}>
         <TextField
           value={titleFilter}
           onChange={(event) => setTitleFilter(event.target.value)}
-          placeholder="Título da Publicação"
+          placeholder={t("titlePlaceholder")}
           fullWidth
           size="small"
           sx={{
@@ -139,7 +141,7 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
           SelectProps={{
             displayEmpty: true,
             renderValue: (selected) =>
-              selected ? String(selected) : "Categoria",
+              selected ? String(selected) : t("categoryPlaceholder"),
           }}
           sx={{
             "& .MuiOutlinedInput-root": {
@@ -157,7 +159,7 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
             },
           }}
         >
-          <MenuItem value="">Todas as categorias</MenuItem>
+          <MenuItem value="">{t("allCategories")}</MenuItem>
           {categorias.map((categoria) => (
             <MenuItem key={categoria} value={categoria}>
               {categoria}
@@ -178,7 +180,7 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
               minHeight: 32,
             }}
           >
-            Localizar
+            {t("searchAction")}
           </Button>
           <Button
             type="button"
@@ -199,7 +201,7 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
               },
             }}
           >
-            Limpar filtros
+            {t("clearFilters")}
           </Button>
         </Stack>
       </Stack>
@@ -243,10 +245,10 @@ const PublicacoesView = ({ publicacoes }: PublicacoesViewProps) => {
             >
               <Icon icon="mdi:file-search-outline" width={42} />
               <Typography fontWeight={800} color="text.primary" mt={1}>
-                Nenhuma publicação encontrada
+                {t("emptyTitle")}
               </Typography>
               <Typography color="text.secondary" fontSize="0.9rem" mt={0.5}>
-                Tente buscar por outro título ou categoria.
+                {t("emptySubtitle")}
               </Typography>
             </Paper>
           </Container>

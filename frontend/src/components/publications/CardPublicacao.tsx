@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type CardPublicacaoProps = {
   publicacao: PublicacaoItem;
 };
 
 export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
+  const t = useTranslations("public.publications");
+
   return (
     <Paper
       component="article"
@@ -108,7 +111,7 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
               fullWidth
               sx={{ textTransform: "none", borderColor: "divider" }}
             >
-              Ler publicação
+              {t("readPublication")}
             </Button>
           </Box>
         </Stack>

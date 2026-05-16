@@ -32,6 +32,13 @@ class StorePublicacaoRequest extends FormRequest
                 'max:255'
             ],
 
+            'imagem' => [
+                'nullable',
+                'file',
+                'mimes:jpg,jpeg,png,gif,webp',
+                'max:5120'
+            ],
+
             'autor' => [
                 'required',
                 'string',

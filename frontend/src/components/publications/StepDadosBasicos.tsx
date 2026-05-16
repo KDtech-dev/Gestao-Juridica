@@ -1,16 +1,14 @@
 "use client";
 
-import { Box, Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import type { CategoriaOption } from "@/api/categorias/types";
 import { PublicacaoFormData, PublicationErrors } from "./types";
 import { HtmlTextEditor } from "./HtmlTextEditor";
 import InputSingleFile from "../InputSingleFile";
+import InputImage from "../InputImage";
+import { useTranslations } from "next-intl";
 
-const STATUS_OPTIONS = [
-  { value: "rascunho", label: "Rascunho" },
-  { value: "publicado", label: "Publicado" },
-  { value: "arquivado", label: "Arquivado" },
-] as const;
+const STATUS_OPTIONS = ["rascunho", "publicado", "arquivado"] as const;
 
 type Props = {
   isEn?: boolean;
@@ -25,13 +23,13 @@ type Props = {
 };
 
 export function StepDadosBasicos({
-  isEn = false,
   data,
   errors,
   categorias,
   categoriasLoading = false,
   onChange,
 }: Props) {
+  const t = useTranslations("internal.publicationForm.fields");
   const selectedCategoria = categorias.find(
     (categoria) => String(categoria.id) === data.categoriaId,
   );
@@ -42,7 +40,7 @@ export function StepDadosBasicos({
         <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
-            label={isEn ? "Title" : "Título"}
+            label={t("title")}
             value={data.titulo}
             onChange={(event) => onChange("titulo", event.target.value)}
             error={Boolean(errors.titulo)}
@@ -54,7 +52,7 @@ export function StepDadosBasicos({
           <TextField
             select
             fullWidth
-            label={isEn ? "Category" : "Categoria"}
+            label={t("category")}
             value={data.categoriaId}
             onChange={(event) => {
               const categoriaId = event.target.value;
@@ -70,9 +68,7 @@ export function StepDadosBasicos({
               errors.categoriaId ||
               errors.categoria ||
               selectedCategoria?.descricao ||
-              (categoriasLoading
-                ? "Carregando categorias..."
-                : "Categoria vinculada ao cadastro do backend.")
+              (categoriasLoading ? t("categoriesLoading") : t("categoryHelper"))
             }
             disabled={categoriasLoading}
           >
@@ -84,65 +80,37 @@ export function StepDadosBasicos({
           </TextField>
         </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-          <TextField
-            fullWidth
-            label={isEn ? "Banner image URL" : "URL da imagem do banner"}
-            value={data.bannerImage}
-            onChange={(event) => onChange("bannerImage", event.target.value)}
-            error={Boolean(errors.bannerImage)}
-            helperText={
-              errors.bannerImage ||
-              "Use uma URL pública para a imagem aparecer nos posts."
-            }
-          />
-        </Grid>
-
         <Grid size={{ xs: 12 }}>
-          <Box
-            sx={{
-              minHeight: 220,
-              border: "1px solid",
-              borderColor: errors.bannerImage ? "error.main" : "divider",
-              borderRadius: 2,
-              bgcolor: "background.default",
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
-            {data.bannerImage ? (
-              <Box
-                component="img"
-                src={data.bannerImage}
-                alt={data.titulo || "Prévia do banner"}
-                sx={{
-                  display: "block",
-                  width: "100%",
-                  height: { xs: 220, md: 300 },
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <Stack
-                alignItems="center"
-                justifyContent="center"
-                sx={{ minHeight: { xs: 220, md: 300 }, px: 2 }}
-              >
-                <Typography fontWeight={700} color="text.primary">
-                  Prévia do banner
-                </Typography>
-                <Typography color="text.secondary" fontSize="0.9rem">
-                  A imagem será exibida aqui ao informar uma URL válida.
-                </Typography>
-              </Stack>
-            )}
-          </Box>
+          <Stack spacing={0.75}>
+            <Typography fontWeight={700} color="text.primary">
+              {t("bannerImage")}
+            </Typography>
+            <InputImage
+              value={data.bannerImage}
+              onImageChange={(file) => onChange("bannerImage", file ?? "")}
+              cropImage
+              aspect={16 / 9}
+              imageHeight={300}
+              subBoxInput={{
+                sx: {
+                  borderColor: errors.bannerImage ? "error.main" : "divider",
+                  bgcolor: "background.default",
+                },
+              }}
+            />
+            <Typography
+              color={errors.bannerImage ? "error.main" : "text.secondary"}
+              fontSize="0.78rem"
+            >
+              {errors.bannerImage || t("bannerImageHelper")}
+            </Typography>
+          </Stack>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
-            label={isEn ? "Author name" : "Nome do autor"}
+            label={t("author")}
             value={data.autor}
             onChange={(event) => onChange("autor", event.target.value)}
             error={Boolean(errors.autor)}
@@ -163,14 +131,11 @@ export function StepDadosBasicos({
               )
             }
             error={Boolean(errors.status)}
-            helperText={
-              errors.status ||
-              "Somente publicações com status publicado aparecem em posts."
-            }
+            helperText={errors.status || t("statusHelper")}
           >
             {STATUS_OPTIONS.map((status) => (
-              <MenuItem key={status.value} value={status.value}>
-                {status.label}
+              <MenuItem key={status} value={status}>
+                {t(`statusOptions.${status}`)}
               </MenuItem>
             ))}
           </TextField>
@@ -178,18 +143,18 @@ export function StepDadosBasicos({
 
         <Grid size={{ xs: 12 }}>
           <HtmlTextEditor
-            label={isEn ? "Summary" : "Resumo"}
+            label={t("summary")}
             value={data.resumo}
             onChange={(value) => onChange("resumo", value)}
             error={errors.resumo}
             minRows={4}
-            helperText={`${data.resumo.length}/2000 caracteres`}
+            helperText={t("summaryCounter", { count: data.resumo.length })}
           />
         </Grid>
 
         <Grid size={{ xs: 12 }}>
           <HtmlTextEditor
-            label={isEn ? "Publication text" : "Texto da publicação"}
+            label={t("content")}
             value={data.conteudo}
             onChange={(value) => onChange("conteudo", value)}
             error={errors.conteudo}
@@ -203,8 +168,8 @@ export function StepDadosBasicos({
             onFileChange={(file) => onChange("anexos", file ? [file] : [])}
             tipos_aceitos={["pdf", "doc", "docx", "jpg", "jpeg", "png"]}
             maxSize={10 * 1024 * 1024}
-            label={isEn ? "Attachment" : "Anexo da publicação"}
-            helperText="PDF, DOC, DOCX, JPG ou PNG até 10 MB."
+            label={t("attachment")}
+            helperText={t("attachmentHelper")}
           />
         </Grid>
       </Grid>

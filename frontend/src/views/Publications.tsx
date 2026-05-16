@@ -29,6 +29,7 @@ import {
   listarPublicacoesClient,
 } from "@/api/publicacoes/apiPublicacoesClient";
 import { toast } from "@/utils/toast";
+import { useTranslations } from "next-intl";
 
 function normalize(value: string) {
   return value
@@ -38,20 +39,12 @@ function normalize(value: string) {
     .trim();
 }
 
-const STATUS_TABS: Array<{ value: StatusPublicacao; label: string }> = [
-  { value: "publicado", label: "Publicadas" },
-  { value: "rascunho", label: "Rascunhos" },
-  { value: "arquivado", label: "Arquivadas" },
-];
-
-const statusLabels: Record<StatusPublicacao, string> = {
-  publicado: "Publicado",
-  rascunho: "Rascunho",
-  arquivado: "Arquivado",
-};
+const STATUS_TABS: StatusPublicacao[] = ["publicado", "rascunho", "arquivado"];
 
 export default function PublicationsView() {
   const { hasRole } = useAuth();
+  const t = useTranslations("internal.publications");
+  const loadErrorFallback = t("errors.load");
   const [search, setSearch] = useState("");
   const [posts, setPosts] = useState<PublicacaoItem[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
@@ -78,9 +71,7 @@ export default function PublicationsView() {
       } catch (error) {
         if (active) {
           setLoadError(
-            error instanceof Error
-              ? error.message
-              : "Não foi possível carregar as publicações.",
+            error instanceof Error ? error.message : loadErrorFallback,
           );
         }
       } finally {
@@ -95,7 +86,7 @@ export default function PublicationsView() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [loadErrorFallback]);
 
   const filteredPosts = useMemo(() => {
     const term = normalize(search);
@@ -122,8 +113,8 @@ export default function PublicationsView() {
     return STATUS_TABS.reduce(
       (acc, status) => ({
         ...acc,
-        [status.value]: posts.filter(
-          (post) => (post.status ?? "publicado") === status.value,
+        [status]: posts.filter(
+          (post) => (post.status ?? "publicado") === status,
         ).length,
       }),
       {} as Record<StatusPublicacao, number>,
@@ -151,13 +142,9 @@ export default function PublicationsView() {
             : item,
         ),
       );
-      toast.success("Publicação arquivada.");
+      toast.success(t("toast.archived"));
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível arquivar a publicação.",
-      );
+      toast.error(error instanceof Error ? error.message : t("errors.archive"));
     } finally {
       setProcessingPostId(null);
     }
@@ -174,13 +161,9 @@ export default function PublicationsView() {
         current.filter((item) => item.id !== deleteTarget.id),
       );
       setDeleteTarget(null);
-      toast.success("Publicação deletada.");
+      toast.success(t("toast.deleted"));
     } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível deletar a publicação.",
-      );
+      toast.error(error instanceof Error ? error.message : t("errors.delete"));
     } finally {
       setProcessingPostId(null);
     }
@@ -209,10 +192,10 @@ export default function PublicationsView() {
           >
             <Box>
               <Typography variant="h4" fontWeight={700} color="text.primary">
-                Publicações
+                {t("title")}
               </Typography>
               <Typography color="text.secondary" fontSize="0.94rem">
-                Gerencie as publicações criadas por você.
+                {t("subtitle")}
               </Typography>
             </Box>
 
@@ -227,7 +210,7 @@ export default function PublicationsView() {
                   borderRadius: "12px",
                 }}
               >
-                Adicionar publicação
+                {t("add")}
               </Button>
             ) : null}
           </Stack>
@@ -260,9 +243,9 @@ export default function PublicationsView() {
             >
               {STATUS_TABS.map((status) => (
                 <Tab
-                  key={status.value}
-                  value={status.value}
-                  label={`${status.label} (${statusCounts[status.value] ?? 0})`}
+                  key={status}
+                  value={status}
+                  label={`${t(`tabs.${status}`)} (${statusCounts[status] ?? 0})`}
                 />
               ))}
             </Tabs>
@@ -271,7 +254,7 @@ export default function PublicationsView() {
               fullWidth
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder={"Buscar nas suas publicações..."}
+              placeholder={t("searchPlaceholder")}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -301,7 +284,7 @@ export default function PublicationsView() {
               }}
             >
               <Typography color="text.secondary" fontSize="0.9rem">
-                Carregando publicações...
+                {t("loading")}
               </Typography>
             </Paper>
           ) : filteredPosts.length === 0 ? (
@@ -324,19 +307,21 @@ export default function PublicationsView() {
                 mt={1}
               >
                 {search
-                  ? "Nenhuma publicação encontrada"
+                  ? t("empty.searchTitle")
                   : loadError
-                    ? "Não foi possível carregar publicações"
-                    : `Nenhuma publicação em ${STATUS_TABS.find((tab) => tab.value === activeStatus)?.label.toLowerCase()}.`}
+                    ? t("empty.loadTitle")
+                    : t("empty.statusTitle", {
+                        status: t(`tabs.${activeStatus}`).toLowerCase(),
+                      })}
               </Typography>
               <Typography color="text.secondary" fontSize="0.9rem" mt={0.5}>
                 {loadError
                   ? loadError
                   : search
-                    ? "Tente buscar por outro título, categoria ou cliente."
+                    ? t("empty.searchSubtitle")
                     : canManagePublications
-                      ? "Crie ou altere o status de uma publicação para ela aparecer aqui."
-                      : "Quando houver publicações vinculadas ao seu usuário, elas aparecerão aqui."}
+                      ? t("empty.manageSubtitle")
+                      : t("empty.userSubtitle")}
               </Typography>
 
               {canManagePublications && !search ? (
@@ -351,7 +336,7 @@ export default function PublicationsView() {
                     mt: 2,
                   }}
                 >
-                  Adicionar publicação
+                  {t("add")}
                 </Button>
               ) : null}
             </Paper>
@@ -388,8 +373,8 @@ export default function PublicationsView() {
                       }}
                     />
                     <Typography color="text.secondary" fontSize="0.82rem">
-                      {statusLabels[post.status ?? "publicado"]} • {post.data} •{" "}
-                      {post.readTime}
+                      {t(`status.${post.status ?? "publicado"}`)} • {post.data}{" "}
+                      • {post.readTime}
                     </Typography>
                   </Stack>
 
@@ -411,14 +396,14 @@ export default function PublicationsView() {
                     alignItems="center"
                   >
                     <Typography color="text.secondary" fontSize="0.84rem">
-                      Por {post.autor}
+                      {t("byAuthor", { author: post.autor })}
                     </Typography>
                     <Stack direction="row" spacing={0.5}>
-                      <Tooltip title="Editar publicação">
+                      <Tooltip title={t("actions.edit")}>
                         <IconButton
                           component={Link}
-                          href={`/publicacoes/editar/${post.slug}`}
-                          aria-label="Editar publicação"
+                          href={`/publicacoes/editar/${post.id}`}
+                          aria-label={t("actions.edit")}
                           size="small"
                           sx={{
                             border: "1px solid",
@@ -429,10 +414,10 @@ export default function PublicationsView() {
                         </IconButton>
                       </Tooltip>
 
-                      <Tooltip title="Arquivar publicação">
+                      <Tooltip title={t("actions.archive")}>
                         <span>
                           <IconButton
-                            aria-label="Arquivar publicação"
+                            aria-label={t("actions.archive")}
                             size="small"
                             disabled={
                               post.status === "arquivado" ||
@@ -449,10 +434,10 @@ export default function PublicationsView() {
                         </span>
                       </Tooltip>
 
-                      <Tooltip title="Deletar publicação">
+                      <Tooltip title={t("actions.delete")}>
                         <span>
                           <IconButton
-                            aria-label="Deletar publicação"
+                            aria-label={t("actions.delete")}
                             size="small"
                             disabled={processingPostId === post.id}
                             onClick={() => setDeleteTarget(post)}
@@ -477,14 +462,14 @@ export default function PublicationsView() {
 
       <ConfirmDialog
         open={Boolean(deleteTarget)}
-        title="Deletar publicação?"
+        title={t("deleteDialog.title")}
         description={
           deleteTarget
-            ? `A publicação "${deleteTarget.titulo}" será deletada permanentemente. Essa ação não pode ser desfeita.`
+            ? t("deleteDialog.description", { title: deleteTarget.titulo })
             : undefined
         }
-        confirmText="Deletar publicação"
-        cancelText="Cancelar"
+        confirmText={t("deleteDialog.confirm")}
+        cancelText={t("deleteDialog.cancel")}
         loading={Boolean(deleteTarget && processingPostId === deleteTarget.id)}
         onConfirm={confirmDeletePost}
         onClose={() => {

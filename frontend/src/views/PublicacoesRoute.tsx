@@ -6,6 +6,7 @@ import PublicationsView from "@/views/Publications";
 import PublicacoesView from "@/views/Publicacoes";
 import { usePathname } from "next/navigation";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type PublicacoesRouteViewProps = {
   publicacoesPublicas: PublicacaoItem[];
@@ -16,6 +17,7 @@ export default function PublicacoesRouteView({
 }: PublicacoesRouteViewProps) {
   const { isAuthenticated, loading } = useAuth();
   const pathname = usePathname();
+  const t = useTranslations("public.publications");
 
   const isPublicRoute = pathname === "/posts";
 
@@ -33,7 +35,7 @@ export default function PublicacoesRouteView({
         <Box sx={{ textAlign: "center" }}>
           <CircularProgress size={28} />
           <Typography sx={{ mt: 1.5 }} color="text.secondary" fontSize="0.9rem">
-            Carregando publicações...
+            {t("loading")}
           </Typography>
         </Box>
       </Box>

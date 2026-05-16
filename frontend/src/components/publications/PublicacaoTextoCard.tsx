@@ -3,12 +3,15 @@
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { useTranslations } from "next-intl";
 
 type PublicacaoTextoCardProps = {
   publicacao: PublicacaoItem;
 };
 
 export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
+  const t = useTranslations("public.publicationDetail");
+
   return (
     <Paper
       elevation={3}
@@ -32,7 +35,9 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
       >
         <Stack direction="row" spacing={0.75} alignItems="center">
           <Icon icon="mdi:account-outline" width={18} />
-          <Typography variant="subtitle1">Por {publicacao.autor}</Typography>
+          <Typography variant="subtitle1">
+            {t("byAuthor", { author: publicacao.autor })}
+          </Typography>
         </Stack>
         <Stack direction="row" spacing={0.75} alignItems="center">
           <Icon icon="mdi:calendar-month-outline" width={18} />

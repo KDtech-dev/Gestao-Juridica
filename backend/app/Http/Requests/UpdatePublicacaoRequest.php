@@ -32,6 +32,13 @@ class UpdatePublicacaoRequest extends FormRequest
                 'max:255'
             ],
 
+            'imagem' => [
+                'nullable',
+                'file',
+                'mimes:jpg,jpeg,png,gif,webp',
+                'max:5120'
+            ],
+
             'autor' => [
                 'sometimes',
                 'string',

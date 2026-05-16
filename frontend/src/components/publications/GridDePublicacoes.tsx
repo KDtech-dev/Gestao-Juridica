@@ -10,10 +10,11 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { CardPublicacao } from "@/components/publications/CardPublicacao";
+import { useTranslations } from "next-intl";
 
 type GridDePublicacoesProps = {
   publicacoes: PublicacaoItem[];
@@ -29,8 +30,8 @@ type GridDePublicacoesProps = {
 
 export function GridDePublicacoes({
   publicacoes,
-  title = "Publicações",
-  subtitle = "Notícias jurídicas, análises práticas e conteúdos do escritório",
+  title,
+  subtitle,
   hideVerMais = false,
   controlledPage,
   controlledPageCount,
@@ -41,6 +42,8 @@ export function GridDePublicacoes({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
+  const t = useTranslations("public.publications");
+  const shouldScrollToTopRef = useRef(false);
 
   const isControlled =
     typeof controlledPage === "number" &&
@@ -65,6 +68,34 @@ export function GridDePublicacoes({
     );
   }, [PUBLICACOES_PER_PAGE, boundedPage, isControlled, publicacoes]);
 
+  useEffect(() => {
+    if (!shouldScrollToTopRef.current) return;
+
+    shouldScrollToTopRef.current = false;
+
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+
+    const firstFrame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
+
+    return () => window.cancelAnimationFrame(firstFrame);
+  }, [boundedPage]);
+
+  const handlePageChange = (value: number) => {
+    shouldScrollToTopRef.current = true;
+
+    if (isControlled) {
+      onPageChange?.(value);
+    } else {
+      setPage(value);
+    }
+  };
+
   return (
     <Container
       component="section"
@@ -78,14 +109,14 @@ export function GridDePublicacoes({
           fontWeight={700}
           sx={{ color: "text.primary", mb: 1 }}
         >
-          {title}
+          {title ?? t("sectionTitle")}
         </Typography>
         <Typography
           variant="subtitle1"
           align="center"
           sx={{ color: "text.secondary", mb: 4, fontSize: { xs: 16, md: 18 } }}
         >
-          {subtitle}
+          {subtitle ?? t("sectionSubtitle")}
         </Typography>
 
         <Grid
@@ -110,9 +141,7 @@ export function GridDePublicacoes({
             <Pagination
               count={pageCount}
               page={boundedPage}
-              onChange={(_, value) =>
-                isControlled ? onPageChange?.(value) : setPage(value)
-              }
+              onChange={(_, value) => handlePageChange(value)}
               color="primary"
               shape="rounded"
               size={isMobile ? "small" : "medium"}
@@ -141,7 +170,7 @@ export function GridDePublicacoes({
               onClick={() => router.push(verMaisHref)}
               sx={{ textTransform: "none" }}
             >
-              Ver mais publicações
+              {t("seeMore")}
             </Button>
           </Box>
         )}
