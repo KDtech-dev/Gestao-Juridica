@@ -55,9 +55,105 @@ advocacia-gestao/
 │
 └── README.md
 ```
+---
+
+## ⚙️ Como Executar o Projeto
+
+### 🔹 Back-end (Laravel)
+
+Acesse a pasta do back-end:
+
+```bash
+cd backend
+```
+
+Instale as dependências:
+
+```bash
+composer install
+```
+
+Crie o arquivo `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Gere a chave da aplicação:
+
+```bash
+php artisan key:generate
+```
+
+Crie o link simbólico do storage:
+
+```bash
+php artisan storage:link
+```
+
+Execute as migrations:
+
+```bash
+php artisan migrate
+```
+
+Inicie o servidor Laravel:
+
+```bash
+php artisan serve
+```
+
+Servidor disponível em:
+
+```txt
+http://127.0.0.1:8000
+```
+---
+
+### 🔹 Front-end (Next.js)
+
+Acesse a pasta do front-end:
+
+```bash
+cd frontend
+```
+
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Execute o servidor de desenvolvimento:
+
+```bash
+npm run dev
+```
+
+Aplicação disponível em:
+
+```txt
+http://localhost:3000
+```
 
 ---
 
+## 🔗 Integração Front-end e Back-end
+
+O front-end em Next.js consome a API desenvolvida em Laravel.
+
+Exemplo de URL da API:
+
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
+```
+
+Essa variável pode ser adicionada no arquivo:
+
+```txt
+frontend/.env.local
+```
+---
 ## 👨‍💻 Autor
 
 **Diego André Afonso**
