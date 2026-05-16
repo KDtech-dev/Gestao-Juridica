@@ -135,24 +135,6 @@ Aplicação disponível em:
 ```txt
 http://localhost:3000
 ```
-
----
-
-## 🔗 Integração Front-end e Back-end
-
-O front-end em Next.js consome a API desenvolvida em Laravel.
-
-Exemplo de URL da API:
-
-```env
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
-```
-
-Essa variável pode ser adicionada no arquivo:
-
-```txt
-frontend/.env.local
-```
 ---
 ## 👨‍💻 Autor
 
