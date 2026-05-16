@@ -3,8 +3,7 @@
 import { Box, IconButton, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { useMemo, useState, useEffect } from "react";
-
-const weekDays = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+import { useTranslation } from "@/hooks/useTranslation";
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -17,9 +16,23 @@ function getFirstWeekDay(year: number, month: number) {
 type CalendarCardProps = {
   value?: Date;
   onSelectDate?: (date: Date) => void;
+  eventDates?: Date[];
 };
 
-export function CalendarCard({ value, onSelectDate }: CalendarCardProps) {
+function dateKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+export function CalendarCard({
+  value,
+  onSelectDate,
+  eventDates = [],
+}: CalendarCardProps) {
+  const { t, language } = useTranslation();
   const initial = value ?? new Date();
   const [currentDate, setCurrentDate] = useState(
     new Date(initial.getFullYear(), initial.getMonth(), 1),
@@ -57,7 +70,7 @@ export function CalendarCard({ value, onSelectDate }: CalendarCardProps) {
     const daysInMonth = getDaysInMonth(year, month);
     const firstWeekDay = getFirstWeekDay(year, month);
 
-    const monthLabel = currentDate.toLocaleDateString("pt-BR", {
+    const monthLabel = currentDate.toLocaleDateString(language, {
       month: "long",
       year: "numeric",
     });
@@ -72,7 +85,40 @@ export function CalendarCard({ value, onSelectDate }: CalendarCardProps) {
     }));
 
     return { monthLabel, cells: [...prefix, ...days] };
-  }, [currentDate]);
+  }, [currentDate, language]);
+
+  const weekDays = useMemo(
+    () => [
+      t("agenda.calendar.weekDays.sun"),
+      t("agenda.calendar.weekDays.mon"),
+      t("agenda.calendar.weekDays.tue"),
+      t("agenda.calendar.weekDays.wed"),
+      t("agenda.calendar.weekDays.thu"),
+      t("agenda.calendar.weekDays.fri"),
+      t("agenda.calendar.weekDays.sat"),
+    ],
+    [t],
+  );
+
+  const eventDayCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    eventDates.forEach((date) => {
+      const key = dateKey(date);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+
+    return counts;
+  }, [eventDates]);
+  const selectedDateKey = value
+    ? dateKey(value)
+    : dateKey(
+        new Date(
+          currentDate.getFullYear(),
+          currentDate.getMonth(),
+          selectedDay,
+        ),
+      );
 
   return (
     <Paper
@@ -122,24 +168,91 @@ export function CalendarCard({ value, onSelectDate }: CalendarCardProps) {
         {cells.map((cell) => (
           <Box key={cell.key}>
             {cell.day ? (
-              <Box
-                onClick={handleSelectDay(cell.day as number)}
-                sx={{
-                  width: 38,
-                  height: 38,
-                  borderRadius: "999px",
-                  display: "grid",
-                  placeItems: "center",
-                  fontWeight: 500,
-                  fontSize: "1.05rem",
-                  color: cell.day === selectedDay ? "#fff" : "text.primary",
-                  bgcolor:
-                    cell.day === selectedDay ? "primary.main" : "transparent",
-                  cursor: "pointer",
-                }}
-              >
-                {cell.day}
-              </Box>
+              (() => {
+                const cellDateKey = dateKey(
+                  new Date(
+                    currentDate.getFullYear(),
+                    currentDate.getMonth(),
+                    cell.day,
+                  ),
+                );
+                const isSelected = cellDateKey === selectedDateKey;
+                const eventCount = eventDayCounts.get(cellDateKey) ?? 0;
+                const hasEvent = eventCount > 0;
+
+                return (
+                  <Box
+                    component="button"
+                    type="button"
+                    aria-label={`${t("agenda.calendar.selectDay")} ${cell.day}`}
+                    onClick={handleSelectDay(cell.day as number)}
+                    sx={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: "999px",
+                      border: "1px solid",
+                      borderColor: hasEvent
+                        ? isSelected
+                          ? "primary.main"
+                          : "primary.light"
+                        : "transparent",
+                      display: "grid",
+                      placeItems: "center",
+                      position: "relative",
+                      fontWeight: 500,
+                      fontSize: "1.05rem",
+                      color: isSelected ? "#fff" : "text.primary",
+                      bgcolor: isSelected
+                        ? "primary.main"
+                        : hasEvent
+                          ? "rgba(25,118,210,0.08)"
+                          : "transparent",
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      transition:
+                        "background-color .12s, border-color .12s, box-shadow .12s, transform .12s",
+                      "&:hover": {
+                        bgcolor: isSelected
+                          ? "primary.dark"
+                          : "rgba(25,118,210,0.12)",
+                        borderColor: "primary.main",
+                        transform: "translateY(-1px)",
+                        boxShadow: "0 8px 16px rgba(15,23,42,0.10)",
+                      },
+                      "&:focus-visible": {
+                        outline: "2px solid",
+                        outlineColor: "primary.main",
+                        outlineOffset: 2,
+                      },
+                    }}
+                  >
+                    {cell.day}
+                    {hasEvent && (
+                      <Box
+                        sx={{
+                          minWidth: eventCount > 1 ? 14 : 6,
+                          height: eventCount > 1 ? 14 : 6,
+                          px: eventCount > 1 ? 0.4 : 0,
+                          borderRadius: "999px",
+                          bgcolor: isSelected ? "#fff" : "primary.main",
+                          color: isSelected ? "primary.main" : "#fff",
+                          position: "absolute",
+                          bottom: eventCount > 1 ? -2 : 5,
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          display: "grid",
+                          placeItems: "center",
+                          fontSize: "0.62rem",
+                          fontWeight: 800,
+                          lineHeight: 1,
+                        }}
+                      >
+                        {eventCount > 1 ? eventCount : null}
+                      </Box>
+                    )}
+                  </Box>
+                );
+              })()
             ) : (
               <Box sx={{ width: 38, height: 38 }} />
             )}

@@ -23,5 +23,128 @@
     "title": "Clientes",
     "newClient": "Nuevo cliente",
     "search": "Buscar cliente"
+  },
+
+  "sidebar": {
+    "brand": "Central jurídica",
+    "mainMenu": "Menú principal",
+    "items": {
+      "agenda": "Agenda",
+      "clientes": "Clientes",
+      "publicacoes": "Publicaciones",
+      "cases": "Casos",
+      "myCases": "Mis casos",
+      "adminUsers": "Usuarios",
+      "profile": "Mi perfil",
+      "logout": "Salir",
+      "perfil": "Mi perfil",
+      "sair": "Salir"
+    }
+  },
+
+  "agenda": {
+    "title": "Agenda",
+    "subtitle": "Gestiona compromisos, audiencias, plazos y recordatorios.",
+    "today": "Hoy",
+    "newAppointment": "Nuevo compromiso",
+    "creatorUnknown": "Creador no informado",
+    "views": {
+      "public": "Vista pública",
+      "personal": "Vista personal"
+    },
+    "periods": {
+      "today": "Hoy",
+      "week": "Semana",
+      "month": "Mes"
+    },
+    "summary": {
+      "todayTitle": "Agenda de hoy",
+      "dayTitle": "Resumen del día",
+      "personalDescription": "Solo compromisos creados por ti",
+      "publicDescription": "Compromisos públicos del equipo",
+      "total": "Total",
+      "completed": "Completados",
+      "pending": "Pendientes",
+      "noNext": "Sin próximos",
+      "nextAppointment": "Próximo compromiso"
+    },
+    "timeline": {
+      "title": "Próximos compromisos",
+      "loading": "Cargando compromisos...",
+      "empty": "No se encontraron próximos compromisos.",
+      "perPage": "Mostrar"
+    },
+    "calendar": {
+      "selectDay": "Seleccionar día",
+      "weekDays": {
+        "sun": "Dom",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mié",
+        "thu": "Jue",
+        "fri": "Vie",
+        "sat": "Sáb"
+      }
+    },
+    "calendarPanel": {
+      "title": "Marcados en el calendario",
+      "empty": "No hay recordatorios ni compromisos en este día."
+    },
+    "actions": {
+      "view": "Ver",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "close": "Cerrar",
+      "viewAppointment": "Ver compromiso",
+      "editAppointment": "Editar compromiso",
+      "deleteAppointment": "Eliminar compromiso"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "types": {
+      "appointment": "Compromiso",
+      "reminder": "Recordatorio",
+      "hearing": "Audiencia",
+      "deadline": "Plazo",
+      "meeting": "Reunión"
+    },
+    "viewModal": {
+      "title": "Ver compromiso",
+      "at": "a las"
+    },
+    "deleteDialog": {
+      "title": "¿Eliminar compromiso?",
+      "prefix": "El compromiso",
+      "suffix": "se eliminará permanentemente. Esta acción no se puede deshacer."
+    },
+    "notifications": {
+      "createdTitle": "Compromiso agendado",
+      "createdDescription": "Se agregó un nuevo compromiso a la agenda.",
+      "createErrorTitle": "Error al agendar compromiso",
+      "updatedTitle": "Compromiso actualizado",
+      "updatedDescription": "Los cambios se guardaron en la agenda.",
+      "updateErrorTitle": "Error al guardar compromiso",
+      "deletedTitle": "Compromiso eliminado",
+      "deletedDescription": "El compromiso fue eliminado de la agenda.",
+      "deleteErrorTitle": "Error al eliminar compromiso"
+    },
+    "form": {
+      "newTitle": "Nuevo compromiso",
+      "editTitle": "Editar compromiso",
+      "scheduling": "Agendando...",
+      "scheduleAppointment": "Agendar compromiso",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "titleLabel": "Título del compromiso",
+      "titleRequired": "Informa el título.",
+      "typeLabel": "Tipo",
+      "statusLabel": "Estado",
+      "dateTimeLabel": "Fecha y hora",
+      "dateTimeRequired": "Informa fecha y hora.",
+      "descriptionLabel": "Descripción/Pauta"
+    }
   }
 }

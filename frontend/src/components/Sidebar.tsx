@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type NavItem = {
   key: string;
@@ -17,26 +18,26 @@ type NavItem = {
 const mainItems: NavItem[] = [
   {
     key: "agenda",
-    label: "Agenda",
+    label: "",
     icon: "mdi:calendar-month-outline",
     href: "/agenda",
   },
   {
     key: "clientes",
-    label: "Clientes",
+    label: "",
     icon: "mdi:account-group-outline",
     href: "/clients",
   },
 
   {
     key: "publicacoes",
-    label: "Publicações",
+    label: "",
     icon: "mdi:newspaper-variant-outline",
     href: "/publicacoes?modo=interna",
   },
   {
     key: "cases",
-    label: "Casos",
+    label: "",
     icon: "mdi:briefcase-outline",
     href: "/cases",
   },
@@ -45,13 +46,13 @@ const mainItems: NavItem[] = [
 const bottomItems: NavItem[] = [
   {
     key: "perfil",
-    label: "Meu Perfil",
+    label: "",
     icon: "mdi:account-outline",
     href: "/profile",
   },
   {
     key: "sair",
-    label: "Sair",
+    label: "",
     icon: "mdi:logout",
   },
 ];
@@ -110,6 +111,7 @@ export function SidebarDashboard({ activeKey }: Props) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const { user, loading, logout, hasRole } = useAuth();
+  const { t } = useTranslation();
 
   if (loading) {
     return (
@@ -212,15 +214,15 @@ export function SidebarDashboard({ activeKey }: Props) {
 
   let translatedMainItems = mainItems.map((item) => {
     if (item.key === "clientes" && isClient) {
-      return { ...item, label: "Meus Casos", href: "/meu-caso" };
+      return { ...item, label: t("sidebar.items.myCases"), href: "/meu-caso" };
     }
-    return item;
+    return { ...item, label: t(`sidebar.items.${item.key}`) };
   });
 
   if (isAdmin) {
     translatedMainItems.push({
       key: "admin-users",
-      label: "Usuários",
+      label: t("sidebar.items.adminUsers"),
       icon: "mdi:account-multiple-outline",
       href: "/admin/users",
     });
@@ -236,7 +238,7 @@ export function SidebarDashboard({ activeKey }: Props) {
     if (item.key === "sair") {
       return {
         ...item,
-        label: "Sair",
+        label: t("sidebar.items.logout"),
         href: undefined,
         onClick: () => {
           logout();
@@ -246,7 +248,10 @@ export function SidebarDashboard({ activeKey }: Props) {
 
     return {
       ...item,
-      label: item.key === "perfil" ? "Meu Perfil" : item.label,
+      label:
+        item.key === "perfil"
+          ? t("sidebar.items.profile")
+          : t(`sidebar.items.${item.key}`),
     };
   });
 
@@ -292,7 +297,7 @@ export function SidebarDashboard({ activeKey }: Props) {
             <Icon icon="mdi:scale-balance" width={20} color="#fff" />
           </Box>
           <Typography fontWeight={700} fontSize="1.1rem" color="#f8fafc">
-            Central jurídica
+            {t("sidebar.brand")}
           </Typography>
         </Box>
       </Link>
@@ -307,7 +312,7 @@ export function SidebarDashboard({ activeKey }: Props) {
             mb: 1.2,
           }}
         >
-          Menu Principal
+          {t("sidebar.mainMenu")}
         </Typography>
 
         <Stack spacing={0.8}>

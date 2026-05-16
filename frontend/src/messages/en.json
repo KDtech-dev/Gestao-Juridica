@@ -23,5 +23,128 @@
     "title": "Clients",
     "newClient": "New client",
     "search": "Search client"
+  },
+
+  "sidebar": {
+    "brand": "Legal hub",
+    "mainMenu": "Main Menu",
+    "items": {
+      "agenda": "Calendar",
+      "clientes": "Clients",
+      "publicacoes": "Publications",
+      "cases": "Cases",
+      "myCases": "My Cases",
+      "adminUsers": "Users",
+      "profile": "My Profile",
+      "logout": "Logout",
+      "perfil": "My Profile",
+      "sair": "Logout"
+    }
+  },
+
+  "agenda": {
+    "title": "Calendar",
+    "subtitle": "Manage appointments, hearings, deadlines, and reminders.",
+    "today": "Today",
+    "newAppointment": "New Appointment",
+    "creatorUnknown": "Creator not informed",
+    "views": {
+      "public": "Public view",
+      "personal": "Personal view"
+    },
+    "periods": {
+      "today": "Today",
+      "week": "Week",
+      "month": "Month"
+    },
+    "summary": {
+      "todayTitle": "Today's Calendar",
+      "dayTitle": "Day Summary",
+      "personalDescription": "Only appointments created by you",
+      "publicDescription": "Public team appointments",
+      "total": "Total",
+      "completed": "Completed",
+      "pending": "Pending",
+      "noNext": "No upcoming",
+      "nextAppointment": "Next appointment"
+    },
+    "timeline": {
+      "title": "Upcoming appointments",
+      "loading": "Loading appointments...",
+      "empty": "No upcoming appointments found.",
+      "perPage": "Show"
+    },
+    "calendar": {
+      "selectDay": "Select day",
+      "weekDays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      }
+    },
+    "calendarPanel": {
+      "title": "Marked on calendar",
+      "empty": "No reminders or appointments on this day."
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "delete": "Delete",
+      "close": "Close",
+      "viewAppointment": "View appointment",
+      "editAppointment": "Edit appointment",
+      "deleteAppointment": "Delete appointment"
+    },
+    "status": {
+      "pending": "Pending",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "types": {
+      "appointment": "Appointment",
+      "reminder": "Reminder",
+      "hearing": "Hearing",
+      "deadline": "Deadline",
+      "meeting": "Meeting"
+    },
+    "viewModal": {
+      "title": "View Appointment",
+      "at": "at"
+    },
+    "deleteDialog": {
+      "title": "Delete appointment?",
+      "prefix": "The appointment",
+      "suffix": "will be permanently deleted. This action cannot be undone."
+    },
+    "notifications": {
+      "createdTitle": "Appointment scheduled",
+      "createdDescription": "A new appointment was added to the calendar.",
+      "createErrorTitle": "Error scheduling appointment",
+      "updatedTitle": "Appointment updated",
+      "updatedDescription": "The changes were saved to the calendar.",
+      "updateErrorTitle": "Error saving appointment",
+      "deletedTitle": "Appointment deleted",
+      "deletedDescription": "The appointment was removed from the calendar.",
+      "deleteErrorTitle": "Error deleting appointment"
+    },
+    "form": {
+      "newTitle": "New Appointment",
+      "editTitle": "Edit Appointment",
+      "scheduling": "Scheduling...",
+      "scheduleAppointment": "Schedule Appointment",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "titleLabel": "Appointment title",
+      "titleRequired": "Enter the title.",
+      "typeLabel": "Type",
+      "statusLabel": "Status",
+      "dateTimeLabel": "Date and time",
+      "dateTimeRequired": "Enter date and time.",
+      "descriptionLabel": "Description/Agenda"
+    }
   }
 }
