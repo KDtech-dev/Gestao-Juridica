@@ -61,6 +61,17 @@ class StorePublicacaoRequest extends FormRequest
                 'nullable',
                 'date'
             ],
+
+            'anexos' => [
+                'nullable',
+                'array'
+            ],
+
+            'anexos.*' => [
+                'file',
+                'mimes:pdf,doc,docx,jpg,jpeg,png',
+                'max:10240'
+            ],
         ];
     }
 }

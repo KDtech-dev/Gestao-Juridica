@@ -8,12 +8,15 @@ import type {
   PublicacaoPayload,
 } from "./types";
 
-const getHeaders = () => {
+const getHeaders = (isFormData = false) => {
   const headers: HeadersInit = {
     Accept: "application/json",
-    "Content-Type": "application/json",
   };
   const token = authStorage.get();
+
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -26,10 +29,12 @@ const requestJson = async <T>(
   path: string,
   init: RequestInit = {},
 ): Promise<T> => {
+  const isFormData =
+    typeof FormData !== "undefined" && init.body instanceof FormData;
   const response = await fetch(path, {
     ...init,
     headers: {
-      ...getHeaders(),
+      ...getHeaders(isFormData),
       ...init.headers,
     },
   });
@@ -52,10 +57,10 @@ const requestJson = async <T>(
   return payload as T;
 };
 
-export const criarPublicacaoClient = (payload: PublicacaoPayload) =>
+export const criarPublicacaoClient = (payload: PublicacaoPayload | FormData) =>
   requestJson<PublicacaoItem>("/api/publicacoes", {
     method: "POST",
-    body: JSON.stringify(payload),
+    body: payload instanceof FormData ? payload : JSON.stringify(payload),
   });
 
 export const listarPublicacoesClient = () =>
@@ -66,11 +71,11 @@ export const buscarPublicacaoClient = (id: string) =>
 
 export const atualizarPublicacaoClient = (
   id: string,
-  payload: AtualizarPublicacaoPayload,
+  payload: AtualizarPublicacaoPayload | FormData,
 ) =>
   requestJson<PublicacaoItem>(`/api/publicacoes/${id}`, {
     method: "PUT",
-    body: JSON.stringify(payload),
+    body: payload instanceof FormData ? payload : JSON.stringify(payload),
   });
 
 export const deletarPublicacaoClient = (id: string) =>

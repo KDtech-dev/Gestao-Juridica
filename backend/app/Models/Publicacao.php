@@ -38,6 +38,11 @@ class Publicacao extends Model
         return $this->belongsTo(Categoria::class);
     }
 
+    public function anexos()
+    {
+        return $this->hasMany(Anexo::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

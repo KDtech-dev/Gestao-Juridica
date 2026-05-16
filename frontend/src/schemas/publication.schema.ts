@@ -3,6 +3,7 @@ import { z } from "zod";
 export const publicationSchema = z.object({
   titulo: z.string().trim().min(1, "Informe o título."),
   categoria: z.string().trim().min(1, "Informe a categoria."),
+  categoriaId: z.string().trim().min(1, "Selecione uma categoria."),
   bannerImage: z
     .string()
     .trim()

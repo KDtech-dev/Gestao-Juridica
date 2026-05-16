@@ -35,11 +35,14 @@ import {
   buscarPublicacaoClient,
   criarPublicacaoClient,
 } from "@/api/publicacoes/apiPublicacoesClient";
+import { listarCategoriasClient } from "@/api/categorias/apiCategoriasClient";
+import type { CategoriaOption } from "@/api/categorias/types";
 import type { PublicacaoItem, PublicacaoPayload } from "@/api/publicacoes/types";
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
   categoria: "",
+  categoriaId: "",
   bannerImage: "",
   autor: "",
   resumo: "",
@@ -71,13 +74,33 @@ function isBackendPublicationId(id?: string) {
 function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
   return {
     titulo: form.titulo.trim(),
-    categoria_id: null,
+    categoria_id: form.categoriaId || null,
     imagem_caminho: form.bannerImage.trim() || null,
     autor: form.autor.trim(),
     resumo: form.resumo.trim() || null,
     conteudo: form.conteudo.trim() || null,
     status: form.status,
   };
+}
+
+function buildPublicacaoRequestBody(form: PublicacaoFormData) {
+  const payload = buildPublicacaoPayload(form);
+
+  if (form.anexos.length === 0) return payload;
+
+  const body = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== null && value !== undefined) {
+      body.append(key, String(value));
+    }
+  });
+
+  form.anexos.forEach((file) => {
+    body.append("anexos[]", file);
+  });
+
+  return body;
 }
 
 type Props = {
@@ -110,6 +133,7 @@ export default function NewPublicationView({ editSlug }: Props) {
     return {
       titulo: editItem.titulo,
       categoria: editItem.categoria,
+      categoriaId: editItem.categoriaId ? String(editItem.categoriaId) : "",
       bannerImage: editItem.bannerImage,
       autor: editItem.autor,
       resumo: editItem.resumo,
@@ -124,6 +148,8 @@ export default function NewPublicationView({ editSlug }: Props) {
     getFormSnapshot(initialResolvedForm),
   );
   const [errors, setErrors] = useState<PublicationErrors>({});
+  const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+  const [categoriasLoading, setCategoriasLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
   const [savingDraftOnLeave, setSavingDraftOnLeave] = useState(false);
@@ -165,6 +191,52 @@ export default function NewPublicationView({ editSlug }: Props) {
     setForm(initialResolvedForm);
     setInitialSnapshot(getFormSnapshot(initialResolvedForm));
   }, [initialResolvedForm]);
+
+  useEffect(() => {
+    let active = true;
+
+    listarCategoriasClient()
+      .then((items) => {
+        if (active) {
+          setCategorias(items);
+        }
+      })
+      .catch((error) => {
+        if (active) {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Não foi possível carregar as categorias.",
+          );
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setCategoriasLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!form.categoria || form.categoriaId || categorias.length === 0) return;
+
+    const matchedCategoria = categorias.find(
+      (categoria) =>
+        categoria.nome.trim().toLowerCase() ===
+        form.categoria.trim().toLowerCase(),
+    );
+
+    if (matchedCategoria) {
+      setForm((prev) => ({
+        ...prev,
+        categoriaId: String(matchedCategoria.id),
+      }));
+    }
+  }, [categorias, form.categoria, form.categoriaId]);
 
   useEffect(() => {
     if (!hasUnsavedChanges) return;
@@ -295,7 +367,7 @@ export default function NewPublicationView({ editSlug }: Props) {
     setSubmitting(true);
 
     try {
-      const payload = buildPublicacaoPayload(form);
+      const payload = buildPublicacaoRequestBody(form);
       const publicacao =
         isEditMode && isBackendPublicationId(editItem?.id)
           ? await atualizarPublicacaoClient(editItem?.id ?? "", payload)
@@ -329,7 +401,7 @@ export default function NewPublicationView({ editSlug }: Props) {
       autor: form.autor.trim() || user?.name || "Autor não informado",
       status: "rascunho",
     };
-    const payload = buildPublicacaoPayload(draftForm);
+    const payload = buildPublicacaoRequestBody(draftForm);
     const publicacao =
       isEditMode && isBackendPublicationId(editItem?.id)
         ? await atualizarPublicacaoClient(editItem?.id ?? "", payload)
@@ -436,6 +508,8 @@ export default function NewPublicationView({ editSlug }: Props) {
               <StepDadosBasicos
                 data={form}
                 errors={errors}
+                categorias={categorias}
+                categoriasLoading={categoriasLoading}
                 onChange={handleChange}
               />
             )}

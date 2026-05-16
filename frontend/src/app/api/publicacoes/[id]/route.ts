@@ -17,8 +17,9 @@ const getForwardHeaders = (request: NextRequest, hasBody = false) => {
   });
   const authorization = request.headers.get("authorization");
   const cookieToken = request.cookies.get("authToken")?.value;
+  const contentType = request.headers.get("content-type") ?? "";
 
-  if (hasBody) {
+  if (hasBody && !contentType.includes("multipart/form-data")) {
     headers.set("Content-Type", "application/json");
   }
 
@@ -79,10 +80,16 @@ export const PUT = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) => {
-  const body = await request.text();
+  const contentType = request.headers.get("content-type") ?? "";
+  const isMultipart = contentType.includes("multipart/form-data");
+  const body = isMultipart ? await request.formData() : await request.text();
+
+  if (body instanceof FormData) {
+    body.set("_method", "PUT");
+  }
 
   return proxyPublicacao(request, await getId(params), {
-    method: "PUT",
+    method: isMultipart ? "POST" : "PUT",
     body,
   });
 };

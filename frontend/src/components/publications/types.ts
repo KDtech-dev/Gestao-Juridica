@@ -3,6 +3,7 @@ import type { StatusPublicacao } from "@/api/publicacoes/types";
 export type PublicacaoFormData = {
   titulo: string;
   categoria: string;
+  categoriaId: string;
   bannerImage: string;
   autor: string;
   resumo: string;

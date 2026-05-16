@@ -13,6 +13,7 @@ export type PublicacaoItem = {
   conteudoHtml: string;
   tipo: "Atualização de Caso" | "Comunicado ao Cliente" | "Notícia Jurídica";
   categoria: string;
+  categoriaId?: number | string | null;
   autor: string;
   authorEmail?: string;
   data: string;
@@ -36,9 +37,18 @@ export type ApiUsuarioPublicacao = {
   email?: string | null;
 };
 
+export type ApiAnexo = {
+  id?: number | string;
+  descricao?: string | null;
+  arquivo?: string | null;
+  nome_arquivo?: string | null;
+  url?: string | null;
+};
+
 export type ApiPublicacao = {
   id: string;
   titulo?: string | null;
+  categoria_id?: number | string | null;
   categoria?: ApiCategoria | null;
   user?: ApiUsuarioPublicacao | null;
   imagem_caminho?: string | null;
@@ -49,6 +59,7 @@ export type ApiPublicacao = {
   publicado_em?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  anexos?: ApiAnexo[] | null;
 };
 
 export type StatusPublicacao = "rascunho" | "publicado" | "arquivado";

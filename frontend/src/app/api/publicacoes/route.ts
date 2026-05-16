@@ -19,8 +19,9 @@ const getForwardHeaders = (request: NextRequest, hasBody = false) => {
   });
   const authorization = request.headers.get("authorization");
   const cookieToken = request.cookies.get("authToken")?.value;
+  const contentType = request.headers.get("content-type") ?? "";
 
-  if (hasBody) {
+  if (hasBody && !contentType.includes("multipart/form-data")) {
     headers.set("Content-Type", "application/json");
   }
 
@@ -72,7 +73,10 @@ const proxyPublicacoes = async (
 export const GET = (request: NextRequest) => proxyPublicacoes(request);
 
 export const POST = async (request: NextRequest) => {
-  const body = await request.text();
+  const contentType = request.headers.get("content-type") ?? "";
+  const body = contentType.includes("multipart/form-data")
+    ? await request.formData()
+    : await request.text();
 
   return proxyPublicacoes(request, {
     method: "POST",

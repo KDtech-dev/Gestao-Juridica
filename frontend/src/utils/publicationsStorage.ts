@@ -102,6 +102,7 @@ export function buildPublicacaoFromForm(
           .join(""),
     tipo: "Notícia Jurídica",
     categoria: form.categoria || existing?.categoria || "Publicação",
+    categoriaId: form.categoriaId || existing?.categoriaId || null,
     autor: form.autor.trim() || user?.name || existing?.autor || "Usuário",
     authorEmail: user?.email || existing?.authorEmail,
     data: existing?.data ?? formatPublicationDate(now),

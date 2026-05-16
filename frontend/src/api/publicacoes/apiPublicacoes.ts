@@ -136,6 +136,7 @@ export const mapApiPublicacaoToItem = (
     conteudoHtml: conteudo || "<p>Conteúdo indisponível.</p>",
     tipo: "Notícia Jurídica",
     categoria: publicacao.categoria?.nome?.trim() || "Publicação",
+    categoriaId: publicacao.categoria?.id ?? publicacao.categoria_id ?? null,
     autor,
     authorEmail: options.includePrivateUserData
       ? (publicacao.user?.email ?? undefined)
@@ -150,7 +151,16 @@ export const mapApiPublicacaoToItem = (
         : undefined,
     cliente: "Não informado",
     processo: "Não informado",
-    anexos: [],
+    anexos: Array.isArray(publicacao.anexos)
+      ? publicacao.anexos.map((anexo, index) => ({
+          id: String(anexo.id ?? `${publicacao.id}-anexo-${index}`),
+          nome:
+            anexo.nome_arquivo?.trim() ||
+            anexo.descricao?.trim() ||
+            "Anexo da publicação",
+          url: anexo.url || anexo.arquivo || "#",
+        }))
+      : [],
   };
 };
 

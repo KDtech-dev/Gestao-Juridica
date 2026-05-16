@@ -6,6 +6,7 @@ use App\Enums\StatusPublicacao;
 use App\Interfaces\PublicationStrategyInterface;
 use App\Models\Publicacao;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PublicacaoAdminStrategy implements PublicationStrategyInterface
 {
@@ -13,7 +14,7 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
     {
         return Publicacao::query()
             ->where('user_id', Auth::id())
-            ->with('categoria')
+            ->with(['categoria', 'anexos'])
             ->latest()
             ->get();
     }
@@ -23,21 +24,35 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
         return Publicacao::query()
             ->where('user_id', Auth::id())
             ->where('id', $id)
-            ->with('categoria')
+            ->with(['categoria', 'anexos'])
             ->firstOrFail();
     }
 
     public function create(array $data)
     {
+        $anexos = $data['anexos'] ?? [];
+        unset($data['anexos']);
+
         $data['user_id'] = Auth::id();
 
         $this->handlePublishedAt($data);
 
-        return Publicacao::create($data);
+        $publicacao = Publicacao::create($data);
+
+        $this->storeAnexos($publicacao, $anexos);
+
+        return $publicacao->fresh([
+            'categoria',
+            'user',
+            'anexos'
+        ]);
     }
 
     public function update(string $id, array $data)
     {
+        $anexos = $data['anexos'] ?? [];
+        unset($data['anexos']);
+
         $publicacao = Publicacao::query()
             ->where('user_id', Auth::id())
             ->where('id', $id)
@@ -47,9 +62,12 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
 
         $publicacao->update($data);
 
+        $this->storeAnexos($publicacao, $anexos);
+
         return $publicacao->fresh([
             'categoria',
-            'user'
+            'user',
+            'anexos'
         ]);
     }
     public function delete(string $id)
@@ -83,6 +101,27 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
             ])
         ) {
             $data['publicado_em'] = null;
+        }
+    }
+
+    private function storeAnexos(Publicacao $publicacao, array $anexos): void
+    {
+        foreach ($anexos as $anexo) {
+            if (!$anexo) {
+                continue;
+            }
+
+            $path = $anexo->store(
+                "publicacoes/{$publicacao->id}/anexos",
+                'public'
+            );
+
+            $publicacao->anexos()->create([
+                'descricao' => 'Anexo da publicação',
+                'arquivo' => $path,
+                'nome_arquivo' => $anexo->getClientOriginalName(),
+                'url' => Storage::disk('public')->url($path),
+            ]);
         }
     }
 }

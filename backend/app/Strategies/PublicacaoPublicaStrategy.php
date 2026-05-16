@@ -25,7 +25,7 @@ class PublicacaoPublicaStrategy implements PublicationStrategyInterface
                 'updated_at',
             ])
             ->where('status', StatusPublicacao::PUBLICADO->value)
-            ->with('categoria')
+            ->with(['categoria', 'anexos'])
             ->orderByDesc('publicado_em')
             ->get();
     }
@@ -51,7 +51,7 @@ class PublicacaoPublicaStrategy implements PublicationStrategyInterface
                 StatusPublicacao::PUBLICADO->value
             )
             ->where('id', $id)
-            ->with('categoria')
+            ->with(['categoria', 'anexos'])
             ->firstOrFail();
     }
     public function create(array $data)

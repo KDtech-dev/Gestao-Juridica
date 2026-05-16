@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             TestUsersSeeder::class,
             PublicacaoSeeder::class,
             CompromissoSeeder::class,
+            CategoriaSeeder::class,
         ]);
     }
 }
