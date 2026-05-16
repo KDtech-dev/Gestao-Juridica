@@ -1,6 +1,7 @@
 import { getPublicApiOrigin } from "@/configs/apiUrl";
 import { mapApiPublicacaoToItem } from "@/api/publicacoes/apiPublicacoes";
 import type { ApiPublicacao } from "@/api/publicacoes/types";
+import { getSafePayloadErrorMessage } from "@/utils/safeErrorMessage";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -52,7 +53,12 @@ const proxyPublicacao = async (
 
   if (!response.ok) {
     return NextResponse.json(
-      { message: payload?.message ?? "Erro ao processar publicação." },
+      {
+        message: getSafePayloadErrorMessage(
+          payload,
+          "Erro ao processar publicação.",
+        ),
+      },
       { status: response.status },
     );
   }

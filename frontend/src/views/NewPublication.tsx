@@ -36,6 +36,7 @@ import {
   criarPublicacaoClient,
 } from "@/api/publicacoes/apiPublicacoesClient";
 import { listarCategoriasClient } from "@/api/categorias/apiCategoriasClient";
+import { getApiErrorMessage } from "@/configs/ApiError";
 import type { CategoriaOption } from "@/api/categorias/types";
 import type {
   PublicacaoItem,
@@ -55,19 +56,52 @@ const initialForm: PublicacaoFormData = {
   anexos: [],
 };
 
+function getTextValue(value: unknown, fallback = "") {
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (value && typeof value === "object" && "nome" in value) {
+    const nome = (value as { nome?: unknown }).nome;
+
+    return typeof nome === "string" ? nome : fallback;
+  }
+
+  return fallback;
+}
+
+function getBannerImageValue(value: unknown) {
+  return isFile(value) || typeof value === "string" ? value : "";
+}
+
+function getFormFiles(value: unknown) {
+  return Array.isArray(value)
+    ? value.filter((file): file is File => isFile(file))
+    : [];
+}
+
+function isFile(value: unknown): value is File {
+  return typeof File !== "undefined" && value instanceof File;
+}
+
+function getStatusValue(value: unknown): PublicacaoFormData["status"] {
+  return value === "rascunho" || value === "publicado" || value === "arquivado"
+    ? value
+    : "publicado";
+}
+
 function getFormSnapshot(form: PublicacaoFormData) {
   return JSON.stringify({
     ...form,
-    bannerImage:
-      form.bannerImage instanceof File
-        ? {
-            name: form.bannerImage.name,
-            size: form.bannerImage.size,
-            type: form.bannerImage.type,
-            lastModified: form.bannerImage.lastModified,
-          }
-        : form.bannerImage,
-    anexos: form.anexos.map((file) => ({
+    bannerImage: isFile(form.bannerImage)
+      ? {
+          name: form.bannerImage.name,
+          size: form.bannerImage.size,
+          type: form.bannerImage.type,
+          lastModified: form.bannerImage.lastModified,
+        }
+      : form.bannerImage,
+    anexos: getFormFiles(form.anexos).map((file) => ({
       name: file.name,
       size: file.size,
       type: file.type,
@@ -85,24 +119,26 @@ function isBackendPublicationId(id?: string) {
 }
 
 function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
+  const bannerImage = getBannerImageValue(form.bannerImage);
+
   return {
-    titulo: form.titulo.trim(),
-    categoria_id: form.categoriaId || null,
+    titulo: getTextValue(form.titulo).trim(),
+    categoria_id: getTextValue(form.categoriaId).trim() || null,
     imagem_caminho:
-      typeof form.bannerImage === "string"
-        ? form.bannerImage.trim() || null
-        : null,
-    autor: form.autor.trim(),
-    resumo: form.resumo.trim() || null,
-    conteudo: form.conteudo.trim() || null,
-    status: form.status,
+      typeof bannerImage === "string" ? bannerImage.trim() || null : null,
+    autor: getTextValue(form.autor).trim(),
+    resumo: getTextValue(form.resumo).trim() || null,
+    conteudo: getTextValue(form.conteudo).trim() || null,
+    status: getStatusValue(form.status),
   };
 }
 
 function buildPublicacaoRequestBody(form: PublicacaoFormData) {
   const payload = buildPublicacaoPayload(form);
 
-  if (form.anexos.length === 0 && !(form.bannerImage instanceof File)) {
+  const anexos = getFormFiles(form.anexos);
+
+  if (anexos.length === 0 && !isFile(form.bannerImage)) {
     return payload;
   }
 
@@ -114,11 +150,11 @@ function buildPublicacaoRequestBody(form: PublicacaoFormData) {
     }
   });
 
-  form.anexos.forEach((file) => {
+  anexos.forEach((file) => {
     body.append("anexos[]", file);
   });
 
-  if (form.bannerImage instanceof File) {
+  if (isFile(form.bannerImage)) {
     body.append("imagem", form.bannerImage);
   }
 
@@ -155,14 +191,17 @@ export default function NewPublicationView({ editSlug }: Props) {
       };
     }
     return {
-      titulo: editItem.titulo,
-      categoria: editItem.categoria,
-      categoriaId: editItem.categoriaId ? String(editItem.categoriaId) : "",
-      bannerImage: editItem.bannerImage,
-      autor: editItem.autor,
-      resumo: editItem.resumo,
-      conteudo: editItem.conteudoHtml,
-      status: editItem.status ?? "publicado",
+      titulo: getTextValue(editItem.titulo),
+      categoria: getTextValue(editItem.categoria),
+      categoriaId:
+        editItem.categoriaId !== null && editItem.categoriaId !== undefined
+          ? String(editItem.categoriaId)
+          : "",
+      bannerImage: getBannerImageValue(editItem.bannerImage),
+      autor: getTextValue(editItem.autor),
+      resumo: getTextValue(editItem.resumo),
+      conteudo: getTextValue(editItem.conteudoHtml),
+      status: getStatusValue(editItem.status),
       anexos: [],
     };
   }, [editItem, user?.name]);
@@ -227,9 +266,7 @@ export default function NewPublicationView({ editSlug }: Props) {
       })
       .catch((error) => {
         if (active) {
-          toast.error(
-            error instanceof Error ? error.message : categoriesErrorMessage,
-          );
+          toast.error(getApiErrorMessage(error) || categoriesErrorMessage);
         }
       })
       .finally(() => {
@@ -244,12 +281,14 @@ export default function NewPublicationView({ editSlug }: Props) {
   }, [categoriesErrorMessage]);
 
   useEffect(() => {
-    if (!form.categoria || form.categoriaId || categorias.length === 0) return;
+    const categoriaAtual = getTextValue(form.categoria);
+
+    if (!categoriaAtual || form.categoriaId || categorias.length === 0) return;
 
     const matchedCategoria = categorias.find(
       (categoria) =>
         categoria.nome.trim().toLowerCase() ===
-        form.categoria.trim().toLowerCase(),
+        categoriaAtual.trim().toLowerCase(),
     );
 
     if (matchedCategoria) {
@@ -410,7 +449,7 @@ export default function NewPublicationView({ editSlug }: Props) {
       );
       router.push("/publicacoes?modo=interna");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("errors.save"));
+      toast.error(getApiErrorMessage(error) || t("errors.save"));
     } finally {
       setSubmitting(false);
     }
@@ -419,8 +458,11 @@ export default function NewPublicationView({ editSlug }: Props) {
   const saveDraft = async () => {
     const draftForm: PublicacaoFormData = {
       ...form,
-      titulo: form.titulo.trim() || t("draft.untitled"),
-      autor: form.autor.trim() || user?.name || t("draft.unknownAuthor"),
+      titulo: getTextValue(form.titulo).trim() || t("draft.untitled"),
+      autor:
+        getTextValue(form.autor).trim() ||
+        user?.name ||
+        t("draft.unknownAuthor"),
       status: "rascunho",
     };
     const payload = buildPublicacaoRequestBody(draftForm);
@@ -461,7 +503,7 @@ export default function NewPublicationView({ editSlug }: Props) {
         await saveDraft();
         toast.success(t("toast.draftSent"));
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : t("errors.draft"));
+        toast.error(getApiErrorMessage(error) || t("errors.draft"));
         setSavingDraftOnLeave(false);
         return;
       }

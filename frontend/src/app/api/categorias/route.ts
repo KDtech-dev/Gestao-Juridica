@@ -1,5 +1,6 @@
 import { getPublicApiOrigin } from "@/configs/apiUrl";
 import type { CategoriaOption } from "@/api/categorias/types";
+import { getSafePayloadErrorMessage } from "@/utils/safeErrorMessage";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +40,12 @@ export const GET = async () => {
 
   if (!response.ok) {
     return NextResponse.json(
-      { message: payload?.message ?? "Erro ao buscar categorias." },
+      {
+        message: getSafePayloadErrorMessage(
+          payload,
+          "Erro ao buscar categorias.",
+        ),
+      },
       { status: response.status },
     );
   }

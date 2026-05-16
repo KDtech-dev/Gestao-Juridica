@@ -7,6 +7,7 @@ import type {
   PublicacaoItem,
   PublicacaoPayload,
 } from "./types";
+import { getSafePayloadErrorMessage } from "@/utils/safeErrorMessage";
 
 const getHeaders = (isFormData = false) => {
   const headers: HeadersInit = {
@@ -44,13 +45,8 @@ const requestJson = async <T>(
     | null;
 
   if (!response.ok) {
-    const message =
-      payload && typeof payload === "object" && "message" in payload
-        ? payload.message
-        : null;
-
     throw new Error(
-      typeof message === "string" ? message : "Erro ao salvar publicação.",
+      getSafePayloadErrorMessage(payload, "Erro ao salvar publicação."),
     );
   }
 
