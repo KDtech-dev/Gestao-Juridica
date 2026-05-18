@@ -56,6 +56,7 @@ export function HeaderDashboard({
         titulo: notification.title,
         descricao: notification.description,
         lida: notification.read,
+        tipo: notification.type,
       })),
     [notifications],
   );

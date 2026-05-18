@@ -27,6 +27,16 @@ class CompromissoSeeder extends Seeder
         }
 
         $today = Carbon::today();
+        $fimDaSemana = $today->copy()->endOfWeek();
+        $estaSemana = function (int $diasAPartirDeHoje) use ($today, $fimDaSemana): string {
+            $data = $today->copy()->addDays($diasAPartirDeHoje);
+
+            if ($data->greaterThan($fimDaSemana)) {
+                return $fimDaSemana->toDateString();
+            }
+
+            return $data->toDateString();
+        };
 
         $items = [
             [
@@ -48,6 +58,33 @@ class CompromissoSeeder extends Seeder
                 'status' => StatusCompromisso::CONCLUIDO->value,
             ],
             [
+                'email' => 'teste@email.com',
+                'titulo' => 'Prazo urgente para assinatura digital',
+                'descricao' => 'Validar assinatura digital e registrar o protocolo ainda hoje.',
+                'data' => $today->toDateString(),
+                'hora' => '08:20',
+                'tipo' => TipoCompromisso::PRAZO->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'funcionario@example.com',
+                'titulo' => 'Lembrete de ligação para cliente',
+                'descricao' => 'Confirmar recebimento de documentos e pendências cadastrais.',
+                'data' => $today->toDateString(),
+                'hora' => '10:40',
+                'tipo' => TipoCompromisso::LEMBRETE->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'advogado@example.com',
+                'titulo' => 'Reunião rápida de estratégia',
+                'descricao' => 'Definir abordagem para audiência e divisão de tarefas.',
+                'data' => $today->toDateString(),
+                'hora' => '11:20',
+                'tipo' => TipoCompromisso::REUNIAO->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
                 'email' => 'advogado@example.com',
                 'titulo' => 'Audiência de conciliação',
                 'descricao' => 'Processo trabalhista com audiência remota.',
@@ -67,10 +104,28 @@ class CompromissoSeeder extends Seeder
             ],
             [
                 'email' => 'funcionario@example.com',
+                'titulo' => 'Triagem de compromissos do dia',
+                'descricao' => 'Conferir agenda compartilhada e ajustar responsáveis.',
+                'data' => $today->toDateString(),
+                'hora' => '17:30',
+                'tipo' => TipoCompromisso::COMPROMISSO->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'funcionario@example.com',
                 'titulo' => 'Atualizar documentação do cliente',
                 'descricao' => 'Conferir documentos recebidos e anexar ao caso.',
-                'data' => $today->copy()->addDay()->toDateString(),
+                'data' => $estaSemana(1),
                 'hora' => '10:15',
+                'tipo' => TipoCompromisso::COMPROMISSO->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'advogado@example.com',
+                'titulo' => 'Preparar minuta de acordo',
+                'descricao' => 'Revisar cláusulas sensíveis antes do envio ao cliente.',
+                'data' => $estaSemana(1),
+                'hora' => '15:10',
                 'tipo' => TipoCompromisso::COMPROMISSO->value,
                 'status' => StatusCompromisso::PENDENTE->value,
             ],
@@ -78,17 +133,44 @@ class CompromissoSeeder extends Seeder
                 'email' => 'teste@email.com',
                 'titulo' => 'Lembrete de cobrança de honorários',
                 'descricao' => 'Enviar lembrete ao financeiro sobre parcelas em aberto.',
-                'data' => $today->copy()->addDays(2)->toDateString(),
+                'data' => $estaSemana(2),
                 'hora' => '11:00',
                 'tipo' => TipoCompromisso::LEMBRETE->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'funcionario@example.com',
+                'titulo' => 'Separar anexos para protocolo',
+                'descricao' => 'Organizar documentos finais para o prazo da semana.',
+                'data' => $estaSemana(2),
+                'hora' => '14:20',
+                'tipo' => TipoCompromisso::PRAZO->value,
                 'status' => StatusCompromisso::PENDENTE->value,
             ],
             [
                 'email' => 'advogado@example.com',
                 'titulo' => 'Prazo para manifestação',
                 'descricao' => 'Protocolar manifestação antes do fim do expediente.',
-                'data' => $today->copy()->addDays(3)->toDateString(),
+                'data' => $estaSemana(3),
                 'hora' => '16:30',
+                'tipo' => TipoCompromisso::PRAZO->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'teste@email.com',
+                'titulo' => 'Revisão de pauta semanal',
+                'descricao' => 'Validar compromissos pendentes e redistribuir tarefas críticas.',
+                'data' => $estaSemana(3),
+                'hora' => '09:50',
+                'tipo' => TipoCompromisso::REUNIAO->value,
+                'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'funcionario@example.com',
+                'titulo' => 'Conferência de intimações da semana',
+                'descricao' => 'Verificar intimações novas e sinalizar prazos curtos.',
+                'data' => $estaSemana(4),
+                'hora' => '08:55',
                 'tipo' => TipoCompromisso::PRAZO->value,
                 'status' => StatusCompromisso::PENDENTE->value,
             ],
@@ -96,10 +178,19 @@ class CompromissoSeeder extends Seeder
                 'email' => 'advogado@example.com',
                 'titulo' => 'Reunião com cliente empresarial',
                 'descricao' => 'Discutir estratégia processual e próximos documentos.',
-                'data' => $today->copy()->addDays(5)->toDateString(),
+                'data' => $estaSemana(5),
                 'hora' => '09:00',
                 'tipo' => TipoCompromisso::REUNIAO->value,
                 'status' => StatusCompromisso::PENDENTE->value,
+            ],
+            [
+                'email' => 'teste@email.com',
+                'titulo' => 'Compromisso concluído hoje sem notificação',
+                'descricao' => 'Registro concluído para validar filtro de status.',
+                'data' => $today->toDateString(),
+                'hora' => '18:10',
+                'tipo' => TipoCompromisso::COMPROMISSO->value,
+                'status' => StatusCompromisso::CONCLUIDO->value,
             ],
             [
                 'email' => 'funcionario@example.com',
@@ -150,7 +241,7 @@ class CompromissoSeeder extends Seeder
                 'email' => 'teste@email.com',
                 'titulo' => 'Compromisso cancelado de teste',
                 'descricao' => 'Registro mantido para validar status cancelado no calendário.',
-                'data' => $today->copy()->addDays(4)->toDateString(),
+                'data' => $estaSemana(4),
                 'hora' => '17:00',
                 'tipo' => TipoCompromisso::COMPROMISSO->value,
                 'status' => StatusCompromisso::CANCELADO->value,

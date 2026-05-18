@@ -105,64 +105,16 @@ function isSameDay(d1: Date, d2: Date) {
   );
 }
 
-function endOfDay(date: Date) {
-  const end = new Date(date);
-  end.setHours(23, 59, 59, 999);
-
-  return end;
-}
-
-function startOfDay(date: Date) {
-  const start = new Date(date);
-  start.setHours(0, 0, 0, 0);
-
-  return start;
-}
-
-function startOfWeek(date: Date) {
-  const start = startOfDay(date);
-  start.setDate(start.getDate() - start.getDay());
-
-  return start;
-}
-
-function startOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0, 0);
-}
-
-function endOfWeek(date: Date) {
-  const end = endOfDay(date);
-  const day = end.getDay();
-  const daysUntilSaturday = 6 - day;
-
-  end.setDate(end.getDate() + daysUntilSaturday);
-
-  return end;
-}
-
-function endOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
-}
-
-function getPeriodEnd(period: AgendaPeriod, date: Date) {
-  if (period === "today") return endOfDay(date);
-  if (period === "week") return endOfWeek(date);
-
-  return endOfMonth(date);
-}
-
-function getPeriodStart(period: AgendaPeriod, date: Date) {
-  if (period === "today") return startOfDay(date);
-  if (period === "week") return startOfWeek(date);
-
-  return startOfMonth(date);
-}
-
 function compromissoDate(compromisso: Compromisso) {
-  const [year, month, day] = compromisso.data.split("-").map(Number);
+  const datePart = compromisso.data.split(/[T\s]/)[0];
+  const [year, month, day] = datePart.split("-").map(Number);
   const [hour, minute] = (compromisso.hora || "00:00").split(":").map(Number);
 
-  return new Date(year, (month || 1) - 1, day || 1, hour || 0, minute || 0);
+  if (!year || !month || !day) {
+    return new Date();
+  }
+
+  return new Date(year, month - 1, day, hour || 0, minute || 0);
 }
 
 function formatTime(compromisso: Compromisso) {
@@ -202,13 +154,20 @@ export default function AgendaView() {
   const [open, setOpen] = useState(false);
   const [visao, setVisao] = useState<CompromissoVisao>("publica");
   const [compromissos, setCompromissos] = useState<Compromisso[]>([]);
+  const [upcomingCompromissos, setUpcomingCompromissos] = useState<
+    Compromisso[]
+  >([]);
   const [selectedEvent, setSelectedEvent] = useState<Compromisso | null>(null);
   const [viewEvent, setViewEvent] = useState<Compromisso | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Compromisso | null>(null);
-  const [loadingCompromissos, setLoadingCompromissos] = useState(true);
+  const [loadingUpcomingCompromissos, setLoadingUpcomingCompromissos] =
+    useState(true);
   const [compromissosError, setCompromissosError] = useState<string | null>(
     null,
   );
+  const [upcomingCompromissosError, setUpcomingCompromissosError] = useState<
+    string | null
+  >(null);
   const [submittingCompromisso, setSubmittingCompromisso] = useState(false);
   const [deletingCompromisso, setDeletingCompromisso] = useState(false);
   const { addNotification } = useNotifications();
@@ -222,26 +181,40 @@ export default function AgendaView() {
       ? new URLSearchParams(window.location.search).get("time")
       : null;
   const [openEdit, setOpenEdit] = useState(false);
-  const autoSelectedInitialDateRef = useRef(false);
-
   const loadCompromissos = useCallback(async () => {
     if (authLoading || !isAuthenticated) return;
 
     try {
-      setLoadingCompromissos(true);
       setCompromissosError(null);
       const data = await listCompromissos(visao);
       setCompromissos(data);
     } catch (error) {
       setCompromissosError(getApiErrorMessage(error));
-    } finally {
-      setLoadingCompromissos(false);
     }
   }, [authLoading, isAuthenticated, visao]);
 
   useEffect(() => {
     void loadCompromissos();
   }, [loadCompromissos]);
+
+  const loadUpcomingCompromissos = useCallback(async () => {
+    if (authLoading || !isAuthenticated) return;
+
+    try {
+      setLoadingUpcomingCompromissos(true);
+      setUpcomingCompromissosError(null);
+      const data = await listCompromissos(visao, { periodo: agendaPeriod });
+      setUpcomingCompromissos(data);
+    } catch (error) {
+      setUpcomingCompromissosError(getApiErrorMessage(error));
+    } finally {
+      setLoadingUpcomingCompromissos(false);
+    }
+  }, [agendaPeriod, authLoading, isAuthenticated, visao]);
+
+  useEffect(() => {
+    void loadUpcomingCompromissos();
+  }, [loadUpcomingCompromissos]);
 
   const filteredEvents = useMemo(
     () =>
@@ -256,24 +229,12 @@ export default function AgendaView() {
   );
 
   const upcomingEvents = useMemo(() => {
-    const now = new Date();
-    const periodStart = getPeriodStart(agendaPeriod, now);
-    const periodEnd = getPeriodEnd(agendaPeriod, now);
-
-    return compromissos
-      .filter((compromisso) => {
-        const eventDate = compromissoDate(compromisso);
-
-        return (
-          eventDate >= periodStart &&
-          eventDate <= periodEnd &&
-          compromisso.status !== "CANCELADO"
-        );
-      })
+    return upcomingCompromissos
+      .slice()
       .sort(
         (a, b) => compromissoDate(a).getTime() - compromissoDate(b).getTime(),
       );
-  }, [agendaPeriod, compromissos]);
+  }, [upcomingCompromissos]);
 
   const timelineTotalPages = Math.max(
     1,
@@ -289,31 +250,6 @@ export default function AgendaView() {
   useEffect(() => {
     setTimelinePage(1);
   }, [agendaPeriod, timelinePageSize, upcomingEvents.length, visao]);
-
-  useEffect(() => {
-    if (
-      autoSelectedInitialDateRef.current ||
-      loadingCompromissos ||
-      compromissos.length === 0 ||
-      filteredEvents.length > 0
-    ) {
-      return;
-    }
-
-    autoSelectedInitialDateRef.current = true;
-    const nextDate = compromissos
-      .slice()
-      .sort(
-        (a, b) => compromissoDate(a).getTime() - compromissoDate(b).getTime(),
-      )
-      .find((compromisso) => compromissoDate(compromisso) >= selectedDate);
-
-    setSelectedDate(
-      nextDate
-        ? compromissoDate(nextDate)
-        : compromissoDate(compromissos[0]),
-    );
-  }, [compromissos, filteredEvents.length, loadingCompromissos, selectedDate]);
 
   const calendarEventDates = useMemo(
     () => compromissos.map((compromisso) => compromissoDate(compromisso)),
@@ -374,6 +310,7 @@ export default function AgendaView() {
       const created = await createCompromisso(payload);
       setCompromissos((current) => [...current, created]);
       setSelectedDate(compromissoDate(created));
+      void loadUpcomingCompromissos();
       setOpen(false);
       addNotification({
         title: t("agenda.notifications.createdTitle"),
@@ -401,6 +338,7 @@ export default function AgendaView() {
         ),
       );
       setSelectedDate(compromissoDate(updated));
+      void loadUpcomingCompromissos();
       setOpenEdit(false);
       setSelectedEvent(null);
       addNotification({
@@ -424,6 +362,11 @@ export default function AgendaView() {
       setDeletingCompromisso(true);
       await deleteCompromisso(deleteTarget.id);
       setCompromissos((current) =>
+        current.filter(
+          (compromisso) => String(compromisso.id) !== String(deleteTarget.id),
+        ),
+      );
+      setUpcomingCompromissos((current) =>
         current.filter(
           (compromisso) => String(compromisso.id) !== String(deleteTarget.id),
         ),
@@ -692,7 +635,7 @@ export default function AgendaView() {
                   </Box>
 
                   <Stack sx={{ p: 2 }} spacing={0}>
-                    {loadingCompromissos && (
+                    {loadingUpcomingCompromissos && (
                       <Box sx={{ p: 2, display: "grid", gap: 1 }}>
                         <Typography color="text.secondary" fontSize="0.9rem">
                           {t("agenda.timeline.loading")}
@@ -710,16 +653,16 @@ export default function AgendaView() {
                       </Box>
                     )}
 
-                    {!loadingCompromissos && compromissosError && (
+                    {!loadingUpcomingCompromissos && upcomingCompromissosError && (
                       <Box sx={{ p: 2 }}>
                         <Typography color="error">
-                          {compromissosError}
+                          {upcomingCompromissosError}
                         </Typography>
                       </Box>
                     )}
 
-                    {!loadingCompromissos &&
-                      !compromissosError &&
+                    {!loadingUpcomingCompromissos &&
+                      !upcomingCompromissosError &&
                       upcomingEvents.length === 0 && (
                         <Box sx={{ p: 2 }}>
                           <Typography color="text.secondary">
@@ -728,8 +671,8 @@ export default function AgendaView() {
                         </Box>
                       )}
 
-                    {!loadingCompromissos &&
-                      !compromissosError &&
+                    {!loadingUpcomingCompromissos &&
+                      !upcomingCompromissosError &&
                       paginatedUpcomingEvents.map((event, idx) => {
                         const now = new Date();
                         const nowMinutes =
@@ -960,8 +903,8 @@ export default function AgendaView() {
                         );
                       })}
 
-                    {!loadingCompromissos &&
-                      !compromissosError &&
+                    {!loadingUpcomingCompromissos &&
+                      !upcomingCompromissosError &&
                       upcomingEvents.length > 0 && (
                         <Stack
                           direction={{ xs: "column", sm: "row" }}
@@ -1054,7 +997,13 @@ export default function AgendaView() {
                   />
                 </Stack>
 
-                {filteredEvents.length === 0 ? (
+                {compromissosError ? (
+                  <Box sx={{ p: 1.5 }}>
+                    <Typography color="error" fontSize="0.88rem">
+                      {compromissosError}
+                    </Typography>
+                  </Box>
+                ) : filteredEvents.length === 0 ? (
                   <Box
                     sx={{
                       borderRadius: "12px",

@@ -1,7 +1,19 @@
 "use client";
-import { Menu, Box, Stack, Typography, Divider } from "@mui/material";
+import {
+  Menu,
+  Box,
+  Stack,
+  Typography,
+  Divider,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  Button,
+} from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
 import { Icon } from "@iconify/react";
+import Link from "next/link";
+import { useState } from "react";
 
 export type Notificacao = {
   id: string;
@@ -30,25 +42,25 @@ type TipoConfig = {
 
 const tipoConfig: Record<string, TipoConfig> = {
   mencao: {
-    icon: "solar:user-bold-duotone",
+    icon: "mdi:user",
     color: "secondary",
   },
   tarefa: {
-    icon: "solar:check-circle-bold-duotone",
+    icon: "mdi:check-circle",
     color: "success",
   },
   sistema: {
-    icon: "solar:shield-check-bold-duotone",
+    icon: "mdi:shield-check",
     color: "primary",
   },
   aviso: {
-    icon: "solar:danger-triangle-bold-duotone",
+    icon: "mdi:alert-circle-outline",
     color: "warning",
   },
 };
 
 const defaultConfig: TipoConfig = {
-  icon: "solar:bell-bold-duotone",
+  icon: "mdi:bell-outline",
   color: "primary",
 };
 
@@ -62,6 +74,8 @@ export default function MenuNotificacoes({
   aoMarcarComoLida,
 }: MenuNotificacoesProps) {
   const theme = useTheme();
+  const [notificacaoSelecionada, setNotificacaoSelecionada] =
+    useState<Notificacao | null>(null);
   const naoLidas = notificacoes.filter((n) => !n.lida).length;
   const isDark = theme.palette.mode === "dark";
 
@@ -102,33 +116,35 @@ export default function MenuNotificacoes({
     },
   };
 
-  const aoClicarItem = (id: string) => () => {
-    aoMarcarComoLida(id);
+  const aoClicarItem = (item: Notificacao) => () => {
+    aoMarcarComoLida(item.id);
+    setNotificacaoSelecionada({ ...item, lida: true });
     aoFechar();
   };
 
   return (
-    <Menu
-      anchorEl={elementoAncora}
-      open={aberto}
-      onClose={aoFechar}
-      disableScrollLock
-      PaperProps={{
-        elevation: 0,
-        sx: {
-          width: 380,
-          maxWidth: "calc(100vw - 24px)",
-          borderRadius: "14px",
-          border: "1px solid",
-          borderColor: "divider",
-          bgcolor: "background.paper",
-          overflow: "hidden",
-          boxShadow: theme.shadows[8],
-        },
-      }}
-      transformOrigin={{ horizontal: "right", vertical: "top" }}
-      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-    >
+    <>
+      <Menu
+        anchorEl={elementoAncora}
+        open={aberto}
+        onClose={aoFechar}
+        disableScrollLock
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            width: 380,
+            maxWidth: "calc(100vw - 24px)",
+            borderRadius: "14px",
+            border: "1px solid",
+            borderColor: "divider",
+            bgcolor: "background.paper",
+            overflow: "hidden",
+            boxShadow: theme.shadows[8],
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
       <Box sx={{ px: 2, py: 1.5 }}>
         <Stack
           direction="row"
@@ -173,11 +189,7 @@ export default function MenuNotificacoes({
               Lidas
             </Box>
 
-            <Box
-              component="button"
-              onClick={aoLimparTodas}
-              sx={actionButtonSx}
-            >
+            <Box component="button" onClick={aoLimparTodas} sx={actionButtonSx}>
               <Icon icon="mdi:trash-can-outline" width={15} />
               Limpar
             </Box>
@@ -211,7 +223,7 @@ export default function MenuNotificacoes({
             return (
               <Box
                 key={item.id}
-                onClick={aoClicarItem(item.id)}
+                onClick={aoClicarItem(item)}
                 sx={{
                   display: "flex",
                   alignItems: "flex-start",
@@ -319,11 +331,14 @@ export default function MenuNotificacoes({
       />
       <Box sx={{ py: 1.2, textAlign: "center" }}>
         <Typography
-          component="span"
+          component={Link}
+          href="/notificacoes"
+          onClick={aoFechar}
           sx={{
             fontSize: "0.78rem",
             color: "text.disabled",
             cursor: "pointer",
+            textDecoration: "none",
             "&:hover": {
               color: "text.secondary",
             },
@@ -332,6 +347,55 @@ export default function MenuNotificacoes({
           Ver histórico completo
         </Typography>
       </Box>
-    </Menu>
+      </Menu>
+
+      <Dialog
+        open={Boolean(notificacaoSelecionada)}
+        onClose={() => setNotificacaoSelecionada(null)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogContent sx={{ pt: 3 }}>
+          <Stack spacing={1.4}>
+            <Stack direction="row" alignItems="center" gap={1.2}>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "12px",
+                  display: "grid",
+                  placeItems: "center",
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
+                  flexShrink: 0,
+                }}
+              >
+                <Icon icon="mdi:bell-outline" width={21} />
+              </Box>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography fontWeight={800} color="text.primary">
+                  {notificacaoSelecionada?.titulo}
+                </Typography>
+                {notificacaoSelecionada?.tempo && (
+                  <Typography fontSize="0.78rem" color="text.secondary">
+                    {notificacaoSelecionada.tempo}
+                  </Typography>
+                )}
+              </Box>
+            </Stack>
+
+            <Divider />
+
+            <Typography color="text.secondary" fontSize="0.94rem" lineHeight={1.7}>
+              {notificacaoSelecionada?.descricao ||
+                "Esta notificação não possui descrição."}
+            </Typography>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setNotificacaoSelecionada(null)}>Fechar</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }

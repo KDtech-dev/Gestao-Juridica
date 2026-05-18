@@ -51,6 +51,12 @@ const mainItems: NavItem[] = [
     icon: "mdi:briefcase-outline",
     href: "/cases",
   },
+  {
+    key: "notificacoes",
+    label: "Notificações",
+    icon: "mdi:bell-outline",
+    href: "/notificacoes",
+  },
 ];
 
 type SidebarItemProps = {

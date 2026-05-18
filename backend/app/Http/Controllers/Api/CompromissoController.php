@@ -23,11 +23,15 @@ class CompromissoController extends Controller
     public function index(Request $request): JsonResponse
     {
         $somenteDoUsuario = $request->query('visao') === 'pessoal';
+        $periodo = $request->query('periodo');
+        $periodo = in_array($periodo, ['today', 'week', 'month'], true)
+            ? $periodo
+            : null;
 
         return response()->json([
             'success' => true,
             'data' => CompromissoResource::collection(
-                $this->service->listar($somenteDoUsuario)
+                $this->service->listar($somenteDoUsuario, $periodo)
             ),
         ]);
     }

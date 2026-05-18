@@ -1,7 +1,6 @@
 "use client";
 
 import { Box, MenuItem, TextField } from "@mui/material";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { FormEvent, useMemo, useState } from "react";
 import {
   CompromissoPayload,
@@ -52,6 +51,26 @@ function toTime(value: Date | null) {
   return `${hours}:${minutes}`;
 }
 
+function toDateTimeInputValue(value: Date | null) {
+  if (!value) return "";
+
+  return `${toDate(value)}T${toTime(value)}`;
+}
+
+function fromDateTimeInputValue(value: string) {
+  if (!value) return null;
+
+  const [datePart, timePart = "00:00"] = value.split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute] = timePart.split(":").map(Number);
+
+  if (!year || !month || !day) return null;
+
+  const date = new Date(year, month - 1, day, hour || 0, minute || 0);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
 export function CompromissoForm({
   id,
   initialValues,
@@ -66,6 +85,9 @@ export function CompromissoForm({
   const [values, setValues] = useState<CompromissoFormValues>(
     resolvedInitialValues,
   );
+  const [startsAtInput, setStartsAtInput] = useState(
+    toDateTimeInputValue(resolvedInitialValues.startsAt ?? null),
+  );
   const [submitted, setSubmitted] = useState(false);
 
   function updateValue<K extends keyof CompromissoFormValues>(
@@ -79,17 +101,23 @@ export function CompromissoForm({
     event.preventDefault();
     setSubmitted(true);
 
+    const formData = new FormData(event.currentTarget);
+    const selectedStartsAt = String(formData.get("startsAt") ?? "");
     const titulo = values.titulo.trim();
-    const startsAt = values.startsAt;
+    const startsAt = fromDateTimeInputValue(selectedStartsAt);
 
     if (!titulo || !startsAt) return;
+
+    const data = toDate(startsAt);
+    const hora = toTime(startsAt);
 
     onSubmit({
       titulo,
       tipo: values.tipo,
       status: values.status,
-      data: toDate(startsAt),
-      hora: toTime(startsAt),
+      data,
+      hora,
+      starts_at: `${data} ${hora}:00`,
       descricao: values.descricao.trim(),
     });
   }
@@ -158,23 +186,24 @@ export function CompromissoForm({
       </TextField>
 
       <Box sx={{ gridColumn: "1 / -1" }}>
-        <DateTimePicker
+        <TextField
+          fullWidth
+          required
+          name="startsAt"
+          type="datetime-local"
           label={t("agenda.form.dateTimeLabel")}
-          sx={{ width: "100%" }}
-          format="dd/MM/yyyy HH:mm"
-          value={values.startsAt}
+          value={startsAtInput}
           disabled={disabled}
-          ampm={false}
-          onChange={(value) => updateValue("startsAt", value)}
+          onChange={(event) => setStartsAtInput(event.target.value)}
+          error={submitted && !fromDateTimeInputValue(startsAtInput)}
+          helperText={
+            submitted && !fromDateTimeInputValue(startsAtInput)
+              ? t("agenda.form.dateTimeRequired")
+              : undefined
+          }
           slotProps={{
-            textField: {
-              fullWidth: true,
-              required: true,
-              error: submitted && !values.startsAt,
-              helperText:
-                submitted && !values.startsAt
-                  ? t("agenda.form.dateTimeRequired")
-                  : undefined,
+            inputLabel: {
+              shrink: true,
             },
           }}
         />

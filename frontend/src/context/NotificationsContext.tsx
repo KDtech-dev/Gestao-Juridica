@@ -1,6 +1,15 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  clearNotificacoes,
+  listNotificacoes,
+  markAllNotificacoesAsRead,
+  markNotificacaoAsRead,
+  type NotificationKind,
+} from "@/services/notificacaoService";
+import { toast } from "@/utils/toast";
 
 export type NotificationItem = {
   id: string;
@@ -8,6 +17,7 @@ export type NotificationItem = {
   description: string;
   createdAt: string;
   read: boolean;
+  type?: NotificationKind;
 };
 
 type NotificationsContextValue = {
@@ -23,47 +33,36 @@ const NotificationsContext = createContext<
   NotificationsContextValue | undefined
 >(undefined);
 
-const STORAGE_KEY = "lawmanager-notifications";
-
-const seed: NotificationItem[] = [
-  {
-    id: "n1",
-    title: "Novo prazo próximo",
-    description: "Processo 0000000-00 tem audiência em 2 dias.",
-    createdAt: "2026-03-29T12:00:00.000Z",
-    read: false,
-  },
-];
-
-const getInitialNotifications = () => {
-  if (typeof window === "undefined") return seed;
-
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? (JSON.parse(stored) as NotificationItem[]) : seed;
-  } catch {
-    localStorage.removeItem(STORAGE_KEY);
-    return seed;
-  }
-};
-
 export function NotificationsProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(
-    getInitialNotifications,
-  );
+  const { isAuthenticated, loading } = useAuth();
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
 
   useEffect(() => {
-    if (notifications.length === 0) {
-      localStorage.removeItem(STORAGE_KEY);
+    if (loading) return;
+
+    if (!isAuthenticated) {
+      queueMicrotask(() => setNotifications([]));
       return;
     }
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
-  }, [notifications]);
+    let active = true;
+
+    listNotificacoes()
+      .then((items) => {
+        if (active) setNotifications(items);
+      })
+      .catch(() => {
+        if (active) setNotifications([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isAuthenticated, loading]);
 
   const value = useMemo<NotificationsContextValue>(() => {
     return {
@@ -71,31 +70,38 @@ export function NotificationsProvider({
       unreadCount: notifications.filter((n) => !n.read).length,
 
       addNotification: ({ title, description }) => {
-        setNotifications((prev) => [
-          {
-            id: `n${Date.now()}`,
-            title,
-            description,
-            createdAt: new Date().toISOString(),
-            read: false,
-          },
-          ...prev,
-        ]);
+        const message = description ? `${title}: ${description}` : title;
+        const isError = /erro|error|falha/i.test(title);
+
+        if (isError) {
+          toast.error(message);
+          return;
+        }
+
+        toast.success(message);
       },
 
       markAsRead: (id) => {
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
         );
+        void markNotificacaoAsRead(id).catch(() => {
+          void listNotificacoes().then(setNotifications);
+        });
       },
 
       markAllAsRead: () => {
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+        void markAllNotificacoesAsRead().catch(() => {
+          void listNotificacoes().then(setNotifications);
+        });
       },
 
       clearAll: () => {
         setNotifications([]);
-        localStorage.removeItem(STORAGE_KEY);
+        void clearNotificacoes().catch(() => {
+          void listNotificacoes().then(setNotifications);
+        });
       },
     };
   }, [notifications]);

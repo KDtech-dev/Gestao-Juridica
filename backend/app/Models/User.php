@@ -72,4 +72,9 @@ class User extends Authenticatable
     {
         return $this->hasRole('advogado');
     }
+
+    public function notificacoes()
+    {
+        return $this->hasMany(Notificacao::class, 'usuario_id');
+    }
 }

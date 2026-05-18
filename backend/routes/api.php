@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CompromissoController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PublicacaoController;
 use App\Http\Controllers\Api\CategoriaController;
+use App\Http\Controllers\Api\NotificacaoController;
 
 
 Route::prefix('auth')->group(function () {
@@ -65,6 +66,26 @@ Route::middleware('auth:sanctum')->group(function () {
         'compromissos',
         CompromissoController::class
     )->except(['create', 'edit']);
+
+    Route::get('notificacoes', [
+        NotificacaoController::class,
+        'index'
+    ]);
+
+    Route::patch('notificacoes/lidas', [
+        NotificacaoController::class,
+        'marcarTodasComoLidas'
+    ]);
+
+    Route::patch('notificacoes/{notificacao}/lida', [
+        NotificacaoController::class,
+        'marcarComoLida'
+    ]);
+
+    Route::delete('notificacoes', [
+        NotificacaoController::class,
+        'limpar'
+    ]);
 
 
     Route::middleware(

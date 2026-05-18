@@ -12,6 +12,7 @@ export type CompromissoTipo =
   | "PRAZO"
   | "REUNIAO";
 export type CompromissoVisao = "publica" | "pessoal";
+export type CompromissoPeriodo = "today" | "week" | "month";
 
 export type Compromisso = {
   id: number | string;
@@ -37,6 +38,7 @@ export type CompromissoPayload = {
   descricao?: string;
   data: string;
   hora?: string;
+  starts_at?: string;
   tipo: CompromissoTipo;
   status?: CompromissoStatus;
 };
@@ -51,6 +53,24 @@ function asOptionalString(value: unknown): string | null {
   if (typeof value === "string") return value;
   if (typeof value === "number") return String(value);
   return null;
+}
+
+function normalizeDate(value: unknown): string {
+  const raw = asOptionalString(value);
+
+  if (!raw) return "";
+
+  const datePart = raw.split(/[T\s]/)[0];
+
+  return /^\d{4}-\d{2}-\d{2}$/.test(datePart) ? datePart : raw;
+}
+
+function normalizeTime(value: unknown): string | null {
+  const raw = asOptionalString(value);
+
+  if (!raw) return null;
+
+  return raw.slice(0, 5);
 }
 
 function normalizeTipo(value: unknown): CompromissoTipo {
@@ -85,8 +105,8 @@ function normalizeCompromisso(raw: unknown): Compromisso {
     id: typeof id === "number" || typeof id === "string" ? id : "",
     titulo: asOptionalString(obj.titulo) ?? "",
     descricao: asOptionalString(obj.descricao),
-    data: asOptionalString(obj.data) ?? new Date().toISOString().slice(0, 10),
-    hora: asOptionalString(obj.hora),
+    data: normalizeDate(obj.data),
+    hora: normalizeTime(obj.hora),
     tipo: normalizeTipo(obj.tipo),
     status: normalizeStatus(obj.status),
     anexo: asOptionalString(obj.anexo),
@@ -115,9 +135,21 @@ function normalizeList(raw: unknown): Compromisso[] {
   return items.map(normalizeCompromisso);
 }
 
-export async function listCompromissos(visao: CompromissoVisao = "publica") {
+type ListCompromissosOptions = {
+  periodo?: CompromissoPeriodo;
+};
+
+export async function listCompromissos(
+  visao: CompromissoVisao = "publica",
+  options: ListCompromissosOptions = {},
+) {
+  const params = {
+    ...(visao === "pessoal" ? { visao: "pessoal" } : {}),
+    ...(options.periodo ? { periodo: options.periodo } : {}),
+  };
+
   const res = await api.get("/compromissos", {
-    params: visao === "pessoal" ? { visao: "pessoal" } : undefined,
+    params: Object.keys(params).length > 0 ? params : undefined,
   });
 
   return normalizeList(res.data);

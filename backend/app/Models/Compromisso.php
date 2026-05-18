@@ -28,4 +28,9 @@ class Compromisso extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function notificacoes()
+    {
+        return $this->hasMany(Notificacao::class);
+    }
 }

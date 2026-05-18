@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             CategoriaSeeder::class,
             PublicacaoSeeder::class,
             CompromissoSeeder::class,
+            NotificacaoSeeder::class,
         ]);
     }
 }
