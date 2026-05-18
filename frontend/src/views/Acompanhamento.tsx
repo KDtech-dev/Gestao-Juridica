@@ -158,9 +158,10 @@ export default function AcompanhamentoView({
 
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
           <Stack
-            direction="row"
+            direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
-            alignItems="center"
+            alignItems={{ xs: "flex-start", sm: "center" }}
+            gap={1.5}
             mb={2.2}
           >
             <Box>
@@ -172,7 +173,11 @@ export default function AcompanhamentoView({
               </Typography>
             </Box>
 
-            <Stack direction="row" spacing={1} alignItems="center">
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              spacing={1}
+              alignItems={{ xs: "flex-start", sm: "center" }}
+            >
               <Chip
                 label={status}
                 sx={{

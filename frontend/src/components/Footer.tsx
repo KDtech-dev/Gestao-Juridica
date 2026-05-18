@@ -11,31 +11,31 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
-import { teamSpecialties } from "@/data/team";
 import { useState } from "react";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
+import { useTranslations } from "next-intl";
+
+export const logoSrc = "/logo.png";
 
 export function Footer() {
+  const t = useTranslations("public.footer");
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openTerms, setOpenTerms] = useState(false);
+  const specialties = t.raw("specialties.items") as string[];
 
   const telefone = "5533999377986";
 
   const email = "contato@centraljuridica.com.br";
 
-  const mensagem = "Olá, gostaria de agendar uma consulta jurídica.";
+  const mensagem = t("whatsappMessage");
   const whatsappHref = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-
-  // backend/storage/app/public/logo.png -> normalmente acessível como /storage/logo.png no Laravel
-  const logoSrc = "/logo.png";
 
   return (
     <Box
       component="footer"
       sx={{ bgcolor: "#0b1220", color: "rgba(255,255,255,0.92)" }}
     >
-      {/* CTA acima do footer */}
       <Box
         sx={{
           borderTop: "1px solid rgba(255,255,255,0.08)",
@@ -64,7 +64,7 @@ export function Footer() {
                   fontSize: { xs: "1.6rem", md: "2.1rem" },
                 }}
               >
-                Agende sua primeira consulta jurídica sem custo.
+                {t("cta.title")}
               </Typography>
               <Typography
                 color="rgba(255,255,255,0.7)"
@@ -74,8 +74,7 @@ export function Footer() {
                   lineHeight: 1.65,
                 }}
               >
-                Atendimentos com análise técnica e orientação estratégica, com
-                clareza desde o primeiro contato.
+                {t("cta.subtitle")}
               </Typography>
             </Box>
 
@@ -104,23 +103,20 @@ export function Footer() {
                 },
               }}
             >
-              Falar no WhatsApp
+              {t("cta.whatsapp")}
             </Button>
           </Stack>
         </Container>
       </Box>
 
-      {/* Linha sutil separando CTA e footer principal */}
       <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.08)" }} />
 
-      {/* Footer principal em 4 colunas */}
       <Container
         maxWidth="xl"
         disableGutters
         sx={{ px: { xs: 2, md: 3 }, py: { xs: 7, md: 10 } }}
       >
         <Grid container spacing={{ xs: 4, md: 6 }} alignItems="flex-start">
-          {/* Coluna 1 */}
           <Grid size={{ xs: 12, md: 3.5 }}>
             <Stack spacing={2.2}>
               <Stack direction="row" spacing={1.25} alignItems="center">
@@ -138,10 +134,17 @@ export function Footer() {
                 />
 
                 <Box>
-                  <Typography fontWeight={900} sx={{ fontSize: "1.05rem" }}>
+                  <Typography
+                    fontWeight={900}
+                    sx={{ fontSize: "1.25rem", lineHeight: 0.5, mb: 0.5 }}
+                  >
                     Central Jurídica
                   </Typography>
-                  <Typography variant="caption" color="rgba(255,255,255,0.6)">
+                  <Typography
+                    variant="caption"
+                    color="rgba(255,255,255,0.6)"
+                    sx={{ lineHeight: 0.5, fontSize: "0.95rem" }}
+                  >
                     Advocacia & Consultoria
                   </Typography>
                 </Box>
@@ -151,8 +154,7 @@ export function Footer() {
                 color="rgba(255,255,255,0.65)"
                 sx={{ lineHeight: 1.7 }}
               >
-                Atuação estratégica para pessoas e empresas, com foco em
-                segurança jurídica e resultados.
+                {t("description")}
               </Typography>
 
               <Stack
@@ -189,11 +191,10 @@ export function Footer() {
             </Stack>
           </Grid>
 
-          {/* Coluna 2 */}
           <Grid size={{ xs: 12, sm: 6, md: 2.5 }}>
             <Stack spacing={1.4}>
               <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
-                Especialidades
+                {t("specialties.title")}
               </Typography>
 
               <Stack
@@ -201,8 +202,8 @@ export function Footer() {
                 spacing={0.9}
                 sx={{ listStyle: "none", p: 0, m: 0 }}
               >
-                {teamSpecialties.map((esp) => (
-                  <Box key={esp} component="li">
+                {specialties.map((specialty) => (
+                  <Box key={specialty} component="li">
                     <Typography
                       color="rgba(255,255,255,0.66)"
                       sx={{
@@ -211,7 +212,7 @@ export function Footer() {
                         lineHeight: 1.55,
                       }}
                     >
-                      {esp}
+                      {specialty}
                     </Typography>
                   </Box>
                 ))}
@@ -219,11 +220,10 @@ export function Footer() {
             </Stack>
           </Grid>
 
-          {/* Coluna 3 */}
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Stack spacing={1.4}>
               <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
-                Navegação
+                {t("navigation.title")}
               </Typography>
 
               <Stack
@@ -232,17 +232,38 @@ export function Footer() {
                 sx={{ listStyle: "none", p: 0, m: 0 }}
               >
                 {[
-                  { label: "Início", href: "/" },
-                  { label: "Sobre", href: "/sobre" },
-                  { label: "Publicações", href: "/posts" },
-                  { label: "Contato", href: whatsappHref },
-                  { label: "Política de Privacidade", onClick: () => setOpenPrivacy(true) },
-                  { label: "Termos", onClick: () => setOpenTerms(true) },
+                  { label: t("navigation.home"), href: "/" },
+                  { label: t("navigation.about"), href: "/sobre" },
+                  { label: t("navigation.publications"), href: "/posts" },
+                  { label: t("navigation.contact"), href: whatsappHref },
+                  {
+                    label: t("navigation.privacy"),
+                    onClick: () => setOpenPrivacy(true),
+                  },
+                  {
+                    label: t("navigation.terms"),
+                    onClick: () => setOpenTerms(true),
+                  },
                 ].map((item) => (
                   <Box key={item.label} component="li">
                     <MuiLink
-                      component="button"
-                      type="button"
+                      component={
+                        item.href
+                          ? item.href.startsWith("http")
+                            ? "a"
+                            : Link
+                          : "button"
+                      }
+                      href={item.href}
+                      type={item.onClick ? "button" : undefined}
+                      target={
+                        item.href?.startsWith("http") ? "_blank" : undefined
+                      }
+                      rel={
+                        item.href?.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
                       underline="none"
                       onClick={item.onClick}
                       color="rgba(255,255,255,0.7)"
@@ -270,16 +291,14 @@ export function Footer() {
                     </MuiLink>
                   </Box>
                 ))}
-
               </Stack>
             </Stack>
           </Grid>
 
-          {/* Coluna 4 */}
           <Grid size={{ xs: 12, md: 2.999 }}>
             <Stack spacing={1.4}>
               <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
-                Contato
+                {t("contact.title")}
               </Typography>
 
               <Stack spacing={1.1}>
@@ -321,7 +340,6 @@ export function Footer() {
           </Grid>
         </Grid>
 
-        {/* Barra inferior */}
         <Box
           sx={{
             mt: { xs: 6, md: 8 },
@@ -329,7 +347,6 @@ export function Footer() {
             pt: { xs: 3.5, md: 4 },
           }}
         >
-
           <Grid container spacing={2} alignItems="center">
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
@@ -337,8 +354,8 @@ export function Footer() {
                 color="rgba(255,255,255,0.55)"
                 sx={{ fontWeight: 850 }}
               >
-                © {new Date().getFullYear()} Central Jurídica — Todos os
-                direitos reservados
+                © {new Date().getFullYear()} Central Jurídica -{" "}
+                {t("copyrightRights")}
               </Typography>
             </Grid>
 
@@ -361,7 +378,7 @@ export function Footer() {
                     "&:hover": { color: "rgba(255,255,255,0.92)", opacity: 1 },
                   }}
                 >
-                  Política de Privacidade
+                  {t("navigation.privacy")}
                 </MuiLink>
 
                 <MuiLink
@@ -376,16 +393,15 @@ export function Footer() {
                     "&:hover": { color: "rgba(255,255,255,0.92)", opacity: 1 },
                   }}
                 >
-                  Termos
+                  {t("navigation.terms")}
                 </MuiLink>
-
 
                 <Typography
                   variant="body2"
                   color="rgba(255,255,255,0.55)"
                   sx={{ fontWeight: 850 }}
                 >
-                  Desenvolvido por{" "}
+                  {t("developedBy")}{" "}
                   <span style={{ color: "rgba(255,255,255,0.78)" }}>
                     KDtech
                   </span>
@@ -396,9 +412,11 @@ export function Footer() {
         </Box>
       </Container>
 
-      <PrivacyPolicyModal open={openPrivacy} onClose={() => setOpenPrivacy(false)} />
+      <PrivacyPolicyModal
+        open={openPrivacy}
+        onClose={() => setOpenPrivacy(false)}
+      />
       <PrivacyTermsModal open={openTerms} onClose={() => setOpenTerms(false)} />
     </Box>
   );
 }
-

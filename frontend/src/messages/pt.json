@@ -170,7 +170,7 @@
   },
 
   "sidebar": {
-    "brand": "Central jurídica",
+   
     "mainMenu": "Menu Principal",
     "items": {
       "agenda": "Agenda",
@@ -188,12 +188,47 @@
 
   "public": {
     "header": {
-      "brand": "Central jurídica",
-      "subtitle": "Advocacia & Consultoria",
+      "home": "Início",
       "publications": "Publicações",
       "team": "Equipe",
       "access": "Acessar",
       "login": "Login"
+    },
+    "footer": {
+      "cta": {
+        "title": "Agende sua primeira consulta jurídica sem custo.",
+        "subtitle": "Atendimentos com análise técnica e orientação estratégica, com clareza desde o primeiro contato.",
+        "whatsapp": "Falar no WhatsApp"
+      },
+      "whatsappMessage": "Olá, gostaria de agendar uma consulta jurídica.",
+      "description": "Atuação estratégica para pessoas e empresas, com foco em segurança jurídica e resultados.",
+      "specialties": {
+        "title": "Especialidades",
+        "items": [
+          "Direito Tributário",
+          "Direito Empresarial",
+          "Direito Trabalhista",
+          "Direito Civil",
+          "Direito Digital",
+          "Direito Imobiliário",
+          "Direito de Família",
+          "Contratos"
+        ]
+      },
+      "navigation": {
+        "title": "Navegação",
+        "home": "Início",
+        "about": "Sobre",
+        "publications": "Publicações",
+        "contact": "Contato",
+        "privacy": "Política de Privacidade",
+        "terms": "Termos"
+      },
+      "contact": {
+        "title": "Contato"
+      },
+      "copyrightRights": "Todos os direitos reservados",
+      "developedBy": "Desenvolvido por"
     },
     "publications": {
       "sectionTitle": "Publicações",

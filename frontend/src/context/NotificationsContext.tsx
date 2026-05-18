@@ -35,14 +35,33 @@ const seed: NotificationItem[] = [
   },
 ];
 
+const getInitialNotifications = () => {
+  if (typeof window === "undefined") return seed;
+
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    return stored ? (JSON.parse(stored) as NotificationItem[]) : seed;
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return seed;
+  }
+};
+
 export function NotificationsProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>(seed);
+  const [notifications, setNotifications] = useState<NotificationItem[]>(
+    getInitialNotifications,
+  );
 
   useEffect(() => {
+    if (notifications.length === 0) {
+      localStorage.removeItem(STORAGE_KEY);
+      return;
+    }
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications));
   }, [notifications]);
 
@@ -50,6 +69,7 @@ export function NotificationsProvider({
     return {
       notifications,
       unreadCount: notifications.filter((n) => !n.read).length,
+
       addNotification: ({ title, description }) => {
         setNotifications((prev) => [
           {
@@ -62,15 +82,21 @@ export function NotificationsProvider({
           ...prev,
         ]);
       },
+
       markAsRead: (id) => {
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
         );
       },
+
       markAllAsRead: () => {
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       },
-      clearAll: () => setNotifications([]),
+
+      clearAll: () => {
+        setNotifications([]);
+        localStorage.removeItem(STORAGE_KEY);
+      },
     };
   }, [notifications]);
 

@@ -16,6 +16,8 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.2.2",
+    "@iconify-react/ic": "^1.0.2",
+    "@iconify-react/mdi": "^1.0.2",
     "@iconify/react": "^6.0.2",
     "@mui/material": "^7.3.9",
     "@mui/system": "^7.3.9",

@@ -2,11 +2,13 @@
 
 import { Box, Container, Typography, Button, Stack } from "@mui/material";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
 import { useAuth } from "@/hooks/useAuth";
 import { getRouteByRole } from "@/utils/redirectByRole";
+import { logoSrc } from "./Footer";
+import { useTranslations } from "next-intl";
 
 export function Header() {
+  const t = useTranslations("public.header");
   const { isAuthenticated, user, loading } = useAuth();
   const accessHref =
     isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
@@ -27,14 +29,50 @@ export function Header() {
           justifyContent="space-between"
           py={2}
         >
-          <Stack direction="row" spacing={2} alignItems="center">
-            <Box sx={{ bgcolor: "#2563eb", p: 1, borderRadius: 2 }}>
-              <Icon icon="mdi:scale-balance" color="#fff" />
-            </Box>
+          <Stack
+            component={Link}
+            href="/"
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            sx={{
+              minWidth: 0,
+              color: "text.primary",
+              textDecoration: "none",
+              flexShrink: 0,
+            }}
+          >
+            <Box
+              component="img"
+              src={logoSrc}
+              alt="Central Jurídica"
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: 2,
+                objectFit: "contain",
+                filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.35))",
+              }}
+            />
 
-            <Box>
-              <Typography fontWeight="bold">Central jurídica</Typography>
-              <Typography variant="caption" color="text.secondary">
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Typography
+                fontWeight={900}
+                sx={{ fontSize: "0.95rem", lineHeight: 1.1 }}
+              >
+                Central Jurídica
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 0.35, lineHeight: 1.1, fontSize: "0.75rem" }}
+              >
                 Advocacia & Consultoria
               </Typography>
             </Box>
@@ -49,6 +87,19 @@ export function Header() {
             >
               <Button
                 component={Link}
+                href="/"
+                variant="text"
+                sx={{
+                  color: "text.primary",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  px: { xs: 1, sm: 1.5 },
+                }}
+              >
+                {t("home")}
+              </Button>
+              <Button
+                component={Link}
                 href="/posts"
                 variant="text"
                 sx={{
@@ -58,7 +109,7 @@ export function Header() {
                   px: { xs: 1, sm: 1.5 },
                 }}
               >
-                Publicações
+                {t("publications")}
               </Button>
               <Button
                 component={Link}
@@ -71,7 +122,7 @@ export function Header() {
                   px: { xs: 1, sm: 1.5 },
                 }}
               >
-                Equipe
+                {t("team")}
               </Button>
             </Stack>
 
@@ -87,7 +138,7 @@ export function Header() {
                   "&:hover": { bgcolor: "primary.dark" },
                 }}
               >
-                {isAuthenticated ? "Acessar" : "Login"}
+                {isAuthenticated ? t("access") : t("login")}
               </Button>
             )}
           </Stack>

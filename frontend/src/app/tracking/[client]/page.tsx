@@ -37,7 +37,7 @@ export default async function TrackingPage({
       {!isClientView && <SidebarDashboard activeKey="clientes" />}
 
       <Box sx={{ ml: { xs: 0, md: isClientView ? 0 : "280px" }, minWidth: 0 }}>
-        <HeaderDashboard />
+        <HeaderDashboard showMenuButton={!isClientView} />
 
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
           <Box mb={2.2}>

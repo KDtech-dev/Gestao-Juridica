@@ -11,6 +11,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -105,9 +106,10 @@ export default function CasesView() {
 
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
           <Stack
-            direction="row"
+            direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
-            alignItems="center"
+            alignItems={{ xs: "flex-start", sm: "center" }}
+            gap={1.5}
             mb={2.2}
           >
             <Box>
@@ -149,9 +151,10 @@ export default function CasesView() {
             }}
           >
             <Stack
-              direction="row"
+              direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
-              alignItems="center"
+              alignItems={{ xs: "stretch", sm: "center" }}
+              gap={1.2}
               sx={{
                 px: 2,
                 py: 1.8,
@@ -198,113 +201,119 @@ export default function CasesView() {
                   borderColor: "divider",
                   color: "text.secondary",
                   minWidth: 100,
+                  width: { xs: "100%", sm: "auto" },
                 }}
               >
                 Filtros
               </Button>
             </Stack>
 
-            <Table>
-              <TableHead sx={{ bgcolor: "background.paper" }}>
-                <TableRow>
-                  <TableCell sx={headCellStyle}>CLIENTE</TableCell>
-                  <TableCell sx={headCellStyle}>TÍTULO DO CASO</TableCell>
-                  <TableCell sx={headCellStyle}>NÚMERO DO PROCESSO</TableCell>
-                  <TableCell sx={headCellStyle}>PRÓXIMA AUDIÊNCIA</TableCell>
-                  <TableCell sx={headCellStyle}>ADVOGADO</TableCell>
-                  <TableCell
-                    sx={{
-                      ...headCellStyle,
-                      textAlign: "right",
-                      pr: 3,
-                    }}
-                  >
-                    AÇÕES
-                  </TableCell>
-                </TableRow>
-              </TableHead>
+            <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+              <Table sx={{ minWidth: 860 }}>
+                <TableHead sx={{ bgcolor: "background.paper" }}>
+                  <TableRow>
+                    <TableCell sx={headCellStyle}>CLIENTE</TableCell>
+                    <TableCell sx={headCellStyle}>TÍTULO DO CASO</TableCell>
+                    <TableCell sx={headCellStyle}>
+                      NÚMERO DO PROCESSO
+                    </TableCell>
+                    <TableCell sx={headCellStyle}>PRÓXIMA AUDIÊNCIA</TableCell>
+                    <TableCell sx={headCellStyle}>ADVOGADO</TableCell>
+                    <TableCell
+                      sx={{
+                        ...headCellStyle,
+                        textAlign: "right",
+                        pr: 3,
+                      }}
+                    >
+                      AÇÕES
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
 
-              <TableBody>
-                {loadingCases && (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={rowCellStyle}>
-                      <Typography color="text.secondary">
-                        Carregando casos...
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!loadingCases && casesError && (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={rowCellStyle}>
-                      <Typography color="error">{casesError}</Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!loadingCases && !casesError && cases.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={6} sx={rowCellStyle}>
-                      <Typography color="text.secondary">
-                        Nenhum caso encontrado.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!loadingCases &&
-                  !casesError &&
-                  cases.map((caseItem) => {
-                    return (
-                      <TableRow key={caseItem.id}>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography fontWeight={600} color="text.primary">
-                            {caseItem.clientName}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.primary">
-                            {caseItem.title}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.secondary">
-                            {caseItem.processNumber || "-"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.primary">
-                            {caseItem.nextHearing || "Sem audiência definida"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.primary">
-                            {caseItem.lawyerName || "-"}
-                          </Typography>
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            ...rowCellStyle,
-                            textAlign: "right",
-                            pr: 2,
-                          }}
-                        >
-                          <IconButton
-                            sx={actionBtnStyle}
-                            component={Link}
-                            href={`/acompanhamento/${caseItem.clientSlug}/${caseItem.caseSlug}`}
+                <TableBody>
+                  {loadingCases && (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={rowCellStyle}>
+                        <Typography color="text.secondary">
+                          Carregando casos...
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loadingCases && casesError && (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={rowCellStyle}>
+                        <Typography color="error">{casesError}</Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loadingCases && !casesError && cases.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={rowCellStyle}>
+                        <Typography color="text.secondary">
+                          Nenhum caso encontrado.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loadingCases &&
+                    !casesError &&
+                    cases.map((caseItem) => {
+                      return (
+                        <TableRow key={caseItem.id}>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography fontWeight={600} color="text.primary">
+                              {caseItem.clientName}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography color="text.primary">
+                              {caseItem.title}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography color="text.secondary">
+                              {caseItem.processNumber || "-"}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography color="text.primary">
+                              {caseItem.nextHearing || "Sem audiência definida"}
+                            </Typography>
+                          </TableCell>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography color="text.primary">
+                              {caseItem.lawyerName || "-"}
+                            </Typography>
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              ...rowCellStyle,
+                              textAlign: "right",
+                              pr: 2,
+                            }}
                           >
-                            <Icon icon="mdi:eye-outline" width={19} />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
+                            <IconButton
+                              sx={actionBtnStyle}
+                              component={Link}
+                              href={`/acompanhamento/${caseItem.clientSlug}/${caseItem.caseSlug}`}
+                            >
+                              <Icon icon="mdi:eye-outline" width={19} />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
             <Stack
-              direction="row"
+              direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
-              alignItems="center"
+              alignItems={{ xs: "stretch", sm: "center" }}
+              gap={1.5}
               sx={{
                 px: 2,
                 py: 2,

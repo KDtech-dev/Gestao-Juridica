@@ -170,7 +170,7 @@
   },
 
   "sidebar": {
-    "brand": "Legal hub",
+   
     "mainMenu": "Main Menu",
     "items": {
       "agenda": "Calendar",
@@ -188,12 +188,47 @@
 
   "public": {
     "header": {
-      "brand": "Legal hub",
-      "subtitle": "Law Firm & Consulting",
+      "home": "Home",
       "publications": "Publications",
       "team": "Team",
       "access": "Open",
       "login": "Login"
+    },
+    "footer": {
+      "cta": {
+        "title": "Schedule your first legal consultation at no cost.",
+        "subtitle": "Service with technical analysis and strategic guidance, with clarity from the first contact.",
+        "whatsapp": "Talk on WhatsApp"
+      },
+      "whatsappMessage": "Hello, I would like to schedule a legal consultation.",
+      "description": "Strategic legal support for individuals and companies, focused on legal certainty and results.",
+      "specialties": {
+        "title": "Specialties",
+        "items": [
+          "Tax Law",
+          "Business Law",
+          "Labor Law",
+          "Civil Law",
+          "Digital Law",
+          "Real Estate Law",
+          "Family Law",
+          "Contracts"
+        ]
+      },
+      "navigation": {
+        "title": "Navigation",
+        "home": "Home",
+        "about": "About",
+        "publications": "Publications",
+        "contact": "Contact",
+        "privacy": "Privacy Policy",
+        "terms": "Terms"
+      },
+      "contact": {
+        "title": "Contact"
+      },
+      "copyrightRights": "All rights reserved",
+      "developedBy": "Developed by"
     },
     "publications": {
       "sectionTitle": "Publications",

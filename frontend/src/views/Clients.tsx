@@ -14,6 +14,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   TextField,
@@ -120,9 +121,10 @@ export default function ClientesView() {
 
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
           <Stack
-            direction="row"
+            direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
-            alignItems="center"
+            alignItems={{ xs: "flex-start", sm: "center" }}
+            gap={1.5}
             mb={2.2}
           >
             <Box>
@@ -195,9 +197,10 @@ export default function ClientesView() {
             }}
           >
             <Stack
-              direction="row"
+              direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
-              alignItems="center"
+              alignItems={{ xs: "stretch", sm: "center" }}
+              gap={1.2}
               sx={{
                 px: 2,
                 py: 1.8,
@@ -242,139 +245,151 @@ export default function ClientesView() {
                   borderColor: "divider",
                   color: "text.secondary",
                   minWidth: 100,
+                  width: { xs: "100%", sm: "auto" },
                 }}
               >
                 Filtros
               </Button>
             </Stack>
 
-            <Table>
-              <TableHead sx={{ bgcolor: "background.paper" }}>
-                <TableRow>
-                  <TableCell sx={headCellStyle}>NOME DO CLIENTE</TableCell>
-                  <TableCell sx={headCellStyle}>DETALHES DE CONTATO</TableCell>
-                  <TableCell sx={headCellStyle}>CPF / CNPJ</TableCell>
-                  <TableCell sx={headCellStyle}>STATUS</TableCell>
-                  <TableCell
-                    sx={{
-                      ...headCellStyle,
-                      textAlign: "right",
-                      pr: 3,
-                    }}
-                  >
-                    AÇÕES
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-
-              <TableBody>
-                {loading && (
+            <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+              <Table sx={{ minWidth: 760 }}>
+                <TableHead sx={{ bgcolor: "background.paper" }}>
                   <TableRow>
-                    <TableCell colSpan={5} sx={rowCellStyle}>
-                      <Typography color="text.secondary">
-                        Carregando clientes...
-                      </Typography>
+                    <TableCell sx={headCellStyle}>NOME DO CLIENTE</TableCell>
+                    <TableCell sx={headCellStyle}>
+                      DETALHES DE CONTATO
+                    </TableCell>
+                    <TableCell sx={headCellStyle}>CPF / CNPJ</TableCell>
+                    <TableCell sx={headCellStyle}>STATUS</TableCell>
+                    <TableCell
+                      sx={{
+                        ...headCellStyle,
+                        textAlign: "right",
+                        pr: 3,
+                      }}
+                    >
+                      AÇÕES
                     </TableCell>
                   </TableRow>
-                )}
-                {!loading && error && (
-                  <TableRow>
-                    <TableCell colSpan={5} sx={rowCellStyle}>
-                      <Typography color="error">{error}</Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!loading && !error && clients.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={5} sx={rowCellStyle}>
-                      <Typography color="text.secondary">
-                        Nenhum cliente encontrado.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {!loading &&
-                  !error &&
-                  clients.map((client) => {
-                    const { color, bg } = statusStyles(client.status);
+                </TableHead>
 
-                    return (
-                      <TableRow key={client.id ?? client.slug}>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography
-                            fontWeight={600}
-                            color="text.primary"
-                            mb={0.3}
-                          >
-                            {client.name}
-                          </Typography>
-                          <Typography color="text.secondary" fontSize="0.86rem">
-                            Contato: {client.contactName || "-"}
-                          </Typography>
-                        </TableCell>
+                <TableBody>
+                  {loading && (
+                    <TableRow>
+                      <TableCell colSpan={5} sx={rowCellStyle}>
+                        <Typography color="text.secondary">
+                          Carregando clientes...
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loading && error && (
+                    <TableRow>
+                      <TableCell colSpan={5} sx={rowCellStyle}>
+                        <Typography color="error">{error}</Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loading && !error && clients.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={5} sx={rowCellStyle}>
+                        <Typography color="text.secondary">
+                          Nenhum cliente encontrado.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {!loading &&
+                    !error &&
+                    clients.map((client) => {
+                      const { color, bg } = statusStyles(client.status);
 
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.primary">
-                            {client.email || "-"}
-                          </Typography>
-                          <Typography color="text.secondary" fontSize="0.86rem">
-                            {client.phone || "-"}
-                          </Typography>
-                        </TableCell>
+                      return (
+                        <TableRow key={client.id ?? client.slug}>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography
+                              fontWeight={600}
+                              color="text.primary"
+                              mb={0.3}
+                            >
+                              {client.name}
+                            </Typography>
+                            <Typography
+                              color="text.secondary"
+                              fontSize="0.86rem"
+                            >
+                              Contato: {client.contactName || "-"}
+                            </Typography>
+                          </TableCell>
 
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.secondary">
-                            {client.cpfCnpj || "-"}
-                          </Typography>
-                        </TableCell>
+                          <TableCell sx={rowCellStyle}>
+                            <Typography color="text.primary">
+                              {client.email || "-"}
+                            </Typography>
+                            <Typography
+                              color="text.secondary"
+                              fontSize="0.86rem"
+                            >
+                              {client.phone || "-"}
+                            </Typography>
+                          </TableCell>
 
-                        <TableCell sx={rowCellStyle}>
-                          <Chip
-                            label={statusLabel(client.status)}
+                          <TableCell sx={rowCellStyle}>
+                            <Typography color="text.secondary">
+                              {client.cpfCnpj || "-"}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell sx={rowCellStyle}>
+                            <Chip
+                              label={statusLabel(client.status)}
+                              sx={{
+                                bgcolor: bg,
+                                color,
+                                fontWeight: 500,
+                              }}
+                            />
+                          </TableCell>
+
+                          <TableCell
                             sx={{
-                              bgcolor: bg,
-                              color,
-                              fontWeight: 500,
+                              ...rowCellStyle,
+                              textAlign: "right",
+                              pr: 2,
                             }}
-                          />
-                        </TableCell>
-
-                        <TableCell
-                          sx={{
-                            ...rowCellStyle,
-                            textAlign: "right",
-                            pr: 2,
-                          }}
-                        >
-                          <IconButton
-                            sx={actionBtnStyle}
-                            component={Link}
-                            href={`/acompanhamento/${client.slug}`}
                           >
-                            <Icon icon="mdi:eye-outline" width={19} />
-                          </IconButton>
-                          <>
                             <IconButton
                               sx={actionBtnStyle}
-                              onClick={handleOpenEditClientModal}
+                              component={Link}
+                              href={`/acompanhamento/${client.slug}`}
                             >
-                              <Icon icon="mdi:pencil-outline" width={19} />
+                              <Icon icon="mdi:eye-outline" width={19} />
                             </IconButton>
-                            <IconButton sx={actionBtnStyle}>
-                              <Icon icon="mdi:trash-can-outline" width={19} />
-                            </IconButton>
-                          </>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
+                            <>
+                              <IconButton
+                                sx={actionBtnStyle}
+                                onClick={handleOpenEditClientModal}
+                              >
+                                <Icon icon="mdi:pencil-outline" width={19} />
+                              </IconButton>
+                              <IconButton sx={actionBtnStyle}>
+                                <Icon icon="mdi:trash-can-outline" width={19} />
+                              </IconButton>
+                            </>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
             <Stack
-              direction="row"
+              direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
-              alignItems="center"
+              alignItems={{ xs: "stretch", sm: "center" }}
+              gap={1.5}
               sx={{
                 px: 2,
                 py: 2,

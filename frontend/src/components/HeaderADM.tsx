@@ -2,17 +2,16 @@
 
 import {
   Autocomplete,
-  Avatar,
   Badge,
   Box,
   IconButton,
   InputAdornment,
-  Menu,
-  MenuItem,
   Skeleton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
 import {
@@ -26,28 +25,40 @@ import { useTheme } from "@mui/material/styles";
 import { cases, listTrackedClients } from "@/data/cases";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import MenuNotificacoes, {
+  type Notificacao,
+} from "@/components/MenuNotificações";
+import UserDropdown from "@/components/Userdropdown";
 
 type Props = {
-  userName?: string;
-  userRole?: string;
   showSearch?: boolean;
+  showMenuButton?: boolean;
 };
 
 export function HeaderDashboard({
-  userName: propUserName,
-  userRole: propUserRole,
   showSearch = true,
+  showMenuButton = true,
 }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchValue, setSearchValue] = useState("");
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
   const isDark = theme.palette.mode === "dark";
-  const { notifications, unreadCount, markAsRead, markAllAsRead, clearAll } =
+  const { notifications, unreadCount, markAllAsRead, clearAll, markAsRead } =
     useNotifications();
-
   const { user, loading } = useAuth();
-
+  const handleCloseNotifications = () => setAnchorEl(null);
+  const notificacoes = useMemo<Notificacao[]>(
+    () =>
+      notifications.map((notification) => ({
+        id: notification.id,
+        titulo: notification.title,
+        descricao: notification.description,
+        lida: notification.read,
+      })),
+    [notifications],
+  );
   const searchOptions = useMemo(() => {
     const clientOptions = listTrackedClients().map((client) => ({
       label: client.name,
@@ -92,30 +103,18 @@ export function HeaderDashboard({
         <Box sx={{ flex: 1, minWidth: 0 }} />
         <Stack direction="row" alignItems="center" spacing={1.2}>
           <Skeleton variant="circular" width={36} height={36} />
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            <Skeleton variant="text" width={120} />
-            <Skeleton variant="text" width={80} />
-          </Box>
         </Stack>
       </Box>
     );
   }
 
-  if (!user && !propUserName) return null;
+  if (!user) return null;
 
-  const name = propUserName || user?.name || "Usuário";
-  const role = propUserRole || (user?.roles?.[0] ? String(user.roles[0]) : "");
-
-  const initials = (name || "")
-    .split(" ")
-    .map((p: string) => p[0] || "")
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
   const handleOpenNotifications = (event: MouseEvent<HTMLElement>) =>
     setAnchorEl(event.currentTarget);
-  const handleCloseNotifications = () => setAnchorEl(null);
-  const handleMarkNotificationAsRead = (id: string) => () => markAsRead(id);
+  const handleOpenSidebar = () => {
+    window.dispatchEvent(new CustomEvent("dashboard-sidebar:open"));
+  };
   const handleSearchInputChange = (_: unknown, value: string) =>
     setSearchValue(value);
   const handleSearchOptionChange = (
@@ -142,21 +141,49 @@ export function HeaderDashboard({
   return (
     <Box
       sx={{
-        height: 80,
+        minHeight: { xs: showSearch ? 112 : 64, md: 80 },
         bgcolor: "background.paper",
         borderBottom: "1px solid",
         borderColor: "divider",
-        px: { xs: 2, md: 4 },
+        px: { xs: 1.5, sm: 2, md: 4 },
+        py: { xs: 1, md: 0 },
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        gap: 2,
+        flexWrap: { xs: "wrap", md: "nowrap" },
+        gap: { xs: 1, md: 2 },
       }}
     >
+      {isMobile && showMenuButton && (
+        <Tooltip title="Abrir menu">
+          <IconButton
+            aria-label="Abrir menu lateral"
+            onClick={handleOpenSidebar}
+            sx={{
+              color: "text.primary",
+              border: "1px solid",
+              borderColor: "divider",
+              bgcolor: "background.paper",
+              width: 40,
+              height: 40,
+              flexShrink: 0,
+            }}
+          >
+            <Icon icon="mdi:menu" width={22} />
+          </IconButton>
+        </Tooltip>
+      )}
+
       {showSearch && (
         <Autocomplete
           freeSolo
           fullWidth
+          sx={{
+            order: { xs: 3, md: 0 },
+            flexBasis: { xs: "100%", md: "auto" },
+            maxWidth: { xs: "100%", md: 460 },
+            minWidth: { xs: 0, md: 320 },
+          }}
           options={searchOptions}
           getOptionLabel={(option) =>
             typeof option === "string" ? option : option.label
@@ -196,11 +223,11 @@ export function HeaderDashboard({
               placeholder={"Buscar clientes, processos ou tarefas..."}
               onKeyDown={handleSearchKeyDown}
               sx={{
-                maxWidth: 460,
+                maxWidth: { xs: "100%", md: 460 },
                 "& .MuiOutlinedInput-root": {
                   height: 46,
                   borderRadius: "10px",
-                  bgcolor: isDark ? "#0f172a" : "#f8fafc",
+                  bgcolor: "background.default",
                 },
                 "& .MuiOutlinedInput-notchedOutline": {
                   borderColor: "divider",
@@ -223,7 +250,7 @@ export function HeaderDashboard({
         />
       )}
 
-      <Box sx={{ flex: 1, minWidth: 0 }} />
+      <Box sx={{ flex: 1, minWidth: 0, display: { xs: "none", md: "block" } }} />
 
       <Box
         sx={{
@@ -231,6 +258,7 @@ export function HeaderDashboard({
           alignItems: "center",
           gap: 0.9,
           flexShrink: 0,
+          ml: "auto",
         }}
       >
         <Box
@@ -263,137 +291,18 @@ export function HeaderDashboard({
           }}
         />
 
-        <Box
-          sx={{
-            textAlign: "right",
-            display: { xs: "none", sm: "block" },
-            lineHeight: 1.05,
-            whiteSpace: "nowrap",
-          }}
-        >
-          <Typography
-            fontSize="0.92rem"
-            fontWeight={700}
-            color="text.primary"
-            whiteSpace="nowrap"
-          >
-            {name}
-          </Typography>
-          <Typography
-            fontSize="0.75rem"
-            color="text.secondary"
-            mt={0.18}
-            whiteSpace="nowrap"
-          >
-            {role}
-          </Typography>
-        </Box>
-
-        <Avatar
-          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&q=80"
-          alt={name}
-          sx={{
-            width: 36,
-            height: 36,
-            bgcolor: "#1d4ed8",
-            fontSize: "0.84rem",
-            ml: 0.1,
-            cursor: "pointer",
-          }}
-        >
-          {initials}
-        </Avatar>
+        <UserDropdown />
       </Box>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleCloseNotifications}
-        PaperProps={{
-          sx: {
-            width: 360,
-            borderRadius: "12px",
-            border: "1px solid",
-            borderColor: "divider",
-            bgcolor: "background.paper",
-          },
-        }}
-      >
-        <Box
-          sx={{
-            px: 1.6,
-            py: 1.2,
-            borderBottom: "1px solid",
-            borderColor: "divider",
-          }}
-        >
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Typography fontWeight={700} color="text.primary">
-              Notificações
-            </Typography>
-            <Stack direction="row" spacing={0.8}>
-              <Typography
-                fontSize="0.75rem"
-                color="primary.main"
-                sx={{ cursor: "pointer" }}
-                onClick={markAllAsRead}
-              >
-                Marcar tudo como lido
-              </Typography>
-              <Typography
-                fontSize="0.75rem"
-                color="text.secondary"
-                sx={{ cursor: "pointer" }}
-                onClick={clearAll}
-              >
-                Limpar
-              </Typography>
-            </Stack>
-          </Stack>
-        </Box>
-
-        {notifications.length === 0 ? (
-          <MenuItem disabled>
-            <Typography color="text.secondary" fontSize="0.86rem">
-              Sem notificações por enquanto.
-            </Typography>
-          </MenuItem>
-        ) : (
-          notifications.slice(0, 8).map((item) => (
-            <MenuItem
-              key={item.id}
-              onClick={handleMarkNotificationAsRead(item.id)}
-              sx={{
-                alignItems: "flex-start",
-                whiteSpace: "normal",
-                py: 1.2,
-                bgcolor: item.read
-                  ? "transparent"
-                  : isDark
-                    ? "rgba(96,165,250,0.15)"
-                    : "#eff6ff",
-              }}
-            >
-              <Box>
-                <Typography
-                  fontSize="0.86rem"
-                  fontWeight={600}
-                  color="text.primary"
-                >
-                  {item.title}
-                </Typography>
-                <Typography fontSize="0.8rem" color="text.secondary">
-                  {item.description}
-                </Typography>
-              </Box>
-            </MenuItem>
-          ))
-        )}
-      </Menu>
+      <MenuNotificacoes
+        elementoAncora={anchorEl}
+        aberto={Boolean(anchorEl)}
+        temaEscuro={isDark}
+        notificacoes={notificacoes}
+        aoFechar={handleCloseNotifications}
+        aoMarcarTodasComoLidas={markAllAsRead}
+        aoLimparTodas={clearAll}
+        aoMarcarComoLida={markAsRead}
+      />
     </Box>
   );
 }

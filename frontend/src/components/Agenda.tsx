@@ -29,7 +29,8 @@ export function TodayAgenda({ items }: { items: Item[] }) {
         border: "1px solid",
         borderColor: "divider",
         boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
-        width: 320,
+        width: "100%",
+        maxWidth: 320,
       }}
     >
       <Typography fontWeight={700} mb={2} color="text.primary">

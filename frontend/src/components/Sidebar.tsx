@@ -1,11 +1,21 @@
 "use client";
 
-import { Box, ButtonBase, Skeleton, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  ButtonBase,
+  Drawer,
+  IconButton,
+  Skeleton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { useTheme } from "@mui/material/styles";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useEffect, useState } from "react";
+import { logoSrc } from "./Footer";
 
 type NavItem = {
   key: string;
@@ -43,34 +53,25 @@ const mainItems: NavItem[] = [
   },
 ];
 
-const bottomItems: NavItem[] = [
-  {
-    key: "perfil",
-    label: "",
-    icon: "mdi:account-outline",
-    href: "/profile",
-  },
-  {
-    key: "sair",
-    label: "",
-    icon: "mdi:logout",
-  },
-];
-
 type SidebarItemProps = {
   item: NavItem;
   active: boolean;
+  onNavigate?: () => void;
 };
 
-function SidebarItem({ item, active }: SidebarItemProps) {
+function SidebarItem({ item, active, onNavigate }: SidebarItemProps) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
+  const handleClick = () => {
+    item.onClick?.();
+    onNavigate?.();
+  };
 
   return (
     <ButtonBase
       component={item.href ? Link : "button"}
       href={item.href}
-      onClick={item.onClick}
+      onClick={handleClick}
       sx={{
         width: "100%",
         borderRadius: "12px",
@@ -110,33 +111,43 @@ type Props = {
 export function SidebarDashboard({ activeKey }: Props) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
-  const { user, loading, logout, hasRole } = useAuth();
+  const { user, loading, hasRole } = useAuth();
   const { t } = useTranslation();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const sidebarBackground = isDark ? "var(--sidebar)" : "#0a1834";
+  const sidebarBorder = isDark ? "var(--sidebar-border)" : "#142746";
+  const sidebarInnerBorder = isDark ? "var(--sidebar-border)" : "#1f3358";
+
+  useEffect(() => {
+    const openSidebar = () => setMobileOpen(true);
+
+    window.addEventListener("dashboard-sidebar:open", openSidebar);
+
+    return () => {
+      window.removeEventListener("dashboard-sidebar:open", openSidebar);
+    };
+  }, []);
 
   if (loading) {
-    return (
+    const loadingContent = (
       <Box
         sx={{
           width: 280,
           height: "100dvh",
-          bgcolor: isDark ? "#0b1220" : "#0a1834",
+          bgcolor: sidebarBackground,
           borderRight: "1px solid",
-          borderColor: isDark ? "#1e293b" : "#142746",
-          display: { xs: "none", md: "flex" },
+          borderColor: sidebarBorder,
+          display: "flex",
           flexDirection: "column",
           flexShrink: 0,
-          position: "fixed",
-          top: 0,
-          left: 0,
-          zIndex: 1200,
         }}
       >
         <Box
           sx={{
             height: 80,
-            px: 3,
+            px: 2.5,
             borderBottom: "1px solid",
-            borderColor: isDark ? "#1e293b" : "#1f3358",
+            borderColor: sidebarInnerBorder,
             display: "flex",
             alignItems: "center",
             gap: 1.2,
@@ -175,35 +186,37 @@ export function SidebarDashboard({ activeKey }: Props) {
             ))}
           </Stack>
         </Box>
+      </Box>
+    );
 
+    return (
+      <>
         <Box
           sx={{
-            px: 2,
-            py: 2.5,
-            borderTop: "1px solid",
-            borderColor: isDark ? "#1e293b" : "#1f3358",
+            display: { xs: "none", md: "block" },
+            position: "fixed",
+            top: 0,
+            left: 0,
+            zIndex: 1200,
           }}
         >
-          <Stack spacing={1}>
-            <Skeleton
-              variant="rounded"
-              height={44}
-              sx={{
-                borderRadius: "12px",
-                bgcolor: "rgba(255,255,255,0.08)",
-              }}
-            />
-            <Skeleton
-              variant="rounded"
-              height={44}
-              sx={{
-                borderRadius: "12px",
-                bgcolor: "rgba(255,255,255,0.08)",
-              }}
-            />
-          </Stack>
+          {loadingContent}
         </Box>
-      </Box>
+        <Drawer
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: true }}
+          PaperProps={{
+            sx: {
+              bgcolor: sidebarBackground,
+              color: "#f8fafc",
+              display: { xs: "block", md: "none" },
+            },
+          }}
+        >
+          {loadingContent}
+        </Drawer>
+      </>
     );
   }
 
@@ -234,73 +247,81 @@ export function SidebarDashboard({ activeKey }: Props) {
     );
   }
 
-  const translatedBottomItems = bottomItems.map((item) => {
-    if (item.key === "sair") {
-      return {
-        ...item,
-        label: t("sidebar.items.logout"),
-        href: undefined,
-        onClick: () => {
-          logout();
-        },
-      };
-    }
-
-    return {
-      ...item,
-      label:
-        item.key === "perfil"
-          ? t("sidebar.items.profile")
-          : t(`sidebar.items.${item.key}`),
-    };
-  });
-
-  return (
+  const sidebarContent = (
     <Box
       sx={{
         width: 280,
         height: "100dvh",
-        bgcolor: isDark ? "#0b1220" : "#0a1834",
+        bgcolor: sidebarBackground,
         borderRight: "1px solid",
-        borderColor: isDark ? "#1e293b" : "#142746",
-        display: { xs: "none", md: "flex" },
+        borderColor: sidebarBorder,
+        display: "flex",
         flexDirection: "column",
         flexShrink: 0,
-        position: "fixed",
-        top: 0,
-        left: 0,
-        zIndex: 1200,
       }}
     >
-      <Link href="/" style={{ textDecoration: "none" }}>
-        <Box
-          sx={{
-            height: 80,
-            px: 3,
-            borderBottom: "1px solid",
-            borderColor: isDark ? "#1e293b" : "#1f3358",
-            display: "flex",
-            alignItems: "center",
-            gap: 1.2,
-          }}
-        >
+      <Box
+        sx={{
+          height: 80,
+          px: 3,
+          borderBottom: "1px solid",
+          borderColor: sidebarInnerBorder,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.2,
+        }}
+      >
+        <Link href="/" style={{ textDecoration: "none", flex: 1 }}>
           <Box
             sx={{
-              width: 34,
-              height: 34,
-              borderRadius: "9px",
-              display: "grid",
-              placeItems: "center",
-              bgcolor: "primary.main",
+              minWidth: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: 1.25,
             }}
           >
-            <Icon icon="mdi:scale-balance" width={20} color="#fff" />
+            <Box
+              component="img"
+              src={logoSrc}
+              alt="Central Jurídica"
+              sx={{
+                width: 45,
+                height: 45,
+                flexShrink: 0,
+                borderRadius: "10px",
+                objectFit: "contain",
+                p: 0.01,
+                filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.28))",
+              }}
+            />
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                sx={{
+                  color: "#f8fafc",
+                  fontSize: "0.98rem",
+                  fontWeight: 800,
+                  lineHeight: 1,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                Central Jurídica
+              </Typography>
+            </Box>
           </Box>
-          <Typography fontWeight={700} fontSize="1.1rem" color="#f8fafc">
-            {t("sidebar.brand")}
-          </Typography>
-        </Box>
-      </Link>
+        </Link>
+        <IconButton
+          aria-label="Fechar menu lateral"
+          onClick={() => setMobileOpen(false)}
+          sx={{
+            color: "#f8fafc",
+            display: { xs: "inline-flex", md: "none" },
+          }}
+        >
+          <Icon icon="mdi:close" width={22} />
+        </IconButton>
+      </Box>
 
       <Box sx={{ px: 2, py: 2.5, flex: 1 }}>
         <Typography
@@ -321,31 +342,42 @@ export function SidebarDashboard({ activeKey }: Props) {
               key={item.key}
               item={item}
               active={activeKey === item.key}
-            />
-          ))}
-        </Stack>
-      </Box>
-
-      <Box
-        sx={{
-          px: 2,
-          py: 2.5,
-          borderTop: "1px solid",
-          borderColor: isDark ? "#1e293b" : "#1f3358",
-          bgcolor: isDark ? "#0b1220" : "#0a1834",
-          flexShrink: 0,
-        }}
-      >
-        <Stack spacing={0.8}>
-          {translatedBottomItems.map((item) => (
-            <SidebarItem
-              key={item.key}
-              item={item}
-              active={activeKey === item.key}
+              onNavigate={() => setMobileOpen(false)}
             />
           ))}
         </Stack>
       </Box>
     </Box>
+  );
+
+  return (
+    <>
+      <Box
+        sx={{
+          display: { xs: "none", md: "block" },
+          position: "fixed",
+          top: 0,
+          left: 0,
+          zIndex: 1200,
+        }}
+      >
+        {sidebarContent}
+      </Box>
+
+      <Drawer
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        ModalProps={{ keepMounted: true }}
+        PaperProps={{
+          sx: {
+            bgcolor: sidebarBackground,
+            color: "#f8fafc",
+            display: { xs: "block", md: "none" },
+          },
+        }}
+      >
+        {sidebarContent}
+      </Drawer>
+    </>
   );
 }
