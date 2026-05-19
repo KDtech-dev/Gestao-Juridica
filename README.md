@@ -178,10 +178,6 @@ cd frontend
 npm install
 ```
 
-```env
-NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
-```
-
 Se `NEXT_PUBLIC_API_URL` não for definido, o Next usa rewrites locais para encaminhar `/api/*` e `/sanctum/*` para `http://127.0.0.1:8000`.
 
 ## Como executar
