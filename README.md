@@ -1,150 +1,212 @@
-## 🧠 Sistema de Gestão para Advocacia
+# Sistema de Gestão para Advocacia
 
-Sistema web desenvolvido para auxiliar na gestão de escritórios de advocacia, permitindo o controle de processos, clientes e atividades administrativas de forma centralizada.
+Plataforma web para gestão administrativa de escritórios de advocacia, com área pública institucional, autenticação por perfil e módulos internos para clientes, publicações, agenda/compromissos e notificações.
 
----
+O projeto está organizado como um monorepo com:
 
-## 📌 Descrição
+- `backend/`: API REST em Laravel 12.
+- `frontend/`: aplicação web em Next.js 16.
 
-O projeto tem como objetivo facilitar a organização de escritórios jurídicos, oferecendo funcionalidades essenciais para o dia a dia da advocacia, como controle de informações, acompanhamento de dados e estruturação de processos internos.
+## Sumário
 
-Sistemas desse tipo são fundamentais, pois a gestão eficiente é um dos pilares para o sucesso na advocacia — não basta apenas conhecimento jurídico, é necessário organização e controle operacional. ([Reddit][1])
+- [Visão geral](#visão-geral)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Arquitetura](#arquitetura)
+- [Pré-requisitos](#pré-requisitos)
+- [Configuração do ambiente](#configuração-do-ambiente)
+- [Como executar](#como-executar)
+- [Usuários de teste](#usuários-de-teste)
+- [Rotas da aplicação](#rotas-da-aplicação)
+- [API REST](#api-rest)
+- [Scripts úteis](#scripts-úteis)
+- [Testes e qualidade](#testes-e-qualidade)
+- [Deploy](#deploy)
+- [Estrutura de pastas](#estrutura-de-pastas)
+- [Observações do estado atual](#observações-do-estado-atual)
+- [Solução de problemas](#solução-de-problemas)
 
----
+## Visão geral
 
-## 🚀 Funcionalidades
+O sistema atende dois contextos principais:
 
-* 📁 Cadastro e gerenciamento de clientes
-* ⚖️ Controle de processos jurídicos
-* 📅 Organização de atividades e registros
-* 📊 Estrutura base para expansão (financeiro, relatórios, etc.)
-* 🔐 Sistema com foco em organização e controle de dados
+1. **Site público do escritório**: página inicial, equipe, publicações/artigos jurídicos e detalhes de publicações.
+2. **Dashboard interno**: autenticação, gestão de clientes, agenda, compromissos, publicações, notificações e áreas administrativas.
 
----
+A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend armazena o token no navegador e envia as requisições autenticadas com `Authorization: Bearer <token>`.
 
-## 🛠️ Tecnologias Utilizadas
+## Funcionalidades
 
-* **Back-end:** PHP / LARAVEL
-* **Banco de dados:** MySQL
-* **Front-end:** TypeScript / React
-* **Controle de versão:** Git / GitHub
+### Área pública
 
----
+- Página institucional com apresentação do escritório.
+- Listagem de publicações públicas.
+- Página de detalhe de publicação.
+- Página de equipe.
+- Suporte a internacionalização base (`pt`, `en`, `es`).
 
-## 📁 Estrutura do Projeto
+### Área autenticada
+
+- Login com CPF ou e-mail.
+- Redirecionamento por perfil de usuário.
+- Gestão de clientes.
+- Gestão de publicações com status:
+  - `rascunho`
+  - `publicado`
+  - `arquivado`
+- Cadastro de categorias jurídicas.
+- Agenda de compromissos.
+- Notificações de compromissos do dia/semana.
+- Layout administrativo com sidebar, header, tema e toast.
+- Telas administrativas para usuários e equipe no frontend.
+
+### Perfis de acesso
+
+O backend trabalha com os papéis:
+
+- `admin`
+- `advogado`
+- `funcionario`
+
+## Tecnologias
+
+### Backend
+
+- PHP `^8.2`
+- Laravel `^12.0`
+- Laravel Sanctum `^4.3`
+- Laravel Reverb `^1.10`
+- Spatie Laravel Permission `^7.2`
+- Kra8 Laravel Snowflake `^2.5`
+- PHPUnit `^11.5`
+- Laravel Pint
+- Banco relacional via Eloquent: MySQL 
+### Frontend
+
+- Next.js `16.2.0`
+- React `19.2.4`
+- TypeScript `^5`
+- Material UI `^7.3`
+- MUI X Date Pickers `^9.2`
+- Axios `^1.13`
+- React Hook Form `^7.75`
+- Zod `^4.4`
+- next-intl `^4.11`
+- Recharts `^3.8`
+- Tailwind CSS `^4`
+- ESLint `^9`
+- Prettier `^3.8`
+
+## Arquitetura
+
+```text
+Browser
+  |
+  | Next.js App Router
+  | - páginas públicas
+  | - dashboard protegido
+  | - rewrites /api e /sanctum
+  v
+Laravel API
+  | - Sanctum
+  | - Spatie roles
+  | - services/resources/requests
+  v
+Banco de dados
+  | - users
+  | - roles/permissions
+  | - publicacoes
+  | - categorias
+  | - anexos
+  | - compromissos
+  | - notificacoes
+  | - cases
+```
+
+Fluxo principal de autenticação:
+
+1. Usuário acessa `/login`.
+2. Frontend envia `POST /api/auth/login` com CPF/e-mail e senha.
+3. Backend valida credenciais e retorna token Sanctum.
+4. Frontend salva o token em `localStorage` ou `sessionStorage`.
+5. Requisições privadas enviam `Authorization: Bearer <token>`.
+
+## Pré-requisitos
+
+Instale na máquina:
+
+- PHP 8.2 ou superior.
+- Composer.
+- Node.js compatível com Next.js 16.
+- npm.
+- MySQL/MariaDB, caso use `DB_CONNECTION=mysql`.
+- Extensões PHP comuns do Laravel, como `pdo`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`.
+
+## Configuração do ambiente
+
+### 1. Clonar o projeto
 
 ```bash
-advocacia-gestao/
-│
-├── backend/                 # API e regras de negócio (Laravel)
-│   ├── app/                 # Models, Controllers, Services
-│   ├── routes/              # Rotas da API
-│   ├── database/            # Migrations e seeders
-│   ├── config/              # Configurações do sistema
-│   ├── public/              # Entrada pública (index.php)
-│   └── tests/               # Testes automatizados
-│
-├── frontend/                # Interface do usuário (Next.js)
-│   ├── app/                 # Páginas e rotas
-│   ├── components/          # Componentes reutilizáveis
-│   ├── services/            # Comunicação com API
-│   ├── hooks/               # Hooks personalizados
-│   ├── utils/               # Funções auxiliares
-│   ├── public/              # Arquivos estáticos
-│   └── styles/              # Estilização
-│
-└── README.md
+git clone <url-do-repositorio>
+cd advocacia-gestao
 ```
----
-
-## ⚙️ Como Executar o Projeto
-
-### 🔹 Back-end (Laravel)
-
-Acesse a pasta do back-end:
+### 2. Backend
 
 ```bash
 cd backend
-```
-
-Instale as dependências:
-
-```bash
 composer install
-```
-
-Crie o arquivo `.env`:
-
-```bash
 cp .env.example .env
-```
-
-Gere a chave da aplicação:
-
-```bash
 php artisan key:generate
 ```
+```bash
+touch database/database.sqlite
+```
 
-Crie o link simbólico do storage:
+Depois rode migrations e seeders:
 
 ```bash
+php artisan migrate --seed
 php artisan storage:link
 ```
 
-Execute as migrations:
+### 3. Frontend
 
-```bash
-php artisan migrate
-```
-
-Inicie o servidor Laravel:
-
-```bash
-php artisan serve
-```
-
-Servidor disponível em:
-
-```txt
-http://127.0.0.1:8000
-```
----
-
-### 🔹 Front-end (Next.js)
-
-Acesse a pasta do front-end:
+Em outro terminal:
 
 ```bash
 cd frontend
-```
-
-Instale as dependências:
-
-```bash
 npm install
 ```
 
-Execute o servidor de desenvolvimento:
+```env
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+```
+
+Se `NEXT_PUBLIC_API_URL` não for definido, o Next usa rewrites locais para encaminhar `/api/*` e `/sanctum/*` para `http://127.0.0.1:8000`.
+
+## Como executar
+
+### Terminal 1: API Laravel
 
 ```bash
-npm run dev
+cd backend
+php artisan serve
 ```
 
-Aplicação disponível em:
+API disponível em:
 
-```txt
-http://localhost:3000
+```text
+http://127.0.0.1:8000
 ```
----
-## 👨‍💻 Autor
+
+### Terminal 2: Frontend Next.js
+
+## Autor
 
 **Diego André Afonso**
+
 Estudante de Análise e Desenvolvimento de Sistemas
 
----
+## Licença
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT.
-
----
+Este projeto informa licença MIT nos manifestos do backend. Caso o repositório precise de distribuição formal, adicione um arquivo `LICENSE` na raiz.
