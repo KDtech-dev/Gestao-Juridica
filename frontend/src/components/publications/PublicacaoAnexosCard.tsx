@@ -1,9 +1,18 @@
 "use client";
 
-import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Divider,
+  Link,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { DownloadButton } from "../DownloadButton";
 
 type PublicacaoAnexosCardProps = {
   publicacao: PublicacaoItem;
@@ -65,23 +74,12 @@ export function PublicacaoAnexosCard({
                   </Box>
                 </Stack>
 
-                <Button
-                  component="a"
-                  href={anexo.url}
-                  download
-                  variant="outlined"
-                  size="small"
-                  startIcon={<Icon icon="mdi:download" />}
-                  sx={{ textTransform: "none", borderColor: "divider" }}
-                >
-                  {t("download")}
-                </Button>
+                <DownloadButton url={anexo.url} label={t("download")} />
               </Stack>
               {index < publicacao.anexos.length - 1 && (
                 <Divider sx={{ mt: 1.5 }} />
               )}
-            </Box>
-          ))}
+            </Box>git
         </Stack>
       )}
     </Paper>
