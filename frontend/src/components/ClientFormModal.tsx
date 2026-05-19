@@ -55,11 +55,11 @@ export function ClientFormModal({
       <DialogTitle>
         {initialData
           ? isEn
-            ? "Edit Client"
-            : "Editar Cliente"
+            ? "Edit client"
+            : "Editar cliente"
           : isEn
-            ? "New Client"
-            : "Novo Cliente"}
+            ? "New client"
+            : "Novo cliente"}
       </DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>

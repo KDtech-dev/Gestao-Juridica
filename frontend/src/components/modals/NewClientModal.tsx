@@ -23,8 +23,8 @@ export function NewClientModal({
     <BaseModal
       open={open}
       onClose={onClose}
-      title="Novo Cliente"
-      confirmText={submitting ? "Adicionando..." : "Adicionar Cliente"}
+      title="Novo cliente"
+      confirmText={submitting ? "Adicionando..." : "Adicionar cliente"}
       confirmFormId={formId}
       confirmType="submit"
       confirmDisabled={submitting}

@@ -129,7 +129,11 @@ export function BaseModal({
                 gap: 1,
               }}
             >
-              <Button onClick={onClose} color={isDark ? "inherit" : "primary"}>
+              <Button
+                onClick={onClose}
+                color={isDark ? "inherit" : "primary"}
+                sx={{ whiteSpace: "nowrap" }}
+              >
                 {cancelText ?? BRANDING.modal?.cancelText ?? "Cancelar"}
               </Button>
 
@@ -141,6 +145,7 @@ export function BaseModal({
                 form={confirmFormId}
                 variant="contained"
                 disabled={confirmDisabled}
+                sx={{ whiteSpace: "nowrap" }}
               >
                 {confirmText ?? BRANDING.modal?.confirmText ?? "Salvar"}
               </Button>

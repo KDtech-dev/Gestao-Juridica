@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
   Container,
   Dialog,
@@ -13,7 +14,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useState } from "react";
@@ -51,14 +52,59 @@ export default function NotificacoesView() {
     markAsRead,
     markAllAsRead,
     clearAll,
+    clearSelected,
   } = useNotifications();
   const [selected, setSelected] = useState<NotificationItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const selectedCount = notifications.filter((notification) =>
+    selectedIds.has(notification.id),
+  ).length;
+  const allSelected =
+    notifications.length > 0 && selectedCount === notifications.length;
 
   function openNotification(notification: NotificationItem) {
     setSelected({ ...notification, read: true });
     if (!notification.read) {
       markAsRead(notification.id);
     }
+  }
+
+  function toggleSelected(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+
+      return next;
+    });
+  }
+
+  function toggleAllSelected() {
+    setSelectedIds(() => {
+      if (notifications.length > 0 && selectedCount === notifications.length) {
+        return new Set();
+      }
+
+      return new Set(notifications.map((notification) => notification.id));
+    });
+  }
+
+  function removeSelected() {
+    const ids = notifications
+      .filter((notification) => selectedIds.has(notification.id))
+      .map((notification) => notification.id);
+
+    clearSelected(ids);
+    setSelectedIds(new Set());
+  }
+
+  function removeAll() {
+    clearAll();
+    setSelectedIds(new Set());
   }
 
   return (
@@ -90,7 +136,12 @@ export default function NotificacoesView() {
               </Typography>
             </Box>
 
-            <Stack direction="row" gap={1}>
+            <Stack
+              direction="row"
+              gap={1}
+              flexWrap="wrap"
+              justifyContent={{ xs: "flex-start", md: "flex-end" }}
+            >
               <Button
                 variant="outlined"
                 startIcon={<Icon icon="mdi:check-all" />}
@@ -100,13 +151,30 @@ export default function NotificacoesView() {
                 Marcar lidas
               </Button>
               <Button
+                variant="outlined"
+                startIcon={<Icon icon="mdi:check-circle" />}
+                onClick={toggleAllSelected}
+                disabled={notifications.length === 0}
+              >
+                {allSelected ? "Desmarcar todas" : "Selecionar todas"}
+              </Button>
+              <Button
                 color="error"
                 variant="outlined"
                 startIcon={<Icon icon="mdi:trash-can-outline" />}
-                onClick={clearAll}
+                onClick={removeSelected}
+                disabled={selectedCount === 0}
+              >
+                Remover selecionadas
+              </Button>
+              <Button
+                color="error"
+                variant="outlined"
+                startIcon={<Icon icon="mdi:trash-can-outline" />}
+                onClick={removeAll}
                 disabled={notifications.length === 0}
               >
-                Limpar
+                Limpar todas
               </Button>
             </Stack>
           </Stack>
@@ -131,12 +199,8 @@ export default function NotificacoesView() {
               notifications.map((notification) => (
                 <Box
                   key={notification.id}
-                  component="button"
-                  type="button"
-                  onClick={() => openNotification(notification)}
                   sx={{
                     width: "100%",
-                    border: 0,
                     borderBottom: "1px solid",
                     borderColor: "divider",
                     bgcolor: notification.read
@@ -145,13 +209,21 @@ export default function NotificacoesView() {
                     textAlign: "left",
                     px: { xs: 2, md: 2.5 },
                     py: 1.8,
-                    cursor: "pointer",
                     fontFamily: "inherit",
                     "&:last-child": { borderBottom: 0 },
                     "&:hover": { bgcolor: "action.hover" },
                   }}
                 >
                   <Stack direction="row" gap={1.5} alignItems="flex-start">
+                    <Checkbox
+                      checked={selectedIds.has(notification.id)}
+                      onChange={() => toggleSelected(notification.id)}
+                      inputProps={{
+                        "aria-label": `Selecionar notificação ${notification.title}`,
+                      }}
+                      sx={{ p: 0.4, mt: 0.1 }}
+                    />
+
                     <Box
                       sx={{
                         width: 38,
@@ -167,7 +239,21 @@ export default function NotificacoesView() {
                       <Icon icon={notificationIcon(notification.type)} width={20} />
                     </Box>
 
-                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box
+                      component="button"
+                      type="button"
+                      onClick={() => openNotification(notification)}
+                      sx={{
+                        flex: 1,
+                        minWidth: 0,
+                        border: 0,
+                        p: 0,
+                        bgcolor: "transparent",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        fontFamily: "inherit",
+                      }}
+                    >
                       <Stack
                         direction={{ xs: "column", sm: "row" }}
                         justifyContent="space-between"

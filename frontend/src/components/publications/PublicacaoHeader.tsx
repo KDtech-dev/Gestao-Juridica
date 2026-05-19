@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useRouter } from "next/navigation";
 
 type Props = {

@@ -9,7 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { PublicacaoItem } from "@/api/publicacoes/types";

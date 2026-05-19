@@ -46,7 +46,11 @@ export function ConfirmDialog({
         ) : null}
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose} disabled={loading}>
+        <Button
+          onClick={onClose}
+          disabled={loading}
+          sx={{ whiteSpace: "nowrap" }}
+        >
           {cancelText}
         </Button>
         <Button
@@ -54,6 +58,7 @@ export function ConfirmDialog({
           color="error"
           onClick={onConfirm}
           disabled={loading}
+          sx={{ whiteSpace: "nowrap" }}
         >
           {confirmText}
         </Button>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Typography, Stack, Button } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useRouter } from "next/navigation";
 
 interface Item {

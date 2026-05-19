@@ -10,7 +10,7 @@ import {
   Button,
   IconButton,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useMemo } from "react";
 
 interface Props {

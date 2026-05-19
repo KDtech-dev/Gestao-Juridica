@@ -28,8 +28,8 @@ export function NewAppointmentModal({
     <BaseModal
       open={open}
       onClose={onClose}
-      title="Novo Compromisso"
-      confirmText={submitting ? "Agendando..." : "Agendar Compromisso"}
+      title="Novo compromisso"
+      confirmText={submitting ? "Agendando..." : "Agendar compromisso"}
       confirmFormId={formId}
       confirmType="submit"
       confirmDisabled={submitting}

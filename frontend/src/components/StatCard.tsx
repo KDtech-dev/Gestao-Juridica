@@ -1,5 +1,5 @@
 import { Box, Typography, Stack } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import Link from "next/link";
 
 interface StatCardProps {

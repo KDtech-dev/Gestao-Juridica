@@ -3,7 +3,7 @@ import ReactCrop, { centerCrop, Crop, makeAspectCrop, PixelCrop } from 'react-im
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import { Box, Button, Dialog, DialogActions, DialogContent, Fade, FadeProps, IconButton, Stack } from '@mui/material'
-import { Icon } from '@iconify/react'
+import { Icon } from '@/components/AppIcon'
 import 'react-image-crop/dist/ReactCrop.css'
 
 const Transition = forwardRef(function Transition(props: FadeProps & { children?: ReactElement }, ref: Ref<unknown>) {
@@ -192,10 +192,20 @@ const CropImagemModal = ({ show, setShow, src, onSaveImage, aspect }: props) => 
         }}
       >
         <Stack direction='row' spacing={1}>
-          <Button variant='outlined' color='inherit' onClick={() => setShow(false)}>
+          <Button
+            variant='outlined'
+            color='inherit'
+            onClick={() => setShow(false)}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
             Cancelar
           </Button>
-          <Button variant='contained' onClick={handleSubmit} disabled={!completedCrop?.width || !completedCrop?.height}>
+          <Button
+            variant='contained'
+            onClick={handleSubmit}
+            disabled={!completedCrop?.width || !completedCrop?.height}
+            sx={{ whiteSpace: 'nowrap' }}
+          >
             Salvar
           </Button>
         </Stack>

@@ -23,8 +23,8 @@ export function NewCaseModal({
     <BaseModal
       open={open}
       onClose={onClose}
-      title="Novo Caso"
-      confirmText={submitting ? "Criando..." : "Criar Caso"}
+      title="Novo caso"
+      confirmText={submitting ? "Criando..." : "Criar caso"}
       confirmFormId={formId}
       confirmType="submit"
       confirmDisabled={submitting}

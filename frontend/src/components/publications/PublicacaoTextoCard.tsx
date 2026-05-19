@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
 

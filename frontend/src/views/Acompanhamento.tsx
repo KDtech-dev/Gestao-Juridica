@@ -12,7 +12,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useState } from "react";
@@ -202,7 +202,7 @@ export default function AcompanhamentoView({
                 sx={{ textTransform: "none" }}
                 onClick={handleOpenEditCaseModal}
               >
-                Editar Caso
+                Editar caso
               </Button>
             </Stack>
           </Stack>
@@ -340,7 +340,7 @@ export default function AcompanhamentoView({
                     startIcon={<Icon icon="mdi:email-outline" />}
                     sx={actionBtn}
                   >
-                    Enviar por E-mail
+                    Enviar por e-mail
                   </Button>
                 </Stack>
               </Paper>

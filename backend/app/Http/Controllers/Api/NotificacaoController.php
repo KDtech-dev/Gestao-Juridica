@@ -62,9 +62,16 @@ class NotificacaoController extends Controller
 
     public function limpar(Request $request): JsonResponse
     {
-        Notificacao::query()
-            ->where('usuario_id', $request->user()->id)
-            ->delete();
+        $ids = $request->input('ids');
+
+        $query = Notificacao::query()
+            ->where('usuario_id', $request->user()->id);
+
+        if (is_array($ids) && count($ids) > 0) {
+            $query->whereIn('id', $ids);
+        }
+
+        $query->delete();
 
         return response()->json([
             'success' => true,

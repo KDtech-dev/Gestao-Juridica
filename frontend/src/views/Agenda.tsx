@@ -20,7 +20,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { CalendarCard } from "@/components/CalendarCard";

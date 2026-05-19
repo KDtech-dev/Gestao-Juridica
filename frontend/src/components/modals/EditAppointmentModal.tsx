@@ -28,8 +28,8 @@ export function EditAppointmentModal({
     <BaseModal
       open={open}
       onClose={onClose}
-      title="Editar Compromisso"
-      confirmText={submitting ? "Salvando..." : "Salvar Alterações"}
+      title="Editar compromisso"
+      confirmText={submitting ? "Salvando..." : "Salvar alterações"}
       confirmFormId={formId}
       confirmType="submit"
       confirmDisabled={submitting}

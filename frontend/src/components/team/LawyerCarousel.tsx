@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useMemo, useState } from "react";
 import { TeamLawyer } from "@/data/team";
 import { LawyerProfileCard } from "@/components/team/LawyerProfileCard";

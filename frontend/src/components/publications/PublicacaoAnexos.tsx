@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type Props = {

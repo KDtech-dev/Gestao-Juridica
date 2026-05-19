@@ -5,8 +5,8 @@ namespace App\Strategies;
 use App\Enums\StatusPublicacao;
 use App\Interfaces\PublicationStrategyInterface;
 use App\Models\Publicacao;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class PublicacaoAdminStrategy implements PublicationStrategyInterface
 {
@@ -115,11 +115,11 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
     private function storeAnexos(Publicacao $publicacao, array $anexos): void
     {
         foreach ($anexos as $anexo) {
-            if (!$anexo) {
+            if (!$anexo instanceof UploadedFile) {
                 continue;
             }
 
-            $path = $anexo->store(
+            $path = $anexo->storePublicly(
                 "publicacoes/{$publicacao->id}/anexos",
                 'public'
             );
@@ -128,19 +128,22 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
                 'descricao' => 'Anexo da publicação',
                 'arquivo' => $path,
                 'nome_arquivo' => $anexo->getClientOriginalName(),
-                'url' => Storage::disk('public')->url($path),
+                'url' => asset("storage/{$path}"),
             ]);
         }
     }
 
-    private function storeImagem(array &$data, mixed $imagem): void
+    private function storeImagem(array &$data, ?UploadedFile $imagem): void
     {
         if (!$imagem) {
             return;
         }
 
-        $path = $imagem->store('publicacoes/banners', 'public');
+        $path = $imagem->storePublicly(
+            'publicacoes/banners',
+            'public'
+        );
 
-        $data['imagem_caminho'] = Storage::disk('public')->url($path);
+        $data['imagem_caminho'] = asset("storage/{$path}");
     }
 }

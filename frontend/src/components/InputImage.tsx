@@ -5,7 +5,7 @@ import { styled } from "@mui/material/styles";
 import Typography, { TypographyProps } from "@mui/material/Typography";
 import { useDropzone } from "react-dropzone";
 import { IconButton, useMediaQuery, useTheme } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { BoxProps } from "@mui/system";
 import CropImagemModal from "./CropImagemModal";
 import { useTranslations } from "next-intl";

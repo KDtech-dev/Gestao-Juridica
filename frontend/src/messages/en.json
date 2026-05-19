@@ -68,15 +68,15 @@
     },
     "publicationForm": {
       "title": {
-        "new": "New Publication",
-        "edit": "Edit Publication"
+        "new": "New publication",
+        "edit": "Edit publication"
       },
       "subtitle": {
         "new": "Fill in the publication data step by step.",
         "edit": "Update the publication data step by step."
       },
       "steps": {
-        "data": "Publication Data",
+        "data": "Publication data",
         "review": "Review"
       },
       "actions": {
@@ -84,8 +84,8 @@
         "back": "Back",
         "next": "Next",
         "saving": "Saving...",
-        "saveChanges": "Save Changes",
-        "savePublication": "Save Publication"
+        "saveChanges": "Save changes",
+        "savePublication": "Save publication"
       },
       "fields": {
         "title": "Title",
@@ -265,7 +265,7 @@
     "title": "Calendar",
     "subtitle": "Manage appointments, hearings, deadlines, and reminders.",
     "today": "Today",
-    "newAppointment": "New Appointment",
+    "newAppointment": "New appointment",
     "creatorUnknown": "Creator not informed",
     "views": {
       "public": "Public view",
@@ -351,12 +351,12 @@
       "deleteErrorTitle": "Error deleting appointment"
     },
     "form": {
-      "newTitle": "New Appointment",
-      "editTitle": "Edit Appointment",
+      "newTitle": "New appointment",
+      "editTitle": "Edit appointment",
       "scheduling": "Scheduling...",
-      "scheduleAppointment": "Schedule Appointment",
+      "scheduleAppointment": "Schedule appointment",
       "saving": "Saving...",
-      "saveChanges": "Save Changes",
+      "saveChanges": "Save changes",
       "titleLabel": "Appointment title",
       "titleRequired": "Enter the title.",
       "typeLabel": "Type",

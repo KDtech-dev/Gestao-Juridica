@@ -17,7 +17,7 @@ import {
   Typography,
   Switch,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useMemo, useState } from "react";
 import type { User } from "@/services/userService";
 

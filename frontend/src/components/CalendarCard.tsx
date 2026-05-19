@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, IconButton, Paper, Stack, Typography } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useMemo, useState, useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 

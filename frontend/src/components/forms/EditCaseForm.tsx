@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, MenuItem, TextField, InputAdornment } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 
 export function EditCaseForm() {
   return (

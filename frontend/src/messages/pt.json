@@ -48,35 +48,35 @@
       "actions": {
         "edit": "Editar publicação",
         "archive": "Arquivar publicação",
-        "delete": "Deletar publicação"
+        "delete": "Excluir publicação"
       },
       "toast": {
         "archived": "Publicação arquivada.",
-        "deleted": "Publicação deletada."
+        "deleted": "Publicação excluída."
       },
       "errors": {
         "load": "Não foi possível carregar as publicações.",
         "archive": "Não foi possível arquivar a publicação.",
-        "delete": "Não foi possível deletar a publicação."
+        "delete": "Não foi possível excluir a publicação."
       },
       "deleteDialog": {
-        "title": "Deletar publicação?",
-        "description": "A publicação \"{title}\" será deletada permanentemente. Essa ação não pode ser desfeita.",
-        "confirm": "Deletar publicação",
+        "title": "Excluir publicação?",
+        "description": "A publicação \"{title}\" será excluída permanentemente. Essa ação não pode ser desfeita.",
+        "confirm": "Excluir publicação",
         "cancel": "Cancelar"
       }
     },
     "publicationForm": {
       "title": {
-        "new": "Nova Publicação",
-        "edit": "Editar Publicação"
+        "new": "Nova publicação",
+        "edit": "Editar publicação"
       },
       "subtitle": {
         "new": "Preencha os dados da publicação em etapas.",
         "edit": "Atualize os dados da publicação em etapas."
       },
       "steps": {
-        "data": "Dados da Publicação",
+        "data": "Dados da publicação",
         "review": "Revisão"
       },
       "actions": {
@@ -84,8 +84,8 @@
         "back": "Voltar",
         "next": "Próximo",
         "saving": "Salvando...",
-        "saveChanges": "Salvar Alterações",
-        "savePublication": "Salvar Publicação"
+        "saveChanges": "Salvar alterações",
+        "savePublication": "Salvar publicação"
       },
       "fields": {
         "title": "Título",
@@ -265,7 +265,7 @@
     "title": "Agenda",
     "subtitle": "Gerencie compromissos, audiências, prazos e lembretes.",
     "today": "Hoje",
-    "newAppointment": "Novo Compromisso",
+    "newAppointment": "Novo compromisso",
     "creatorUnknown": "Criador não informado",
     "views": {
       "public": "Visão pública",
@@ -351,12 +351,12 @@
       "deleteErrorTitle": "Erro ao excluir compromisso"
     },
     "form": {
-      "newTitle": "Novo Compromisso",
-      "editTitle": "Editar Compromisso",
+      "newTitle": "Novo compromisso",
+      "editTitle": "Editar compromisso",
       "scheduling": "Agendando...",
-      "scheduleAppointment": "Agendar Compromisso",
+      "scheduleAppointment": "Agendar compromisso",
       "saving": "Salvando...",
-      "saveChanges": "Salvar Alterações",
+      "saveChanges": "Salvar alterações",
       "titleLabel": "Título do compromisso",
       "titleRequired": "Informe o título.",
       "typeLabel": "Tipo",

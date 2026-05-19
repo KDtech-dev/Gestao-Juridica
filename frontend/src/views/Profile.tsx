@@ -223,7 +223,7 @@ export default function ProfileView() {
                         }}
                         disabled={!isDirty}
                       >
-                        Salvar Alterações
+                        Salvar alterações
                       </Button>
                     </Grid>
                   </Grid>

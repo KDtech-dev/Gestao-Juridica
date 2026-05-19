@@ -11,7 +11,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { HeaderDashboard } from "@/components/HeaderADM";

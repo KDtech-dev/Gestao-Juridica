@@ -7,6 +7,7 @@ use App\Http\Requests\StorePublicacaoRequest;
 use App\Http\Requests\UpdatePublicacaoRequest;
 use App\Services\PublicacaoService;
 use App\Strategies\PublicacaoAdminStrategy;
+use Illuminate\Support\Facades\Log;
 
 class PublicacaoController extends Controller
 {

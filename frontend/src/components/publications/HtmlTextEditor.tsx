@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 
 type HtmlTextEditorProps = {
   label: string;

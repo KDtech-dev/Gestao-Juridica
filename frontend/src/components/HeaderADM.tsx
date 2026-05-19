@@ -13,7 +13,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import {
   useMemo,
   useState,
@@ -45,20 +45,25 @@ export function HeaderDashboard({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const router = useRouter();
   const isDark = theme.palette.mode === "dark";
-  const { notifications, unreadCount, markAllAsRead, clearAll, markAsRead } =
-    useNotifications();
+  const {
+    menuNotifications,
+    menuUnreadCount,
+    markAllAsRead,
+    clearMenu,
+    markAsRead,
+  } = useNotifications();
   const { user, loading } = useAuth();
   const handleCloseNotifications = () => setAnchorEl(null);
   const notificacoes = useMemo<Notificacao[]>(
     () =>
-      notifications.map((notification) => ({
+      menuNotifications.map((notification) => ({
         id: notification.id,
         titulo: notification.title,
         descricao: notification.description,
         lida: notification.read,
         tipo: notification.type,
       })),
-    [notifications],
+    [menuNotifications],
   );
   const searchOptions = useMemo(() => {
     const clientOptions = listTrackedClients().map((client) => ({
@@ -275,7 +280,7 @@ export function HeaderDashboard({
           >
             <Badge
               color="error"
-              variant={unreadCount > 0 ? "dot" : "standard"}
+              variant={menuUnreadCount > 0 ? "dot" : "standard"}
               overlap="circular"
             >
               <Icon icon="mdi:bell-outline" width={19} />
@@ -301,7 +306,7 @@ export function HeaderDashboard({
         notificacoes={notificacoes}
         aoFechar={handleCloseNotifications}
         aoMarcarTodasComoLidas={markAllAsRead}
-        aoLimparTodas={clearAll}
+        aoLimparTodas={clearMenu}
         aoMarcarComoLida={markAsRead}
       />
     </Box>

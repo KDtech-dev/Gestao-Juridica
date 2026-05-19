@@ -17,8 +17,8 @@ export function EditClientModal({ open, onClose, onSubmit }: Props) {
     <BaseModal
       open={open}
       onClose={onClose}
-      title="Editar Cliente"
-      confirmText="Salvar Alterações"
+      title="Editar cliente"
+      confirmText="Salvar alterações"
       confirmFormId={formId}
       confirmType="submit"
       maxWidth="lg"

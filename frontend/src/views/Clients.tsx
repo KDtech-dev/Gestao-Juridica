@@ -20,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useState, type MouseEvent } from "react";
@@ -173,7 +173,7 @@ export default function ClientesView() {
                     handleOpenNewClientModal();
                   }}
                 >
-                  Novo Cliente
+                  Novo cliente
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
@@ -181,7 +181,7 @@ export default function ClientesView() {
                     handleOpenNewCaseModal();
                   }}
                 >
-                  Novo Caso
+                  Novo caso
                 </MenuItem>
               </Menu>
             </>

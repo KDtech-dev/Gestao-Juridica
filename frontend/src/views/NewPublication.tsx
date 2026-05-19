@@ -587,6 +587,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                   sx={{
                     textTransform: "none",
                     borderColor: "divider",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {t("actions.cancel")}
@@ -599,6 +600,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                   sx={{
                     textTransform: "none",
                     borderColor: "divider",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   {t("actions.back")}
@@ -609,7 +611,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                 <Button
                   variant="contained"
                   onClick={nextStep}
-                  sx={{ textTransform: "none" }}
+                  sx={{ textTransform: "none", whiteSpace: "nowrap" }}
                 >
                   {t("actions.next")}
                 </Button>
@@ -619,7 +621,7 @@ export default function NewPublicationView({ editSlug }: Props) {
                   color="success"
                   onClick={publish}
                   disabled={submitting}
-                  sx={{ textTransform: "none" }}
+                  sx={{ textTransform: "none", whiteSpace: "nowrap" }}
                 >
                   {submitting
                     ? t("actions.saving")

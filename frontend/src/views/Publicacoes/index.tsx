@@ -12,7 +12,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useMemo, useState } from "react";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { PublicacoesHeroSlider } from "@/components/publications/PublicacoesHeroSlider";

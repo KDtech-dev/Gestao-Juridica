@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 

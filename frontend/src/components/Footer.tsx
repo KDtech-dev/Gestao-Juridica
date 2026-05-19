@@ -10,7 +10,7 @@ import {
   Link as MuiLink,
 } from "@mui/material";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { useState } from "react";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";

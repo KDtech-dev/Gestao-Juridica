@@ -15,7 +15,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import ConfirmDialog from "@/components/users/ConfirmDialog";

@@ -81,3 +81,9 @@ export async function markAllNotificacoesAsRead() {
 export async function clearNotificacoes() {
   await api.delete("/notificacoes");
 }
+
+export async function clearSelectedNotificacoes(ids: string[]) {
+  await api.delete("/notificacoes", {
+    data: { ids },
+  });
+}

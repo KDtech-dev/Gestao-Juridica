@@ -152,7 +152,7 @@ export default function RegisterView() {
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded"
           >
-            {csvFile ? "Enviar CSV" : "Cadastrar"}
+            {csvFile ? "Enviar csv" : "Cadastrar"}
           </button>
           <span className="text-sm text-gray-600">
             {loading ? "Enviando..." : null}

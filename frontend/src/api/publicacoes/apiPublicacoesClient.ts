@@ -53,11 +53,15 @@ const requestJson = async <T>(
   return payload as T;
 };
 
-export const criarPublicacaoClient = (payload: PublicacaoPayload | FormData) =>
-  requestJson<PublicacaoItem>("/api/publicacoes", {
+export const criarPublicacaoClient = (payload: PublicacaoPayload | FormData) => {
+  const isFormData = payload instanceof FormData;
+
+  return requestJson<PublicacaoItem>("/api/publicacoes", {
     method: "POST",
-    body: payload instanceof FormData ? payload : JSON.stringify(payload),
+    headers: getHeaders(isFormData),
+    body: isFormData ? payload : JSON.stringify(payload),
   });
+};
 
 export const listarPublicacoesClient = () =>
   requestJson<PublicacaoItem[]>("/api/publicacoes");

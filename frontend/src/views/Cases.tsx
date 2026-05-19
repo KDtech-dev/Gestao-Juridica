@@ -17,7 +17,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 
@@ -137,7 +137,7 @@ export default function CasesView() {
               }}
             >
               <Icon icon="mdi:plus" width={20} />
-              Novo Caso
+              Novo caso
             </Button>
           </Stack>
 

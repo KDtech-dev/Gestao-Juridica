@@ -14,8 +14,8 @@ export function EditCaseModal({ open, onClose, onSubmit }: Props) {
     <BaseModal
       open={open}
       onClose={onClose}
-      title="Editar Caso"
-      confirmText="Salvar Alterações"
+      title="Editar caso"
+      confirmText="Salvar alterações"
       onSubmit={onSubmit}
       maxWidth="lg"
     >

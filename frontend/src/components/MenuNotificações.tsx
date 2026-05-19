@@ -11,7 +11,7 @@ import {
   Button,
 } from "@mui/material";
 import { alpha, useTheme } from "@mui/material/styles";
-import { Icon } from "@iconify/react";
+import { Icon } from "@/components/AppIcon";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -77,6 +77,7 @@ export default function MenuNotificacoes({
   const [notificacaoSelecionada, setNotificacaoSelecionada] =
     useState<Notificacao | null>(null);
   const naoLidas = notificacoes.filter((n) => !n.lida).length;
+  const temNotificacoes = notificacoes.length > 0;
   const isDark = theme.palette.mode === "dark";
 
   const getTone = (config: TipoConfig) => {
@@ -113,6 +114,12 @@ export default function MenuNotificacoes({
     "&:hover": {
       bgcolor: "action.hover",
       color: "text.primary",
+    },
+    "&:disabled": {
+      opacity: 0.45,
+      cursor: "not-allowed",
+      bgcolor: "transparent",
+      color: "text.disabled",
     },
   };
 
@@ -183,13 +190,19 @@ export default function MenuNotificacoes({
             <Box
               component="button"
               onClick={aoMarcarTodasComoLidas}
+              disabled={naoLidas === 0}
               sx={actionButtonSx}
             >
               <Icon icon="mdi:check-all" width={15} />
               Lidas
             </Box>
 
-            <Box component="button" onClick={aoLimparTodas} sx={actionButtonSx}>
+            <Box
+              component="button"
+              onClick={aoLimparTodas}
+              disabled={!temNotificacoes}
+              sx={actionButtonSx}
+            >
               <Icon icon="mdi:trash-can-outline" width={15} />
               Limpar
             </Box>
