@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Divider,
-  Link,
-  Paper,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
@@ -79,7 +71,8 @@ export function PublicacaoAnexosCard({
               {index < publicacao.anexos.length - 1 && (
                 <Divider sx={{ mt: 1.5 }} />
               )}
-            </Box>git
+            </Box>
+          ))}
         </Stack>
       )}
     </Paper>
