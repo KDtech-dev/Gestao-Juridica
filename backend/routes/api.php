@@ -44,6 +44,11 @@ Route::prefix('posts')->group(function () {
         'index'
     ]);
 
+    Route::get('/anexos/{anexo}', [
+        PostController::class,
+        'anexo'
+    ])->name('api.posts.anexos.show');
+
     Route::get('/{id}', [
         PostController::class,
         'show'

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\StatusPublicacao;
 use App\Http\Controllers\Controller;
+use App\Models\Anexo;
 use App\Services\PublicacaoService;
 use App\Strategies\PublicacaoPublicaStrategy;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -28,6 +31,24 @@ class PostController extends Controller
     {
         return response()->json(
             $this->service->getPublicacaoById($id)
+        );
+    }
+
+    public function anexo(Anexo $anexo)
+    {
+        $anexo->loadMissing('publicacao');
+
+        abort_unless(
+            $anexo->arquivo
+            && $anexo->publicacao
+            && $anexo->publicacao->status === StatusPublicacao::PUBLICADO
+            && Storage::disk('public')->exists($anexo->arquivo),
+            404
+        );
+
+        return Storage::disk('public')->download(
+            $anexo->arquivo,
+            $anexo->nome_arquivo
         );
     }
 }

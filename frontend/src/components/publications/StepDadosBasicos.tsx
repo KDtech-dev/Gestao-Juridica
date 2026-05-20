@@ -164,8 +164,9 @@ export function StepDadosBasicos({
 
         <Grid size={{ xs: 12 }}>
           <InputSingleFile
-            value={data.anexos[0]}
-            onFileChange={(file) => onChange("anexos", file ? [file] : [])}
+            multiple
+            values={data.anexos}
+            onFilesChange={(files) => onChange("anexos", files)}
             tipos_aceitos={["pdf", "doc", "docx", "jpg", "jpeg", "png"]}
             maxSize={10 * 1024 * 1024}
             label={t("attachment")}

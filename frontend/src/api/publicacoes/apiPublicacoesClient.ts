@@ -72,11 +72,18 @@ export const buscarPublicacaoClient = (id: string) =>
 export const atualizarPublicacaoClient = (
   id: string,
   payload: AtualizarPublicacaoPayload | FormData,
-) =>
-  requestJson<PublicacaoItem>(`/api/publicacoes/${id}`, {
-    method: "PUT",
-    body: payload instanceof FormData ? payload : JSON.stringify(payload),
+) => {
+  const isFormData = payload instanceof FormData;
+
+  if (isFormData) {
+    payload.set("_method", "PUT");
+  }
+
+  return requestJson<PublicacaoItem>(`/api/publicacoes/${id}`, {
+    method: isFormData ? "POST" : "PUT",
+    body: isFormData ? payload : JSON.stringify(payload),
   });
+};
 
 export const deletarPublicacaoClient = (id: string) =>
   requestJson<DeletePublicacaoResponse>(`/api/publicacoes/${id}`, {

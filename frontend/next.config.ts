@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
         destination: `${target}/api/:path*`,
       },
       {
+        source: "/posts/anexos/:path*",
+        destination: `${target}/posts/anexos/:path*`,
+      },
+      {
         source: "/sanctum/:path*",
         destination: `${target}/sanctum/:path*`,
       },

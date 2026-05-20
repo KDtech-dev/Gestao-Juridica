@@ -18,7 +18,10 @@ const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
 
 type props = {
   onFileChange?: (event: File | undefined) => void
+  onFilesChange?: (files: File[]) => void
   value?: File
+  values?: File[]
+  multiple?: boolean
   cropImage?: boolean
   minWidth?: number
   maxWidth?: number
@@ -56,7 +59,10 @@ const buildAcceptedFiles = (extensions: string[]) =>
 
 const InputSingleFile = ({
   onFileChange,
+  onFilesChange,
   value,
+  values,
+  multiple = false,
   subBoxInput,
   onlyView,
   iconProps,
@@ -69,26 +75,39 @@ const InputSingleFile = ({
   helperText = 'Solte o arquivo aqui ou clique para navegar.',
   ...props
 }: props) => {
+  const selectedFiles = multiple ? values ?? [] : value ? [value] : []
+  const hasSelectedFile = selectedFiles.length > 0
+
   const { getRootProps, getInputProps } = useDropzone({
-    multiple: false,
+    multiple,
     accept: tipos_aceitos ? buildAcceptedFiles(tipos_aceitos) : undefined,
     onDrop: (arquivoAceito: File[]) => {
       if (!onlyView) {
-        const arquivo = arquivoAceito[0]
-        if (!arquivo) return
+        const arquivosValidos = arquivoAceito.filter(arquivo => {
+          if (maxSize && arquivo.size > maxSize) {
+            toast.error(`O tamanho máximo permitido é de ${(maxSize / (1024 * 1024)).toFixed(0)} MB`)
 
-        if (maxSize && arquivo.size > maxSize) {
-          toast.error(`O tamanho máximo permitido é de ${(maxSize / (1024 * 1024)).toFixed(0)} MB`)
+            return false
+          }
 
+          const extensao = arquivo.name.split('.').pop()?.toLowerCase() || ''
+          if (!tipos_aceitos || tipos_aceitos.includes(extensao)) {
+            return true
+          }
+
+          toast.error(`Este arquivo não é aceito. São aceitos apenas os tipos: .${tipos_aceitos.join(', .')}`)
+
+          return false
+        })
+
+        if (arquivosValidos.length === 0) return
+
+        if (multiple) {
+          onFilesChange?.([...selectedFiles, ...arquivosValidos])
           return
         }
 
-        const extensao = arquivo.name.split('.').pop()?.toLowerCase() || ''
-        if (!tipos_aceitos || tipos_aceitos.includes(extensao)) {
-          onFileChange?.(arquivo)
-        } else {
-          toast.error(`Este arquivo não é aceito. São aceitos apenas os tipos: .${tipos_aceitos.join(', .')}`)
-        }
+        onFileChange?.(arquivosValidos[0])
       }
     }
   })
@@ -104,16 +123,34 @@ const InputSingleFile = ({
     }
   }
 
-  const handleOpenFile = () => {
-    if (value) {
+  const handleOpenFile = (file?: File) => {
+    if (file) {
+      visualizarArquivo(file)
+    } else if (value) {
       visualizarArquivo(value)
     } else if (existingFileUrl) {
       window.open(existingFileUrl, '_blank')
     }
   }
 
+  const handleDeleteFile = (index: number): MouseEventHandler<HTMLButtonElement> => e => {
+    e.stopPropagation()
+
+    if (onlyView) {
+      handleOpenFile(selectedFiles[index])
+      return
+    }
+
+    if (multiple) {
+      onFilesChange?.(selectedFiles.filter((_, fileIndex) => fileIndex !== index))
+      return
+    }
+
+    handleDeleteImage(e)
+  }
+
   return (
-    <Box {...props} sx={value ? { height: 'auto', ...props.sx } : props.sx}>
+    <Box {...props} sx={hasSelectedFile ? { height: 'auto', ...props.sx } : props.sx}>
       <input {...getInputProps()} />
       <Box
         {...subBoxInput}
@@ -124,9 +161,9 @@ const InputSingleFile = ({
           justifyContent: 'center',
           minHeight: '150px',
           border: '1.5px dashed',
-          borderColor: value || existingFileName ? 'primary.main' : 'divider',
+          borderColor: hasSelectedFile || existingFileName ? 'primary.main' : 'divider',
           borderRadius: 2,
-          bgcolor: value || existingFileName ? 'action.selected' : 'background.default',
+          bgcolor: hasSelectedFile || existingFileName ? 'action.selected' : 'background.default',
           cursor: onlyView ? 'default' : 'pointer',
           p: { xs: 2, md: 2.5 },
           transition: 'border-color 160ms ease, background-color 160ms ease',
@@ -181,7 +218,39 @@ const InputSingleFile = ({
           </Box>
         </Box>
       </Box>
-      {(value || existingFileName) && (
+      {hasSelectedFile && (
+        <Stack spacing={1} sx={{ mt: 1 }}>
+          {selectedFiles.map((file, index) => (
+            <Box
+              key={`${file.name}-${file.lastModified}-${index}`}
+              sx={{
+                width: '100%',
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                px: 1.5,
+                py: 1,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <Typography
+                sx={{ maxWidth: '80%', overflow: 'hidden', cursor: 'pointer', ':hover': { color: 'rgb(0, 166, 90)' } }}
+                title={file.name}
+                onClick={() => handleOpenFile(file)}
+              >
+                {file.name}
+              </Typography>
+              <IconButton sx={{ marginRight: '8px', marginLeft: '20px' }} onClick={handleDeleteFile(index)}>
+                {onlyView ? <Icon icon='mdi:eye-outline' /> : <Icon icon='mdi:delete-outline' width='1em' height='1em' />}
+              </IconButton>
+            </Box>
+          ))}
+        </Stack>
+      )}
+      {!hasSelectedFile && existingFileName && (
         <Box
           sx={{
             width: '100%',
@@ -197,22 +266,13 @@ const InputSingleFile = ({
             alignItems: 'center'
           }}
         >
-          {existingFileUrl ? (
-            <Typography
-              sx={{ maxWidth: '80%', overflow: 'hidden', cursor: 'pointer', ':hover': { color: 'rgb(0, 166, 90)' } }}
-              title={existingFileName}
-              onClick={() => window.open(existingFileUrl, '_blank')}
-            >
-              {existingFileName}
-            </Typography>
-          ) : (
-            <Typography
-              sx={{ maxWidth: '80%', overflow: 'hidden', cursor: 'pointer', ':hover': { color: 'rgb(0, 166, 90)' } }}
-              onClick={handleOpenFile}
-            >
-              {value?.name}
-            </Typography>
-          )}
+          <Typography
+            sx={{ maxWidth: '80%', overflow: 'hidden', cursor: 'pointer', ':hover': { color: 'rgb(0, 166, 90)' } }}
+            title={existingFileName}
+            onClick={() => existingFileUrl && window.open(existingFileUrl, '_blank')}
+          >
+            {existingFileName}
+          </Typography>
           <IconButton sx={{ marginRight: '8px', marginLeft: '20px' }} onClick={handleDeleteImage}>
             {onlyView ? <Icon icon='mdi:eye-outline' /> : <Icon icon='mdi:delete-outline' width='1em' height='1em' />}
           </IconButton>

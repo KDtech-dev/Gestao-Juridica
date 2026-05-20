@@ -100,6 +100,20 @@ export const PUT = async (
   });
 };
 
+export const POST = async (
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) => {
+  const contentType = request.headers.get("content-type") ?? "";
+  const isMultipart = contentType.includes("multipart/form-data");
+  const body = isMultipart ? await request.formData() : await request.text();
+
+  return proxyPublicacao(request, await getId(params), {
+    method: "POST",
+    body,
+  });
+};
+
 export const DELETE = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },

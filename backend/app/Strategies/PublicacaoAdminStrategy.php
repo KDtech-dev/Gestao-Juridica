@@ -7,6 +7,7 @@ use App\Interfaces\PublicationStrategyInterface;
 use App\Models\Publicacao;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PublicacaoAdminStrategy implements PublicationStrategyInterface
 {
@@ -70,6 +71,10 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
 
         $publicacao->update($data);
 
+        if (!empty($anexos)) {
+            $this->replaceAnexos($publicacao);
+        }
+
         $this->storeAnexos($publicacao, $anexos);
 
         return $publicacao->fresh([
@@ -128,7 +133,6 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
                 'descricao' => 'Anexo da publicação',
                 'arquivo' => $path,
                 'nome_arquivo' => $anexo->getClientOriginalName(),
-                'url' => asset("storage/{$path}"),
             ]);
         }
     }
@@ -145,5 +149,18 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
         );
 
         $data['imagem_caminho'] = asset("storage/{$path}");
+    }
+
+    private function replaceAnexos(Publicacao $publicacao): void
+    {
+        $publicacao->loadMissing('anexos');
+
+        foreach ($publicacao->anexos as $anexo) {
+            if ($anexo->arquivo) {
+                Storage::disk('public')->delete($anexo->arquivo);
+            }
+
+            $anexo->delete();
+        }
     }
 }

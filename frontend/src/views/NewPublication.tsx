@@ -225,7 +225,7 @@ export default function NewPublicationView({ editSlug }: Props) {
   );
 
   useEffect(() => {
-    if (!editSlug || localEditItem) return;
+    if (!editSlug) return;
 
     const id =
       editSlug.match(
@@ -248,7 +248,7 @@ export default function NewPublicationView({ editSlug }: Props) {
     return () => {
       active = false;
     };
-  }, [editSlug, localEditItem]);
+  }, [editSlug]);
 
   useEffect(() => {
     setForm(initialResolvedForm);

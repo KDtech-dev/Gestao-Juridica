@@ -46,6 +46,65 @@ function ReviewHtml({ label, value }: { label: string; value: string }) {
   );
 }
 
+function formatFileSize(size: number) {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function ReviewAttachments({
+  label,
+  files,
+  emptyText,
+}: {
+  label: string;
+  files: File[];
+  emptyText: string;
+}) {
+  return (
+    <Box>
+      <Typography fontSize="0.8rem" color="text.secondary" mb={0.6}>
+        {label}
+      </Typography>
+      {files.length > 0 ? (
+        <Stack spacing={0.75}>
+          {files.map((file, index) => (
+            <Box
+              key={`${file.name}-${file.lastModified}-${index}`}
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: "10px",
+                bgcolor: "background.default",
+                px: 1.2,
+                py: 0.9,
+              }}
+            >
+              <Typography
+                color="text.primary"
+                fontWeight={600}
+                sx={{
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {file.name}
+              </Typography>
+              <Typography fontSize="0.78rem" color="text.secondary">
+                {formatFileSize(file.size)}
+              </Typography>
+            </Box>
+          ))}
+        </Stack>
+      ) : (
+        <Typography color="text.primary" fontWeight={600}>
+          {emptyText}
+        </Typography>
+      )}
+    </Box>
+  );
+}
+
 export function StepRevisao({ data }: Props) {
   const t = useTranslations("internal.publicationForm.review");
   const imagePreview = useMemo(() => {
@@ -118,13 +177,10 @@ export function StepRevisao({ data }: Props) {
         <Stack spacing={1.1}>
           <ReviewHtml label={t("summary")} value={data.resumo} />
           <ReviewHtml label={t("content")} value={data.conteudo} />
-          <ReviewItem
+          <ReviewAttachments
             label={t("attachments")}
-            value={
-              data.anexos.length > 0
-                ? data.anexos.map((a) => a.name).join(", ")
-                : t("noAttachments")
-            }
+            files={data.anexos}
+            emptyText={t("noAttachments")}
           />
         </Stack>
       </Paper>
