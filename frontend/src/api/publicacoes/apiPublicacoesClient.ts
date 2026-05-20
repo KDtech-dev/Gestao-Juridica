@@ -75,12 +75,8 @@ export const atualizarPublicacaoClient = (
 ) => {
   const isFormData = payload instanceof FormData;
 
-  if (isFormData) {
-    payload.set("_method", "PUT");
-  }
-
   return requestJson<PublicacaoItem>(`/api/publicacoes/${id}`, {
-    method: isFormData ? "POST" : "PUT",
+    method: "PUT",
     body: isFormData ? payload : JSON.stringify(payload),
   });
 };

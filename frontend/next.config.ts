@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
         destination: `${target}/posts/anexos/:path*`,
       },
       {
+        source: "/storage/:path*",
+        destination: `${target}/storage/:path*`,
+      },
+      {
         source: "/sanctum/:path*",
         destination: `${target}/sanctum/:path*`,
       },

@@ -166,7 +166,18 @@ export function StepDadosBasicos({
           <InputSingleFile
             multiple
             values={data.anexos}
+            existingFiles={data.anexosExistentes}
             onFilesChange={(files) => onChange("anexos", files)}
+            onRemoveExistingFile={(id) => {
+              onChange(
+                "anexosExistentes",
+                data.anexosExistentes.filter((anexo) => anexo.id !== id),
+              );
+              onChange("anexosRemovidos", [
+                ...data.anexosRemovidos,
+                id,
+              ]);
+            }}
             tipos_aceitos={["pdf", "doc", "docx", "jpg", "jpeg", "png"]}
             maxSize={10 * 1024 * 1024}
             label={t("attachment")}

@@ -2,6 +2,7 @@ export type PublicacaoAnexo = {
   id: string;
   nome: string;
   url: string;
+  viewUrl: string;
 };
 
 export type PublicacaoItem = {

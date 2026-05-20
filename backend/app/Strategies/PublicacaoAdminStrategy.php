@@ -56,8 +56,10 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
     public function update(string $id, array $data)
     {
         $anexos = $data['anexos'] ?? [];
+        $anexosRemover = $data['anexos_remover'] ?? [];
         $imagem = $data['imagem'] ?? null;
         unset($data['anexos']);
+        unset($data['anexos_remover']);
         unset($data['imagem']);
 
         $publicacao = Publicacao::query()
@@ -71,10 +73,7 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
 
         $publicacao->update($data);
 
-        if (!empty($anexos)) {
-            $this->replaceAnexos($publicacao);
-        }
-
+        $this->removeAnexos($publicacao, $anexosRemover);
         $this->storeAnexos($publicacao, $anexos);
 
         return $publicacao->fresh([
@@ -162,5 +161,23 @@ class PublicacaoAdminStrategy implements PublicationStrategyInterface
 
             $anexo->delete();
         }
+    }
+
+    private function removeAnexos(Publicacao $publicacao, array $anexoIds): void
+    {
+        if (empty($anexoIds)) {
+            return;
+        }
+
+        $publicacao->anexos()
+            ->whereIn('id', $anexoIds)
+            ->get()
+            ->each(function ($anexo): void {
+                if ($anexo->arquivo) {
+                    Storage::disk('public')->delete($anexo->arquivo);
+                }
+
+                $anexo->delete();
+            });
     }
 }

@@ -79,6 +79,16 @@ class UpdatePublicacaoRequest extends FormRequest
                 'mimes:pdf,doc,docx,jpg,jpeg,png',
                 'max:10240'
             ],
+
+            'anexos_remover' => [
+                'nullable',
+                'array'
+            ],
+
+            'anexos_remover.*' => [
+                'required',
+                Rule::exists('anexos', 'id')
+            ],
         ];
     }
 }

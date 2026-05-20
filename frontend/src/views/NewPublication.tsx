@@ -54,6 +54,8 @@ const initialForm: PublicacaoFormData = {
   conteudo: "",
   status: "publicado",
   anexos: [],
+  anexosExistentes: [],
+  anexosRemovidos: [],
 };
 
 function getTextValue(value: unknown, fallback = "") {
@@ -107,6 +109,8 @@ function getFormSnapshot(form: PublicacaoFormData) {
       type: file.type,
       lastModified: file.lastModified,
     })),
+    anexosExistentes: form.anexosExistentes,
+    anexosRemovidos: form.anexosRemovidos,
   });
 }
 
@@ -118,8 +122,15 @@ function isBackendPublicationId(id?: string) {
   );
 }
 
-function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
+type PublicacaoRequestPayload = PublicacaoPayload & {
+  anexos_remover?: string[];
+};
+
+function buildPublicacaoPayload(
+  form: PublicacaoFormData,
+): PublicacaoRequestPayload {
   const bannerImage = getBannerImageValue(form.bannerImage);
+  const anexosRemover = form.anexosRemovidos.filter(Boolean);
 
   return {
     titulo: getTextValue(form.titulo).trim(),
@@ -130,6 +141,7 @@ function buildPublicacaoPayload(form: PublicacaoFormData): PublicacaoPayload {
     resumo: getTextValue(form.resumo).trim() || null,
     conteudo: getTextValue(form.conteudo).trim() || null,
     status: getStatusValue(form.status),
+    ...(anexosRemover.length > 0 ? { anexos_remover: anexosRemover } : {}),
   };
 }
 
@@ -137,15 +149,16 @@ function buildPublicacaoRequestBody(form: PublicacaoFormData) {
   const payload = buildPublicacaoPayload(form);
 
   const anexos = getFormFiles(form.anexos);
+  const anexosRemover = form.anexosRemovidos.filter(Boolean);
 
-  if (anexos.length === 0 && !isFile(form.bannerImage)) {
+  if (anexos.length === 0 && anexosRemover.length === 0 && !isFile(form.bannerImage)) {
     return payload;
   }
 
   const body = new FormData();
 
   Object.entries(payload).forEach(([key, value]) => {
-    if (value !== null && value !== undefined) {
+    if (key !== "anexos_remover" && value !== null && value !== undefined) {
       body.append(key, String(value));
     }
   });
@@ -157,6 +170,10 @@ function buildPublicacaoRequestBody(form: PublicacaoFormData) {
   if (isFile(form.bannerImage)) {
     body.append("imagem", form.bannerImage);
   }
+
+  anexosRemover.forEach((id) => {
+    body.append("anexos_remover[]", id);
+  });
 
   return body;
 }
@@ -203,6 +220,8 @@ export default function NewPublicationView({ editSlug }: Props) {
       conteudo: getTextValue(editItem.conteudoHtml),
       status: getStatusValue(editItem.status),
       anexos: [],
+      anexosExistentes: editItem.anexos,
+      anexosRemovidos: [],
     };
   }, [editItem, user?.name]);
   const [activeStep, setActiveStep] = useState(0);

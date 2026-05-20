@@ -1,4 +1,7 @@
-import type { StatusPublicacao } from "@/api/publicacoes/types";
+import type {
+  PublicacaoAnexo,
+  StatusPublicacao,
+} from "@/api/publicacoes/types";
 
 export type PublicacaoFormData = {
   titulo: string;
@@ -10,6 +13,8 @@ export type PublicacaoFormData = {
   conteudo: string;
   status: StatusPublicacao;
   anexos: File[];
+  anexosExistentes: PublicacaoAnexo[];
+  anexosRemovidos: string[];
 };
 
 export type PublicationErrors = Partial<

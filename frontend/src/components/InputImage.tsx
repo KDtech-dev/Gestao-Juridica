@@ -9,6 +9,7 @@ import { Icon } from "@/components/AppIcon";
 import { BoxProps } from "@mui/system";
 import CropImagemModal from "./CropImagemModal";
 import { useTranslations } from "next-intl";
+import { getPublicApiOrigin } from "@/configs/apiUrl";
 
 const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
   marginBottom: theme.spacing(5),
@@ -80,6 +81,7 @@ const InputImage = ({
   }, [file]);
 
   const inputProps = getInputProps({ id });
+  const backendOrigin = getPublicApiOrigin() || "http://127.0.0.1:8000";
 
   return (
     <Box {...props} sx={file ? { height: "auto", ...props.sx } : props.sx}>
@@ -154,6 +156,20 @@ const InputImage = ({
                 title={typeof file == "string" ? "" : file.name}
                 className="single-file-image"
                 src={typeof file == "string" ? file : URL.createObjectURL(file)}
+                onError={(event) => {
+                  if (typeof file !== "string" || !file.startsWith("/storage/")) {
+                    return;
+                  }
+
+                  const image = event.currentTarget;
+
+                  if (image.dataset.fallbackSrc) {
+                    return;
+                  }
+
+                  image.dataset.fallbackSrc = "true";
+                  image.src = `${backendOrigin.replace(/\/$/, "")}${file}`;
+                }}
                 style={{
                   maxHeight: "100%",
                   maxWidth: "100%",

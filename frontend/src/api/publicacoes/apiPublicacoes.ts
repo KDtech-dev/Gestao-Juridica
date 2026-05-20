@@ -19,6 +19,31 @@ const getServerApiBaseUrl = () => {
   return `${origin.replace(/\/$/, "")}/api`;
 };
 
+const getServerOrigin = () => getServerApiBaseUrl().replace(/\/api$/, "");
+
+const normalizePublicUrl = (value?: string | null) => {
+  const path = value?.trim();
+
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const url = new URL(path);
+      const serverUrl = new URL(getServerOrigin());
+
+      if (url.origin === serverUrl.origin) {
+        return `${url.pathname}${url.search}`;
+      }
+    } catch {
+      return path;
+    }
+
+    return path;
+  }
+  if (path.startsWith("/")) return path;
+
+  return `/storage/${path.replace(/^storage\//, "")}`;
+};
+
 const getAuthHeaders = async () => {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore
@@ -132,7 +157,8 @@ export const mapApiPublicacaoToItem = (
     slug,
     titulo,
     resumo: publicacao.resumo?.trim() || stripHtml(conteudo).slice(0, 180),
-    bannerImage: publicacao.imagem_caminho || DEFAULT_BANNER_IMAGE,
+    bannerImage:
+      normalizePublicUrl(publicacao.imagem_caminho) || DEFAULT_BANNER_IMAGE,
     conteudoHtml: conteudo || "<p>Conteúdo indisponível.</p>",
     tipo: "Notícia Jurídica",
     categoria: publicacao.categoria?.nome?.trim() || "Publicação",
@@ -157,8 +183,10 @@ export const mapApiPublicacaoToItem = (
           nome:
             anexo.nome_arquivo?.trim() ||
             anexo.descricao?.trim() ||
+            anexo.arquivo?.split("/").pop()?.trim() ||
             "Anexo da publicação",
-          url: anexo.url || anexo.arquivo || "#",
+          url: normalizePublicUrl(anexo.url || anexo.arquivo) || "#",
+          viewUrl: normalizePublicUrl(anexo.arquivo || anexo.url) || "#",
         }))
       : [],
   };

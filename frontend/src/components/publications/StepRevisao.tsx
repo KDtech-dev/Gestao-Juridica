@@ -1,6 +1,7 @@
 "use client";
 
 import { Box, Paper, Stack, Typography } from "@mui/material";
+import type { PublicacaoAnexo } from "@/api/publicacoes/types";
 import { PublicacaoFormData } from "./types";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo } from "react";
@@ -56,19 +57,49 @@ function formatFileSize(size: number) {
 function ReviewAttachments({
   label,
   files,
+  existingFiles,
   emptyText,
 }: {
   label: string;
   files: File[];
+  existingFiles: PublicacaoAnexo[];
   emptyText: string;
 }) {
+  const hasAttachments = files.length > 0 || existingFiles.length > 0;
+
   return (
     <Box>
       <Typography fontSize="0.8rem" color="text.secondary" mb={0.6}>
         {label}
       </Typography>
-      {files.length > 0 ? (
+      {hasAttachments ? (
         <Stack spacing={0.75}>
+          {existingFiles.map((file) => (
+            <Box
+              key={file.id}
+              sx={{
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: "10px",
+                bgcolor: "background.default",
+                px: 1.2,
+                py: 0.9,
+              }}
+            >
+              <Typography
+                color="text.primary"
+                fontWeight={600}
+                sx={{
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {file.nome}
+              </Typography>
+              <Typography fontSize="0.78rem" color="text.secondary">
+                {file.url}
+              </Typography>
+            </Box>
+          ))}
           {files.map((file, index) => (
             <Box
               key={`${file.name}-${file.lastModified}-${index}`}
@@ -180,6 +211,7 @@ export function StepRevisao({ data }: Props) {
           <ReviewAttachments
             label={t("attachments")}
             files={data.anexos}
+            existingFiles={data.anexosExistentes}
             emptyText={t("noAttachments")}
           />
         </Stack>

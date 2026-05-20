@@ -3,11 +3,12 @@ import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 import Typography, { TypographyProps } from '@mui/material/Typography'
 import { useDropzone } from 'react-dropzone'
-import { Chip, IconButton, Stack } from '@mui/material'
+import { Chip, IconButton, Stack, Tooltip } from '@mui/material'
 import { Icon, type IconProps } from '@/components/AppIcon'
 import { BoxProps } from '@mui/system'
 import { visualizarArquivo } from '@/@core/utils/funcoes-de-arquivo'
 import { toast } from '@/utils/toast'
+import type { PublicacaoAnexo } from '@/api/publicacoes/types'
 
 const HeadingTypography = styled(Typography)<TypographyProps>(({ theme }) => ({
   marginBottom: 0,
@@ -33,7 +34,9 @@ type props = {
   maxSize?: number
   existingFileName?: string
   existingFileUrl?: string
+  existingFiles?: PublicacaoAnexo[]
   onRemoveExisting?: () => void
+  onRemoveExistingFile?: (id: string) => void
   label?: string
   helperText?: string
 } & BoxProps
@@ -70,13 +73,17 @@ const InputSingleFile = ({
   maxSize,
   existingFileName,
   existingFileUrl,
+  existingFiles,
   onRemoveExisting,
+  onRemoveExistingFile,
   label = 'Anexo',
   helperText = 'Solte o arquivo aqui ou clique para navegar.',
   ...props
 }: props) => {
   const selectedFiles = multiple ? values ?? [] : value ? [value] : []
   const hasSelectedFile = selectedFiles.length > 0
+  const currentExistingFiles = multiple ? existingFiles ?? [] : []
+  const hasExistingFile = Boolean(existingFileName) || currentExistingFiles.length > 0
 
   const { getRootProps, getInputProps } = useDropzone({
     multiple,
@@ -161,9 +168,9 @@ const InputSingleFile = ({
           justifyContent: 'center',
           minHeight: '150px',
           border: '1.5px dashed',
-          borderColor: hasSelectedFile || existingFileName ? 'primary.main' : 'divider',
+          borderColor: hasSelectedFile || hasExistingFile ? 'primary.main' : 'divider',
           borderRadius: 2,
-          bgcolor: hasSelectedFile || existingFileName ? 'action.selected' : 'background.default',
+          bgcolor: hasSelectedFile || hasExistingFile ? 'action.selected' : 'background.default',
           cursor: onlyView ? 'default' : 'pointer',
           p: { xs: 2, md: 2.5 },
           transition: 'border-color 160ms ease, background-color 160ms ease',
@@ -246,6 +253,68 @@ const InputSingleFile = ({
               <IconButton sx={{ marginRight: '8px', marginLeft: '20px' }} onClick={handleDeleteFile(index)}>
                 {onlyView ? <Icon icon='mdi:eye-outline' /> : <Icon icon='mdi:delete-outline' width='1em' height='1em' />}
               </IconButton>
+            </Box>
+          ))}
+        </Stack>
+      )}
+      {currentExistingFiles.length > 0 && (
+        <Stack spacing={1} sx={{ mt: 1 }}>
+          {currentExistingFiles.map((file) => (
+            <Box
+              key={file.id}
+              sx={{
+                width: '100%',
+                bgcolor: 'background.paper',
+                border: '1px solid',
+                borderColor: 'divider',
+                borderRadius: 2,
+                px: 1.5,
+                py: 1,
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <Typography
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  pr: 1,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  cursor: 'pointer',
+                  ':hover': { color: 'rgb(0, 166, 90)' }
+                }}
+                title={file.nome}
+                onClick={() => file.viewUrl && window.open(file.viewUrl, '_blank')}
+              >
+                {file.nome || 'Anexo da publicação'}
+              </Typography>
+              <Stack direction='row' spacing={0.5} flexShrink={0}>
+                <Tooltip title='Visualizar'>
+                  <IconButton
+                    onClick={e => {
+                      e.stopPropagation()
+                      if (file.viewUrl) window.open(file.viewUrl, '_blank')
+                    }}
+                  >
+                    <Icon icon='mdi:eye-outline' width='1em' height='1em' />
+                  </IconButton>
+                </Tooltip>
+                {!onlyView && (
+                  <Tooltip title='Remover'>
+                    <IconButton
+                      onClick={e => {
+                        e.stopPropagation()
+                        onRemoveExistingFile?.(file.id)
+                      }}
+                    >
+                      <Icon icon='mdi:delete-outline' width='1em' height='1em' />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Stack>
             </Box>
           ))}
         </Stack>
