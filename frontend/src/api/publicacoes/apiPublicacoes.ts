@@ -10,8 +10,7 @@ import type {
   PublicacaoPayload,
 } from "./types";
 
-const DEFAULT_BANNER_IMAGE =
-  "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1400&q=80";
+const DEFAULT_BANNER_IMAGE = "/storage/publicacoes/default-publication.png";
 
 const getServerApiBaseUrl = () => {
   const origin = getPublicApiOrigin() || "http://127.0.0.1:8000";

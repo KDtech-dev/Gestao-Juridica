@@ -10,7 +10,7 @@ export const publicationSchema = z.object({
   categoriaId: z.string().trim().min(1, "Selecione uma categoria."),
   bannerImage: z.union([
     fileSchema,
-    z.string().trim().min(1, "Informe a imagem do banner."),
+    z.string().trim(),
   ]),
   autor: z.string().trim().min(1, "Informe o nome do autor."),
   resumo: z

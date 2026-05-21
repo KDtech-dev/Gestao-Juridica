@@ -46,9 +46,12 @@ class PostController extends Controller
             404
         );
 
-        return Storage::disk('public')->download(
+        return Storage::disk('public')->response(
             $anexo->arquivo,
-            $anexo->nome_arquivo
+            $anexo->nome_arquivo,
+            [
+                'Content-Disposition' => 'inline; filename="' . addslashes($anexo->nome_arquivo) . '"',
+            ]
         );
     }
 }

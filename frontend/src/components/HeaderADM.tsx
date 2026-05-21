@@ -23,12 +23,14 @@ import {
 import { useNotifications } from "@/context/NotificationsContext";
 import { useTheme } from "@mui/material/styles";
 import { cases, listTrackedClients } from "@/data/cases";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import MenuNotificacoes, {
   type Notificacao,
 } from "@/components/MenuNotificações";
 import UserDropdown from "@/components/Userdropdown";
+import { logoSrc } from "./Footer";
 
 type Props = {
   showSearch?: boolean;
@@ -179,6 +181,30 @@ export function HeaderDashboard({
           </IconButton>
         </Tooltip>
       )}
+
+      <Box
+        component={Link}
+        href="/"
+        aria-label="Central Jurídica"
+        sx={{
+          display: { xs: "flex", md: "none" },
+          alignItems: "center",
+          flexShrink: 0,
+        }}
+      >
+        <Box
+          component="img"
+          src={logoSrc}
+          alt="Central Jurídica"
+          sx={{
+            width: 40,
+            height: 40,
+            borderRadius: "9px",
+            objectFit: "contain",
+            filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.28))",
+          }}
+        />
+      </Box>
 
       {showSearch && (
         <Autocomplete

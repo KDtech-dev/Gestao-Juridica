@@ -5,8 +5,7 @@ import type { PublicacaoFormData } from "@/components/publications/types";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 const STORAGE_KEY = "lawmanager-user-publications";
-const DEFAULT_BANNER_IMAGE =
-  "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1400&q=80";
+const DEFAULT_BANNER_IMAGE = "/storage/publicacoes/default-publication.png";
 
 function slugify(value: string) {
   return value

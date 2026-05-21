@@ -22,9 +22,7 @@ class PublicacaoFactory extends Factory
             'user_id'        => User::inRandomOrder()->value('id'),
             'titulo'         => $this->faker->sentence(6),
             'categoria_id'   => Categoria::inRandomOrder()->value('id'),
-            'imagem_caminho' => $this->faker->boolean(70)
-                ? 'publicacoes/' . $this->faker->uuid() . '.jpg'
-                : null,
+            'imagem_caminho' => 'publicacoes/default-publication.png',
 
             'autor'          => $this->faker->name(),
             'resumo'         => $this->faker->paragraph(2),

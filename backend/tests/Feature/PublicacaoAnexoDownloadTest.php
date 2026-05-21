@@ -24,7 +24,7 @@ class PublicacaoAnexoDownloadTest extends TestCase
         parent::setUp();
     }
 
-    public function test_public_attachment_can_be_downloaded_without_api_prefix(): void
+    public function test_public_attachment_can_be_viewed_inline_without_api_prefix(): void
     {
         Storage::fake('public');
 
@@ -56,6 +56,6 @@ class PublicacaoAnexoDownloadTest extends TestCase
 
         $this->get($anexo->url)
             ->assertOk()
-            ->assertHeader('content-disposition');
+            ->assertHeader('content-disposition', 'inline; filename="documento.pdf"');
     }
 }

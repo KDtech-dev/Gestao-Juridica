@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
+import { Box, Button, Container, Typography } from "@mui/material";
 
 export function HomeCard() {
   return (
@@ -15,19 +15,9 @@ export function HomeCard() {
           Especialistas em soluções jurídicas corporativas...
         </Typography>
 
-        <Stack direction="row" spacing={2}>
-          <Button component={Link} href="#contato" variant="contained">
-            Consulta Gratuita
-          </Button>
-          <Button
-            component={Link}
-            href="/login"
-            variant="outlined"
-            sx={{ color: "#fff", borderColor: "#fff" }}
-          >
-            Acompanhe seu Caso
-          </Button>
-        </Stack>
+        <Button component={Link} href="#contato" variant="contained">
+          Consulta Gratuita
+        </Button>
       </Box>
     </Container>
   );

@@ -16,7 +16,7 @@ import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { useTranslations } from "next-intl";
 
-export const logoSrc = "/logo.png";
+export const logoSrc = "/central-juridico-logo-icon.png";
 
 export function Footer() {
   const t = useTranslations("public.footer");
