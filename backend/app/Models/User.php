@@ -17,9 +17,8 @@ use Spatie\Permission\Traits\HasRoles;
  */
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUuids; 
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUuids;
 
-    // Remover $keyType e $incrementing — a trait já define os dois
     protected $guard_name = 'api';
 
     protected $fillable = [
