@@ -126,7 +126,6 @@ export function DialogCliente({
           />
         </Box>
 
-        {/* CPF / CNPJ */}
         <Controller
           name="cpf_cnpj"
           control={control}
