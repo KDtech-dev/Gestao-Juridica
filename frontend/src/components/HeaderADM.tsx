@@ -143,7 +143,7 @@ export function HeaderDashboard({
       router.push(firstMatch.href);
       return;
     }
-    router.push("/clients");
+    router.push("/clientes");
   };
 
   return (

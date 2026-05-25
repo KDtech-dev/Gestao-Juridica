@@ -36,7 +36,7 @@ const mainItems: NavItem[] = [
     key: "clientes",
     label: "",
     icon: "mdi:account-group-outline",
-    href: "/clients",
+    href: "/clientes",
   },
 
   {

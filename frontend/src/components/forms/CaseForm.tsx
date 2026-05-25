@@ -3,9 +3,9 @@
 import { Box, MenuItem, TextField } from "@mui/material";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { CasePayload } from "@/services/caseService";
-import { Client, listClients } from "@/services/clientService";
 import { Lawyer, listLawyers } from "@/services/lawyerService";
 import { teamSpecialties } from "@/data/team";
+import { ClienteType } from "../publications/types";
 
 export type CaseFormValues = {
   title: string;
@@ -34,17 +34,6 @@ const defaultValues: CaseFormValues = {
   description: "",
 };
 
-function normalizeClientList(raw: unknown): Client[] {
-  if (Array.isArray(raw)) return raw as Client[];
-  if (
-    raw &&
-    typeof raw === "object" &&
-    Array.isArray((raw as { data?: unknown[] }).data)
-  ) {
-    return (raw as { data: Client[] }).data;
-  }
-  return [];
-}
 
 export function CaseForm({
   id,
@@ -58,37 +47,11 @@ export function CaseForm({
   );
   const [values, setValues] = useState<CaseFormValues>(resolvedInitialValues);
   const [submitted, setSubmitted] = useState(false);
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<ClienteType[]>([]);
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [loadingOptions, setLoadingOptions] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadOptions() {
-      try {
-        setLoadingOptions(true);
-        const [clientsResponse, lawyersResponse] = await Promise.all([
-          listClients({ limit: 100 }),
-          listLawyers(),
-        ]);
-
-        if (!active) return;
-
-        setClients(normalizeClientList(clientsResponse));
-        setLawyers(lawyersResponse);
-      } finally {
-        if (active) setLoadingOptions(false);
-      }
-    }
-
-    void loadOptions();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
+ 
   function updateValue<K extends keyof CaseFormValues>(
     name: K,
     value: CaseFormValues[K],

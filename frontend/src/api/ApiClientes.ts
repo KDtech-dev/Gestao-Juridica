@@ -9,13 +9,13 @@ import {
 } from "@/schemas/ClienteSchema";
 
 const getClientes = async (): Promise<PaginatedResponseType<ClienteType>> => {
-  const response = await getAxios().get("/api/clientes");
+  const response = await getAxios().get("/clientes");
 
   return response.data;
 };
 
 const getClienteById = async (id: number): Promise<ClienteType> => {
-  const response = await getAxios().get(`/api/clientes/${id}`);
+  const response = await getAxios().get(`/clientes/${id}`);
 
   return response.data;
 };
@@ -23,7 +23,7 @@ const getClienteById = async (id: number): Promise<ClienteType> => {
 const postCliente = async (
   data: CreateClientePayload,
 ): Promise<ClienteType> => {
-  const response = await getAxios().post("/api/clientes", data);
+  const response = await getAxios().post("/clientes", data);
 
   return response.data.data;
 };
@@ -32,13 +32,13 @@ const updateCliente = async (
   id: number,
   data: UpdateClientePayload,
 ): Promise<ClienteType> => {
-  const response = await getAxios().put(`/api/clientes/${id}`, data);
+  const response = await getAxios().put(`/clientes/${id}`, data);
 
   return response.data.data;
 };
 
 const deleteCliente = async (id: number): Promise<void> => {
-  await getAxios().delete(`/api/clientes/${id}`);
+  await getAxios().delete(`/clientes/${id}`);
 };
 
 export {
