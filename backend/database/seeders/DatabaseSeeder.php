@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             PublicacaoSeeder::class,
             CompromissoSeeder::class,
             NotificacaoSeeder::class,
+            ClienteSeeder::class,
         ]);
     }
 }

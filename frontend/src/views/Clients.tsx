@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  Chip,
   Container,
   IconButton,
   InputAdornment,
@@ -23,97 +22,132 @@ import {
 import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { useState, type MouseEvent } from "react";
-import Link from "next/link";
-import { useNotifications } from "@/context/NotificationsContext";
-import { NewClientModal } from "@/components/modals/NewClientModal";
-import { EditClientModal } from "@/components/modals/EditClientModal";
+import { useCallback, useEffect, useState } from "react";
 import { NewCaseModal } from "@/components/modals/NewCaseModal";
-import useClients, { Client } from "@/hooks/useClients";
-import { getApiErrorMessage } from "@/configs/ApiError";
-import { CasePayload, createCase } from "@/services/caseService";
+import {
+  getClientes,
+  postCliente,
+  updateCliente,
+  deleteCliente,
+} from "@/api/ApiClientes";
+import { toast } from "@/utils/toast";
+import { ClienteType } from "@/components/publications/types";
+import { CreateClientePayload } from "@/schemas/ClienteSchema";
+import DialogCliente from "@/components/DialogCliente";
 
-function statusStyles(status?: Client["status"]) {
-  if (status === "Ativo") {
-    return { color: "#047857", bg: "#b8ead2" };
-  }
-  if (status === "Inativo") {
-    return { color: "#334155", bg: "#e2e8f0" };
-  }
-  return { color: "#1d4ed8", bg: "#c7d8f2" };
-}
+type DialogMode = "create" | "edit" | "view";
 
 export default function ClientesView() {
-  const [open, setOpen] = useState(false);
-  const [editClientOpen, setEditClientOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const menuOpen = Boolean(anchorEl);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogMode, setDialogMode] = useState<DialogMode>("create");
   const [caseOpen, setCaseOpen] = useState(false);
-  const [submittingClient, setSubmittingClient] = useState(false);
+  const [clientes, setClientes] = useState<ClienteType[]>([]);
+  const [clienteSelecionado, setClienteSelecionado] =
+    useState<ClienteType | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
   const [submittingCase, setSubmittingCase] = useState(false);
-  const { clients, loading, error, total, search, setSearch, createClient } =
-    useClients(1, 100);
-  const { addNotification } = useNotifications();
-  const statusLabel = (status?: Client["status"]) => status ?? "Ativo";
-  const handleOpenNewClientModal = () => setOpen(true);
-  const handleCloseNewClientModal = () => setOpen(false);
-  const handleOpenMenu = (e: MouseEvent<HTMLElement>) =>
-    setAnchorEl(e.currentTarget);
-  const handleCloseMenu = () => setAnchorEl(null);
-  const handleOpenNewCaseModal = () => setCaseOpen(true);
-  const handleCloseNewCaseModal = () => setCaseOpen(false);
-  const handleOpenEditClientModal = () => setEditClientOpen(true);
-  const handleCloseEditClientModal = () => setEditClientOpen(false);
-  const handleNewClientSubmit = async (payload: Partial<Client>) => {
+
+  const loadClientes = useCallback(async (page = 1) => {
+    setLoading(true);
     try {
-      setSubmittingClient(true);
-      await createClient(payload);
-      setOpen(false);
-      addNotification({
-        title: "Novo cliente cadastrado",
-        description: "O cliente foi adicionado com sucesso.",
-      });
-    } catch (err) {
-      addNotification({
-        title: "Erro ao cadastrar cliente",
-        description: getApiErrorMessage(err),
-      });
+      const response = await getClientes();
+      setClientes(response.data);
+      setCurrentPage(response.meta.current_page);
+      setLastPage(response.meta.last_page);
+      setTotal(response.meta.total);
+    } catch {
+      toast.error("Erro ao carregar clientes.");
     } finally {
-      setSubmittingClient(false);
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadClientes();
+  }, [loadClientes]);
+
+  const clientesFiltrados = clientes.filter((c) =>
+    [c.name, c.cpf_cnpj, c.email].some((field) =>
+      field?.toLowerCase().includes(search.toLowerCase()),
+    ),
+  );
+
+  const handleSubmit = async (data: CreateClientePayload) => {
+    setSubmitting(true);
+    try {
+      if (dialogMode === "create") {
+        await postCliente(data);
+        toast.success("Cliente criado com sucesso!");
+      } else {
+        await updateCliente(clienteSelecionado!.id, data);
+        toast.success("Cliente atualizado com sucesso!");
+      }
+      handleDialogClose();
+      loadClientes();
+    } catch {
+      toast.error(
+        dialogMode === "create"
+          ? "Erro ao criar cliente."
+          : "Erro ao atualizar cliente.",
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
-  const handleNewCaseSubmit = async (payload: CasePayload) => {
+
+  const handleDeleteCliente = async (cliente: ClienteType) => {
+    if (!confirm(`Deseja remover ${cliente.name}?`)) return;
     try {
-      setSubmittingCase(true);
-      await createCase(payload);
+      await deleteCliente(cliente.id);
+      toast.success("Cliente removido com sucesso!");
+      loadClientes();
+    } catch {
+      toast.error("Erro ao remover cliente.");
+    }
+  };
+
+  const handleNewCaseSubmit = async (data: unknown) => {
+    setSubmittingCase(true);
+    try {
+      toast.success("Caso criado com sucesso!");
       setCaseOpen(false);
-      addNotification({
-        title: "Novo caso criado",
-        description: "Um novo caso foi adicionado no painel.",
-      });
-    } catch (err) {
-      addNotification({
-        title: "Erro ao criar caso",
-        description: getApiErrorMessage(err),
-      });
+    } catch {
+      toast.error("Erro ao criar caso.");
     } finally {
       setSubmittingCase(false);
     }
   };
-  const handleEditClientSubmit = () =>
-    addNotification({
-      title: "Cliente atualizado",
-      description: "Os dados do cliente foram atualizados.",
-    });
+
+  const openCreate = () => {
+    setClienteSelecionado(null);
+    setDialogMode("create");
+    setDialogOpen(true);
+  };
+
+  const openEdit = (cliente: ClienteType) => {
+    setClienteSelecionado(cliente);
+    setDialogMode("edit");
+    setDialogOpen(true);
+  };
+
+  const openView = (cliente: ClienteType) => {
+    setClienteSelecionado(cliente);
+    setDialogMode("view");
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setClienteSelecionado(null);
+  };
 
   return (
-    <Box
-      sx={{
-        bgcolor: "background.default",
-        minHeight: "100vh",
-        display: "block",
-      }}
-    >
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <SidebarDashboard activeKey="clientes" />
 
       <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
@@ -136,55 +170,20 @@ export default function ClientesView() {
               </Typography>
             </Box>
 
-            <>
-              <Button
-                variant="contained"
-                onClick={handleOpenMenu}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: "12px",
-                  px: 1,
-                  minWidth: 44,
-                  height: 44,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontWeight: 600,
-                }}
-              >
-                <Icon icon="mdi:plus" width={20} />
-              </Button>
-              <Menu
-                anchorEl={anchorEl}
-                open={menuOpen}
-                onClose={handleCloseMenu}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "right",
-                }}
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    handleCloseMenu();
-                    handleOpenNewClientModal();
-                  }}
-                >
-                  Novo cliente
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleCloseMenu();
-                    handleOpenNewCaseModal();
-                  }}
-                >
-                  Novo caso
-                </MenuItem>
-              </Menu>
-            </>
+            <Button
+              variant="contained"
+              onClick={openCreate}
+              startIcon={<Icon icon="mdi:plus" width={20} />}
+              sx={{
+                borderRadius: "12px",
+                px: 2,
+                height: 44,
+                textTransform: "none",
+                fontWeight: 600,
+              }}
+            >
+              Novo cliente
+            </Button>
           </Stack>
 
           <Paper
@@ -192,7 +191,6 @@ export default function ClientesView() {
               borderRadius: "16px",
               border: "1px solid",
               borderColor: "divider",
-              boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
               overflow: "hidden",
             }}
           >
@@ -209,65 +207,38 @@ export default function ClientesView() {
               }}
             >
               <TextField
-                placeholder={"Buscar por nome, documento ou e-mail..."}
+                placeholder="Buscar por nome, documento ou e-mail..."
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(e) => setSearch(e.target.value)}
                 sx={{
                   width: { xs: "100%", sm: 450 },
                   "& .MuiOutlinedInput-root": {
-                    bgcolor: "background.paper",
                     borderRadius: "12px",
                     height: 44,
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "divider",
                   },
                 }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Icon
-                        icon="mdi:magnify"
-                        color="currentColor"
-                        width={20}
-                      />
+                      <Icon icon="mdi:magnify" width={20} />
                     </InputAdornment>
                   ),
                 }}
               />
-
-              <Button
-                variant="outlined"
-                startIcon={<Icon icon="mdi:filter-variant" />}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: "12px",
-                  borderColor: "divider",
-                  color: "text.secondary",
-                  minWidth: 100,
-                  width: { xs: "100%", sm: "auto" },
-                }}
-              >
-                Filtros
-              </Button>
             </Stack>
 
-            <TableContainer sx={{ width: "100%", overflowX: "auto" }}>
+            <TableContainer>
               <Table sx={{ minWidth: 760 }}>
-                <TableHead sx={{ bgcolor: "background.paper" }}>
+                <TableHead>
                   <TableRow>
                     <TableCell sx={headCellStyle}>NOME DO CLIENTE</TableCell>
                     <TableCell sx={headCellStyle}>
                       DETALHES DE CONTATO
                     </TableCell>
                     <TableCell sx={headCellStyle}>CPF / CNPJ</TableCell>
-                    <TableCell sx={headCellStyle}>STATUS</TableCell>
+                    <TableCell sx={headCellStyle}>DATA NASC.</TableCell>
                     <TableCell
-                      sx={{
-                        ...headCellStyle,
-                        textAlign: "right",
-                        pr: 3,
-                      }}
+                      sx={{ ...headCellStyle, textAlign: "right", pr: 3 }}
                     >
                       AÇÕES
                     </TableCell>
@@ -284,14 +255,8 @@ export default function ClientesView() {
                       </TableCell>
                     </TableRow>
                   )}
-                  {!loading && error && (
-                    <TableRow>
-                      <TableCell colSpan={5} sx={rowCellStyle}>
-                        <Typography color="error">{error}</Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                  {!loading && !error && clients.length === 0 && (
+
+                  {!loading && clientesFiltrados.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={5} sx={rowCellStyle}>
                         <Typography color="text.secondary">
@@ -300,96 +265,71 @@ export default function ClientesView() {
                       </TableCell>
                     </TableRow>
                   )}
+
                   {!loading &&
-                    !error &&
-                    clients.map((client) => {
-                      const { color, bg } = statusStyles(client.status);
+                    clientesFiltrados.map((cliente) => (
+                      <TableRow key={cliente.id}>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography fontWeight={600} color="text.primary">
+                            {cliente.name}
+                          </Typography>
+                        </TableCell>
 
-                      return (
-                        <TableRow key={client.id ?? client.slug}>
-                          <TableCell sx={rowCellStyle}>
-                            <Typography
-                              fontWeight={600}
-                              color="text.primary"
-                              mb={0.3}
-                            >
-                              {client.name}
-                            </Typography>
-                            <Typography
-                              color="text.secondary"
-                              fontSize="0.86rem"
-                            >
-                              Contato: {client.contactName || "-"}
-                            </Typography>
-                          </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.primary">
+                            {cliente.email || "-"}
+                          </Typography>
+                          <Typography color="text.secondary" fontSize="0.86rem">
+                            {cliente.telefone || "-"}
+                          </Typography>
+                        </TableCell>
 
-                          <TableCell sx={rowCellStyle}>
-                            <Typography color="text.primary">
-                              {client.email || "-"}
-                            </Typography>
-                            <Typography
-                              color="text.secondary"
-                              fontSize="0.86rem"
-                            >
-                              {client.phone || "-"}
-                            </Typography>
-                          </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.secondary">
+                            {cliente.cpf_cnpj || "-"}
+                          </Typography>
+                        </TableCell>
 
-                          <TableCell sx={rowCellStyle}>
-                            <Typography color="text.secondary">
-                              {client.cpfCnpj || "-"}
-                            </Typography>
-                          </TableCell>
+                        <TableCell sx={rowCellStyle}>
+                          <Typography color="text.secondary">
+                            {cliente.data_nascimento || "-"}
+                          </Typography>
+                        </TableCell>
 
-                          <TableCell sx={rowCellStyle}>
-                            <Chip
-                              label={statusLabel(client.status)}
-                              sx={{
-                                bgcolor: bg,
-                                color,
-                                fontWeight: 500,
-                              }}
-                            />
-                          </TableCell>
-
-                          <TableCell
-                            sx={{
-                              ...rowCellStyle,
-                              textAlign: "right",
-                              pr: 2,
-                            }}
+                        <TableCell
+                          sx={{ ...rowCellStyle, textAlign: "right", pr: 2 }}
+                        >
+                          <IconButton
+                            sx={actionBtnStyle}
+                            onClick={() => openView(cliente)}
                           >
-                            <IconButton
-                              sx={actionBtnStyle}
-                              component={Link}
-                              href={`/acompanhamento/${client.slug}`}
-                            >
-                              <Icon icon="mdi:eye-outline" width={19} />
-                            </IconButton>
-                            <>
-                              <IconButton
-                                sx={actionBtnStyle}
-                                onClick={handleOpenEditClientModal}
-                              >
-                                <Icon icon="mdi:pencil-outline" width={19} />
-                              </IconButton>
-                              <IconButton sx={actionBtnStyle}>
-                                <Icon icon="mdi:trash-can-outline" width={19} />
-                              </IconButton>
-                            </>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                            <Icon icon="mdi:eye-outline" width={19} />
+                          </IconButton>
+
+                          <IconButton
+                            sx={actionBtnStyle}
+                            onClick={() => openEdit(cliente)}
+                          >
+                            <Icon icon="mdi:pencil-outline" width={19} />
+                          </IconButton>
+
+                          <IconButton
+                            sx={actionBtnStyle}
+                            onClick={() => handleDeleteCliente(cliente)}
+                          >
+                            <Icon icon="mdi:trash-can-outline" width={19} />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
             </TableContainer>
 
             <Stack
-              direction={{ xs: "column", sm: "row" }}
+              direction="row"
               justifyContent="space-between"
-              alignItems={{ xs: "stretch", sm: "center" }}
-              gap={1.5}
+              alignItems="center"
               sx={{
                 px: 2,
                 py: 2,
@@ -398,30 +338,30 @@ export default function ClientesView() {
               }}
             >
               <Typography color="text.secondary" fontSize="0.95rem">
-                {`Mostrando ${clients.length ? 1 : 0} até ${clients.length} de ${total} registros`}
+                {`${total} registro(s) encontrado(s)`}
               </Typography>
 
               <Stack direction="row" spacing={1}>
                 <Button
                   variant="outlined"
-                  disabled
+                  disabled={currentPage <= 1}
+                  onClick={() => loadClientes(currentPage - 1)}
                   sx={{
                     textTransform: "none",
                     borderRadius: "8px",
                     borderColor: "divider",
-                    minWidth: 88,
                   }}
                 >
                   Anterior
                 </Button>
                 <Button
                   variant="outlined"
-                  disabled
+                  disabled={currentPage >= lastPage}
+                  onClick={() => loadClientes(currentPage + 1)}
                   sx={{
                     textTransform: "none",
                     borderRadius: "8px",
                     borderColor: "divider",
-                    minWidth: 88,
                   }}
                 >
                   Próximo
@@ -432,22 +372,19 @@ export default function ClientesView() {
         </Container>
       </Box>
 
-      <NewClientModal
-        open={open}
-        onClose={handleCloseNewClientModal}
-        onSubmit={handleNewClientSubmit}
-        submitting={submittingClient}
+      <DialogCliente
+        open={dialogOpen}
+        onClose={handleDialogClose}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+        mode={dialogMode}
+        cliente={clienteSelecionado}
       />
       <NewCaseModal
         open={caseOpen}
-        onClose={handleCloseNewCaseModal}
+        onClose={() => setCaseOpen(false)}
         onSubmit={handleNewCaseSubmit}
         submitting={submittingCase}
-      />
-      <EditClientModal
-        open={editClientOpen}
-        onClose={handleCloseEditClientModal}
-        onSubmit={handleEditClientSubmit}
       />
     </Box>
   );
@@ -467,6 +404,4 @@ const rowCellStyle = {
   borderColor: "divider",
 };
 
-const actionBtnStyle = {
-  color: "text.secondary",
-};
+const actionBtnStyle = { color: "text.secondary" };

@@ -6,31 +6,25 @@ use App\Enums\StatusPublicacao;
 use App\Http\Controllers\Controller;
 use App\Models\Anexo;
 use App\Services\PublicacaoService;
-use App\Strategies\PublicacaoPublicaStrategy;
 use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    protected PublicacaoService $service;
-
-    public function __construct()
-    {
-        $this->service = new PublicacaoService(
-            new PublicacaoPublicaStrategy()
-        );
-    }
+    public function __construct(
+        protected PublicacaoService $service
+    ) {}
 
     public function index()
     {
         return response()->json(
-            $this->service->getPublicacoes()
+            $this->service->getPublicacoesPublicas()
         );
     }
 
     public function show(string $id)
     {
         return response()->json(
-            $this->service->getPublicacaoById($id)
+            $this->service->getPublicacaoPublicaById($id)
         );
     }
 

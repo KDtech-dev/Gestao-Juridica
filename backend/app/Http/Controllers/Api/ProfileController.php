@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateProfilePasswordRequest;
+use App\Http\Requests\UpdateProfileRequest;
+use App\Services\ProfileService;
+use App\Services\ResponseService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class ProfileController extends Controller
+{
+    public function __construct(
+        private ProfileService $service
+    ) {}
+
+    public function show(Request $request): JsonResponse
+    {
+        return ResponseService::success([
+            'user' => $this->service->getProfile($request->user()),
+        ]);
+    }
+
+    public function update(UpdateProfileRequest $request): JsonResponse
+    {
+        return ResponseService::success(
+            [
+                'user' => $this->service->updateProfile(
+                    $request->user(),
+                    $request->validated()
+                ),
+            ],
+            'Perfil atualizado.'
+        );
+    }
+
+    public function updatePassword(
+        UpdateProfilePasswordRequest $request
+    ): JsonResponse {
+        $this->service->updatePassword(
+            $request->user(),
+            $request->validated()
+        );
+
+        return ResponseService::success([], 'Senha atualizada com sucesso.');
+    }
+}

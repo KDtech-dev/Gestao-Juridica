@@ -6,19 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePublicacaoRequest;
 use App\Http\Requests\UpdatePublicacaoRequest;
 use App\Services\PublicacaoService;
-use App\Strategies\PublicacaoAdminStrategy;
-use Illuminate\Support\Facades\Log;
 
 class PublicacaoController extends Controller
 {
-    protected PublicacaoService $service;
-
-    public function __construct()
-    {
-        $this->service = new PublicacaoService(
-            new PublicacaoAdminStrategy()
-        );
-    }
+    public function __construct(
+        protected PublicacaoService $service
+    ) {}
 
     public function index()
     {
