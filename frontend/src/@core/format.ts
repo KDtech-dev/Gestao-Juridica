@@ -46,4 +46,34 @@ export function formatCnpj(cnpj: string) {
     .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
     .replace(/\.(\d{3})(\d)/, ".$1/$2")
     .replace(/(\d{4})(\d)/, "$1-$2");
+} 
+
+export function formatCpfCnpj(value: string) {
+  const digits = clearNumber(value);
+
+  if (digits.length <= 11) {
+    const cpf = digits.slice(0, 11);
+
+    if (cpf.length <= 3) {
+      return cpf;
+    }
+
+    if (cpf.length <= 6) {
+      return `${cpf.slice(0, 3)}.${cpf.slice(3)}`;
+    }
+
+    if (cpf.length <= 9) {
+      return `${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(6)}`;
+    }
+
+    return `${cpf.slice(0, 3)}.${cpf.slice(3, 6)}.${cpf.slice(6, 9)}-${cpf.slice(9)}`;
+  }
+
+  const cnpj = digits.slice(0, 14);
+
+  return cnpj
+    .replace(/^(\d{2})(\d)/, "$1.$2")
+    .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1/$2")
+    .replace(/(\d{4})(\d)/, "$1-$2");
 }

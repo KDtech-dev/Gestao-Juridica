@@ -1,6 +1,6 @@
-"use client";
-
-import {
+  "use client";
+  
+  import {
   alpha,
   Box,
   Button,
@@ -8,8 +8,6 @@ import {
   Container,
   IconButton,
   InputAdornment,
-  Menu,
-  MenuItem,
   Paper,
   Skeleton,
   Stack,
@@ -27,7 +25,6 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
-import { NewCaseModal } from "@/components/modals/NewCaseModal";
 import {
   getClientes,
   postCliente,
@@ -38,6 +35,7 @@ import { toast } from "@/utils/toast";
 import { ClienteType } from "@/components/publications/types";
 import { CreateClientePayload } from "@/schemas/ClienteSchema";
 import DialogCliente from "@/components/DialogCliente";
+import { formatCpfCnpj } from "@/@core/format";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -422,7 +420,7 @@ export default function ClientesView() {
                               fontSize: "0.9rem",
                             }}
                           >
-                            {cliente.cpf_cnpj || "-"}
+                            {formatCpfCnpj(cliente.cpf_cnpj || "-")}
                           </Typography>
                         </TableCell>
 

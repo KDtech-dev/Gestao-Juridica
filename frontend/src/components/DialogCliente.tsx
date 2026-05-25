@@ -5,6 +5,7 @@ import { createClienteSchema, CreateClientePayload } from "@/schemas/ClienteSche
 import { ClienteType } from "@/components/publications/types";
 import { BaseModal } from "@/components/modals/BaseModal";
 import { useEffect } from "react";
+import { formatCpfCnpj } from "@/@core/format";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -138,6 +139,9 @@ export function DialogCliente({
               label="CPF / CNPJ"
               error={!!errors.cpf_cnpj}
               helperText={errors.cpf_cnpj?.message}
+              onChange={(event) =>
+                field.onChange(formatCpfCnpj(event.target.value))
+              }
             />
           )}
         />
