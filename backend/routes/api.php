@@ -97,7 +97,6 @@ Route::middleware('auth:sanctum')->group(function () {
         'role:admin|advogado|funcionario'
     )->group(function () {
 
-
         Route::apiResource(
             'clients',
             ClientController::class

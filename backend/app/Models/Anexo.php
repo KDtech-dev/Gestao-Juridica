@@ -16,6 +16,8 @@ class Anexo extends Model
     protected $fillable = [
         'uuid',
         'publicacao_id',
+        'anexavel_id',
+        'anexavel_type',
         'descricao',
         'arquivo',
         'nome_arquivo',
@@ -41,11 +43,20 @@ class Anexo extends Model
         return $this->belongsTo(Publicacao::class);
     }
 
+    public function anexavel()
+    {
+        return $this->morphTo();
+    }
+
     protected function url(): Attribute
     {
         return Attribute::make(
             get: fn (?string $value) => $this->exists
-                ? route('posts.anexos.show', ['anexo' => $this->uuid], false)
+                ? route(
+                    'posts.anexos.show',
+                    ['anexo' => $this->uuid],
+                    false
+                )
                 : $value
         );
     }
