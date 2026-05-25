@@ -1,14 +1,17 @@
 "use client";
 
 import {
+  alpha,
   Box,
   Button,
+  Chip,
   Container,
   IconButton,
   InputAdornment,
   Menu,
   MenuItem,
   Paper,
+  Skeleton,
   Stack,
   Table,
   TableBody,
@@ -18,6 +21,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
@@ -40,7 +44,6 @@ type DialogMode = "create" | "edit" | "view";
 export default function ClientesView() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>("create");
-  const [caseOpen, setCaseOpen] = useState(false);
   const [clientes, setClientes] = useState<ClienteType[]>([]);
   const [clienteSelecionado, setClienteSelecionado] =
     useState<ClienteType | null>(null);
@@ -50,12 +53,14 @@ export default function ClientesView() {
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [submittingCase, setSubmittingCase] = useState(false);
+  const theme = useTheme();
 
   const loadClientes = useCallback(async (page = 1) => {
     setLoading(true);
+
     try {
-      const response = await getClientes();
+      const response = await getClientes(page);
+
       setClientes(response.data);
       setCurrentPage(response.meta.current_page);
       setLastPage(response.meta.last_page);
@@ -66,7 +71,6 @@ export default function ClientesView() {
       setLoading(false);
     }
   }, []);
-
   useEffect(() => {
     loadClientes();
   }, [loadClientes]);
@@ -111,18 +115,6 @@ export default function ClientesView() {
     }
   };
 
-  const handleNewCaseSubmit = async (data: unknown) => {
-    setSubmittingCase(true);
-    try {
-      toast.success("Caso criado com sucesso!");
-      setCaseOpen(false);
-    } catch {
-      toast.error("Erro ao criar caso.");
-    } finally {
-      setSubmittingCase(false);
-    }
-  };
-
   const openCreate = () => {
     setClienteSelecionado(null);
     setDialogMode("create");
@@ -147,7 +139,13 @@ export default function ClientesView() {
   };
 
   return (
-    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+    <Box
+      sx={{
+        bgcolor: "background.default",
+        minHeight: "100vh",
+        transition: "background-color 0.2s ease",
+      }}
+    >
       <SidebarDashboard activeKey="clientes" />
 
       <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
@@ -158,14 +156,31 @@ export default function ClientesView() {
             direction={{ xs: "column", sm: "row" }}
             justifyContent="space-between"
             alignItems={{ xs: "flex-start", sm: "center" }}
-            gap={1.5}
-            mb={2.2}
+            gap={2}
+            mb={3.5}
           >
             <Box>
-              <Typography variant="h4" fontWeight={700} color="text.primary">
+              <Typography
+                variant="h4"
+                fontWeight={800}
+                color="text.primary"
+                sx={{
+                  background: `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
+                  backgroundClip: "text",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                  mb: 0.5,
+                }}
+              >
                 Clientes
               </Typography>
-              <Typography color="text.secondary" fontSize="0.95rem">
+              <Typography
+                color="text.secondary"
+                sx={{
+                  fontSize: "0.95rem",
+                  maxWidth: "500px",
+                }}
+              >
                 Gerencie seu diretório de clientes e contas corporativas.
               </Typography>
             </Box>
@@ -175,11 +190,17 @@ export default function ClientesView() {
               onClick={openCreate}
               startIcon={<Icon icon="mdi:plus" width={20} />}
               sx={{
-                borderRadius: "12px",
-                px: 2,
+                borderRadius: "14px",
+                px: 2.5,
                 height: 44,
                 textTransform: "none",
                 fontWeight: 600,
+                boxShadow: theme.shadows[2],
+                transition: "all 0.2s ease",
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  boxShadow: theme.shadows[4],
+                },
               }}
             >
               Novo cliente
@@ -187,58 +208,116 @@ export default function ClientesView() {
           </Stack>
 
           <Paper
+            elevation={0}
             sx={{
-              borderRadius: "16px",
-              border: "1px solid",
-              borderColor: "divider",
+              borderRadius: "20px",
+              border: `1px solid ${theme.palette.divider}`,
               overflow: "hidden",
+              transition: "box-shadow 0.2s ease",
+              "&:hover": {
+                boxShadow: theme.shadows[3],
+              },
             }}
           >
             <Stack
               direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
               alignItems={{ xs: "stretch", sm: "center" }}
-              gap={1.2}
+              gap={1.5}
               sx={{
-                px: 2,
-                py: 1.8,
-                borderBottom: "1px solid",
-                borderColor: "divider",
+                px: { xs: 2, sm: 3 },
+                py: 2,
+                borderBottom: `1px solid ${theme.palette.divider}`,
+                bgcolor: `${theme.palette.primary.main}08`,
               }}
             >
               <TextField
                 placeholder="Buscar por nome, documento ou e-mail..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                size="small"
                 sx={{
                   width: { xs: "100%", sm: 450 },
                   "& .MuiOutlinedInput-root": {
-                    borderRadius: "12px",
+                    borderRadius: "14px",
                     height: 44,
+                    bgcolor: "background.paper",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      boxShadow: theme.shadows[1],
+                    },
+                    "&.Mui-focused": {
+                      boxShadow: `0 0 0 2px ${(theme.palette.primary.main, 0.2)}`,
+                    },
                   },
                 }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Icon icon="mdi:magnify" width={20} />
+                      <Icon
+                        icon="mdi:magnify"
+                        width={20}
+                        color={theme.palette.text.secondary}
+                      />
                     </InputAdornment>
                   ),
                 }}
               />
+
+              <Chip
+                label={`${total} clientes cadastrados`}
+                size="small"
+                variant="outlined"
+                sx={{
+                  borderRadius: "12px",
+                  height: 32,
+                  "& .MuiChip-label": { px: 1.5 },
+                }}
+              />
             </Stack>
 
-            <TableContainer>
+            <TableContainer sx={{ overflowX: "auto" }}>
               <Table sx={{ minWidth: 760 }}>
                 <TableHead>
-                  <TableRow>
-                    <TableCell sx={headCellStyle}>NOME DO CLIENTE</TableCell>
-                    <TableCell sx={headCellStyle}>
+                  <TableRow sx={{ bgcolor: `${theme.palette.primary.main}08` }}>
+                    <TableCell
+                      sx={{
+                        fontWeight: 800,
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      NOME DO CLIENTE
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 800,
+                        letterSpacing: "0.5px",
+                      }}
+                    >
                       DETALHES DE CONTATO
                     </TableCell>
-                    <TableCell sx={headCellStyle}>CPF / CNPJ</TableCell>
-                    <TableCell sx={headCellStyle}>DATA NASC.</TableCell>
                     <TableCell
-                      sx={{ ...headCellStyle, textAlign: "right", pr: 3 }}
+                      sx={{
+                        fontWeight: 800,
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      CPF / CNPJ
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: 800,
+                        letterSpacing: "0.5px",
+                      }}
+                    >
+                      DATA NASC.
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        textAlign: "right",
+                        pr: 3,
+                        fontWeight: 800,
+                      }}
                     >
                       AÇÕES
                     </TableCell>
@@ -246,79 +325,160 @@ export default function ClientesView() {
                 </TableHead>
 
                 <TableBody>
-                  {loading && (
-                    <TableRow>
-                      <TableCell colSpan={5} sx={rowCellStyle}>
-                        <Typography color="text.secondary">
-                          Carregando clientes...
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  )}
+                  {loading &&
+                    [...Array(5)].map((_, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell colSpan={5} sx={{ py: 2 }}>
+                          <Stack spacing={1}>
+                            <Skeleton variant="text" width="80%" height={30} />
+                            <Skeleton variant="text" width="60%" height={20} />
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    ))}
 
                   {!loading && clientesFiltrados.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={5} sx={rowCellStyle}>
-                        <Typography color="text.secondary">
-                          Nenhum cliente encontrado.
-                        </Typography>
+                      <TableCell
+                        colSpan={5}
+                        sx={{ py: 8, textAlign: "center" }}
+                      >
+                        <Stack alignItems="center" spacing={2}>
+                          <Icon
+                            icon="mdi:account-group-outline"
+                            width={48}
+                            color={theme.palette.text.secondary}
+                          />
+                          <Typography color="text.secondary" variant="h6">
+                            Nenhum cliente encontrado
+                          </Typography>
+                          <Button
+                            variant="outlined"
+                            onClick={openCreate}
+                            startIcon={<Icon icon="mdi:plus" />}
+                            sx={{ borderRadius: "12px" }}
+                          >
+                            Adicionar primeiro cliente
+                          </Button>
+                        </Stack>
                       </TableCell>
                     </TableRow>
                   )}
 
                   {!loading &&
-                    clientesFiltrados.map((cliente) => (
-                      <TableRow key={cliente.id}>
-                        <TableCell sx={rowCellStyle}>
-                          <Typography fontWeight={600} color="text.primary">
+                    clientesFiltrados.map((cliente, index) => (
+                      <TableRow
+                        key={cliente.id}
+                        sx={{
+                          transition: "all 0.2s ease",
+                          "&:hover": {
+                            bgcolor: `${theme.palette.primary.main}08`,
+                            "& .action-buttons": {
+                              opacity: 1,
+                            },
+                          },
+                          animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
+                        }}
+                      >
+                        <TableCell>
+                          <Typography fontWeight={700} color="text.primary">
                             {cliente.name}
                           </Typography>
                         </TableCell>
 
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.primary">
+                        <TableCell>
+                          <Typography
+                            color="text.primary"
+                            variant="body2"
+                            fontWeight={500}
+                          >
                             {cliente.email || "-"}
                           </Typography>
-                          <Typography color="text.secondary" fontSize="0.86rem">
-                            {cliente.telefone || "-"}
-                          </Typography>
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={0.5}
+                            mt={0.5}
+                          >
+                            <Icon
+                              icon="mdi:phone"
+                              width={14}
+                              color={theme.palette.text.secondary}
+                            />
+                            <Typography
+                              color="text.secondary"
+                              variant="caption"
+                            >
+                              {cliente.telefone || "-"}
+                            </Typography>
+                          </Stack>
                         </TableCell>
 
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.secondary">
+                        <TableCell>
+                          <Typography
+                            color="text.secondary"
+                            sx={{
+                              fontFamily: "monospace",
+                              fontSize: "0.9rem",
+                            }}
+                          >
                             {cliente.cpf_cnpj || "-"}
                           </Typography>
                         </TableCell>
 
-                        <TableCell sx={rowCellStyle}>
-                          <Typography color="text.secondary">
+                        <TableCell>
+                          <Typography color="text.secondary" variant="body2">
                             {cliente.data_nascimento || "-"}
                           </Typography>
                         </TableCell>
 
-                        <TableCell
-                          sx={{ ...rowCellStyle, textAlign: "right", pr: 2 }}
-                        >
-                          <IconButton
-                            sx={actionBtnStyle}
-                            onClick={() => openView(cliente)}
+                        <TableCell sx={{ textAlign: "right", pr: 2 }}>
+                          <Stack
+                            direction="row"
+                            spacing={0.5}
+                            justifyContent="flex-end"
+                            className="action-buttons"
+                            sx={{ opacity: { xs: 1, md: 0.6 } }}
                           >
-                            <Icon icon="mdi:eye-outline" width={19} />
-                          </IconButton>
+                            <IconButton
+                              size="small"
+                              onClick={() => openView(cliente)}
+                              sx={{
+                                "&:hover": {
+                                  bgcolor: `${theme.palette.info.main}08`,
+                                  color: "info.main",
+                                },
+                              }}
+                            >
+                              <Icon icon="mdi:eye-outline" width={20} />
+                            </IconButton>
 
-                          <IconButton
-                            sx={actionBtnStyle}
-                            onClick={() => openEdit(cliente)}
-                          >
-                            <Icon icon="mdi:pencil-outline" width={19} />
-                          </IconButton>
+                            <IconButton
+                              size="small"
+                              onClick={() => openEdit(cliente)}
+                              sx={{
+                                "&:hover": {
+                                  bgcolor: `${theme.palette.warning.main}08`,
+                                  color: "warning.main",
+                                },
+                              }}
+                            >
+                              <Icon icon="mdi:pencil-outline" width={20} />
+                            </IconButton>
 
-                          <IconButton
-                            sx={actionBtnStyle}
-                            onClick={() => handleDeleteCliente(cliente)}
-                          >
-                            <Icon icon="mdi:trash-can-outline" width={19} />
-                          </IconButton>
+                            <IconButton
+                              size="small"
+                              onClick={() => handleDeleteCliente(cliente)}
+                              sx={{
+                                "&:hover": {
+                                  bgcolor: `${theme.palette.error.main}08`,
+                                  color: "error.main",
+                                },
+                              }}
+                            >
+                              <Icon icon="mdi:trash-can-outline" width={20} />
+                            </IconButton>
+                          </Stack>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -327,41 +487,69 @@ export default function ClientesView() {
             </TableContainer>
 
             <Stack
-              direction="row"
+              direction={{ xs: "column", sm: "row" }}
               justifyContent="space-between"
               alignItems="center"
+              gap={2}
               sx={{
-                px: 2,
-                py: 2,
-                borderTop: "1px solid",
-                borderColor: "divider",
+                px: { xs: 2, sm: 3 },
+                py: 2.5,
+                borderTop: `1px solid ${theme.palette.divider}`,
+                bgcolor: alpha(theme.palette.primary.main, 0.02),
               }}
             >
-              <Typography color="text.secondary" fontSize="0.95rem">
-                {`${total} registro(s) encontrado(s)`}
+              <Typography color="text.secondary" variant="body2">
+                Mostrando {clientes.length} de {total} registro(s)
               </Typography>
 
-              <Stack direction="row" spacing={1}>
+              <Stack direction="row" spacing={1} alignItems="center">
                 <Button
                   variant="outlined"
-                  disabled={currentPage <= 1}
+                  disabled={currentPage <= 1 || loading}
                   onClick={() => loadClientes(currentPage - 1)}
+                  startIcon={<Icon icon="mdi:chevron-left" width={18} />}
                   sx={{
                     textTransform: "none",
-                    borderRadius: "8px",
-                    borderColor: "divider",
+                    borderRadius: "10px",
+                    px: 2,
+                    minWidth: 120,
+                    borderColor: theme.palette.divider,
+                    transition: "all 0.2s ease",
+                    "&:hover:not(:disabled)": {
+                      borderColor: theme.palette.primary.main,
+                      bgcolor: alpha(theme.palette.primary.main, 0.04),
+                    },
                   }}
                 >
                   Anterior
                 </Button>
+
+                <Chip
+                  label={`Página ${currentPage} de ${lastPage}`}
+                  color="primary"
+                  variant="outlined"
+                  sx={{
+                    borderRadius: "10px",
+                    fontWeight: 600,
+                  }}
+                />
+
                 <Button
                   variant="outlined"
-                  disabled={currentPage >= lastPage}
+                  disabled={currentPage >= lastPage || loading}
                   onClick={() => loadClientes(currentPage + 1)}
+                  endIcon={<Icon icon="mdi:chevron-right" width={18} />}
                   sx={{
                     textTransform: "none",
-                    borderRadius: "8px",
-                    borderColor: "divider",
+                    borderRadius: "10px",
+                    px: 2,
+                    minWidth: 120,
+                    borderColor: theme.palette.divider,
+                    transition: "all 0.2s ease",
+                    "&:hover:not(:disabled)": {
+                      borderColor: theme.palette.primary.main,
+                      bgcolor: alpha(theme.palette.primary.main, 0.04),
+                    },
                   }}
                 >
                   Próximo
@@ -370,38 +558,16 @@ export default function ClientesView() {
             </Stack>
           </Paper>
         </Container>
-      </Box>
 
-      <DialogCliente
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        onSubmit={handleSubmit}
-        submitting={submitting}
-        mode={dialogMode}
-        cliente={clienteSelecionado}
-      />
-      <NewCaseModal
-        open={caseOpen}
-        onClose={() => setCaseOpen(false)}
-        onSubmit={handleNewCaseSubmit}
-        submitting={submittingCase}
-      />
+        <DialogCliente
+          open={dialogOpen}
+          onClose={handleDialogClose}
+          onSubmit={handleSubmit}
+          submitting={submitting}
+          mode={dialogMode}
+          cliente={clienteSelecionado}
+        />
+      </Box>
     </Box>
   );
 }
-
-const headCellStyle = {
-  color: "text.secondary",
-  fontWeight: 700,
-  fontSize: "0.9rem",
-  borderBottom: "1px solid",
-  borderColor: "divider",
-};
-
-const rowCellStyle = {
-  py: 1.9,
-  borderBottom: "1px solid",
-  borderColor: "divider",
-};
-
-const actionBtnStyle = { color: "text.secondary" };

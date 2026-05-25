@@ -8,8 +8,10 @@ import {
   UpdateClientePayload,
 } from "@/schemas/ClienteSchema";
 
-const getClientes = async (): Promise<PaginatedResponseType<ClienteType>> => {
-  const response = await getAxios().get("/clientes");
+const getClientes = async (
+  page = 1,
+): Promise<PaginatedResponseType<ClienteType>> => {
+  const response = await getAxios().get("/clientes", { params: { page } });
 
   return response.data;
 };
