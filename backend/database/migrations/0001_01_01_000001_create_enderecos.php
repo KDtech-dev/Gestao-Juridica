@@ -10,13 +10,6 @@ return new class extends Migration
     {
         Schema::create('enderecos', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
-            $table->uuid('pessoa_id')->unique();
-            $table->foreign('pessoa_id')
-                ->references('id')
-                ->on('pessoas')
-                ->cascadeOnDelete();
-
             $table->string('cep', 8);
             $table->string('logradouro');
             $table->string('numero', 10);
@@ -24,7 +17,6 @@ return new class extends Migration
             $table->string('bairro');
             $table->string('cidade');
             $table->string('estado', 2);
-
             $table->timestamps();
         });
     }

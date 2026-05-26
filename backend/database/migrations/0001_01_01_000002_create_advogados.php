@@ -10,16 +10,28 @@ return new class extends Migration
     {
         Schema::create('advogados', function (Blueprint $table) {
             $table->uuid('id')->primary();
-
-            $table->uuid('pessoa_id')->unique();
-            $table->foreign('pessoa_id')
+            $table->uuid('user_id')->unique();
+            $table->foreign('user_id')
                 ->references('id')
-                ->on('pessoas')
+                ->on('users')
                 ->cascadeOnDelete();
-
+            $table->enum('sexo', [
+                'masculino',
+                'feminino',
+                'outro',
+                'prefiro_nao_dizer'
+            ])->nullable();
+            $table->string('celular', 20)->nullable();
+            $table->text('resumo_pessoal')->nullable();
+            $table->string('foto_perfil')->nullable();
             $table->string('oab_numero', 20)->unique();
             $table->string('oab_uf', 2);
             $table->string('especialidade')->nullable();
+            $table->uuid('endereco_id')->nullable();
+            $table->foreign('endereco_id')
+                ->references('id')
+                ->on('enderecos')
+                ->nullOnDelete();
 
             $table->timestamps();
         });
