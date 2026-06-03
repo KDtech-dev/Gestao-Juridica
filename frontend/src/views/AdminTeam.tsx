@@ -1,6 +1,6 @@
 "use client";
 
-import AdminUsersView from "@/views/AdminUsers";
+import AdminUsersView from "@/views/Users/Users";
 
 export default function AdminTeamView() {
   // Legacy route kept for backwards-compatibility.

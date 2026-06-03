@@ -1,7 +1,7 @@
 import {
   ClienteType,
   PaginatedResponseType,
-} from "@/components/publications/types";
+} from "@/@core/types";
 import { getAxios } from "@/configs/axios";
 import {
   CreateClientePayload,

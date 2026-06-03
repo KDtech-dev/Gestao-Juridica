@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClienteSchema, CreateClientePayload } from "@/schemas/ClienteSchema";
 import { useEffect } from "react";
-import { ClienteType } from "@/components/publications/types";
+import { ClienteType } from "@/@core/types";
 
 type Props = {
   id: string;

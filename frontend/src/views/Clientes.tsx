@@ -32,7 +32,7 @@ import {
   deleteCliente,
 } from "@/api/ApiClientes";
 import { toast } from "@/utils/toast";
-import { ClienteType } from "@/components/publications/types";
+import { ClienteType } from "@/@core/types";
 import { CreateClientePayload } from "@/schemas/ClienteSchema";
 import DialogCliente from "@/components/DialogCliente";
 import { formatCpfCnpj } from "@/@core/format";
@@ -158,16 +158,12 @@ export default function ClientesView() {
             mb={3.5}
           >
             <Box>
-              <Typography
+             <Typography
                 variant="h4"
                 fontWeight={800}
-                color="text.primary"
                 sx={{
-                  background: `linear-gradient(135deg, ${theme.palette.text.primary} 0%, ${theme.palette.primary.main} 100%)`,
-                  backgroundClip: "text",
-                  WebkitBackgroundClip: "text",
-                  color: "transparent",
-                  mb: 0.5,
+                  borderRadius: "10px",
+                  color: "text.primary",
                 }}
               >
                 Clientes

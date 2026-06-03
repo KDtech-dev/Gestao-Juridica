@@ -2,7 +2,7 @@
 
 import { Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import type { CategoriaOption } from "@/api/categorias/types";
-import { PublicacaoFormData, PublicationErrors } from "./types";
+import { PublicacaoFormData, PublicationErrors } from "../../@core/types";
 import { HtmlTextEditor } from "./HtmlTextEditor";
 import InputSingleFile from "../InputSingleFile";
 import InputImage from "../InputImage";

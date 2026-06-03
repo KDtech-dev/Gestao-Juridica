@@ -10,11 +10,11 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\PublicacaoController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\NotificacaoController;
-
+use App\Http\Controllers\Api\UserController;
 
 Route::prefix('auth')->group(function () {
     Route::post('login',          [AuthController::class, 'login']);
-    Route::post('forgot-password',[PasswordController::class, 'sendResetLinkEmail']);
+    Route::post('forgot-password', [PasswordController::class, 'sendResetLinkEmail']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout',  [AuthController::class, 'logout']);
@@ -67,5 +67,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/lidas',                 [NotificacaoController::class, 'marcarTodasComoLidas']);
         Route::patch('/{notificacao}/lida',    [NotificacaoController::class, 'marcarComoLida']);
         Route::delete('/',                     [NotificacaoController::class, 'limpar']);
+    });
+
+    Route::prefix('users')->group(function () {
+        Route::get('/',               [UserController::class, 'index']);
+        Route::post('/',              [UserController::class, 'store']);
+        Route::get('/{user}',        [UserController::class, 'show']);
+        Route::put('/{user}',        [UserController::class, 'update']);
+        Route::delete('/{user}',     [UserController::class, 'destroy']);
     });
 });

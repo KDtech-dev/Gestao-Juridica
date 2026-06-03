@@ -2,7 +2,7 @@ import { Box, TextField } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClienteSchema, CreateClientePayload } from "@/schemas/ClienteSchema";
-import { ClienteType } from "@/components/publications/types";
+import { ClienteType } from "@/@core/types";
 import { BaseModal } from "@/components/modals/BaseModal";
 import { useEffect } from "react";
 import { formatCpfCnpj } from "@/@core/format";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { AuthUser } from "@/context/AuthContext";
-import type { PublicacaoFormData } from "@/components/publications/types";
+import type { PublicacaoFormData } from "@/@core/types";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 const STORAGE_KEY = "lawmanager-user-publications";

@@ -5,7 +5,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { CasePayload } from "@/services/caseService";
 import { Lawyer, listLawyers } from "@/services/lawyerService";
 import { teamSpecialties } from "@/data/team";
-import { ClienteType } from "../publications/types";
+import { ClienteType } from "../../@core/types";
 
 export type CaseFormValues = {
   title: string;

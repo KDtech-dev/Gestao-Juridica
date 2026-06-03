@@ -1,3 +1,5 @@
+import { CategoriaType } from "@/@core/types";
+
 export type PublicacaoAnexo = {
   id: string;
   nome: string;
@@ -25,12 +27,6 @@ export type PublicacaoItem = {
   anexos: PublicacaoAnexo[];
 };
 
-export type ApiCategoria = {
-  id?: number | string;
-  nome?: string | null;
-  descricao?: string | null;
-};
-
 export type ApiUsuarioPublicacao = {
   id?: number | string;
   name?: string | null;
@@ -50,7 +46,7 @@ export type ApiPublicacao = {
   id: string;
   titulo?: string | null;
   categoria_id?: number | string | null;
-  categoria?: ApiCategoria | null;
+  categoria?: CategoriaType | null;
   user?: ApiUsuarioPublicacao | null;
   imagem_caminho?: string | null;
   autor?: string | null;

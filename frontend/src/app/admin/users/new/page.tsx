@@ -1,4 +1,4 @@
-import NewUserView from "@/views/NewUser";
+import NewUserView from "@/views/Users/NovoUser";
 
 export default function NewUserPage() {
   return <NewUserView />;

@@ -56,6 +56,14 @@ class User extends Authenticatable
             default       => null,
         };
     }
+    public function funcionario()
+    {
+        return $this->hasOne(Funcionario::class);
+    }
+    public function advogado()
+    {
+        return $this->hasOne(Advogado::class);
+    }
 
     public function isAdmin(): bool
     {

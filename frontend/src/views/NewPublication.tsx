@@ -20,7 +20,7 @@ import ConfirmDialog from "@/components/users/ConfirmDialog";
 import {
   PublicacaoFormData,
   PublicationErrors,
-} from "@/components/publications/types";
+} from "@/@core/types";
 import { toast } from "@/utils/toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";

@@ -2,7 +2,7 @@
 
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import type { PublicacaoAnexo } from "@/api/publicacoes/types";
-import { PublicacaoFormData } from "./types";
+import { PublicacaoFormData } from "../../@core/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo } from "react";
 
