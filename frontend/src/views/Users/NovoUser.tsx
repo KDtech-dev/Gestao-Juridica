@@ -18,15 +18,19 @@ import { Icon } from "@/components/AppIcon";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import {
   newUserSchema,
-  type NewUserInput
+  type NewUserInput,
   type NewUserPayload,
 } from "@/schemas/user.schema";
+import type { CreateUserPayload } from "@/schemas/UserSchema";
+import { postUser } from "@/api/ApiUsers";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
+import type { RoleType } from "@/@core/types";
 
 const practiceAreaOptions = [
   "Direito Civil",
@@ -61,19 +65,29 @@ function getValidationErrors(payload: NewUserInput): FormErrors {
   }, {});
 }
 
-function toCreatePayload(payload: NewUserPayload) {
+function toCreatePayload(payload: NewUserPayload): CreateUserPayload {
   return {
     name: payload.name,
     email: payload.email,
-    phone: payload.phone || undefined,
-    type: payload.type,
+    role: payload.type,
     cpf: payload.cpf,
     password: payload.password,
-    oabNumber:
-      payload.type === "advogado" ? payload.oabNumber || undefined : undefined,
-    areas:
-      payload.type === "advogado" && payload.areas?.length
-        ? payload.areas
+    password_confirmation: payload.confirmPassword,
+    funcionario:
+      payload.type === "funcionario"
+        ? {
+            celular: payload.phone || undefined,
+            resumo_pessoal: payload.position || undefined,
+          }
+        : undefined,
+    advogado:
+      payload.type === "advogado"
+        ? {
+            celular: payload.phone || undefined,
+            oab_numero: payload.oabNumber || "",
+            oab_uf: "",
+            especialidade: payload.areas?.length ? payload.areas : undefined,
+          }
         : undefined,
   };
 }
@@ -92,6 +106,7 @@ const initialForm: FormState = {
 };
 
 export default function NewUserView() {
+  const t = useTranslations("internal.newUser");
   const router = useRouter();
   const { hasRole } = useAuth();
   const isAdmin = hasRole("admin");
@@ -137,13 +152,11 @@ export default function NewUserView() {
     setLoading(true);
 
     try {
-      await createUser(toCreatePayload(parsed.data));
-      toast.success("Usuário criado.");
+      await postUser(toCreatePayload(parsed.data));
+      toast.success(t("toast.created"));
       router.push("/admin/users");
     } catch (err) {
-      toast.error(
-        formatToastErrorMessage(err, "Não foi possível criar usuário."),
-      );
+      toast.error(formatToastErrorMessage(err, t("errors.create")));
     } finally {
       setLoading(false);
     }
@@ -166,10 +179,10 @@ export default function NewUserView() {
             >
               <Box>
                 <Typography variant="h4" fontWeight={700} color="text.primary">
-                  Novo usuário
+                  {t("title")}
                 </Typography>
                 <Typography color="text.secondary" fontSize="0.95rem">
-                  Cadastre administradores, advogados e funcionários.
+                  {t("subtitle")}
                 </Typography>
               </Box>
 
@@ -179,7 +192,7 @@ export default function NewUserView() {
                 startIcon={<Icon icon="mdi:arrow-left" width={20} />}
                 sx={{ textTransform: "none", borderRadius: "12px" }}
               >
-                Voltar
+                {t("actions.back")}
               </Button>
             </Stack>
 
@@ -195,10 +208,10 @@ export default function NewUserView() {
                 elevation={0}
               >
                 <Typography variant="h5" fontWeight={600} mb={1}>
-                  Acesso restrito
+                  {t("restricted.title")}
                 </Typography>
                 <Typography color="text.secondary">
-                  Somente administradores podem criar usuários.
+                  {t("restricted.description")}
                 </Typography>
               </Paper>
             ) : (
@@ -224,12 +237,12 @@ export default function NewUserView() {
                     }}
                   >
                     <FormControl fullWidth>
-                      <InputLabel>Tipo</InputLabel>
+                      <InputLabel>{t("fields.type")}</InputLabel>
                       <Select
-                        label="Tipo"
+                        label={t("fields.type")}
                         value={form.type}
                         onChange={(e) => {
-                          const next = e.target.value as UserType;
+                          const next = e.target.value as RoleType;
                           const nextForm: FormState = {
                             ...form,
                             type: next,
@@ -243,14 +256,18 @@ export default function NewUserView() {
                           setFormErrors(getValidationErrors(nextForm));
                         }}
                       >
-                        <MenuItem value="admin">Administrador</MenuItem>
-                        <MenuItem value="advogado">Advogado</MenuItem>
-                        <MenuItem value="funcionario">Funcionário</MenuItem>
+                        <MenuItem value="admin">{t("roles.admin")}</MenuItem>
+                        <MenuItem value="advogado">
+                          {t("roles.advogado")}
+                        </MenuItem>
+                        <MenuItem value="funcionario">
+                          {t("roles.funcionario")}
+                        </MenuItem>
                       </Select>
                     </FormControl>
 
                     <TextField
-                      label="Nome"
+                      label={t("fields.name")}
                       value={form.name}
                       onChange={(e) => updateForm("name", e.target.value)}
                       onBlur={() => setTouched((p) => ({ ...p, name: true }))}
@@ -260,7 +277,7 @@ export default function NewUserView() {
                     />
 
                     <TextField
-                      label="E-mail"
+                      label={t("fields.email")}
                       type="email"
                       value={form.email}
                       onChange={(e) => updateForm("email", e.target.value)}
@@ -271,7 +288,7 @@ export default function NewUserView() {
                     />
 
                     <TextField
-                      label="CPF"
+                      label={t("fields.cpf")}
                       value={form.cpf}
                       onChange={(e) =>
                         updateForm("cpf", normalizeCpf(e.target.value))
@@ -285,7 +302,7 @@ export default function NewUserView() {
                     {form.type === "advogado" ? (
                       <>
                         <TextField
-                          label="OAB"
+                          label={t("fields.oab")}
                           value={form.oabNumber}
                           onChange={(e) =>
                             updateForm("oabNumber", e.target.value)
@@ -307,8 +324,8 @@ export default function NewUserView() {
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              label="Especialidades"
-                              placeholder="Adicionar Especialidade..."
+                              label={t("fields.specialties")}
+                              placeholder={t("fields.addSpecialty")}
                             />
                           )}
                         />
@@ -316,7 +333,7 @@ export default function NewUserView() {
                     ) : null}
 
                     <TextField
-                      label="Senha"
+                      label={t("fields.password")}
                       type="password"
                       value={form.password}
                       onChange={(e) => updateForm("password", e.target.value)}
@@ -332,14 +349,14 @@ export default function NewUserView() {
                       fullWidth
                     />
                     <TextField
-                      label="Telefone"
+                      label={t("fields.phone")}
                       value={form.phone}
                       onChange={(e) => updateForm("phone", e.target.value)}
                       fullWidth
                     />
 
                     <TextField
-                      label="Confirmar senha"
+                      label={t("fields.confirmPassword")}
                       type="password"
                       value={form.confirmPassword}
                       onChange={(e) =>
@@ -369,7 +386,7 @@ export default function NewUserView() {
                         disabled={loading}
                         sx={{ textTransform: "none" }}
                       >
-                        Cancelar
+                        {t("actions.cancel")}
                       </Button>
                       <Button
                         variant="contained"
@@ -377,7 +394,7 @@ export default function NewUserView() {
                         disabled={loading || !canSubmit}
                         sx={{ textTransform: "none", borderRadius: "12px" }}
                       >
-                        {loading ? "Criando..." : "Criar usuário"}
+                        {loading ? t("actions.creating") : t("actions.create")}
                       </Button>
                     </Stack>
                   </Stack>

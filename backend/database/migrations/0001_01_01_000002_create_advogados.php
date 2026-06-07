@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('foto_perfil')->nullable();
             $table->string('oab_numero', 20)->unique();
             $table->string('oab_uf', 2);
-            $table->string('especialidade')->nullable();
+            $table->json('especialidade')->nullable();
             $table->uuid('endereco_id')->nullable();
             $table->foreign('endereco_id')
                 ->references('id')

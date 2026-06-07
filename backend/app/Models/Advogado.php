@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 
 class Advogado extends Model
 {
-    //
+    use HasUuids;
 
     protected $fillable = [
         'user_id',
@@ -18,6 +19,10 @@ class Advogado extends Model
         'oab_uf',
         'especialidade',
         'endereco_id',
+    ];
+
+     protected $casts = [
+        'especialidade' => 'array',
     ];
 
     public function user()

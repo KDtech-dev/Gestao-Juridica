@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,23 +30,24 @@ import { clearNumber, formatCpf, formatTelefone } from "@/@core/format";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { useLanguage } from "@/context/LanguageContext";
 import { ChangePasswordModal } from "@/components/modals/ChangePasswordModal";
-const practiceAreasOptions = [
-  "Direito Civil",
-  "Direito Trabalhista",
-  "Direito Tributário",
-  "Direito Penal",
-  "Direito Empresarial",
-  "Direito Administrativo",
-  "Direito Previdenciário",
-  "Direito de Família",
-  "Propriedade Intelectual",
-  "Contratos",
+const practiceAreaKeys = [
+  "civil",
+  "labor",
+  "tax",
+  "criminal",
+  "business",
+  "administrative",
+  "socialSecurity",
+  "family",
+  "intellectualProperty",
+  "contracts",
 ];
 
 export default function ProfileView() {
+  const t = useTranslations("internal.profile");
   const { themeMode, setThemeMode } = useThemeMode();
   const { language, setLanguage } = useLanguage();
-  const { hasRole } = useAuth();
+  const { hasRole, user } = useAuth();
   const [avatar, setAvatar] = useState<string | null>(null);
 
   const roleNormalizedFromAuth = hasRole("advogado")
@@ -57,6 +59,9 @@ export default function ProfileView() {
         : "";
   const roleNormalized = (roleNormalizedFromAuth || "").toLowerCase();
   const isAdvogadoRole = roleNormalized === "advogado";
+  const roleLabel = roleNormalized
+    ? t(`roles.${roleNormalized}`)
+    : t("roles.user");
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const handleOpenPrivacy = () => setPrivacyOpen(true);
   const handleClosePrivacy = () => setPrivacyOpen(false);
@@ -117,7 +122,7 @@ export default function ProfileView() {
           >
             <Box>
               <Typography variant="h4" fontWeight={700} color="text.primary">
-                Meu Perfil
+                {t("title")}
               </Typography>
             </Box>
           </Grid>
@@ -162,7 +167,7 @@ export default function ProfileView() {
                 >
                   <Grid spacing={6} ml={5}>
                     <Typography fontWeight={700} fontSize="1.8rem" color="#fff">
-                      Admistrador
+                      {roleLabel}
                     </Typography>
                   </Grid>
                 </Box>
@@ -205,10 +210,10 @@ export default function ProfileView() {
 
                       <Box>
                         <Typography fontWeight={600}>
-                          {"Administrador"}
+                          {user?.name || roleLabel}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {"Administrador"}
+                          {user?.email || roleLabel}
                         </Typography>
                       </Box>
                     </Grid>
@@ -223,7 +228,7 @@ export default function ProfileView() {
                         }}
                         disabled={!isDirty}
                       >
-                        Salvar alterações
+                        {t("actions.saveChanges")}
                       </Button>
                     </Grid>
                   </Grid>
@@ -244,7 +249,7 @@ export default function ProfileView() {
                         color="text.primary"
                         mb={1.2}
                       >
-                        Informações Pessoais
+                        {t("sections.personalInfo")}
                       </Typography>
 
                       <Box
@@ -264,8 +269,8 @@ export default function ProfileView() {
                           render={({ field, fieldState }) => (
                             <TextField
                               {...field}
-                              label="Nome Completo"
-                              placeholder="Nome"
+                              label={t("fields.fullName")}
+                              placeholder={t("fields.namePlaceholder")}
                               error={!!fieldState.error}
                               helperText={fieldState.error?.message}
                               fullWidth
@@ -280,8 +285,8 @@ export default function ProfileView() {
                           render={({ field, fieldState }) => (
                             <TextField
                               {...field}
-                              label="E-mail Profissional"
-                              placeholder="E-mail"
+                              label={t("fields.professionalEmail")}
+                              placeholder={t("fields.emailPlaceholder")}
                               error={!!fieldState.error}
                               helperText={fieldState.error?.message}
                               fullWidth
@@ -294,7 +299,7 @@ export default function ProfileView() {
                           control={form.control}
                           render={({ field, fieldState }) => (
                             <TextField
-                              label="Telefone"
+                              label={t("fields.phone")}
                               placeholder="(00) 00000-0000"
                               value={formatTelefone(field.value || "")}
                               onChange={(e) => {
@@ -312,7 +317,7 @@ export default function ProfileView() {
                           render={({ field }) => (
                             <TextField
                               {...field}
-                              label="CPF"
+                              label={t("fields.cpf")}
                               placeholder="000.000.000-00"
                               value={formatCpf(field.value || "")}
                               onChange={(e) => {
@@ -336,7 +341,7 @@ export default function ProfileView() {
                             color="text.primary"
                             mb={1.2}
                           >
-                            Dados Profissionais
+                            {t("sections.professionalData")}
                           </Typography>
 
                           <Box
@@ -350,14 +355,14 @@ export default function ProfileView() {
                             }}
                           >
                             <InputBasico
-                              label="oabNumber"
+                              label={t("fields.oabNumber")}
                               field="oabNumber"
-                              placeholder="Número OAB"
+                              placeholder={t("fields.oabNumberPlaceholder")}
                             />
                             <InputBasico
-                              label="position"
+                              label={t("fields.position")}
                               field="position"
-                              placeholder="Cargo/Função"
+                              placeholder={t("fields.positionPlaceholder")}
                             />
                           </Box>
                           <Box
@@ -373,15 +378,17 @@ export default function ProfileView() {
                                 render={({ field }) => (
                                   <Autocomplete
                                     multiple
-                                    options={practiceAreasOptions.map(
+                                    options={practiceAreaKeys.map(
                                       (label, index) => ({
                                         id: index + 1,
-                                        label,
+                                        label: t(`practiceAreas.${label}`),
                                       }),
                                     )}
                                     value={field.value.map((id) => ({
                                       id,
-                                      label: practiceAreasOptions[id - 1],
+                                      label: t(
+                                        `practiceAreas.${practiceAreaKeys[id - 1]}`,
+                                      ),
                                     }))}
                                     onChange={(_, value) =>
                                       field.onChange(
@@ -395,11 +402,11 @@ export default function ProfileView() {
                                     renderInput={(params) => (
                                       <TextField
                                         {...params}
-                                        label="Especialidades"
+                                        label={t("fields.specialties")}
                                         placeholder={
                                           field.value?.length
                                             ? ""
-                                            : "Selecione as especialidades"
+                                            : t("fields.specialtiesPlaceholder")
                                         }
                                       />
                                     )}

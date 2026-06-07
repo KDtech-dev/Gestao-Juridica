@@ -2,28 +2,64 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdateUserRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()?->hasRole('admin') ?? false;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
+        $userId    = $this->route('user');
+        $advogadoId = optional($this->route('user'))->advogado?->id;
+
         return [
-            //
+            'name'     => ['sometimes', 'string', 'max:255'],
+            'email'    => ['sometimes', 'email', 'max:255', "unique:users,email,{$userId}"],
+            'cpf'      => ['sometimes', 'string', 'size:11', "unique:users,cpf,{$userId}"],
+            'password' => ['sometimes', 'confirmed', Password::min(8)->letters()->numbers()],
+            'role'     => ['sometimes', 'string', 'in:funcionario,advogado,admin'],
+
+            'endereco'                  => ['sometimes', 'nullable', 'array'],
+            'endereco.logradouro'       => ['required_with:endereco', 'string', 'max:255'],
+            'endereco.numero'           => ['required_with:endereco', 'string', 'max:20'],
+            'endereco.complemento'      => ['nullable', 'string', 'max:100'],
+            'endereco.bairro'           => ['required_with:endereco', 'string', 'max:100'],
+            'endereco.cidade'           => ['required_with:endereco', 'string', 'max:100'],
+            'endereco.uf'               => ['required_with:endereco', 'string', 'size:2'],
+            'endereco.cep'              => ['required_with:endereco', 'string', 'size:8'],
+
+            'funcionario'                   => ['sometimes', 'nullable', 'array'],
+            'funcionario.data_nascimento'   => ['sometimes', 'nullable', 'date', 'before:today'],
+            'funcionario.sexo'              => ['sometimes', 'nullable', 'in:masculino,feminino,outro,prefiro_nao_dizer'],
+            'funcionario.celular'           => ['sometimes', 'nullable', 'string', 'max:20'],
+            'funcionario.resumo_pessoal'    => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'funcionario.foto_perfil'       => ['sometimes', 'nullable', 'string', 'max:500'],
+
+            'advogado'                      => ['sometimes', 'nullable', 'array'],
+            'advogado.data_nascimento'      => ['sometimes', 'nullable', 'date', 'before:today'],
+            'advogado.sexo'                 => ['sometimes', 'nullable', 'in:masculino,feminino,outro,prefiro_nao_dizer'],
+            'advogado.celular'              => ['sometimes', 'nullable', 'string', 'max:20'],
+            'advogado.resumo_pessoal'       => ['sometimes', 'nullable', 'string', 'max:2000'],
+            'advogado.foto_perfil'          => ['sometimes', 'nullable', 'string', 'max:500'],
+            'advogado.oab_numero'           => ['sometimes', 'string', 'max:20', "unique:advogados,oab_numero,{$advogadoId}"],
+            'advogado.oab_uf'               => ['sometimes', 'string', 'size:2'],
+            'advogado.especialidade'        => ['sometimes', 'nullable', 'array'],
+            'advogado.especialidade.*'      => ['string', 'max:255'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'role.in'          => 'A role deve ser: funcionario, advogado ou admin.',
+            'cpf.size'         => 'O CPF deve ter exatamente 11 dígitos (sem pontuação).',
+            'endereco.uf.size' => 'A UF do endereço deve ter 2 caracteres.',
+            'endereco.cep.size'=> 'O CEP deve ter exatamente 8 dígitos (sem hífen).',
         ];
     }
 }

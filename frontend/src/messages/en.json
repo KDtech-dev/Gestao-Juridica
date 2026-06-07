@@ -160,6 +160,311 @@
         "confirm": "Send to drafts",
         "cancel": "Keep editing"
       }
+    },
+    "clients": {
+      "title": "Clients",
+      "subtitle": "Manage your directory of clients and corporate accounts.",
+      "newClient": "New client",
+      "searchPlaceholder": "Search by name, document, or email...",
+      "registeredCount": "{count, plural, =0 {No clients registered} one {# client registered} other {# clients registered}}",
+      "confirmDelete": "Do you want to remove {name}?",
+      "table": {
+        "clientName": "Client name",
+        "contactDetails": "Contact details",
+        "document": "CPF / CNPJ",
+        "birthDate": "Birth date",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No clients found",
+        "action": "Add first client"
+      },
+      "pagination": {
+        "showing": "Showing {shown} of {total} record(s)",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      },
+      "dialog": {
+        "title": {
+          "create": "New client",
+          "edit": "Edit client",
+          "view": "Client details"
+        },
+        "actions": {
+          "add": "Add client",
+          "adding": "Adding...",
+          "saveChanges": "Save changes",
+          "saving": "Saving...",
+          "close": "Close",
+          "cancel": "Cancel"
+        },
+        "fields": {
+          "name": "Name / Corporate name",
+          "document": "CPF / CNPJ",
+          "email": "Email",
+          "phone": "Phone",
+          "birthDate": "Birth date"
+        }
+      },
+      "toast": {
+        "created": "Client created successfully!",
+        "updated": "Client updated successfully!",
+        "deleted": "Client removed successfully!"
+      },
+      "errors": {
+        "load": "Error loading clients.",
+        "create": "Error creating client.",
+        "update": "Error updating client.",
+        "delete": "Error removing client."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Manage system administrators, lawyers, and staff.",
+      "newUser": "New user",
+      "searchPlaceholder": "Search by name, email, or CPF...",
+      "registeredCount": "{count, plural, =0 {No users registered} one {# user registered} other {# users registered}}",
+      "confirmDelete": "Do you want to remove {name}?",
+      "roles": {
+        "admin": "Administrator",
+        "advogado": "Lawyer",
+        "funcionario": "Staff"
+      },
+      "filters": {
+        "role": "Role",
+        "allRoles": "All roles"
+      },
+      "table": {
+        "name": "Name",
+        "contact": "Contact",
+        "cpf": "CPF",
+        "role": "Role",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No users found",
+        "action": "Add first user"
+      },
+      "pagination": {
+        "showing": "Showing {shown} of {total} record(s)",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      },
+      "dialog": {
+        "title": {
+          "create": "New user",
+          "edit": "Edit user",
+          "view": "View user"
+        },
+        "actions": {
+          "create": "Create",
+          "save": "Save",
+          "saving": "Saving...",
+          "close": "Close",
+          "cancel": "Cancel"
+        },
+        "roles": {
+          "admin": "Administrator",
+          "advogado": "Lawyer",
+          "funcionario": "Staff"
+        },
+        "fields": {
+          "role": "Role",
+          "name": "Name",
+          "email": "Email",
+          "cpf": "CPF",
+          "mobile": "Mobile",
+          "birthDate": "Birth date",
+          "personalSummary": "Personal summary",
+          "oabNumber": "OAB number",
+          "oabUf": "State",
+          "specialties": "Specialties",
+          "addSpecialty": "Add specialty...",
+          "password": "Password",
+          "confirmPassword": "Confirm password"
+        }
+      },
+      "toast": {
+        "created": "User created successfully!",
+        "updated": "User updated successfully!",
+        "deleted": "User removed successfully!"
+      },
+      "errors": {
+        "load": "Error loading users.",
+        "create": "Error creating user.",
+        "update": "Error updating user.",
+        "delete": "Error removing user."
+      }
+    },
+    "newUser": {
+      "title": "New user",
+      "subtitle": "Register administrators, lawyers, and staff.",
+      "roles": {
+        "admin": "Administrator",
+        "advogado": "Lawyer",
+        "funcionario": "Staff"
+      },
+      "restricted": {
+        "title": "Restricted access",
+        "description": "Only administrators can create users."
+      },
+      "fields": {
+        "type": "Type",
+        "name": "Name",
+        "email": "Email",
+        "cpf": "CPF",
+        "oab": "OAB",
+        "specialties": "Specialties",
+        "addSpecialty": "Add specialty...",
+        "password": "Password",
+        "phone": "Phone",
+        "confirmPassword": "Confirm password"
+      },
+      "actions": {
+        "back": "Back",
+        "cancel": "Cancel",
+        "create": "Create user",
+        "creating": "Creating..."
+      },
+      "toast": {
+        "created": "User created."
+      },
+      "errors": {
+        "create": "Could not create user."
+      }
+    },
+    "userMenu": {
+      "fallbackUser": "User",
+      "profile": "My Profile",
+      "logout": "Logout",
+      "roles": {
+        "admin": "Administrator",
+        "advogado": "Lawyer",
+        "funcionario": "Staff",
+        "cliente": "Client"
+      }
+    },
+    "profile": {
+      "title": "My Profile",
+      "roles": {
+        "admin": "Administrator",
+        "advogado": "Lawyer",
+        "funcionario": "Staff",
+        "cliente": "Client",
+        "user": "User"
+      },
+      "actions": {
+        "saveChanges": "Save changes"
+      },
+      "sections": {
+        "personalInfo": "Personal Information",
+        "professionalData": "Professional Data"
+      },
+      "fields": {
+        "fullName": "Full Name",
+        "namePlaceholder": "Name",
+        "professionalEmail": "Professional Email",
+        "emailPlaceholder": "Email",
+        "phone": "Phone",
+        "cpf": "CPF",
+        "oabNumber": "OAB Number",
+        "oabNumberPlaceholder": "OAB Number",
+        "position": "Position/Role",
+        "positionPlaceholder": "Position/Role",
+        "specialties": "Specialties",
+        "specialtiesPlaceholder": "Select specialties"
+      },
+      "practiceAreas": {
+        "civil": "Civil Law",
+        "labor": "Labor Law",
+        "tax": "Tax Law",
+        "criminal": "Criminal Law",
+        "business": "Business Law",
+        "administrative": "Administrative Law",
+        "socialSecurity": "Social Security Law",
+        "family": "Family Law",
+        "intellectualProperty": "Intellectual Property",
+        "contracts": "Contracts"
+      },
+      "customization": {
+        "title": "Customization",
+        "description": "Adjust the system theme and language.",
+        "theme": {
+          "label": "Theme",
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System"
+        },
+        "language": {
+          "label": "Language"
+        }
+      },
+      "security": {
+        "title": "Security",
+        "description": "Keep your account secure by updating your password regularly.",
+        "privacyTerms": "View privacy terms",
+        "changePassword": "Change Password"
+      },
+      "passwordModal": {
+        "title": "Change Password",
+        "description": "Keep your account secure by choosing a strong password.",
+        "actions": {
+          "save": "Save",
+          "updating": "Updating..."
+        },
+        "fields": {
+          "currentPassword": "Current password",
+          "newPassword": "New password",
+          "confirmPassword": "Confirm new password"
+        },
+        "validation": {
+          "currentRequired": "Enter your current password.",
+          "newMin": "The new password must be at least 6 characters.",
+          "confirmRequired": "Confirm the new password.",
+          "passwordsMatch": "Passwords must match."
+        },
+        "toast": {
+          "reviewFields": "Review the highlighted fields.",
+          "success": "Password updated successfully."
+        },
+        "errors": {
+          "update": "Could not update the password.",
+          "connection": "Could not connect to the server. Try again later."
+        }
+      }
+    },
+    "notificationsPage": {
+      "title": "Notifications",
+      "subtitle": "Track appointment reminders and system notices.",
+      "unreadCount": "{count, plural, one {# unread} other {# unread}}",
+      "selectAria": "Select notification {title}",
+      "empty": "No notifications found",
+      "actions": {
+        "markRead": "Mark as read",
+        "selectAll": "Select all",
+        "unselectAll": "Unselect all",
+        "removeSelected": "Remove selected",
+        "clearAll": "Clear all"
+      },
+      "dialog": {
+        "noDescription": "This notification has no description.",
+        "close": "Close"
+      }
+    },
+    "notificationsMenu": {
+      "title": "Notifications",
+      "empty": "No notifications",
+      "viewHistory": "View full history",
+      "actions": {
+        "read": "Read",
+        "clear": "Clear"
+      },
+      "dialog": {
+        "noDescription": "This notification has no description.",
+        "close": "Close"
+      }
     }
   },
 
@@ -170,7 +475,6 @@
   },
 
   "sidebar": {
-   
     "mainMenu": "Main Menu",
     "items": {
       "agenda": "Calendar",
@@ -193,7 +497,11 @@
       "publications": "Publications",
       "team": "Team",
       "access": "Open",
-      "login": "Login"
+      "login": "Login",
+      "theme": {
+        "light": "Switch to light theme",
+        "dark": "Switch to dark theme"
+      }
     },
     "footer": {
       "cta": {

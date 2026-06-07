@@ -1,10 +1,14 @@
 import { Box, TextField } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClienteSchema, CreateClientePayload } from "@/schemas/ClienteSchema";
+import {
+  createClienteSchema,
+  CreateClientePayload,
+} from "@/schemas/ClienteSchema";
 import { ClienteType } from "@/@core/types";
 import { BaseModal } from "@/components/modals/BaseModal";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { formatCpfCnpj } from "@/@core/format";
 
 type DialogMode = "create" | "edit" | "view";
@@ -20,18 +24,6 @@ type Props = {
 
 const formId = "cliente-form";
 
-const titleMap: Record<DialogMode, string> = {
-  create: "Novo cliente",
-  edit:   "Editar cliente",
-  view:   "Dados do cliente",
-};
-
-const confirmTextMap = (submitting: boolean): Record<DialogMode, string> => ({
-  create: submitting ? "Adicionando..." : "Adicionar cliente",
-  edit:   submitting ? "Salvando..."    : "Salvar alterações",
-  view:   "Fechar",
-});
-
 export function DialogCliente({
   open,
   onClose,
@@ -40,8 +32,19 @@ export function DialogCliente({
   mode = "create",
   cliente = null,
 }: Props) {
-  const isView     = mode === "view";
+  const t = useTranslations("internal.clients.dialog");
+  const isView = mode === "view";
   const isDisabled = submitting || isView;
+  const titleMap: Record<DialogMode, string> = {
+    create: t("title.create"),
+    edit: t("title.edit"),
+    view: t("title.view"),
+  };
+  const confirmTextMap: Record<DialogMode, string> = {
+    create: submitting ? t("actions.adding") : t("actions.add"),
+    edit: submitting ? t("actions.saving") : t("actions.saveChanges"),
+    view: t("actions.close"),
+  };
 
   const {
     control,
@@ -51,10 +54,10 @@ export function DialogCliente({
   } = useForm<CreateClientePayload>({
     resolver: zodResolver(createClienteSchema),
     defaultValues: {
-      name:            "",
-      cpf_cnpj:        "",
-      email:           "",
-      telefone:        "",
+      name: "",
+      cpf_cnpj: "",
+      email: "",
+      telefone: "",
       data_nascimento: "",
     },
   });
@@ -62,20 +65,20 @@ export function DialogCliente({
   useEffect(() => {
     if (open && cliente) {
       reset({
-        name:            cliente.name            ?? "",
-        cpf_cnpj:        cliente.cpf_cnpj        ?? "",
-        email:           cliente.email           ?? "",
-        telefone:        cliente.telefone        ?? "",
+        name: cliente.name ?? "",
+        cpf_cnpj: cliente.cpf_cnpj ?? "",
+        email: cliente.email ?? "",
+        telefone: cliente.telefone ?? "",
         data_nascimento: cliente.data_nascimento ?? "",
       });
     }
 
     if (open && !cliente) {
       reset({
-        name:            "",
-        cpf_cnpj:        "",
-        email:           "",
-        telefone:        "",
+        name: "",
+        cpf_cnpj: "",
+        email: "",
+        telefone: "",
         data_nascimento: "",
       });
     }
@@ -94,19 +97,19 @@ export function DialogCliente({
       maxWidth="md"
       confirmType={isView ? "button" : "submit"}
       confirmFormId={isView ? undefined : formId}
-      confirmText={confirmTextMap(submitting)[mode]}
+      confirmText={confirmTextMap[mode]}
       confirmDisabled={submitting}
       onSubmit={isView ? handleClose : undefined}
-      cancelText={isView ? undefined : "Cancelar"}
+      cancelText={isView ? undefined : t("actions.cancel")}
     >
       <Box
         id={formId}
         component="form"
         onSubmit={handleSubmit(onSubmit)}
         sx={{
-          display:             "grid",
+          display: "grid",
           gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
-          gap:                 2,
+          gap: 2,
         }}
       >
         <Box sx={{ gridColumn: "1 / -1" }}>
@@ -119,7 +122,7 @@ export function DialogCliente({
                 fullWidth
                 required={!isView}
                 disabled={isDisabled}
-                label="Nome / Razão Social"
+                label={t("fields.name")}
                 error={!!errors.name}
                 helperText={errors.name?.message}
               />
@@ -136,7 +139,7 @@ export function DialogCliente({
               fullWidth
               required={!isView}
               disabled={isDisabled}
-              label="CPF / CNPJ"
+              label={t("fields.document")}
               error={!!errors.cpf_cnpj}
               helperText={errors.cpf_cnpj?.message}
               onChange={(event) =>
@@ -155,7 +158,7 @@ export function DialogCliente({
               fullWidth
               required={!isView}
               disabled={isDisabled}
-              label="E-mail"
+              label={t("fields.email")}
               error={!!errors.email}
               helperText={errors.email?.message}
             />
@@ -170,7 +173,7 @@ export function DialogCliente({
               {...field}
               fullWidth
               disabled={isDisabled}
-              label="Telefone"
+              label={t("fields.phone")}
               error={!!errors.telefone}
               helperText={errors.telefone?.message}
             />
@@ -185,7 +188,7 @@ export function DialogCliente({
               {...field}
               fullWidth
               disabled={isDisabled}
-              label="Data de Nascimento"
+              label={t("fields.birthDate")}
               type="date"
               InputLabelProps={{ shrink: true }}
               error={!!errors.data_nascimento}

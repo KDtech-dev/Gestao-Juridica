@@ -20,8 +20,10 @@ const isLanguage = (value: unknown): value is Language =>
 export function PublicI18nProvider({ children }: { children: ReactNode }) {
   const { isAuthenticated, user, loading } = useAuth();
   const { language } = useLanguage();
-  const userLanguage = isLanguage(user?.idioma) ? user.idioma : language;
-  const locale = !loading && isAuthenticated ? userLanguage : "pt";
+  const locale =
+    !loading && isAuthenticated && isLanguage(user?.idioma)
+      ? user.idioma
+      : language;
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages[locale]}>

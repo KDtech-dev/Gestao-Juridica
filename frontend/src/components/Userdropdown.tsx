@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import UserAvatar from "./UserAvatar";
 import IconifyIcon from "@/@core/components/icon";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslations } from "next-intl";
 
 const BadgeContentSpan = styled("span")(({ theme }) => ({
   width: 8,
@@ -22,12 +23,15 @@ const BadgeContentSpan = styled("span")(({ theme }) => ({
 }));
 
 const UserDropdown = () => {
+  const t = useTranslations("internal.userMenu");
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const router = useRouter();
   const { logout, user } = useAuth();
-  const userName = user?.name || "Usuário";
+  const userName = user?.name || t("fallbackUser");
   const userEmail = user?.email || "";
-  const userRole = user?.roles?.[0] ? String(user.roles[0]) : "Usuário";
+  const userRole = user?.roles?.[0]
+    ? t(`roles.${String(user.roles[0])}`)
+    : t("fallbackUser");
 
   const handleDropdownOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -165,7 +169,7 @@ const UserDropdown = () => {
             <Typography
               sx={{ fontSize: "0.875rem", fontWeight: 500, lineHeight: 1.3 }}
             >
-              Meu Perfil
+              {t("profile")}
             </Typography>
           </Box>
         </MenuItem>
@@ -180,14 +184,11 @@ const UserDropdown = () => {
             "& svg": { flexShrink: 0, color: "text.primary" },
           }}
         >
-<IconifyIcon
-  icon='mdi:logout-variant'
-  width='18'
-  height='18'
-/>          <Typography
+          <IconifyIcon icon="mdi:logout-variant" width="18" height="18" />{" "}
+          <Typography
             sx={{ fontSize: "0.875rem", fontWeight: 500, lineHeight: 1.3 }}
           >
-            Sair
+            {t("logout")}
           </Typography>
         </MenuItem>
       </Menu>

@@ -160,6 +160,311 @@
         "confirm": "Enviar a borradores",
         "cancel": "Seguir editando"
       }
+    },
+    "clients": {
+      "title": "Clientes",
+      "subtitle": "Gestiona tu directorio de clientes y cuentas corporativas.",
+      "newClient": "Nuevo cliente",
+      "searchPlaceholder": "Buscar por nombre, documento o e-mail...",
+      "registeredCount": "{count, plural, =0 {Ningún cliente registrado} one {# cliente registrado} other {# clientes registrados}}",
+      "confirmDelete": "¿Deseas eliminar a {name}?",
+      "table": {
+        "clientName": "Nombre del cliente",
+        "contactDetails": "Datos de contacto",
+        "document": "CPF / CNPJ",
+        "birthDate": "Fecha nac.",
+        "actions": "Acciones"
+      },
+      "empty": {
+        "title": "Ningún cliente encontrado",
+        "action": "Agregar primer cliente"
+      },
+      "pagination": {
+        "showing": "Mostrando {shown} de {total} registro(s)",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página {current} de {total}"
+      },
+      "dialog": {
+        "title": {
+          "create": "Nuevo cliente",
+          "edit": "Editar cliente",
+          "view": "Datos del cliente"
+        },
+        "actions": {
+          "add": "Agregar cliente",
+          "adding": "Agregando...",
+          "saveChanges": "Guardar cambios",
+          "saving": "Guardando...",
+          "close": "Cerrar",
+          "cancel": "Cancelar"
+        },
+        "fields": {
+          "name": "Nombre / Razón social",
+          "document": "CPF / CNPJ",
+          "email": "E-mail",
+          "phone": "Teléfono",
+          "birthDate": "Fecha de nacimiento"
+        }
+      },
+      "toast": {
+        "created": "¡Cliente creado con éxito!",
+        "updated": "¡Cliente actualizado con éxito!",
+        "deleted": "¡Cliente eliminado con éxito!"
+      },
+      "errors": {
+        "load": "Error al cargar clientes.",
+        "create": "Error al crear cliente.",
+        "update": "Error al actualizar cliente.",
+        "delete": "Error al eliminar cliente."
+      }
+    },
+    "users": {
+      "title": "Usuarios",
+      "subtitle": "Gestiona administradores, abogados y funcionarios del sistema.",
+      "newUser": "Nuevo usuario",
+      "searchPlaceholder": "Buscar por nombre, e-mail o CPF...",
+      "registeredCount": "{count, plural, =0 {Ningún usuario registrado} one {# usuario registrado} other {# usuarios registrados}}",
+      "confirmDelete": "¿Deseas eliminar a {name}?",
+      "roles": {
+        "admin": "Administrador",
+        "advogado": "Abogado",
+        "funcionario": "Funcionario"
+      },
+      "filters": {
+        "role": "Perfil",
+        "allRoles": "Todos los perfiles"
+      },
+      "table": {
+        "name": "Nombre",
+        "contact": "Contacto",
+        "cpf": "CPF",
+        "role": "Perfil",
+        "actions": "Acciones"
+      },
+      "empty": {
+        "title": "Ningún usuario encontrado",
+        "action": "Agregar primer usuario"
+      },
+      "pagination": {
+        "showing": "Mostrando {shown} de {total} registro(s)",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página {current} de {total}"
+      },
+      "dialog": {
+        "title": {
+          "create": "Nuevo usuario",
+          "edit": "Editar usuario",
+          "view": "Visualizar usuario"
+        },
+        "actions": {
+          "create": "Crear",
+          "save": "Guardar",
+          "saving": "Guardando...",
+          "close": "Cerrar",
+          "cancel": "Cancelar"
+        },
+        "roles": {
+          "admin": "Administrador",
+          "advogado": "Abogado",
+          "funcionario": "Funcionario"
+        },
+        "fields": {
+          "role": "Perfil",
+          "name": "Nombre",
+          "email": "E-mail",
+          "cpf": "CPF",
+          "mobile": "Celular",
+          "birthDate": "Fecha de nacimiento",
+          "personalSummary": "Resumen personal",
+          "oabNumber": "Número OAB",
+          "oabUf": "UF",
+          "specialties": "Especialidades",
+          "addSpecialty": "Agregar especialidad...",
+          "password": "Contraseña",
+          "confirmPassword": "Confirmar contraseña"
+        }
+      },
+      "toast": {
+        "created": "¡Usuario creado con éxito!",
+        "updated": "¡Usuario actualizado con éxito!",
+        "deleted": "¡Usuario eliminado con éxito!"
+      },
+      "errors": {
+        "load": "Error al cargar usuarios.",
+        "create": "Error al crear usuario.",
+        "update": "Error al actualizar usuario.",
+        "delete": "Error al eliminar usuario."
+      }
+    },
+    "newUser": {
+      "title": "Nuevo usuario",
+      "subtitle": "Registra administradores, abogados y funcionarios.",
+      "roles": {
+        "admin": "Administrador",
+        "advogado": "Abogado",
+        "funcionario": "Funcionario"
+      },
+      "restricted": {
+        "title": "Acceso restringido",
+        "description": "Solo los administradores pueden crear usuarios."
+      },
+      "fields": {
+        "type": "Tipo",
+        "name": "Nombre",
+        "email": "E-mail",
+        "cpf": "CPF",
+        "oab": "OAB",
+        "specialties": "Especialidades",
+        "addSpecialty": "Agregar especialidad...",
+        "password": "Contraseña",
+        "phone": "Teléfono",
+        "confirmPassword": "Confirmar contraseña"
+      },
+      "actions": {
+        "back": "Volver",
+        "cancel": "Cancelar",
+        "create": "Crear usuario",
+        "creating": "Creando..."
+      },
+      "toast": {
+        "created": "Usuario creado."
+      },
+      "errors": {
+        "create": "No fue posible crear usuario."
+      }
+    },
+    "userMenu": {
+      "fallbackUser": "Usuario",
+      "profile": "Mi perfil",
+      "logout": "Salir",
+      "roles": {
+        "admin": "Administrador",
+        "advogado": "Abogado",
+        "funcionario": "Funcionario",
+        "cliente": "Cliente"
+      }
+    },
+    "profile": {
+      "title": "Mi perfil",
+      "roles": {
+        "admin": "Administrador",
+        "advogado": "Abogado",
+        "funcionario": "Funcionario",
+        "cliente": "Cliente",
+        "user": "Usuario"
+      },
+      "actions": {
+        "saveChanges": "Guardar cambios"
+      },
+      "sections": {
+        "personalInfo": "Información personal",
+        "professionalData": "Datos profesionales"
+      },
+      "fields": {
+        "fullName": "Nombre completo",
+        "namePlaceholder": "Nombre",
+        "professionalEmail": "E-mail profesional",
+        "emailPlaceholder": "E-mail",
+        "phone": "Teléfono",
+        "cpf": "CPF",
+        "oabNumber": "Número OAB",
+        "oabNumberPlaceholder": "Número OAB",
+        "position": "Cargo/Función",
+        "positionPlaceholder": "Cargo/Función",
+        "specialties": "Especialidades",
+        "specialtiesPlaceholder": "Selecciona las especialidades"
+      },
+      "practiceAreas": {
+        "civil": "Derecho Civil",
+        "labor": "Derecho Laboral",
+        "tax": "Derecho Tributario",
+        "criminal": "Derecho Penal",
+        "business": "Derecho Empresarial",
+        "administrative": "Derecho Administrativo",
+        "socialSecurity": "Derecho Previsional",
+        "family": "Derecho de Familia",
+        "intellectualProperty": "Propiedad Intelectual",
+        "contracts": "Contratos"
+      },
+      "customization": {
+        "title": "Personalización",
+        "description": "Ajusta el tema y el idioma del sistema.",
+        "theme": {
+          "label": "Tema",
+          "light": "Claro",
+          "dark": "Oscuro",
+          "system": "Sistema"
+        },
+        "language": {
+          "label": "Idioma"
+        }
+      },
+      "security": {
+        "title": "Seguridad",
+        "description": "Mantén tu cuenta segura actualizando tu contraseña regularmente.",
+        "privacyTerms": "Ver términos de privacidad",
+        "changePassword": "Cambiar contraseña"
+      },
+      "passwordModal": {
+        "title": "Cambiar contraseña",
+        "description": "Mantén tu cuenta segura eligiendo una contraseña fuerte.",
+        "actions": {
+          "save": "Guardar",
+          "updating": "Actualizando..."
+        },
+        "fields": {
+          "currentPassword": "Contraseña actual",
+          "newPassword": "Nueva contraseña",
+          "confirmPassword": "Confirmar nueva contraseña"
+        },
+        "validation": {
+          "currentRequired": "Ingresa la contraseña actual.",
+          "newMin": "La nueva contraseña debe tener al menos 6 caracteres.",
+          "confirmRequired": "Confirma la nueva contraseña.",
+          "passwordsMatch": "Las contraseñas deben coincidir."
+        },
+        "toast": {
+          "reviewFields": "Revisa los campos destacados.",
+          "success": "Contraseña actualizada con éxito."
+        },
+        "errors": {
+          "update": "No fue posible actualizar la contraseña.",
+          "connection": "No fue posible conectar con el servidor. Inténtalo de nuevo más tarde."
+        }
+      }
+    },
+    "notificationsPage": {
+      "title": "Notificaciones",
+      "subtitle": "Acompaña recordatorios de compromisos y avisos del sistema.",
+      "unreadCount": "{count, plural, one {# no leída} other {# no leídas}}",
+      "selectAria": "Seleccionar notificación {title}",
+      "empty": "No se encontraron notificaciones",
+      "actions": {
+        "markRead": "Marcar como leídas",
+        "selectAll": "Seleccionar todas",
+        "unselectAll": "Deseleccionar todas",
+        "removeSelected": "Eliminar seleccionadas",
+        "clearAll": "Limpiar todas"
+      },
+      "dialog": {
+        "noDescription": "Esta notificación no tiene descripción.",
+        "close": "Cerrar"
+      }
+    },
+    "notificationsMenu": {
+      "title": "Notificaciones",
+      "empty": "No hay notificaciones",
+      "viewHistory": "Ver historial completo",
+      "actions": {
+        "read": "Leídas",
+        "clear": "Limpiar"
+      },
+      "dialog": {
+        "noDescription": "Esta notificación no tiene descripción.",
+        "close": "Cerrar"
+      }
     }
   },
 
@@ -170,7 +475,6 @@
   },
 
   "sidebar": {
-   
     "mainMenu": "Menú principal",
     "items": {
       "agenda": "Agenda",
@@ -193,7 +497,11 @@
       "publications": "Publicaciones",
       "team": "Equipo",
       "access": "Acceder",
-      "login": "Login"
+      "login": "Login",
+      "theme": {
+        "light": "Activar tema claro",
+        "dark": "Activar tema oscuro"
+      }
     },
     "footer": {
       "cta": {

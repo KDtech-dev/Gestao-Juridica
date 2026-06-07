@@ -1,6 +1,7 @@
 import { Icon } from "@/components/AppIcon";
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
+import { useTranslations } from "next-intl";
 
 type Props = {
   privacyOpen: boolean;
@@ -15,6 +16,8 @@ const CardSeguranca = ({
   onClosePrivacy,
   onOpenChangePassword,
 }: Props) => {
+  const t = useTranslations("internal.profile.security");
+
   return (
     <Grid
       sx={{
@@ -31,12 +34,12 @@ const CardSeguranca = ({
       <Stack direction="row" spacing={1} alignItems="center" mb={1}>
         <Icon icon="mdi:shield-outline" width={18} color="currentColor" />
         <Typography fontWeight={700} color="text.primary">
-          Segurança
+          {t("title")}
         </Typography>
       </Stack>
 
       <Typography color="text.secondary" fontSize="0.86rem">
-        Mantenha sua conta segura atualizando sua senha regularmente.
+        {t("description")}
       </Typography>
 
       <Button
@@ -51,7 +54,7 @@ const CardSeguranca = ({
         startIcon={<Icon icon="mdi:file-document-outline" width={20} />}
         onClick={onOpenPrivacy}
       >
-        Ver termo de privacidade
+        {t("privacyTerms")}
       </Button>
       <Button
         variant="outlined"
@@ -65,7 +68,7 @@ const CardSeguranca = ({
         }}
         onClick={onOpenChangePassword}
       >
-        Alterar Senha
+        {t("changePassword")}
       </Button>
       <PrivacyTermsModal open={privacyOpen} onClose={onClosePrivacy} />
     </Grid>

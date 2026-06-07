@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { getRouteByRole } from "@/utils/redirectByRole";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
+import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
 
 const labels = {
   brand: "Central jurídica",
@@ -42,6 +43,7 @@ const labels = {
 
 export default function LoginView() {
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const {
@@ -184,7 +186,7 @@ export default function LoginView() {
 
               <TextField
                 label={t.password}
-                type="password"
+                type={showPassword ? "text" : "password"}
                 fullWidth
                 {...passwordField}
                 inputRef={(element) => {
@@ -194,6 +196,15 @@ export default function LoginView() {
                 disabled={loading}
                 error={!!errors.password}
                 helperText={errors.password?.message}
+                InputProps={{
+                  endAdornment: (
+                    <PasswordVisibilityAdornment
+                      visible={showPassword}
+                      onToggle={() => setShowPassword((visible) => !visible)}
+                      disabled={loading}
+                    />
+                  ),
+                }}
               />
 
               <Stack

@@ -7,24 +7,8 @@ import auth from "@/configs/auth";
 import { getPublicApiOrigin } from "@/configs/apiUrl";
 import { z } from "zod";
 import { toast } from "@/utils/toast";
-
-const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Informe a senha atual."),
-    newPassword: z
-      .string()
-      .min(6, "A nova senha deve ter pelo menos 6 caracteres."),
-    confirmPassword: z.string().min(1, "Confirme a nova senha."),
-  })
-  .superRefine(({ newPassword, confirmPassword }, ctx) => {
-    if (newPassword !== confirmPassword) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["confirmPassword"],
-        message: "As senhas precisam ser iguais.",
-      });
-    }
-  });
+import { useTranslations } from "next-intl";
+import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
 
 type Props = {
   open: boolean;
@@ -32,9 +16,15 @@ type Props = {
 };
 
 export function ChangePasswordModal({ open, onClose }: Props) {
+  const t = useTranslations("internal.profile.passwordModal");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [visiblePasswords, setVisiblePasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
   const [saving, setSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<
     Partial<
@@ -45,6 +35,26 @@ export function ChangePasswordModal({ open, onClose }: Props) {
   const passwordsMismatch = useMemo(
     () => confirmPassword.length > 0 && confirmPassword !== newPassword,
     [confirmPassword, newPassword],
+  );
+
+  const changePasswordSchema = useMemo(
+    () =>
+      z
+        .object({
+          currentPassword: z.string().min(1, t("validation.currentRequired")),
+          newPassword: z.string().min(6, t("validation.newMin")),
+          confirmPassword: z.string().min(1, t("validation.confirmRequired")),
+        })
+        .superRefine(({ newPassword, confirmPassword }, ctx) => {
+          if (newPassword !== confirmPassword) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["confirmPassword"],
+              message: t("validation.passwordsMatch"),
+            });
+          }
+        }),
+    [t],
   );
 
   const extractErrorMessage = (errors: unknown): string | undefined => {
@@ -64,8 +74,15 @@ export function ChangePasswordModal({ open, onClose }: Props) {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
+    setVisiblePasswords({ current: false, new: false, confirm: false });
     setSaving(false);
     setFieldErrors({});
+  };
+
+  const togglePasswordVisibility = (
+    field: keyof typeof visiblePasswords,
+  ) => {
+    setVisiblePasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
   const handleClose = () => {
@@ -96,7 +113,7 @@ export function ChangePasswordModal({ open, onClose }: Props) {
         }
       }
       setFieldErrors(nextErrors);
-      toast.error("Revise os campos destacados.");
+      toast.error(t("toast.reviewFields"));
       return;
     }
 
@@ -123,21 +140,19 @@ export function ChangePasswordModal({ open, onClose }: Props) {
       });
       const data = await response.json();
       if (response.ok) {
-        toast.success(data?.message ?? "Senha atualizada com sucesso.");
+        toast.success(data?.message ?? t("toast.success"));
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        const fallbackMessage = "Não foi possível atualizar a senha.";
+        const fallbackMessage = t("errors.update");
         const serverMessage =
           data?.message || extractErrorMessage(data?.errors) || fallbackMessage;
         toast.error(serverMessage);
       }
     } catch (error) {
       console.error(error);
-      toast.error(
-        "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
-      );
+      toast.error(t("errors.connection"));
     } finally {
       setSaving(false);
     }
@@ -147,8 +162,8 @@ export function ChangePasswordModal({ open, onClose }: Props) {
     <BaseModal
       open={open}
       onClose={handleClose}
-      title="Alterar Senha"
-      confirmText={saving ? "Atualizando..." : "Salvar"}
+      title={t("title")}
+      confirmText={saving ? t("actions.updating") : t("actions.save")}
       confirmDisabled={saving}
       onSubmit={handleSubmit}
       maxWidth="sm"
@@ -156,13 +171,13 @@ export function ChangePasswordModal({ open, onClose }: Props) {
       <Stack spacing={2}>
         <Stack spacing={0.5}>
           <Typography color="text.secondary" fontSize="0.92rem">
-            Mantenha sua conta segura escolhendo uma senha forte.
+            {t("description")}
           </Typography>
         </Stack>
 
         <TextField
-          label="Senha atual"
-          type="password"
+          label={t("fields.currentPassword")}
+          type={visiblePasswords.current ? "text" : "password"}
           value={currentPassword}
           onChange={(event) => {
             setCurrentPassword(event.target.value);
@@ -177,10 +192,19 @@ export function ChangePasswordModal({ open, onClose }: Props) {
           autoComplete="current-password"
           error={!!fieldErrors.currentPassword}
           helperText={fieldErrors.currentPassword ?? ""}
+          InputProps={{
+            endAdornment: (
+              <PasswordVisibilityAdornment
+                visible={visiblePasswords.current}
+                onToggle={() => togglePasswordVisibility("current")}
+                disabled={saving}
+              />
+            ),
+          }}
         />
         <TextField
-          label="Nova senha"
-          type="password"
+          label={t("fields.newPassword")}
+          type={visiblePasswords.new ? "text" : "password"}
           value={newPassword}
           onChange={(event) => {
             setNewPassword(event.target.value);
@@ -192,10 +216,19 @@ export function ChangePasswordModal({ open, onClose }: Props) {
           autoComplete="new-password"
           error={!!fieldErrors.newPassword}
           helperText={fieldErrors.newPassword ?? ""}
+          InputProps={{
+            endAdornment: (
+              <PasswordVisibilityAdornment
+                visible={visiblePasswords.new}
+                onToggle={() => togglePasswordVisibility("new")}
+                disabled={saving}
+              />
+            ),
+          }}
         />
         <TextField
-          label="Confirmar nova senha"
-          type="password"
+          label={t("fields.confirmPassword")}
+          type={visiblePasswords.confirm ? "text" : "password"}
           value={confirmPassword}
           onChange={(event) => {
             setConfirmPassword(event.target.value);
@@ -211,8 +244,17 @@ export function ChangePasswordModal({ open, onClose }: Props) {
           error={!!fieldErrors.confirmPassword || passwordsMismatch}
           helperText={
             fieldErrors.confirmPassword ??
-            (passwordsMismatch ? "As senhas precisam ser iguais." : "")
+            (passwordsMismatch ? t("validation.passwordsMatch") : "")
           }
+          InputProps={{
+            endAdornment: (
+              <PasswordVisibilityAdornment
+                visible={visiblePasswords.confirm}
+                onToggle={() => togglePasswordVisibility("confirm")}
+                disabled={saving}
+              />
+            ),
+          }}
         />
       </Stack>
     </BaseModal>

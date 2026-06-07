@@ -26,6 +26,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { getUsers, postUser, updateUser, deleteUser } from "@/api/ApiUsers";
 import { toast } from "@/utils/toast";
 import { UserType, RoleType } from "@/@core/types";
@@ -33,12 +34,6 @@ import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
 import DialogUser from "@/components/modals/DialogUser";
 
 type DialogMode = "create" | "edit" | "view";
-
-const ROLE_LABEL: Record<RoleType, string> = {
-  admin: "Administrador",
-  advogado: "Advogado",
-  funcionario: "Funcionário",
-};
 
 const ROLE_COLOR: Record<RoleType, "error" | "primary" | "default"> = {
   admin: "error",
@@ -55,6 +50,7 @@ function getUserPerfil(user: UserType) {
 }
 
 export default function UsersView() {
+  const t = useTranslations("internal.users");
   const theme = useTheme();
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -69,20 +65,23 @@ export default function UsersView() {
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
-  const loadUsers = useCallback(async (page = 1) => {
-    setLoading(true);
-    try {
-      const response = await getUsers(page);
-      setUsers(response.data);
-      setCurrentPage(response.meta.current_page);
-      setLastPage(response.meta.last_page);
-      setTotal(response.meta.total);
-    } catch {
-      toast.error("Erro ao carregar usuários.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const loadUsers = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      try {
+        const response = await getUsers(page);
+        setUsers(response.data);
+        setCurrentPage(response.meta.current_page);
+        setLastPage(response.meta.last_page);
+        setTotal(response.meta.total);
+      } catch {
+        toast.error(t("errors.load"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
 
   useEffect(() => {
     loadUsers();
@@ -101,18 +100,16 @@ export default function UsersView() {
     try {
       if (dialogMode === "create") {
         await postUser(data as CreateUserPayload);
-        toast.success("Usuário criado com sucesso!");
+        toast.success(t("toast.created"));
       } else {
         await updateUser(userSelecionado!.id, data as UpdateUserPayload);
-        toast.success("Usuário atualizado com sucesso!");
+        toast.success(t("toast.updated"));
       }
       handleDialogClose();
       loadUsers();
     } catch {
       toast.error(
-        dialogMode === "create"
-          ? "Erro ao criar usuário."
-          : "Erro ao atualizar usuário.",
+        dialogMode === "create" ? t("errors.create") : t("errors.update"),
       );
     } finally {
       setSubmitting(false);
@@ -120,13 +117,13 @@ export default function UsersView() {
   };
 
   const handleDelete = async (user: UserType) => {
-    if (!confirm(`Deseja remover ${user.name}?`)) return;
+    if (!confirm(t("confirmDelete", { name: user.name }))) return;
     try {
       await deleteUser(user.id);
-      toast.success("Usuário removido com sucesso!");
+      toast.success(t("toast.deleted"));
       loadUsers();
     } catch {
-      toast.error("Erro ao remover usuário.");
+      toast.error(t("errors.delete"));
     }
   };
 
@@ -183,13 +180,13 @@ export default function UsersView() {
                   color: "text.primary",
                 }}
               >
-                Usuários
+                {t("title")}
               </Typography>
               <Typography
                 color="text.secondary"
                 sx={{ fontSize: "0.95rem", maxWidth: "500px" }}
               >
-                Gerencie administradores, advogados e funcionários do sistema.
+                {t("subtitle")}
               </Typography>
             </Box>
 
@@ -211,7 +208,7 @@ export default function UsersView() {
                 },
               }}
             >
-              Novo usuário
+              {t("newUser")}
             </Button>
           </Stack>
 
@@ -239,7 +236,7 @@ export default function UsersView() {
             >
               <Stack direction={{ xs: "column", sm: "row" }} gap={1.2} flex={1}>
                 <TextField
-                  placeholder="Buscar por nome, e-mail ou CPF..."
+                  placeholder={t("searchPlaceholder")}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   size="small"
@@ -273,7 +270,7 @@ export default function UsersView() {
                     setRoleFilter(e.target.value as RoleType | "all")
                   }
                   size="small"
-                  label="Perfil"
+                  label={t("filters.role")}
                   sx={{
                     width: { xs: "100%", sm: 200 },
                     "& .MuiOutlinedInput-root": {
@@ -282,15 +279,17 @@ export default function UsersView() {
                     },
                   }}
                 >
-                  <MenuItem value="all">Todos os perfis</MenuItem>
-                  <MenuItem value="admin">Administrador</MenuItem>
-                  <MenuItem value="advogado">Advogado</MenuItem>
-                  <MenuItem value="funcionario">Funcionário</MenuItem>
+                  <MenuItem value="all">{t("filters.allRoles")}</MenuItem>
+                  <MenuItem value="admin">{t("roles.admin")}</MenuItem>
+                  <MenuItem value="advogado">{t("roles.advogado")}</MenuItem>
+                  <MenuItem value="funcionario">
+                    {t("roles.funcionario")}
+                  </MenuItem>
                 </TextField>
               </Stack>
 
               <Chip
-                label={`${total} usuário${total !== 1 ? "s" : ""} cadastrado${total !== 1 ? "s" : ""}`}
+                label={t("registeredCount", { count: total })}
                 size="small"
                 variant="outlined"
                 sx={{
@@ -307,22 +306,26 @@ export default function UsersView() {
                   <TableRow
                     sx={{ bgcolor: alpha(theme.palette.primary.main, 0.04) }}
                   >
-                    {["NOME", "CONTATO", "CPF", "PERFIL", "AÇÕES"].map(
-                      (col, i) => (
-                        <TableCell
-                          key={col}
-                          sx={{
-                            fontWeight: 800,
-                            letterSpacing: "0.5px",
-                            fontSize: "0.75rem",
-                            textAlign: i === 4 ? "right" : "left",
-                            pr: i === 4 ? 3 : undefined,
-                          }}
-                        >
-                          {col}
-                        </TableCell>
-                      ),
-                    )}
+                    {[
+                      t("table.name"),
+                      t("table.contact"),
+                      t("table.cpf"),
+                      t("table.role"),
+                      t("table.actions"),
+                    ].map((col, i) => (
+                      <TableCell
+                        key={col}
+                        sx={{
+                          fontWeight: 800,
+                          letterSpacing: "0.5px",
+                          fontSize: "0.75rem",
+                          textAlign: i === 4 ? "right" : "left",
+                          pr: i === 4 ? 3 : undefined,
+                        }}
+                      >
+                        {col}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 </TableHead>
 
@@ -352,7 +355,7 @@ export default function UsersView() {
                             color={theme.palette.text.secondary}
                           />
                           <Typography color="text.secondary" variant="h6">
-                            Nenhum usuário encontrado
+                            {t("empty.title")}
                           </Typography>
                           <Button
                             variant="outlined"
@@ -360,7 +363,7 @@ export default function UsersView() {
                             startIcon={<Icon icon="mdi:plus" />}
                             sx={{ borderRadius: "12px" }}
                           >
-                            Adicionar primeiro usuário
+                            {t("empty.action")}
                           </Button>
                         </Stack>
                       </TableCell>
@@ -440,7 +443,7 @@ export default function UsersView() {
                           <TableCell>
                             {role ? (
                               <Chip
-                                label={ROLE_LABEL[role]}
+                                label={t(`roles.${role}`)}
                                 color={ROLE_COLOR[role]}
                                 size="small"
                                 sx={{
@@ -531,7 +534,10 @@ export default function UsersView() {
               }}
             >
               <Typography color="text.secondary" variant="body2">
-                Mostrando {usersFiltrados.length} de {total} registro(s)
+                {t("pagination.showing", {
+                  shown: usersFiltrados.length,
+                  total,
+                })}
               </Typography>
 
               <Stack direction="row" spacing={1} alignItems="center">
@@ -553,11 +559,14 @@ export default function UsersView() {
                     },
                   }}
                 >
-                  Anterior
+                  {t("pagination.previous")}
                 </Button>
 
                 <Chip
-                  label={`Página ${currentPage} de ${lastPage}`}
+                  label={t("pagination.page", {
+                    current: currentPage,
+                    total: lastPage,
+                  })}
                   color="primary"
                   variant="outlined"
                   sx={{ borderRadius: "10px", fontWeight: 600 }}
@@ -581,7 +590,7 @@ export default function UsersView() {
                     },
                   }}
                 >
-                  Próximo
+                  {t("pagination.next")}
                 </Button>
               </Stack>
             </Stack>

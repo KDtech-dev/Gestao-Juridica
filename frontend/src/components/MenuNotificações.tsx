@@ -14,6 +14,7 @@ import { alpha, useTheme } from "@mui/material/styles";
 import { Icon } from "@/components/AppIcon";
 import Link from "next/link";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 export type Notificacao = {
   id: string;
@@ -74,6 +75,7 @@ export default function MenuNotificacoes({
   aoMarcarComoLida,
 }: MenuNotificacoesProps) {
   const theme = useTheme();
+  const t = useTranslations("internal.notificationsMenu");
   const [notificacaoSelecionada, setNotificacaoSelecionada] =
     useState<Notificacao | null>(null);
   const naoLidas = notificacoes.filter((n) => !n.lida).length;
@@ -166,7 +168,7 @@ export default function MenuNotificacoes({
                 color: "text.primary",
               }}
             >
-              Notificações
+              {t("title")}
             </Typography>
             {naoLidas > 0 && (
               <Box
@@ -194,7 +196,7 @@ export default function MenuNotificacoes({
               sx={actionButtonSx}
             >
               <Icon icon="mdi:check-all" width={15} />
-              Lidas
+              {t("actions.read")}
             </Box>
 
             <Box
@@ -204,7 +206,7 @@ export default function MenuNotificacoes({
               sx={actionButtonSx}
             >
               <Icon icon="mdi:trash-can-outline" width={15} />
-              Limpar
+              {t("actions.clear")}
             </Box>
           </Stack>
         </Stack>
@@ -226,7 +228,7 @@ export default function MenuNotificacoes({
             }}
           >
             <Icon icon="mdi:bell-sleep-outline" width={24} />
-            <Typography fontSize="0.8rem">Nenhuma notificação</Typography>
+            <Typography fontSize="0.8rem">{t("empty")}</Typography>
           </Box>
         ) : (
           notificacoes.slice(0, 8).map((item) => {
@@ -357,7 +359,7 @@ export default function MenuNotificacoes({
             },
           }}
         >
-          Ver histórico completo
+          {t("viewHistory")}
         </Typography>
       </Box>
       </Menu>
@@ -401,12 +403,14 @@ export default function MenuNotificacoes({
 
             <Typography color="text.secondary" fontSize="0.94rem" lineHeight={1.7}>
               {notificacaoSelecionada?.descricao ||
-                "Esta notificação não possui descrição."}
+                t("dialog.noDescription")}
             </Typography>
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setNotificacaoSelecionada(null)}>Fechar</Button>
+          <Button onClick={() => setNotificacaoSelecionada(null)}>
+            {t("dialog.close")}
+          </Button>
         </DialogActions>
       </Dialog>
     </>

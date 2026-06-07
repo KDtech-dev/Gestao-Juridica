@@ -22,13 +22,20 @@ import {
   type NotificationItem,
   useNotifications,
 } from "@/context/NotificationsContext";
+import { useLocale, useTranslations } from "next-intl";
 
-function formatDate(value: string) {
+const localeMap: Record<string, string> = {
+  pt: "pt-BR",
+  en: "en-US",
+  es: "es-ES",
+};
+
+function formatDate(value: string, locale: string) {
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleString("pt-BR", {
+  return date.toLocaleString(localeMap[locale] ?? locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -46,6 +53,8 @@ function notificationIcon(type?: NotificationItem["type"]) {
 }
 
 export default function NotificacoesView() {
+  const t = useTranslations("internal.notificationsPage");
+  const locale = useLocale();
   const {
     notifications,
     unreadCount,
@@ -125,14 +134,17 @@ export default function NotificacoesView() {
             <Box>
               <Stack direction="row" alignItems="center" gap={1}>
                 <Typography variant="h4" fontWeight={800} color="text.primary">
-                  Notificações
+                  {t("title")}
                 </Typography>
                 {unreadCount > 0 && (
-                  <Chip label={`${unreadCount} não lida(s)`} color="primary" />
+                  <Chip
+                    label={t("unreadCount", { count: unreadCount })}
+                    color="primary"
+                  />
                 )}
               </Stack>
               <Typography color="text.secondary" fontSize="0.9rem">
-                Acompanhe lembretes de compromissos e avisos do sistema.
+                {t("subtitle")}
               </Typography>
             </Box>
 
@@ -148,7 +160,7 @@ export default function NotificacoesView() {
                 onClick={markAllAsRead}
                 disabled={notifications.length === 0 || unreadCount === 0}
               >
-                Marcar lidas
+                {t("actions.markRead")}
               </Button>
               <Button
                 variant="outlined"
@@ -156,7 +168,9 @@ export default function NotificacoesView() {
                 onClick={toggleAllSelected}
                 disabled={notifications.length === 0}
               >
-                {allSelected ? "Desmarcar todas" : "Selecionar todas"}
+                {allSelected
+                  ? t("actions.unselectAll")
+                  : t("actions.selectAll")}
               </Button>
               <Button
                 color="error"
@@ -165,7 +179,7 @@ export default function NotificacoesView() {
                 onClick={removeSelected}
                 disabled={selectedCount === 0}
               >
-                Remover selecionadas
+                {t("actions.removeSelected")}
               </Button>
               <Button
                 color="error"
@@ -174,7 +188,7 @@ export default function NotificacoesView() {
                 onClick={removeAll}
                 disabled={notifications.length === 0}
               >
-                Limpar todas
+                {t("actions.clearAll")}
               </Button>
             </Stack>
           </Stack>
@@ -192,7 +206,7 @@ export default function NotificacoesView() {
               <Box sx={{ py: 8, textAlign: "center", color: "text.secondary" }}>
                 <Icon icon="mdi:bell-sleep-outline" width={34} />
                 <Typography mt={1} fontWeight={700}>
-                  Nenhuma notificação encontrada
+                  {t("empty")}
                 </Typography>
               </Box>
             ) : (
@@ -219,7 +233,9 @@ export default function NotificacoesView() {
                       checked={selectedIds.has(notification.id)}
                       onChange={() => toggleSelected(notification.id)}
                       inputProps={{
-                        "aria-label": `Selecionar notificação ${notification.title}`,
+                        "aria-label": t("selectAria", {
+                          title: notification.title,
+                        }),
                       }}
                       sx={{ p: 0.4, mt: 0.1 }}
                     />
@@ -263,7 +279,7 @@ export default function NotificacoesView() {
                           {notification.title}
                         </Typography>
                         <Typography fontSize="0.78rem" color="text.secondary">
-                          {formatDate(notification.createdAt)}
+                          {formatDate(notification.createdAt, locale)}
                         </Typography>
                       </Stack>
                       <Typography
@@ -312,16 +328,18 @@ export default function NotificacoesView() {
               {selected?.title}
             </Typography>
             <Typography fontSize="0.82rem" color="text.secondary">
-              {selected ? formatDate(selected.createdAt) : ""}
+              {selected ? formatDate(selected.createdAt, locale) : ""}
             </Typography>
             <Divider />
             <Typography color="text.secondary" lineHeight={1.7}>
-              {selected?.description || "Esta notificação não possui descrição."}
+              {selected?.description || t("dialog.noDescription")}
             </Typography>
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setSelected(null)}>Fechar</Button>
+          <Button onClick={() => setSelected(null)}>
+            {t("dialog.close")}
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

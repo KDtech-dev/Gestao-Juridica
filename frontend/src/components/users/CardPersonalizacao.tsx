@@ -19,12 +19,14 @@ import { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 
 import { useLanguage } from "@/context/LanguageContext";
+import { useTranslations } from "next-intl";
 
 type Props = {
   form: UseFormReturn<ProfileFormSchemaType>;
 };
 
 const CardPersonalizacao = ({ form }: Props) => {
+  const t = useTranslations("internal.profile.customization");
   const { setThemeMode } = useThemeMode();
 
   const { setLanguage } = useLanguage();
@@ -45,15 +47,15 @@ const CardPersonalizacao = ({ form }: Props) => {
       <Stack direction="row" spacing={1} alignItems="center">
         <Icon icon="mdi:palette-outline" width={18} />
 
-        <Typography fontWeight={700}>Personalização</Typography>
+        <Typography fontWeight={700}>{t("title")}</Typography>
       </Stack>
 
       <Typography fontSize="0.86rem" color="text.secondary">
-        Ajuste o tema e idioma do sistema.
+        {t("description")}
       </Typography>
 
       <FormControl fullWidth>
-        <InputLabel id="tema-label">Tema</InputLabel>
+        <InputLabel id="tema-label">{t("theme.label")}</InputLabel>
 
         <Controller
           name="tema"
@@ -62,7 +64,7 @@ const CardPersonalizacao = ({ form }: Props) => {
             <>
               <Select
                 {...field}
-                label="Tema"
+                label={t("theme.label")}
                 labelId="tema-label"
                 onChange={(e) => {
                   const value = e.target.value as "light" | "dark" | "system";
@@ -72,11 +74,11 @@ const CardPersonalizacao = ({ form }: Props) => {
                   setThemeMode(value);
                 }}
               >
-                <MenuItem value="light">Claro</MenuItem>
+                <MenuItem value="light">{t("theme.light")}</MenuItem>
 
-                <MenuItem value="dark">Escuro</MenuItem>
+                <MenuItem value="dark">{t("theme.dark")}</MenuItem>
 
-                <MenuItem value="system">Sistema</MenuItem>
+                <MenuItem value="system">{t("theme.system")}</MenuItem>
               </Select>
 
               {fieldState.error && (
@@ -90,7 +92,7 @@ const CardPersonalizacao = ({ form }: Props) => {
       </FormControl>
 
       <FormControl fullWidth>
-        <InputLabel id="idioma-label">Idioma</InputLabel>
+        <InputLabel id="idioma-label">{t("language.label")}</InputLabel>
 
         <Controller
           name="idioma"
@@ -99,7 +101,7 @@ const CardPersonalizacao = ({ form }: Props) => {
             <>
               <Select
                 {...field}
-                label="Idioma"
+                label={t("language.label")}
                 labelId="idioma-label"
                 onChange={(e) => {
                   const value = e.target.value as "pt" | "en" | "es";

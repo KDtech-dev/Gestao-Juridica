@@ -68,6 +68,8 @@ import MdiUpdate from "@iconify-react/mdi/update";
 import MdiUploadOutline from "@iconify-react/mdi/upload-outline";
 import MdiUser from "@iconify-react/mdi/user";
 import MdiWhatsapp from "@iconify-react/mdi/whatsapp";
+import MdiWeatherNight from "@iconify-react/mdi/weather-night";
+import MdiWhiteBalanceSunny from "@iconify-react/mdi/white-balance-sunny";
 
 export type IconProps = RemoteIconProps;
 
@@ -143,6 +145,8 @@ const mdiIcons: Record<string, MdiIconComponent> = {
   "mdi:upload-outline": MdiUploadOutline,
   "mdi:user": MdiUser,
   "mdi:whatsapp": MdiWhatsapp,
+  "mdi:weather-night": MdiWeatherNight,
+  "mdi:white-balance-sunny": MdiWhiteBalanceSunny,
 };
 
 const toIconSize = (size: RemoteIconProps["width"]) =>

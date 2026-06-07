@@ -1,6 +1,6 @@
-  "use client";
-  
-  import {
+"use client";
+
+import {
   alpha,
   Box,
   Button,
@@ -25,6 +25,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   getClientes,
   postCliente,
@@ -40,6 +41,7 @@ import { formatCpfCnpj } from "@/@core/format";
 type DialogMode = "create" | "edit" | "view";
 
 export default function ClientesView() {
+  const t = useTranslations("internal.clients");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>("create");
   const [clientes, setClientes] = useState<ClienteType[]>([]);
@@ -53,22 +55,25 @@ export default function ClientesView() {
   const [submitting, setSubmitting] = useState(false);
   const theme = useTheme();
 
-  const loadClientes = useCallback(async (page = 1) => {
-    setLoading(true);
+  const loadClientes = useCallback(
+    async (page = 1) => {
+      setLoading(true);
 
-    try {
-      const response = await getClientes(page);
+      try {
+        const response = await getClientes(page);
 
-      setClientes(response.data);
-      setCurrentPage(response.meta.current_page);
-      setLastPage(response.meta.last_page);
-      setTotal(response.meta.total);
-    } catch {
-      toast.error("Erro ao carregar clientes.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        setClientes(response.data);
+        setCurrentPage(response.meta.current_page);
+        setLastPage(response.meta.last_page);
+        setTotal(response.meta.total);
+      } catch {
+        toast.error(t("errors.load"));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [t],
+  );
   useEffect(() => {
     loadClientes();
   }, [loadClientes]);
@@ -84,18 +89,16 @@ export default function ClientesView() {
     try {
       if (dialogMode === "create") {
         await postCliente(data);
-        toast.success("Cliente criado com sucesso!");
+        toast.success(t("toast.created"));
       } else {
         await updateCliente(clienteSelecionado!.id, data);
-        toast.success("Cliente atualizado com sucesso!");
+        toast.success(t("toast.updated"));
       }
       handleDialogClose();
       loadClientes();
     } catch {
       toast.error(
-        dialogMode === "create"
-          ? "Erro ao criar cliente."
-          : "Erro ao atualizar cliente.",
+        dialogMode === "create" ? t("errors.create") : t("errors.update"),
       );
     } finally {
       setSubmitting(false);
@@ -103,13 +106,13 @@ export default function ClientesView() {
   };
 
   const handleDeleteCliente = async (cliente: ClienteType) => {
-    if (!confirm(`Deseja remover ${cliente.name}?`)) return;
+    if (!confirm(t("confirmDelete", { name: cliente.name }))) return;
     try {
       await deleteCliente(cliente.id);
-      toast.success("Cliente removido com sucesso!");
+      toast.success(t("toast.deleted"));
       loadClientes();
     } catch {
-      toast.error("Erro ao remover cliente.");
+      toast.error(t("errors.delete"));
     }
   };
 
@@ -158,7 +161,7 @@ export default function ClientesView() {
             mb={3.5}
           >
             <Box>
-             <Typography
+              <Typography
                 variant="h4"
                 fontWeight={800}
                 sx={{
@@ -166,7 +169,7 @@ export default function ClientesView() {
                   color: "text.primary",
                 }}
               >
-                Clientes
+                {t("title")}
               </Typography>
               <Typography
                 color="text.secondary"
@@ -175,7 +178,7 @@ export default function ClientesView() {
                   maxWidth: "500px",
                 }}
               >
-                Gerencie seu diretório de clientes e contas corporativas.
+                {t("subtitle")}
               </Typography>
             </Box>
 
@@ -197,7 +200,7 @@ export default function ClientesView() {
                 },
               }}
             >
-              Novo cliente
+              {t("newClient")}
             </Button>
           </Stack>
 
@@ -226,7 +229,7 @@ export default function ClientesView() {
               }}
             >
               <TextField
-                placeholder="Buscar por nome, documento ou e-mail..."
+                placeholder={t("searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 size="small"
@@ -259,7 +262,7 @@ export default function ClientesView() {
               />
 
               <Chip
-                label={`${total} clientes cadastrados`}
+                label={t("registeredCount", { count: total })}
                 size="small"
                 variant="outlined"
                 sx={{
@@ -280,7 +283,7 @@ export default function ClientesView() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      NOME DO CLIENTE
+                      {t("table.clientName")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -288,7 +291,7 @@ export default function ClientesView() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      DETALHES DE CONTATO
+                      {t("table.contactDetails")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -296,7 +299,7 @@ export default function ClientesView() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      CPF / CNPJ
+                      {t("table.document")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -304,7 +307,7 @@ export default function ClientesView() {
                         letterSpacing: "0.5px",
                       }}
                     >
-                      DATA NASC.
+                      {t("table.birthDate")}
                     </TableCell>
                     <TableCell
                       sx={{
@@ -313,7 +316,7 @@ export default function ClientesView() {
                         fontWeight: 800,
                       }}
                     >
-                      AÇÕES
+                      {t("table.actions")}
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -344,7 +347,7 @@ export default function ClientesView() {
                             color={theme.palette.text.secondary}
                           />
                           <Typography color="text.secondary" variant="h6">
-                            Nenhum cliente encontrado
+                            {t("empty.title")}
                           </Typography>
                           <Button
                             variant="outlined"
@@ -352,7 +355,7 @@ export default function ClientesView() {
                             startIcon={<Icon icon="mdi:plus" />}
                             sx={{ borderRadius: "12px" }}
                           >
-                            Adicionar primeiro cliente
+                            {t("empty.action")}
                           </Button>
                         </Stack>
                       </TableCell>
@@ -493,7 +496,10 @@ export default function ClientesView() {
               }}
             >
               <Typography color="text.secondary" variant="body2">
-                Mostrando {clientes.length} de {total} registro(s)
+                {t("pagination.showing", {
+                  shown: clientes.length,
+                  total,
+                })}
               </Typography>
 
               <Stack direction="row" spacing={1} alignItems="center">
@@ -515,11 +521,14 @@ export default function ClientesView() {
                     },
                   }}
                 >
-                  Anterior
+                  {t("pagination.previous")}
                 </Button>
 
                 <Chip
-                  label={`Página ${currentPage} de ${lastPage}`}
+                  label={t("pagination.page", {
+                    current: currentPage,
+                    total: lastPage,
+                  })}
                   color="primary"
                   variant="outlined"
                   sx={{
@@ -546,7 +555,7 @@ export default function ClientesView() {
                     },
                   }}
                 >
-                  Próximo
+                  {t("pagination.next")}
                 </Button>
               </Stack>
             </Stack>
