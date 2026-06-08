@@ -8,10 +8,21 @@
 
   "auth": {
     "login": {
+      "brand": "Central Legal",
       "title": "Login",
+      "subtitle": "Access your account to continue.",
       "email": "Email",
+      "identifier": "CPF or Email",
       "password": "Password",
-      "button": "Sign In"
+      "remember": "Remember me",
+      "forgot": "Forgot password?",
+      "button": "Sign in",
+      "loading": "Signing in...",
+      "back": "Back to website",
+      "heroTitle": "Legal management focused on productivity",
+      "heroText": "Manage clients, cases, and appointments in one secure, modern interface.",
+      "rights": "© 2026 Central Legal. All rights reserved.",
+      "error": "Could not sign in."
     }
   },
 
@@ -498,9 +509,15 @@
       "team": "Team",
       "access": "Open",
       "login": "Login",
+      "accessibility": "Accessibility",
       "theme": {
         "light": "Switch to light theme",
         "dark": "Switch to dark theme"
+      },
+      "language": {
+        "portuguese": "Portuguese",
+        "english": "English",
+        "spanish": "Spanish"
       }
     },
     "footer": {

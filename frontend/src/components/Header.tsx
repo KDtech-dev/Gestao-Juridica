@@ -8,9 +8,15 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useRef, useState } from "react";
+import type { PointerEvent } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getRouteByRole } from "@/utils/redirectByRole";
 import { logoSrc } from "./Footer";
@@ -21,11 +27,11 @@ import { useLanguage, type Language } from "@/context/LanguageContext";
 
 const languageOptions: Record<
   Language,
-  { flag: string; labelKey: "brazil" | "unitedStates" | "spain"; next: Language }
+  { shortLabel: string; labelKey: "portuguese" | "english" | "spanish" }
 > = {
-  pt: { flag: "🇧🇷", labelKey: "brazil", next: "en" },
-  en: { flag: "🇺🇸", labelKey: "unitedStates", next: "es" },
-  es: { flag: "🇪🇸", labelKey: "spain", next: "pt" },
+  pt: { shortLabel: "PT", labelKey: "portuguese" },
+  en: { shortLabel: "EN", labelKey: "english" },
+  es: { shortLabel: "ES", labelKey: "spanish" },
 };
 
 export function Header() {
@@ -34,199 +40,458 @@ export function Header() {
   const { setThemeMode } = useThemeMode();
   const { language, setLanguage } = useLanguage();
   const { isAuthenticated, user, loading } = useAuth();
+  const pathname = usePathname();
+  const [floatingOpen, setFloatingOpen] = useState(false);
+  const [floatingPosition, setFloatingPosition] = useState({ x: 16, y: 112 });
+  const dragRef = useRef({
+    active: false,
+    moved: false,
+    offsetX: 0,
+    offsetY: 0,
+  });
   const isDark = theme.palette.mode === "dark";
   const accessHref =
     isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
   const themeToggleLabel = isDark ? t("theme.light") : t("theme.dark");
+  const accessibilityLabel = t("accessibility");
   const currentLanguage = languageOptions[language];
   const languageLabel = t(`language.${currentLanguage.labelKey}`);
+  const handleLanguageChange = (event: SelectChangeEvent<Language>) => {
+    setLanguage(event.target.value as Language);
+  };
+  const navItems = [
+    { href: "/", label: t("home"), active: pathname === "/" },
+    { href: "/posts", label: t("publications"), active: pathname === "/posts" },
+    { href: "/equipe", label: t("team"), active: pathname === "/equipe" },
+  ];
+  const handleFloatingPointerDown = (
+    event: PointerEvent<HTMLButtonElement>,
+  ) => {
+    const target = event.currentTarget;
+    target.setPointerCapture(event.pointerId);
+    dragRef.current = {
+      active: true,
+      moved: false,
+      offsetX: event.clientX - floatingPosition.x,
+      offsetY: event.clientY - floatingPosition.y,
+    };
+  };
+  const handleFloatingPointerMove = (
+    event: PointerEvent<HTMLButtonElement>,
+  ) => {
+    if (!dragRef.current.active) return;
+
+    const buttonSize = 48;
+    const nextX = Math.max(
+      8,
+      Math.min(
+        window.innerWidth - buttonSize - 8,
+        event.clientX - dragRef.current.offsetX,
+      ),
+    );
+    const nextY = Math.max(
+      8,
+      Math.min(
+        window.innerHeight - buttonSize - 8,
+        event.clientY - dragRef.current.offsetY,
+      ),
+    );
+
+    if (
+      Math.abs(nextX - floatingPosition.x) > 3 ||
+      Math.abs(nextY - floatingPosition.y) > 3
+    ) {
+      dragRef.current.moved = true;
+    }
+
+    setFloatingPosition({ x: nextX, y: nextY });
+  };
+  const handleFloatingPointerUp = (
+    event: PointerEvent<HTMLButtonElement>,
+  ) => {
+    event.currentTarget.releasePointerCapture(event.pointerId);
+    const wasMoved = dragRef.current.moved;
+    dragRef.current.active = false;
+
+    if (!wasMoved) {
+      setFloatingOpen((open) => !open);
+    }
+  };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        bgcolor: "background.paper",
-        borderBottom: "1px solid",
-        borderColor: "divider",
-      }}
-    >
-      <Container maxWidth="xl">
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          py={2}
+    <>
+      <Box
+        sx={{
+          width: "100%",
+          bgcolor: "background.paper",
+          borderBottom: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Container
+          maxWidth="xl"
+          disableGutters
+          sx={{ px: { xs: 1, sm: 0 }, pr: { sm: 3 } }}
         >
-          <Stack direction="row" spacing={1.5} alignItems="center">
-            <Tooltip title={themeToggleLabel}>
-              <IconButton
-                type="button"
-                aria-label={themeToggleLabel}
-                onClick={() => setThemeMode(isDark ? "light" : "dark")}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  bgcolor: "background.paper",
-                  color: "text.primary",
-                  flexShrink: 0,
-                  "&:hover": {
-                    bgcolor: "action.hover",
-                  },
-                }}
-              >
-                <Icon
-                  icon={
-                    isDark ? "mdi:white-balance-sunny" : "mdi:weather-night"
-                  }
-                  width={20}
-                />
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title={languageLabel}>
-              <IconButton
-                type="button"
-                aria-label={languageLabel}
-                onClick={() => setLanguage(currentLanguage.next)}
-                sx={{
-                  width: 40,
-                  height: 40,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  bgcolor: "background.paper",
-                  color: "text.primary",
-                  flexShrink: 0,
-                  fontSize: "1.2rem",
-                  lineHeight: 1,
-                  "&:hover": {
-                    bgcolor: "action.hover",
-                  },
-                }}
-              >
-                <Box component="span" aria-hidden="true">
-                  {currentLanguage.flag}
-                </Box>
-              </IconButton>
-            </Tooltip>
-
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            alignItems={{ xs: "stretch", md: "center" }}
+            justifyContent="space-between"
+            gap={{ xs: 1.25, md: 2 }}
+            py={{ xs: 1.25, md: 2 }}
+          >
             <Stack
-              component={Link}
-              href="/"
               direction="row"
-              spacing={2}
+              spacing={{ xs: 0.75, sm: 1 }}
               alignItems="center"
               sx={{
                 minWidth: 0,
-                color: "text.primary",
-                textDecoration: "none",
-                flexShrink: 0,
+                width: { xs: "100%", md: "auto" },
+                ml: { xs: 0, md: "-18px" },
               }}
             >
-              <Box
-                component="img"
-                src={logoSrc}
-                alt="Central Jurídica"
-                sx={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 2,
-                  objectFit: "contain",
-                  filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.35))",
-                }}
-              />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography
-                  fontWeight={900}
-                  sx={{ fontSize: "0.95rem", lineHeight: 1.1 }}
+              <Tooltip title={languageLabel}>
+                <Select<Language>
+                  value={language}
+                  size="small"
+                  displayEmpty
+                  aria-label={languageLabel}
+                  onChange={handleLanguageChange}
+                  renderValue={(selected) => (
+                    <Stack
+                      direction="row"
+                      spacing={0.75}
+                      alignItems="center"
+                      component="span"
+                    >
+                      <Icon icon="mdi:translate" width={15} />
+                      <Box
+                        component="span"
+                        sx={{ fontSize: "0.66rem", fontWeight: 800 }}
+                      >
+                        {languageOptions[selected].shortLabel}
+                      </Box>
+                    </Stack>
+                  )}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        mt: 1,
+                        minWidth: 148,
+                        bgcolor: "#070b14",
+                        color: "#d7dce5",
+                        border: "1px solid rgba(148, 163, 184, 0.18)",
+                        borderRadius: 0.75,
+                        boxShadow: "0 18px 44px rgba(0,0,0,0.35)",
+                      },
+                    },
+                    MenuListProps: {
+                      dense: true,
+                      sx: { py: 0.5 },
+                    },
+                  }}
+                  sx={{
+                    display: { xs: "none", md: "flex" },
+                    minWidth: 64,
+                    height: 34,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    bgcolor: "background.paper",
+                    color: "text.primary",
+                    flexShrink: 0,
+                    ".MuiSelect-select": {
+                      display: "flex",
+                      alignItems: "center",
+                      py: 0,
+                      pl: 0.85,
+                      pr: 2.5,
+                    },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      border: 0,
+                    },
+                    ".MuiSelect-icon": {
+                      color: "text.secondary",
+                      right: 4,
+                    },
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
                 >
-                  Central Jurídica
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{ mt: 0.35, lineHeight: 1.1, fontSize: "0.75rem" }}
+                  {Object.entries(languageOptions).map(([value, option]) => (
+                    <MenuItem
+                      key={value}
+                      value={value}
+                      sx={{
+                        minHeight: 34,
+                        fontSize: "0.86rem",
+                        "&.Mui-selected": {
+                          bgcolor: "rgba(59, 130, 246, 0.18)",
+                        },
+                        "&.Mui-selected:hover, &:hover": {
+                          bgcolor: "rgba(59, 130, 246, 0.24)",
+                        },
+                      }}
+                    >
+                      {t(`language.${option.labelKey}`)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </Tooltip>
+              <Tooltip title={themeToggleLabel}>
+                <IconButton
+                  type="button"
+                  aria-label={themeToggleLabel}
+                  onClick={() => setThemeMode(isDark ? "light" : "dark")}
+                  sx={{
+                    display: { xs: "none", md: "inline-flex" },
+                    height: 34,
+                    width: 34,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.paper",
+                    color: "text.primary",
+                    flexShrink: 0,
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
                 >
-                  Advocacia & Consultoria
-                </Typography>
-              </Box>
-            </Stack>
-          </Stack>
+                  <Icon
+                    icon={
+                      isDark ? "mdi:white-balance-sunny" : "mdi:weather-night"
+                    }
+                    width={17}
+                  />
+                </IconButton>
+              </Tooltip>
 
-          <Stack direction="row" spacing={{ xs: 1, sm: 2 }} alignItems="center">
-            <Stack
-              component="nav"
-              direction="row"
-              spacing={{ xs: 0.5, sm: 1 }}
-              alignItems="center"
-            >
-              <Button
+              <Stack
                 component={Link}
                 href="/"
-                variant="text"
+                direction="row"
+                spacing={{ xs: 1, sm: 2 }}
+                alignItems="center"
                 sx={{
+                  minWidth: 0,
+                  ml: { xs: 0, md: "-5px" },
                   color: "text.primary",
-                  textTransform: "none",
-                  fontWeight: 700,
-                  px: { xs: 1, sm: 1.5 },
+                  textDecoration: "none",
+                  flexShrink: 1,
+                  overflow: "hidden",
                 }}
               >
-                {t("home")}
-              </Button>
-              <Button
-                component={Link}
-                href="/posts"
-                variant="text"
-                sx={{
-                  color: "text.primary",
-                  textTransform: "none",
-                  fontWeight: 700,
-                  px: { xs: 1, sm: 1.5 },
-                }}
-              >
-                {t("publications")}
-              </Button>
-              <Button
-                component={Link}
-                href="/equipe"
-                variant="text"
-                sx={{
-                  color: "text.primary",
-                  textTransform: "none",
-                  fontWeight: 700,
-                  px: { xs: 1, sm: 1.5 },
-                }}
-              >
-                {t("team")}
-              </Button>
+                <Box
+                  component="img"
+                  src={logoSrc}
+                  alt="Central Jurídica"
+                  sx={{
+                    width: { xs: 44, sm: 60 },
+                    height: { xs: 44, sm: 60 },
+                    borderRadius: 2,
+                    objectFit: "contain",
+                    filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.35))",
+                    flexShrink: 0,
+                  }}
+                />
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    minWidth: 0,
+                  }}
+                >
+                  <Typography
+                    fontWeight={900}
+                    noWrap
+                    sx={{
+                      fontSize: { xs: "0.82rem", sm: "0.95rem" },
+                      lineHeight: 1.1,
+                    }}
+                  >
+                    Central Jurídica
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    noWrap
+                    sx={{
+                      display: { xs: "none", sm: "block" },
+                      mt: 0.35,
+                      lineHeight: 1.1,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    Advocacia & Consultoria
+                  </Typography>
+                </Box>
+              </Stack>
             </Stack>
 
-            {!loading && (
-              <Button
-                component={Link}
-                href={accessHref}
-                variant="contained"
+            <Stack
+              direction="row"
+              spacing={{ xs: 0.75, sm: 2 }}
+              alignItems="center"
+              justifyContent={{ xs: "space-between", md: "flex-end" }}
+              sx={{ minWidth: 0, width: { xs: "100%", md: "auto" } }}
+            >
+              <Stack
+                component="nav"
+                direction="row"
+                spacing={{ xs: 0.5, sm: 1 }}
+                alignItems="center"
                 sx={{
-                  bgcolor: "primary.main",
-                  borderRadius: "999px",
-                  px: 3,
-                  "&:hover": { bgcolor: "primary.dark" },
+                  minWidth: 0,
+                  overflowX: "auto",
+                  scrollbarWidth: "none",
+                  "&::-webkit-scrollbar": { display: "none" },
                 }}
               >
-                {isAuthenticated ? t("access") : t("login")}
-              </Button>
-            )}
+                {navItems.map((item) => (
+                  <Button
+                    key={item.href}
+                    component={Link}
+                    href={item.href}
+                    variant="text"
+                    sx={{
+                      display: {
+                        xs: item.active ? "none" : "inline-flex",
+                        md: "inline-flex",
+                      },
+                      color: "text.primary",
+                      textTransform: "none",
+                      fontWeight: 700,
+                      px: { xs: 0.75, sm: 1.5 },
+                      minWidth: "auto",
+                      fontSize: { xs: "0.78rem", sm: "0.875rem" },
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
+              </Stack>
+
+              {!loading && (
+                <Button
+                  component={Link}
+                  href={accessHref}
+                  variant="contained"
+                  sx={{
+                    bgcolor: "primary.main",
+                    borderRadius: "999px",
+                    px: { xs: 1.5, sm: 3 },
+                    minWidth: "auto",
+                    flexShrink: 0,
+                    fontSize: { xs: "0.78rem", sm: "0.875rem" },
+                    whiteSpace: "nowrap",
+                    "&:hover": { bgcolor: "primary.dark" },
+                  }}
+                >
+                  {isAuthenticated ? t("access") : t("login")}
+                </Button>
+              )}
+            </Stack>
           </Stack>
-        </Stack>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+
+      <Box
+        sx={{
+          display: { xs: "block", md: "none" },
+          position: "fixed",
+          left: floatingPosition.x,
+          top: floatingPosition.y,
+          zIndex: 1300,
+          touchAction: "none",
+        }}
+      >
+        <Tooltip title={accessibilityLabel}>
+          <IconButton
+            type="button"
+            aria-label={accessibilityLabel}
+            onPointerDown={handleFloatingPointerDown}
+            onPointerMove={handleFloatingPointerMove}
+            onPointerUp={handleFloatingPointerUp}
+            sx={{
+              width: 48,
+              height: 48,
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              boxShadow: "0 14px 34px rgba(15, 23, 42, 0.28)",
+              "&:hover": {
+                bgcolor: "primary.dark",
+              },
+            }}
+          >
+            <Icon icon="mdi:accessibility" width={24} />
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {floatingOpen && (
+        <Box
+          sx={{
+            display: { xs: "flex", md: "none" },
+            position: "fixed",
+            left: `min(${floatingPosition.x}px, calc(100vw - 196px))`,
+            top: `min(${floatingPosition.y + 56}px, calc(100vh - 164px))`,
+            zIndex: 1299,
+            width: 184,
+            flexDirection: "column",
+            gap: 1,
+            p: 1,
+            bgcolor: "background.paper",
+            border: "1px solid",
+            borderColor: "divider",
+            borderRadius: 2,
+            boxShadow: "0 18px 46px rgba(15, 23, 42, 0.22)",
+          }}
+        >
+          <Select<Language>
+            value={language}
+            size="small"
+            aria-label={languageLabel}
+            onChange={handleLanguageChange}
+            sx={{
+              height: 36,
+              fontSize: "0.84rem",
+              ".MuiSelect-select": {
+                display: "flex",
+                alignItems: "center",
+              },
+            }}
+          >
+            {Object.entries(languageOptions).map(([value, option]) => (
+              <MenuItem key={value} value={value}>
+                {t(`language.${option.labelKey}`)}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button
+            type="button"
+            variant="outlined"
+            startIcon={
+              <Icon
+                icon={isDark ? "mdi:white-balance-sunny" : "mdi:weather-night"}
+                width={18}
+              />
+            }
+            onClick={() => setThemeMode(isDark ? "light" : "dark")}
+            sx={{
+              justifyContent: "flex-start",
+              textTransform: "none",
+              fontSize: "0.84rem",
+            }}
+          >
+            {themeToggleLabel}
+          </Button>
+        </Box>
+      )}
+    </>
   );
 }

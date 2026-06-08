@@ -8,10 +8,21 @@
 
   "auth": {
     "login": {
+      "brand": "Central jurídica",
       "title": "Iniciar sesión",
+      "subtitle": "Accede a tu cuenta para continuar.",
       "email": "Correo electrónico",
+      "identifier": "CPF o correo electrónico",
       "password": "Contraseña",
-      "button": "Acceder"
+      "remember": "Recordarme",
+      "forgot": "¿Olvidaste tu contraseña?",
+      "button": "Entrar",
+      "loading": "Entrando...",
+      "back": "Volver al sitio",
+      "heroTitle": "Gestión jurídica enfocada en productividad",
+      "heroText": "Controla clientes, procesos y compromisos en un solo lugar, con una interfaz moderna y segura.",
+      "rights": "© 2026 Central jurídica. Todos los derechos reservados.",
+      "error": "No fue posible iniciar sesión."
     }
   },
 
@@ -498,9 +509,15 @@
       "team": "Equipo",
       "access": "Acceder",
       "login": "Login",
+      "accessibility": "Accesibilidad",
       "theme": {
         "light": "Activar tema claro",
         "dark": "Activar tema oscuro"
+      },
+      "language": {
+        "portuguese": "Portugués",
+        "english": "English",
+        "spanish": "Español"
       }
     },
     "footer": {
