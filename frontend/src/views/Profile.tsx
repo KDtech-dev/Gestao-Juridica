@@ -23,13 +23,15 @@ import {
   profileFormSchema,
   ProfileFormSchemaType,
 } from "@/schemas/ProfileSchema";
-import InputBasico from "@/components/InputBasico";
 import CardSeguranca from "@/components/users/CardSeguranca";
 import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { clearNumber, formatCpf, formatTelefone } from "@/@core/format";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { useLanguage } from "@/context/LanguageContext";
 import { ChangePasswordModal } from "@/components/modals/ChangePasswordModal";
+import { getUserById, updateUser } from "@/api/ApiUsers";
+import type { RoleType, UserType } from "@/@core/types";
+
 const practiceAreaKeys = [
   "civil",
   "labor",
@@ -46,59 +48,136 @@ const practiceAreaKeys = [
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
   const { themeMode, setThemeMode } = useThemeMode();
-  const { language, setLanguage } = useLanguage();
   const { hasRole, user } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [profileUser, setProfileUser] = useState<UserType | null>(null);
 
-  const roleNormalizedFromAuth = hasRole("advogado")
+  const isAdvogado = hasRole("advogado");
+  const isFuncionario = hasRole("funcionario");
+  const isAdmin = hasRole("admin");
+
+  const roleNormalized: RoleType | undefined = isAdvogado
     ? "advogado"
-    : hasRole("funcionario")
+    : isFuncionario
       ? "funcionario"
-      : hasRole("admin")
+      : isAdmin
         ? "admin"
-        : "";
-  const roleNormalized = (roleNormalizedFromAuth || "").toLowerCase();
-  const isAdvogadoRole = roleNormalized === "advogado";
+        : undefined;
+
   const roleLabel = roleNormalized
     ? t(`roles.${roleNormalized}`)
     : t("roles.user");
-  const [privacyOpen, setPrivacyOpen] = useState(false);
-  const handleOpenPrivacy = () => setPrivacyOpen(true);
-  const handleClosePrivacy = () => setPrivacyOpen(false);
-  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-  const handleChangePassword = () => setChangePasswordOpen(true);
-  const handleCloseChangePassword = () => setChangePasswordOpen(false);
 
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setAvatar(imageUrl);
-    }
-  };
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const form = useForm<ProfileFormSchemaType>({
     defaultValues: {
-      nome: "",
+      name: "",
       email: "",
-      phone: "",
       cpf: "",
-      oabNumber: "",
-      position: "",
-      categoria_ids: [],
+      advogado: {
+        celular: "",
+        oab_numero: "",
+        oab_uf: "",
+        especialidade: [],
+        sexo: null,
+        resumo_pessoal: "",
+      },
+      funcionario: {
+        celular: "",
+        data_nascimento: "",
+        sexo: null,
+        resumo_pessoal: "",
+      },
+      endereco: null,
       tema: themeMode,
       idioma: language,
     },
     resolver: zodResolver(profileFormSchema),
   });
+
+  const { isDirty } = form.formState;
+
   useEffect(() => {
-    form.reset((currentValues) => ({
-      ...currentValues,
+    if (!user?.id) return;
+    getUserById(String(user.id))
+      .then((user) => {
+        setProfileUser(user);
+        setAvatar(
+          user.advogado?.foto_perfil_url ??
+            user.funcionario?.foto_perfil_url ??
+            null,
+        );
+
+        form.reset({
+          name: user.name ?? "",
+          email: user.email ?? "",
+          cpf: user.cpf ?? "",
+
+          advogado: isAdvogado
+            ? {
+                celular: user.advogado?.celular ?? "",
+                oab_numero: user.advogado?.oab_numero ?? "",
+                oab_uf: user.advogado?.oab_uf ?? "",
+                especialidade: Array.isArray(user.advogado?.especialidade)
+                  ? user.advogado.especialidade
+                  : [],
+                sexo: user.advogado?.sexo ?? null,
+                resumo_pessoal: user.advogado?.resumo_pessoal ?? "",
+              }
+            : undefined,
+
+          funcionario: isFuncionario
+            ? {
+                celular: user.funcionario?.celular ?? "",
+                data_nascimento: user.funcionario?.data_nascimento ?? "",
+                sexo: user.funcionario?.sexo ?? null,
+                resumo_pessoal: user.funcionario?.resumo_pessoal ?? "",
+              }
+            : undefined,
+
+          endereco:
+            user.advogado?.endereco ?? user.funcionario?.endereco ?? null,
+
+          tema: themeMode,
+          idioma: language,
+        });
+      })
+      .catch(() => {});
+  }, [user?.id]);
+
+  useEffect(() => {
+    form.reset((current) => ({
+      ...current,
       tema: themeMode,
       idioma: language,
     }));
-  }, [themeMode, language, form]);
-  const { isDirty } = form.formState;
+  }, [themeMode, language]);
+
+  const handleSaveProfile = form.handleSubmit(async (data) => {
+    if (!user?.id) return;
+
+    const { tema, idioma, ...payload } = data;
+
+    try {
+      await updateUser(String(user.id), {
+        ...payload,
+        ...(roleNormalized ? { role: roleNormalized } : {}),
+      });
+      await setLanguage(idioma);
+      setThemeMode(tema);
+      form.reset(data);
+    } catch (err) {
+      console.error("Erro ao salvar:", err);
+    }
+  });
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) setAvatar(URL.createObjectURL(file));
+  };
 
   return (
     <Box
@@ -128,34 +207,15 @@ export default function ProfileView() {
           </Grid>
 
           <FormProvider {...form}>
-            <form
-              onSubmit={form.handleSubmit(async (data) => {
-                await setLanguage(data.idioma);
-                setThemeMode(data.tema);
-                console.log("Dados do form:", data);
-              })}
-            >
-              <Card
-                sx={{
-                  borderRadius: "16px",
-                  overflow: "hidden",
-                  p: 0,
-                }}
-              >
+            <form onSubmit={handleSaveProfile}>
+              {" "}
+              {/* ← chamada do handler */}
+              <Card sx={{ borderRadius: "16px", overflow: "hidden", p: 0 }}>
                 <Box
                   sx={{
-                    width: {
-                      xs: "calc(100% + 32px)",
-                      md: "calc(100% + 64px)",
-                    },
-                    ml: {
-                      xs: "-16px",
-                      md: "-32px",
-                    },
-                    mr: {
-                      xs: "-16px",
-                      md: "-32px",
-                    },
+                    width: { xs: "calc(100% + 32px)", md: "calc(100% + 64px)" },
+                    ml: { xs: "-16px", md: "-32px" },
+                    mr: { xs: "-16px", md: "-32px" },
                     height: 150,
                     background:
                       "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)",
@@ -182,10 +242,7 @@ export default function ProfileView() {
                     <Grid display="flex" alignItems="center" gap={2}>
                       <Box sx={{ position: "relative" }}>
                         <Avatar
-                          src={
-                            avatar ||
-                            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&q=80"
-                          }
+                          src={avatar ?? undefined}
                           sx={{
                             width: 76,
                             height: 76,
@@ -207,14 +264,21 @@ export default function ProfileView() {
                           onChange={handleAvatarChange}
                         />
                       </Box>
-
                       <Box>
-                        <Typography fontWeight={600}>
-                          {user?.name || roleLabel}
-                        </Typography>
+                        <Typography fontWeight={600}>{user?.name}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                          {user?.email || roleLabel}
+                          {user?.email}
                         </Typography>
+                        {isAdvogado && profileUser?.advogado && (
+                          <Typography
+                            variant="body2"
+                            color="primary"
+                            fontSize="0.82rem"
+                          >
+                            OAB/{profileUser.advogado.oab_uf}{" "}
+                            {profileUser.advogado.oab_numero}
+                          </Typography>
+                        )}
                       </Box>
                     </Grid>
                     <Grid>
@@ -236,10 +300,7 @@ export default function ProfileView() {
                   <Box
                     sx={{
                       display: "grid",
-                      gridTemplateColumns: {
-                        xs: "1fr",
-                        lg: "1.8fr 0.85fr",
-                      },
+                      gridTemplateColumns: { xs: "1fr", lg: "1.8fr 0.85fr" },
                       gap: 2,
                     }}
                   >
@@ -255,16 +316,13 @@ export default function ProfileView() {
                       <Box
                         sx={{
                           display: "grid",
-                          gridTemplateColumns: {
-                            xs: "1fr",
-                            md: "1fr 1fr",
-                          },
+                          gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
                           gap: 1.4,
                           mb: 2.3,
                         }}
                       >
                         <Controller
-                          name="nome"
+                          name="name"
                           control={form.control}
                           render={({ field, fieldState }) => (
                             <TextField
@@ -278,7 +336,6 @@ export default function ProfileView() {
                             />
                           )}
                         />
-
                         <Controller
                           name="email"
                           control={form.control}
@@ -295,16 +352,20 @@ export default function ProfileView() {
                           )}
                         />
                         <Controller
-                          name="phone"
+                          name={
+                            isAdvogado
+                              ? "advogado.celular"
+                              : "funcionario.celular"
+                          }
                           control={form.control}
                           render={({ field, fieldState }) => (
                             <TextField
                               label={t("fields.phone")}
                               placeholder="(00) 00000-0000"
                               value={formatTelefone(field.value || "")}
-                              onChange={(e) => {
-                                field.onChange(clearNumber(e.target.value));
-                              }}
+                              onChange={(e) =>
+                                field.onChange(clearNumber(e.target.value))
+                              }
                               error={!!fieldState.error}
                               helperText={fieldState.error?.message}
                               fullWidth
@@ -320,22 +381,18 @@ export default function ProfileView() {
                               label={t("fields.cpf")}
                               placeholder="000.000.000-00"
                               value={formatCpf(field.value || "")}
-                              onChange={(e) => {
-                                field.onChange(clearNumber(e.target.value));
-                              }}
+                              onChange={(e) =>
+                                field.onChange(clearNumber(e.target.value))
+                              }
                               fullWidth
+                              disabled
                             />
                           )}
                         />
                       </Box>
 
-                      {isAdvogadoRole && (
-                        <Box
-                          sx={{
-                            display: "grid",
-                            gap: 1.4,
-                          }}
-                        >
+                      {isAdvogado && (
+                        <Box sx={{ display: "grid", gap: 1.4 }}>
                           <Typography
                             fontWeight={700}
                             color="text.primary"
@@ -343,92 +400,111 @@ export default function ProfileView() {
                           >
                             {t("sections.professionalData")}
                           </Typography>
+                          <Box
+                            sx={{
+                              display: "grid",
+                              gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+                              gap: 1.4,
+                            }}
+                          >
+                            <Controller
+                              name="advogado.oab_numero"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <TextField
+                                  {...field}
+                                  label={t("fields.oabNumber")}
+                                  placeholder={t("fields.oabNumberPlaceholder")}
+                                  error={!!fieldState.error}
+                                  helperText={fieldState.error?.message}
+                                  fullWidth
+                                />
+                              )}
+                            />
+                            <Controller
+                              name="advogado.oab_uf"
+                              control={form.control}
+                              render={({ field, fieldState }) => (
+                                <TextField
+                                  {...field}
+                                  label="UF OAB"
+                                  inputProps={{ maxLength: 2 }}
+                                  error={!!fieldState.error}
+                                  helperText={fieldState.error?.message}
+                                  fullWidth
+                                />
+                              )}
+                            />
+                          </Box>
+                          <FormControl fullWidth>
+                            <Controller
+                              name="advogado.especialidade"
+                              control={form.control}
+                              render={({ field }) => (
+                                <Autocomplete
+                                  multiple
+                                  freeSolo
+                                  options={practiceAreaKeys.map((k) =>
+                                    t(`practiceAreas.${k}`),
+                                  )}
+                                  value={field.value ?? []}
+                                  onChange={(_, value) => field.onChange(value)}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      label={t("fields.specialties")}
+                                      placeholder={
+                                        field.value?.length
+                                          ? ""
+                                          : t("fields.specialtiesPlaceholder")
+                                      }
+                                    />
+                                  )}
+                                />
+                              )}
+                            />
+                          </FormControl>
+                        </Box>
+                      )}
 
-                          <Box
-                            sx={{
-                              display: "grid",
-                              gridTemplateColumns: {
-                                xs: "1fr",
-                                md: "1fr 1fr",
-                              },
-                              gap: 1.4,
-                            }}
+                      {isFuncionario && profileUser?.funcionario && (
+                        <Box sx={{ display: "grid", gap: 1.4 }}>
+                          <Typography
+                            fontWeight={700}
+                            color="text.primary"
+                            mb={1.2}
                           >
-                            <InputBasico
-                              label={t("fields.oabNumber")}
-                              field="oabNumber"
-                              placeholder={t("fields.oabNumberPlaceholder")}
-                            />
-                            <InputBasico
-                              label={t("fields.position")}
-                              field="position"
-                              placeholder={t("fields.positionPlaceholder")}
-                            />
-                          </Box>
-                          <Box
-                            sx={{
-                              display: "grid",
-                              gap: 1.4,
-                            }}
-                          >
-                            <FormControl fullWidth>
-                              <Controller
-                                name="categoria_ids"
-                                control={form.control}
-                                render={({ field }) => (
-                                  <Autocomplete
-                                    multiple
-                                    options={practiceAreaKeys.map(
-                                      (label, index) => ({
-                                        id: index + 1,
-                                        label: t(`practiceAreas.${label}`),
-                                      }),
-                                    )}
-                                    value={field.value.map((id) => ({
-                                      id,
-                                      label: t(
-                                        `practiceAreas.${practiceAreaKeys[id - 1]}`,
-                                      ),
-                                    }))}
-                                    onChange={(_, value) =>
-                                      field.onChange(
-                                        value.map((item) => Number(item.id)),
-                                      )
-                                    }
-                                    isOptionEqualToValue={(option, value) =>
-                                      option.id === value.id
-                                    }
-                                    getOptionLabel={(option) => option.label}
-                                    renderInput={(params) => (
-                                      <TextField
-                                        {...params}
-                                        label={t("fields.specialties")}
-                                        placeholder={
-                                          field.value?.length
-                                            ? ""
-                                            : t("fields.specialtiesPlaceholder")
-                                        }
-                                      />
-                                    )}
-                                  />
-                                )}
+                            {t("sections.professionalData")}
+                          </Typography>
+                          <Controller
+                            name="funcionario.resumo_pessoal"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                              <TextField
+                                {...field}
+                                label={t("fields.position")}
+                                placeholder={t("fields.positionPlaceholder")}
+                                error={!!fieldState.error}
+                                helperText={fieldState.error?.message}
+                                fullWidth
                               />
-                            </FormControl>
-                          </Box>
+                            )}
+                          />
                         </Box>
                       )}
                     </Box>
+
                     <Box flexDirection="column">
                       <CardPersonalizacao form={form} />
                       <CardSeguranca
                         privacyOpen={privacyOpen}
-                        onOpenPrivacy={handleOpenPrivacy}
-                        onClosePrivacy={handleClosePrivacy}
-                        onOpenChangePassword={handleChangePassword}
+                        onOpenPrivacy={() => setPrivacyOpen(true)}
+                        onClosePrivacy={() => setPrivacyOpen(false)}
+                        onOpenChangePassword={() => setChangePasswordOpen(true)}
                       />
                       <ChangePasswordModal
                         open={changePasswordOpen}
-                        onClose={handleCloseChangePassword}
+                        onClose={() => setChangePasswordOpen(false)}
                       />
                     </Box>
                   </Box>

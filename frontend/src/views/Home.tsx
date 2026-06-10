@@ -1,6 +1,7 @@
 "use client";
 import {
   Box,
+  Button,
   Chip,
   Container,
   Grid,
@@ -21,13 +22,6 @@ type HomeViewProps = {
 };
 
 export default function HomeView({ publicacoes }: HomeViewProps) {
-  const stats = [
-    { value: "25+", label: "Anos de Experiência" },
-    { value: "1.200+", label: "Clientes Atendidos" },
-    { value: "R$ 50M+", label: "Economizados" },
-    { value: "98%", label: "Taxa de Sucesso" },
-  ];
-
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>
       <Header />
@@ -40,24 +34,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
       >
         <HomeCard />
       </Box>
-      <Box py={8} bgcolor="background.paper">
-        <Container>
-          <Stack
-            direction={{ xs: "column", md: "row" }}
-            spacing={4}
-            justifyContent="space-between"
-          >
-            {stats.map((item, i) => (
-              <Box key={i} textAlign="center" flex={1}>
-                <Typography variant="h4" color="primary">
-                  {item.value}
-                </Typography>
-                <Typography>{item.label}</Typography>
-              </Box>
-            ))}
-          </Stack>
-        </Container>
-      </Box>
+
       <Box
         id="areas"
         sx={{ scrollMarginTop: "80px" }}
@@ -101,7 +78,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
         bgcolor="background.paper"
       >
         <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 4, md: 6 }} alignItems="center">
+          <Grid container spacing={{ xs: 4, md: 6 }} alignItems="flex-start">
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h4" fontWeight={800} mb={2}>
                 Sobre o Escritório
@@ -112,44 +89,105 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
                 fontSize="1.02rem"
                 lineHeight={1.75}
               >
-                Fundado com o propósito de oferecer soluções jurídicas
-                estratégicas, nosso escritório atua há mais de 20 anos no
-                mercado, atendendo empresas e indivíduos com excelência, ética e
-                inovação. Nossa equipe é formada por profissionais altamente
-                qualificados, especializados em diversas áreas do Direito,
-                garantindo um atendimento completo e personalizado.
+                Com atuação pautada na ética, responsabilidade e compromisso com
+                resultados, o escritório Manfrine Chaves de Almeida & Advogados
+                reúne uma equipe multidisciplinar preparada para atender
+                demandas nas áreas do Direito Público, Trabalhista, Cível,
+                Previdenciário e Bancário.
               </Typography>
 
-              <Stack direction="row" flexWrap="wrap" gap={1} mt={3}>
-                <Chip
-                  label="Consultoria estratégica"
-                  variant="outlined"
-                  size="small"
-                  sx={{ borderRadius: 2 }}
-                />
-                <Chip
-                  label="Foco corporativo"
-                  variant="outlined"
-                  size="small"
-                  sx={{ borderRadius: 2 }}
-                />
-                <Chip
-                  label="Ética e inovação"
-                  variant="outlined"
-                  size="small"
-                  sx={{ borderRadius: 2 }}
-                />
-              </Stack>
+              <Typography
+                color="text.secondary"
+                fontSize="1.02rem"
+                lineHeight={1.75}
+                mt={2}
+              >
+                À frente do escritório está Manfrine Chaves de Almeida, advogado
+                e contador, especialista em Direito Público, Trabalhista e
+                Cível. A equipe é formada por profissionais com atuações
+                complementares, incluindo direito previdenciário, consultoria
+                legislativa e demandas judiciais estratégicas.
+              </Typography>
+
+              <Box sx={{ position: "relative" }}>
+                <Typography
+                  id="expandable-text"
+                  color="text.secondary"
+                  fontSize="1.02rem"
+                  lineHeight={1.75}
+                  mt={2}
+                  sx={{
+                    display: "-webkit-box",
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                    transition: "all 0.3s ease",
+                  }}
+                >
+                  Integra a equipe Carollaine Damasceno Barros, advogada e
+                  contadora, especialista em Direito Público e Cível. Com
+                  atuação destacada na assessoria jurídica legislativa e
+                  consultoria técnica, contribui com análises precisas e
+                  fundamentadas, especialmente nas áreas que envolvem gestão
+                  pública e controle de legalidade. Na área previdenciária, o
+                  escritório conta com Luiz Fernando Novais Neves, advogado com
+                  atuação focada na garantia de direitos e benefícios junto aos
+                  órgãos competentes. O Direito Público também é representado
+                  por Anderson Fazendeiro, especialista na área, com experiência
+                  em demandas administrativas e judiciais envolvendo entes
+                  públicos. Compõe ainda a equipe Saiara Tavares Almeida,
+                  advogada especialista em Direito Público e Previdenciário,
+                  atuando com dedicação na defesa de direitos sociais e
+                  administrativos. Na área bancária e pública, destaca-se
+                  Andressa Fazendeiro, especialista em Direito Público e
+                  Bancário, com atuação estratégica em demandas contratuais e
+                  financeiras. Na área trabalhista e previdenciária, Abraão
+                  Lincoln Prates de Almeida, que atua na defesa dos direitos
+                  individuais e coletivos nas relações de trabalho e garantia de
+                  direitos e benefícios junto ao INSS. O escritório se consolida
+                  como referência regional pela atuação técnica, atendimento
+                  personalizado e compromisso com a justiça, oferecendo soluções
+                  jurídicas seguras, eficientes e alinhadas às necessidades de
+                  cada cliente.
+                </Typography>
+              </Box>
+
+              <Button
+                onClick={(e) => {
+                  const el = document.getElementById("expandable-text");
+                  if (el) {
+                    const isExpanded = el.style.webkitLineClamp === "unset";
+                    el.style.webkitLineClamp = isExpanded ? "3" : "unset";
+                    e.currentTarget.textContent = isExpanded
+                      ? "Ler mais"
+                      : "Ler menos";
+
+                    if (!isExpanded) {
+                      setTimeout(() => {
+                        el.scrollIntoView({
+                          behavior: "smooth",
+                          block: "nearest",
+                        });
+                      }, 100);
+                    }
+                  }
+                }}
+                sx={{ mt: 1, p: 0, textTransform: "none", fontWeight: 500 }}
+              >
+                Ler mais
+              </Button>
             </Grid>
 
             <Grid size={{ xs: 12, md: 6 }}>
               <Paper
                 sx={{
-                  borderRadius: 4,
+                  borderRadius: 2,
                   overflow: "hidden",
                   border: "1px solid",
                   borderColor: "divider",
                   boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
+                  position: "sticky",
+                  mt: { xs: 0, md: 20 },
                 }}
               >
                 <Box
@@ -158,7 +196,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
                   src="https://advbox.com.br/blog/wp-content/uploads/2021/11/area-juridica-profissionais.jpg"
                   sx={{
                     width: "100%",
-                    height: { xs: 220, md: 340 },
+                    height: { xs: 250, md: 340 },
                     objectFit: "cover",
                     display: "block",
                   }}

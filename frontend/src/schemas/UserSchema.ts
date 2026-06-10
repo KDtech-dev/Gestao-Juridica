@@ -12,7 +12,7 @@ const roleEnum = z.enum(["funcionario", "advogado", "admin"]);
 const enderecoSchema = z.object({
   logradouro:  z.string().min(1, "Logradouro é obrigatório").max(255),
   numero:      z.string().min(1, "Número é obrigatório").max(20),
-  complemento: z.string().max(100).optional(),
+  complemento: z.string().max(100).optional().nullable(),
   bairro:      z.string().min(1, "Bairro é obrigatório").max(100),
   cidade:      z.string().min(1, "Cidade é obrigatória").max(100),
   uf:          z.string().length(2, "UF deve ter 2 caracteres"),
@@ -20,22 +20,22 @@ const enderecoSchema = z.object({
 });
 
 const funcionarioSchema = z.object({
-  data_nascimento: z.string().optional(),
-  sexo:            sexoEnum.optional(),
-  celular:         z.string().max(20).optional(),
-  resumo_pessoal:  z.string().max(2000).optional(),
-  foto_perfil:     z.instanceof(File).optional(),
+  data_nascimento: z.string().optional().nullable(),
+  sexo:            sexoEnum.optional().nullable(),
+  celular:         z.string().max(20).optional().nullable(),
+  resumo_pessoal:  z.string().max(2000).optional().nullable(),
+  foto_perfil:     z.instanceof(File).optional().nullable(),
 });
 
 const advogadoSchema = z.object({
-  data_nascimento: z.string().optional(),
-  sexo:            sexoEnum.optional(),
-  celular:         z.string().max(20).optional(),
-  resumo_pessoal:  z.string().max(2000).optional(),
-  foto_perfil:     z.instanceof(File).optional(),
+  data_nascimento: z.string().optional().nullable(),
+  sexo:            sexoEnum.optional().nullable(),
+  celular:         z.string().max(20).optional().nullable(),
+  resumo_pessoal:  z.string().max(2000).optional().nullable(),
+  foto_perfil:     z.instanceof(File).optional().nullable(),
   oab_numero:      z.string().min(1, "Número da OAB é obrigatório").max(20),
   oab_uf:          z.string().length(2, "UF da OAB deve ter 2 caracteres"),
-  especialidade:   z.array(z.string()).optional(),
+  especialidade:   z.array(z.string()).optional().nullable(),
 });
 
 export const createUserSchema = z

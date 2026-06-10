@@ -16,6 +16,7 @@ class AuthController extends Controller
 
     public function login(AuthLoginRequest $request): JsonResponse
     {
+
         return ResponseService::success(
             $this->service->login($request->validated())
         );

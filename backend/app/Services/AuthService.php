@@ -1,23 +1,17 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService implements IAuthService
 {
     /**
-     *
-     *
      * @param array{email:string,password:string,cpf:string} $credentials
      */
-
     public function login(array $credentials): array
     {
         $identifier = $credentials['identifier'] ?? null;
@@ -29,10 +23,9 @@ class AuthService implements IAuthService
         }
 
         $field = filter_var($identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'cpf';
-
         $user = User::where($field, $identifier)->first();
 
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             throw ValidationException::withMessages([
                 'login' => 'Credenciais inválidas.',
             ]);
@@ -49,44 +42,44 @@ class AuthService implements IAuthService
         return [
             'token' => $token,
             'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
+                'id'    => $user->id,
+                'name'  => $user->name,
                 'email' => $user->email,
                 'roles' => $user->getRoleNames(),
             ],
         ];
     }
 
-    public function logout(): void
+    public function logout(string $token): void
     {
-        $user = request()->user();
-        if (!$user) {
+        $accessToken = PersonalAccessToken::findToken($token);
+
+        if (!$accessToken) {
             throw new AuthenticationException('Não autenticado');
         }
 
-        $user->currentAccessToken()->delete();
+        $accessToken->delete();
     }
 
     /**
-     * 
-     *
      * @return array{token:string,user:array{id:int,name:string,email:string}}
      */
-    public function refresh(): array
+    public function refresh(string $token): array
     {
-        $user = request()->user();
+        $accessToken = PersonalAccessToken::findToken($token);
 
-        if (!$user) {
+        if (!$accessToken) {
             throw new AuthenticationException('Não autenticado');
         }
 
-        $user->currentAccessToken()->delete();
+        $user = $accessToken->tokenable;
+        $accessToken->delete();
 
         $newToken = $user->createToken('api-token')->plainTextToken;
 
         return [
             'token' => $newToken,
-            'user' => $user->only(['id', 'name', 'email']),
+            'user'  => $user->only(['id', 'name', 'email']),
         ];
     }
 }

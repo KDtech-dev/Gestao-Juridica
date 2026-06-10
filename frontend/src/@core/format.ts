@@ -1,3 +1,6 @@
+import { RoleType } from "./types";
+
+
 export const clearNumber = (value = "") => {
   return value.replace(/\D+/g, "");
 };
@@ -46,7 +49,7 @@ export function formatCnpj(cnpj: string) {
     .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
     .replace(/\.(\d{3})(\d)/, ".$1/$2")
     .replace(/(\d{4})(\d)/, "$1-$2");
-} 
+}
 
 export function formatCpfCnpj(value: string) {
   const digits = clearNumber(value);

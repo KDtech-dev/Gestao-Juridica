@@ -81,10 +81,6 @@ export type ClienteType = {
   created_at: string;
 };
 
-export type EnderecoType = {
-  id: number;
-};
-
 export type RoleType = "funcionario" | "advogado" | "admin";
 
 export type SexoType = "masculino" | "feminino" | "outro" | "prefiro_nao_dizer";
@@ -134,4 +130,15 @@ export type CategoriaType = {
   id?: string;
   nome?: string;
   descricao?: string;
+};
+
+export type EnderecoType = {
+  id: number;
+  logradouro: string;
+  numero: string;
+  complemento: string | null;
+  bairro: string;
+  cidade: string;
+  uf: string;
+  cep: string;
 };
