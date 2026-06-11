@@ -8,7 +8,7 @@
 
   "auth": {
     "login": {
-      "brand": "Central Legal",
+      "brand": "Central Jurídica",
       "title": "Login",
       "subtitle": "Access your account to continue.",
       "email": "Email",
@@ -21,7 +21,7 @@
       "back": "Back to website",
       "heroTitle": "Legal management focused on productivity",
       "heroText": "Manage clients, cases, and appointments in one secure, modern interface.",
-      "rights": "© 2026 Central Legal. All rights reserved.",
+      "rights": "© 2026 Central Jurídica. All rights reserved.",
       "error": "Could not sign in."
     }
   },
