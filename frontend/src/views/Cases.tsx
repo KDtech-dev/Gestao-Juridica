@@ -45,32 +45,6 @@ export default function CasesView() {
   const handleOpenNewCaseModal = () => setCaseOpen(true);
   const handleCloseNewCaseModal = () => setCaseOpen(false);
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadCases() {
-      try {
-        setLoadingCases(true);
-        setCasesError(null);
-        const data = await listCases({ limit: 100, search });
-        if (active) setCases(data.items);
-      } catch (err) {
-        if (active) setCasesError(getApiErrorMessage(err));
-      } finally {
-        if (active) setLoadingCases(false);
-      }
-    }
-
-    const id = window.setTimeout(() => {
-      void loadCases();
-    }, 250);
-
-    return () => {
-      active = false;
-      window.clearTimeout(id);
-    };
-  }, [search]);
-
   const handleNewCaseSubmit = async (payload: CasePayload) => {
     try {
       setSubmittingCase(true);

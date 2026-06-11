@@ -4,7 +4,7 @@ const isGithubPages = process.env.NEXT_PUBLIC_DEPLOY_TARGET === "gh-pages";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: [
-    "192.168.21.116",
+    "localhost:3000",
   ],
   output: isGithubPages ? "export" : undefined,
   basePath: isGithubPages ? "/advocacia-gestao" : "",

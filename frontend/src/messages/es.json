@@ -218,6 +218,29 @@
           "birthDate": "Fecha de nacimiento"
         }
       },
+      "detail": {
+        "back": "Volver a clientes",
+        "loadingTitle": "Datos del cliente",
+        "fallbackTitle": "Cliente",
+        "subtitle": "Datos de registro y casos vinculados.",
+        "edit": "Editar cliente",
+        "infoTitle": "Información del cliente",
+        "infoSubtitle": "Datos utilizados en el registro y en el vínculo de casos.",
+        "fields": {
+          "createdAt": "Registrado en"
+        },
+        "cases": {
+          "title": "Casos",
+          "subtitle": "Procesos vinculados a este cliente.",
+          "count": "{count, plural, =0 {Ningún caso} one {# caso} other {# casos}}",
+          "empty": "Ningún caso encontrado para este cliente.",
+          "untitled": "Caso sin título",
+          "process": "Proceso",
+          "area": "Área",
+          "lawyer": "Abogado",
+          "open": "Abrir caso"
+        }
+      },
       "toast": {
         "created": "¡Cliente creado con éxito!",
         "updated": "¡Cliente actualizado con éxito!",
@@ -225,6 +248,7 @@
       },
       "errors": {
         "load": "Error al cargar clientes.",
+        "loadClient": "Error al cargar cliente.",
         "create": "Error al crear cliente.",
         "update": "Error al actualizar cliente.",
         "delete": "Error al eliminar cliente."

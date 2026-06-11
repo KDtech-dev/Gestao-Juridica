@@ -10,7 +10,7 @@ type ApiErrorResponse = {
 };
 
 export function getApiErrorMessage(error: unknown): string {
-  const fallbackMessage = "Erro na requisição";
+  const fallbackMessage = "Erro não identificado";
 
   if (error instanceof AxiosError) {
     const data = error.response?.data as ApiErrorResponse;

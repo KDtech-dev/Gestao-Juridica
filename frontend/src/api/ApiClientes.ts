@@ -16,10 +16,10 @@ const getClientes = async (
   return response.data;
 };
 
-const getClienteById = async (id: number): Promise<ClienteType> => {
+const getClienteById = async (id: number | string): Promise<ClienteType> => {
   const response = await getAxios().get(`/clientes/${id}`);
 
-  return response.data;
+  return response.data.data ?? response.data;
 };
 
 const postCliente = async (
@@ -31,7 +31,7 @@ const postCliente = async (
 };
 
 const updateCliente = async (
-  id: number,
+  id: number | string,
   data: UpdateClientePayload,
 ): Promise<ClienteType> => {
   const response = await getAxios().put(`/clientes/${id}`, data);
@@ -39,7 +39,7 @@ const updateCliente = async (
   return response.data.data;
 };
 
-const deleteCliente = async (id: number): Promise<void> => {
+const deleteCliente = async (id: number | string): Promise<void> => {
   await getAxios().delete(`/clientes/${id}`);
 };
 

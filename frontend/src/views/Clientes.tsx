@@ -26,6 +26,7 @@ import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import {
   getClientes,
   postCliente,
@@ -54,6 +55,7 @@ export default function ClientesView() {
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const theme = useTheme();
+  const router = useRouter();
 
   const loadClientes = useCallback(
     async (page = 1) => {
@@ -129,9 +131,7 @@ export default function ClientesView() {
   };
 
   const openView = (cliente: ClienteType) => {
-    setClienteSelecionado(cliente);
-    setDialogMode("view");
-    setDialogOpen(true);
+    router.push(`/clientes/${cliente.id}`);
   };
 
   const handleDialogClose = () => {

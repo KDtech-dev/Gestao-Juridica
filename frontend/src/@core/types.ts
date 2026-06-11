@@ -70,7 +70,7 @@ export type PaginatedResponseType<T> = {
 };
 
 export type ClienteType = {
-  id: number;
+  id: number | string;
   name: string;
   cpf_cnpj: string;
   email: string;
