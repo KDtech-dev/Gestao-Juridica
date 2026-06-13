@@ -41,6 +41,8 @@ import { formatCpfCnpj } from "@/@core/format";
 
 type DialogMode = "create" | "edit" | "view";
 
+const SEARCH_PAGE_SIZE = 10;
+
 export default function ClientesView() {
   const t = useTranslations("internal.clients");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -50,12 +52,15 @@ export default function ClientesView() {
     useState<ClienteType | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [searchPage, setSearchPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const theme = useTheme();
   const router = useRouter();
+
+  const isSearching = search.trim().length > 0;
 
   const loadClientes = useCallback(
     async (page = 1) => {
@@ -76,16 +81,55 @@ export default function ClientesView() {
     },
     [t],
   );
+
   useEffect(() => {
     loadClientes();
   }, [loadClientes]);
 
+  // Resetar página da busca sempre que o termo mudar
+  useEffect(() => {
+    setSearchPage(1);
+  }, [search]);
+
+  // --- Lógica de filtragem e paginação client-side para busca ---
   const clientesFiltrados = clientes.filter((c) =>
     [c.name, c.cpf_cnpj, c.email].some((field) =>
       field?.toLowerCase().includes(search.toLowerCase()),
     ),
   );
 
+  const searchLastPage = Math.max(
+    1,
+    Math.ceil(clientesFiltrados.length / SEARCH_PAGE_SIZE),
+  );
+  const searchStart = (searchPage - 1) * SEARCH_PAGE_SIZE;
+  const clientesPaginadosBusca = clientesFiltrados.slice(
+    searchStart,
+    searchStart + SEARCH_PAGE_SIZE,
+  );
+
+  // Lista que efetivamente aparece na tabela
+  const clientesExibidos = isSearching ? clientesPaginadosBusca : clientes;
+
+  // Totais exibidos no rodapé
+  const shownCount = isSearching
+    ? clientesPaginadosBusca.length
+    : clientes.length;
+  const totalCount = isSearching ? clientesFiltrados.length : total;
+
+  // Paginação ativa
+  const activePage = isSearching ? searchPage : currentPage;
+  const activeLastPage = isSearching ? searchLastPage : lastPage;
+
+  const handlePageChange = (page: number) => {
+    if (isSearching) {
+      setSearchPage(page);
+    } else {
+      loadClientes(page);
+    }
+  };
+
+  // --- Handlers ---
   const handleSubmit = async (data: CreateClientePayload) => {
     setSubmitting(true);
     try {
@@ -262,7 +306,7 @@ export default function ClientesView() {
               />
 
               <Chip
-                label={t("registeredCount", { count: total })}
+                label={t("registeredCount", { count: totalCount })}
                 size="small"
                 variant="outlined"
                 sx={{
@@ -277,44 +321,20 @@ export default function ClientesView() {
               <Table sx={{ minWidth: 760 }}>
                 <TableHead>
                   <TableRow sx={{ bgcolor: `${theme.palette.primary.main}08` }}>
-                    <TableCell
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                    <TableCell sx={{ fontWeight: 800, letterSpacing: "0.5px" }}>
                       {t("table.clientName")}
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                    <TableCell sx={{ fontWeight: 800, letterSpacing: "0.5px" }}>
                       {t("table.contactDetails")}
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                    <TableCell sx={{ fontWeight: 800, letterSpacing: "0.5px" }}>
                       {t("table.document")}
                     </TableCell>
-                    <TableCell
-                      sx={{
-                        fontWeight: 800,
-                        letterSpacing: "0.5px",
-                      }}
-                    >
+                    <TableCell sx={{ fontWeight: 800, letterSpacing: "0.5px" }}>
                       {t("table.birthDate")}
                     </TableCell>
                     <TableCell
-                      sx={{
-                        textAlign: "right",
-                        pr: 3,
-                        fontWeight: 800,
-                      }}
+                      sx={{ textAlign: "right", pr: 3, fontWeight: 800 }}
                     >
                       {t("table.actions")}
                     </TableCell>
@@ -334,7 +354,7 @@ export default function ClientesView() {
                       </TableRow>
                     ))}
 
-                  {!loading && clientesFiltrados.length === 0 && (
+                  {!loading && clientesExibidos.length === 0 && (
                     <TableRow>
                       <TableCell
                         colSpan={5}
@@ -349,30 +369,30 @@ export default function ClientesView() {
                           <Typography color="text.secondary" variant="h6">
                             {t("empty.title")}
                           </Typography>
-                          <Button
-                            variant="outlined"
-                            onClick={openCreate}
-                            startIcon={<Icon icon="mdi:plus" />}
-                            sx={{ borderRadius: "12px" }}
-                          >
-                            {t("empty.action")}
-                          </Button>
+                          {!isSearching && (
+                            <Button
+                              variant="outlined"
+                              onClick={openCreate}
+                              startIcon={<Icon icon="mdi:plus" />}
+                              sx={{ borderRadius: "12px" }}
+                            >
+                              {t("empty.action")}
+                            </Button>
+                          )}
                         </Stack>
                       </TableCell>
                     </TableRow>
                   )}
 
                   {!loading &&
-                    clientesFiltrados.map((cliente, index) => (
+                    clientesExibidos.map((cliente, index) => (
                       <TableRow
                         key={cliente.id}
                         sx={{
                           transition: "all 0.2s ease",
                           "&:hover": {
                             bgcolor: `${theme.palette.primary.main}08`,
-                            "& .action-buttons": {
-                              opacity: 1,
-                            },
+                            "& .action-buttons": { opacity: 1 },
                           },
                           animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
                         }}
@@ -414,10 +434,7 @@ export default function ClientesView() {
                         <TableCell>
                           <Typography
                             color="text.secondary"
-                            sx={{
-                              fontFamily: "monospace",
-                              fontSize: "0.9rem",
-                            }}
+                            sx={{ fontFamily: "monospace", fontSize: "0.9rem" }}
                           >
                             {formatCpfCnpj(cliente.cpf_cnpj || "-")}
                           </Typography>
@@ -497,16 +514,16 @@ export default function ClientesView() {
             >
               <Typography color="text.secondary" variant="body2">
                 {t("pagination.showing", {
-                  shown: clientes.length,
-                  total,
+                  shown: shownCount,
+                  total: totalCount,
                 })}
               </Typography>
 
               <Stack direction="row" spacing={1} alignItems="center">
                 <Button
                   variant="outlined"
-                  disabled={currentPage <= 1 || loading}
-                  onClick={() => loadClientes(currentPage - 1)}
+                  disabled={activePage <= 1 || loading}
+                  onClick={() => handlePageChange(activePage - 1)}
                   startIcon={<Icon icon="mdi:chevron-left" width={18} />}
                   sx={{
                     textTransform: "none",
@@ -526,21 +543,18 @@ export default function ClientesView() {
 
                 <Chip
                   label={t("pagination.page", {
-                    current: currentPage,
-                    total: lastPage,
+                    current: activePage,
+                    total: activeLastPage,
                   })}
                   color="primary"
                   variant="outlined"
-                  sx={{
-                    borderRadius: "10px",
-                    fontWeight: 600,
-                  }}
+                  sx={{ borderRadius: "10px", fontWeight: 600 }}
                 />
 
                 <Button
                   variant="outlined"
-                  disabled={currentPage >= lastPage || loading}
-                  onClick={() => loadClientes(currentPage + 1)}
+                  disabled={activePage >= activeLastPage || loading}
+                  onClick={() => handlePageChange(activePage + 1)}
                   endIcon={<Icon icon="mdi:chevron-right" width={18} />}
                   sx={{
                     textTransform: "none",
