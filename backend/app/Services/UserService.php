@@ -74,6 +74,7 @@ class UserService
                 'name'  => $dados['name'] ?? null,
                 'email' => $dados['email'] ?? null,
                 'cpf'   => $dados['cpf'] ?? null,
+                'cor_perfil' => $dados['cor_perfil'] ?? null,
             ]);
 
             if (!empty($dados['password'])) {

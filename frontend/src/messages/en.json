@@ -395,7 +395,8 @@
       },
       "sections": {
         "personalInfo": "Personal Information",
-        "professionalData": "Professional Data"
+        "professionalData": "Professional Data",
+        "address": "Adress"
       },
       "fields": {
         "fullName": "Full Name",
@@ -409,7 +410,17 @@
         "position": "Position/Role",
         "positionPlaceholder": "Position/Role",
         "specialties": "Specialties",
-        "specialtiesPlaceholder": "Select specialties"
+        "specialtiesPlaceholder": "Select specialties",
+        "cep": "ZIP Code",
+        "logradouro": "Street Address",
+        "logradouroPlaceholder": "Street, Avenue",
+        "numero": "Number",
+        "bairro": "Neighborhood",
+        "bairrPlaceholder": "Neighborhood",
+        "cidade": "City",
+        "cidadePlaceholder": "City",
+        "complemento": "Complement",
+        "complementoPlaceholder": "Apartment, Suite"
       },
       "practiceAreas": {
         "civil": "Civil Law",

@@ -399,7 +399,8 @@
       },
       "sections": {
         "personalInfo": "Informações Pessoais",
-        "professionalData": "Dados Profissionais"
+        "professionalData": "Dados Profissionais",
+        "address": "Endereço"
       },
       "fields": {
         "fullName": "Nome Completo",
@@ -413,7 +414,17 @@
         "position": "Cargo/Função",
         "positionPlaceholder": "Cargo/Função",
         "specialties": "Especialidades",
-        "specialtiesPlaceholder": "Selecione as especialidades"
+        "specialtiesPlaceholder": "Selecione as especialidades",
+        "cep": "CEP",
+        "logradouro": "Logradouro",
+        "logradouroPlaceholder": "Rua, Avenida",
+        "numero": "Número",
+        "bairro": "Bairro",
+        "bairrPlaceholder": "Bairro",
+        "cidade": "Cidade",
+        "cidadePlaceholder": "Cidade",
+        "complemento": "Complemento",
+        "complementoPlaceholder": "Apto, Sala..."
       },
       "practiceAreas": {
         "civil": "Direito Civil",

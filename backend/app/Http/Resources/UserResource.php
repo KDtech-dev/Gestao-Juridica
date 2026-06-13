@@ -20,16 +20,20 @@ class UserResource extends JsonResource
             'email'             => $this->email,
             'cpf'               => $this->cpf,
             'email_verified_at' => $this->email_verified_at,
-            'roles'             => $this->getRoleNames(), 
-            'funcionario'       => $this->whenLoaded('funcionario', fn() =>
+            'roles'             => $this->getRoleNames(),
+            'funcionario'       => $this->whenLoaded(
+                'funcionario',
+                fn() =>
                 $this->funcionario ? new FuncionarioResource($this->funcionario) : null
             ),
-            'advogado'          => $this->whenLoaded('advogado', fn() =>
+            'advogado'          => $this->whenLoaded(
+                'advogado',
+                fn() =>
                 $this->advogado ? new AdvogadoResource($this->advogado) : null
             ),
+            'cor_perfil' => $this->cor_perfil,
             'created_at'        => $this->created_at,
             'updated_at'        => $this->updated_at,
         ];
     }
-
 }

@@ -32,6 +32,8 @@ import { CardDadosProfissionais } from "@/components/CardDadosProfissionais";
 import { CardDadosPessoais } from "@/components/CardDadosPessoais";
 import { useRouter } from "next/navigation";
 import { toast, formatToastErrorMessage } from "@/utils/toast";
+import { CardEndereco } from "@/components/CardEndereco";
+import PickColor from "@/components/PickColor";
 
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
@@ -97,6 +99,7 @@ export default function ProfileView() {
       endereco: null,
       tema: themeMode,
       idioma: language,
+      cor_perfil: null,
     },
     resolver: zodResolver(profileFormSchema),
   });
@@ -149,6 +152,7 @@ export default function ProfileView() {
 
           tema: themeModeRef.current,
           idioma: languageRef.current,
+          cor_perfil: fetchedUser.cor_perfil ?? null,
         });
       })
       .catch(() => {});
@@ -183,6 +187,11 @@ export default function ProfileView() {
     const file = event.target.files?.[0];
     if (file) setAvatar(URL.createObjectURL(file));
   };
+  const corPerfil = form.watch("cor_perfil");
+  const bannerBackground =
+    corPerfil && corPerfil !== "#9e9e9e"
+      ? `linear-gradient(90deg, ${corPerfil} 0%, ${corPerfil}99 100%)`
+      : "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)";
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
@@ -207,12 +216,13 @@ export default function ProfileView() {
                     ml: { xs: "-16px", md: "-32px" },
                     mr: { xs: "-16px", md: "-32px" },
                     height: 150,
-                    background:
-                      "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)",
+                    background: bannerBackground,
                     display: "flex",
                     alignItems: "flex-end",
+                    justifyContent: "space-between",
                     px: 2.5,
                     pb: 3,
+                    pr: 5,
                   }}
                 >
                   <Grid spacing={6} ml={5}>
@@ -220,6 +230,7 @@ export default function ProfileView() {
                       {roleLabel}
                     </Typography>
                   </Grid>
+                  <PickColor name="cor_perfil" defaultColor="#9e9e9e" />
                 </Box>
 
                 <Box sx={{ px: 2.5, pb: 3 }}>
@@ -301,6 +312,10 @@ export default function ProfileView() {
                         isAdvogado={isAdvogado}
                         isFuncionario={isFuncionario}
                         profileUser={profileUser}
+                      />
+                      <CardEndereco
+                        isAdvogado={isAdvogado}
+                        isFuncionario={isFuncionario}
                       />
                     </Box>
 

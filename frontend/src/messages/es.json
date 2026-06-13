@@ -399,13 +399,14 @@
       },
       "sections": {
         "personalInfo": "Información personal",
-        "professionalData": "Datos profesionales"
+        "professionalData": "Datos profesionales",
+        "address": "Dirección"
       },
       "fields": {
-        "fullName": "Nombre completo",
+        "fullName": "Nombre Completo",
         "namePlaceholder": "Nombre",
-        "professionalEmail": "E-mail profesional",
-        "emailPlaceholder": "E-mail",
+        "professionalEmail": "Correo Profesional",
+        "emailPlaceholder": "Correo Electrónico",
         "phone": "Teléfono",
         "cpf": "CPF",
         "oabNumber": "Número OAB",
@@ -413,7 +414,17 @@
         "position": "Cargo/Función",
         "positionPlaceholder": "Cargo/Función",
         "specialties": "Especialidades",
-        "specialtiesPlaceholder": "Selecciona las especialidades"
+        "specialtiesPlaceholder": "Seleccione las especialidades",
+        "cep": "Código Postal",
+        "logradouro": "Dirección",
+        "logradouroPlaceholder": "Calle, Avenida",
+        "numero": "Número",
+        "bairro": "Barrio",
+        "bairrPlaceholder": "Barrio",
+        "cidade": "Ciudad",
+        "cidadePlaceholder": "Ciudad",
+        "complemento": "Complemento",
+        "complementoPlaceholder": "Apartamento, Oficina..."
       },
       "practiceAreas": {
         "civil": "Derecho Civil",

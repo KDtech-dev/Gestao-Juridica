@@ -28,6 +28,7 @@ class User extends Authenticatable
         'cpf',
         'api_token',
         'password',
+        'cor_perfil',
     ];
 
     protected $hidden = [

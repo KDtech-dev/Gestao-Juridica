@@ -76,7 +76,12 @@ export const updateUserSchema = z.object({
   password: z.string().min(8).optional(),
   password_confirmation: z.string().optional(),
   role: roleEnum.optional(),
-  endereco: enderecoSchema.optional().nullable(),
+  cor_perfil: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/)
+    .optional()
+    .nullable(),
+  endereco: enderecoSchema.partial().optional().nullable(), 
   funcionario: funcionarioSchema.partial().optional(),
   advogado: advogadoSchema.partial().optional(),
 });

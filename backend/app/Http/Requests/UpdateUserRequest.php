@@ -30,6 +30,7 @@ class UpdateUserRequest extends FormRequest
             'cpf'      => ['sometimes', 'string', 'size:11', "unique:users,cpf,{$userId}"],
             'password' => ['sometimes', 'confirmed', Password::min(8)->letters()->numbers()],
             'role'     => ['sometimes', 'string', 'in:funcionario,advogado,admin'],
+            'cor_perfil' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
 
             'endereco'                  => ['sometimes', 'nullable', 'array'],
             'endereco.logradouro'       => ['required_with:endereco', 'string', 'max:255'],

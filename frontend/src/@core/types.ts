@@ -122,6 +122,7 @@ export type UserType = {
   roles: RoleType[];
   funcionario: FuncionarioType | null;
   advogado: AdvogadoType | null;
+  cor_perfil: string | null;
   created_at: string;
   updated_at: string;
 };
