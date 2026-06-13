@@ -407,8 +407,8 @@
         "cpf": "CPF",
         "oabNumber": "OAB Number",
         "oabNumberPlaceholder": "OAB Number",
-        "position": "Position/Role",
-        "positionPlaceholder": "Position/Role",
+        "personalSummary": "Professional Summary",
+        "personalSummaryPlaceholder": "Professional Summary",
         "specialties": "Specialties",
         "specialtiesPlaceholder": "Select specialties",
         "cep": "ZIP Code",
@@ -420,7 +420,15 @@
         "cidade": "City",
         "cidadePlaceholder": "City",
         "complemento": "Complement",
-        "complementoPlaceholder": "Apartment, Suite"
+        "complementoPlaceholder": "Apartment, Suite...",
+        "birthDate": "Date of Birth",
+        "gender": "Gender",
+        "genderOptions": {
+          "masculino": "Male",
+          "feminino": "Female",
+          "outro": "Other",
+          "prefiro_nao_dizer": "Prefer not to say"
+        }
       },
       "practiceAreas": {
         "civil": "Civil Law",

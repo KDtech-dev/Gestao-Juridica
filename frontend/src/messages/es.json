@@ -411,8 +411,8 @@
         "cpf": "CPF",
         "oabNumber": "Número OAB",
         "oabNumberPlaceholder": "Número OAB",
-        "position": "Cargo/Función",
-        "positionPlaceholder": "Cargo/Función",
+        "personalSummary": "Resumen Profesional",
+        "personalSummaryPlaceholder": "Resumen Profesional",
         "specialties": "Especialidades",
         "specialtiesPlaceholder": "Seleccione las especialidades",
         "cep": "Código Postal",
@@ -424,7 +424,15 @@
         "cidade": "Ciudad",
         "cidadePlaceholder": "Ciudad",
         "complemento": "Complemento",
-        "complementoPlaceholder": "Apartamento, Oficina..."
+        "complementoPlaceholder": "Apartamento, Oficina...",
+        "birthDate": "Fecha de Nacimiento",
+        "gender": "Sexo",
+        "genderOptions": {
+          "masculino": "Masculino",
+          "feminino": "Femenino",
+          "outro": "Otro",
+          "prefiro_nao_dizer": "Prefiero no decirlo"
+        }
       },
       "practiceAreas": {
         "civil": "Derecho Civil",

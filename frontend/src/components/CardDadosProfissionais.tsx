@@ -19,14 +19,11 @@ import { number } from "zod";
 
 type Props = {
   isAdvogado: boolean;
-  isFuncionario: boolean;
   profileUser: UserType | null;
 };
 
 export function CardDadosProfissionais({
   isAdvogado,
-  isFuncionario,
-  profileUser,
 }: Props) {
   const t = useTranslations("internal.profile");
   const { control } = useFormContext<ProfileFormSchemaType>();
@@ -50,7 +47,7 @@ export function CardDadosProfissionais({
       ativo = false;
     };
   }, [isAdvogado]);
-  if (!isAdvogado && !isFuncionario) return null;
+  if (!isAdvogado) return null;
 
   return (
     <Box sx={{ display: "grid", gap: 1.4 }}>
@@ -137,14 +134,6 @@ export function CardDadosProfissionais({
             />
           </FormControl>
         </>
-      )}
-
-      {isFuncionario && profileUser?.funcionario && (
-        <InputBasico
-          field="funcionario.resumo_pessoal"
-          label={t("fields.position")}
-          placeholder={t("fields.positionPlaceholder")}
-        />
       )}
     </Box>
   );

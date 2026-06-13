@@ -10,9 +10,10 @@ import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 
 type Props = {
   isAdvogado: boolean;
+  isFuncionario: boolean;
 };
 
-export function CardDadosPessoais({ isAdvogado }: Props) {
+export function CardDadosPessoais({ isAdvogado, isFuncionario }: Props) {
   const t = useTranslations("internal.profile");
   const { control } = useFormContext<ProfileFormSchemaType>();
 
@@ -36,7 +37,6 @@ export function CardDadosPessoais({ isAdvogado }: Props) {
           placeholder={t("fields.namePlaceholder")}
           sx={{ mt: "1.5em" }}
         />
-
         <InputBasico
           field="email"
           label={t("fields.professionalEmail")}
@@ -76,6 +76,65 @@ export function CardDadosPessoais({ isAdvogado }: Props) {
             />
           )}
         />
+
+        {/* Data de nascimento — advogado ou funcionário */}
+        {(isAdvogado || isFuncionario) && (
+          <InputBasico
+            field={
+              isAdvogado
+                ? "advogado.data_nascimento"
+                : "funcionario.data_nascimento"
+            }
+            label={t("fields.birthDate")}
+            type="date"
+          />
+        )}
+
+        {/* Sexo — advogado ou funcionário */}
+        {(isAdvogado || isFuncionario) && (
+          <Controller
+            name={isAdvogado ? "advogado.sexo" : "funcionario.sexo"}
+            control={control}
+            render={({ field }) => (
+              <TextField
+                select
+                fullWidth
+                label={t("fields.gender")}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value || null)}
+                InputLabelProps={{ shrink: true }}
+                SelectProps={{ native: true }}
+              >
+                <option value="">—</option>
+                <option value="masculino">
+                  {t("fields.genderOptions.masculino")}
+                </option>
+                <option value="feminino">
+                  {t("fields.genderOptions.feminino")}
+                </option>
+                <option value="outro">{t("fields.genderOptions.outro")}</option>
+                <option value="prefiro_nao_dizer">
+                  {t("fields.genderOptions.prefiro_nao_dizer")}
+                </option>
+              </TextField>
+            )}
+          />
+        )}
+        {(isAdvogado || isFuncionario) && (
+          <Box sx={{ gridColumn: { md: "1 / -1" } }}>
+            <InputBasico
+              field={
+                isAdvogado
+                  ? "advogado.resumo_pessoal"
+                  : "funcionario.resumo_pessoal"
+              }
+              label={t("fields.personalSummary")}
+              placeholder={t("fields.personalSummaryPlaceholder")}
+              multiline
+              rows={3}
+            />
+          </Box>
+        )}
       </Box>
     </Box>
   );

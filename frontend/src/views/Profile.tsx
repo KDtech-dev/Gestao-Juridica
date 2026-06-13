@@ -307,10 +307,12 @@ export default function ProfileView() {
                     }}
                   >
                     <Box>
-                      <CardDadosPessoais isAdvogado={isAdvogado} />
-                      <CardDadosProfissionais
+                      <CardDadosPessoais
                         isAdvogado={isAdvogado}
                         isFuncionario={isFuncionario}
+                      />
+                      <CardDadosProfissionais
+                        isAdvogado={isAdvogado}
                         profileUser={profileUser}
                       />
                       <CardEndereco
