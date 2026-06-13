@@ -17,12 +17,7 @@ class Advogado extends Model
         'foto_perfil',
         'oab_numero',
         'oab_uf',
-        'especialidade',
         'endereco_id',
-    ];
-
-     protected $casts = [
-        'especialidade' => 'array',
     ];
 
     public function user()
@@ -33,5 +28,10 @@ class Advogado extends Model
     public function endereco()
     {
         return $this->belongsTo(Endereco::class);
+    }
+
+    public function categorias()
+    {
+        return $this->belongsToMany(Categoria::class, 'advogado_categoria');
     }
 }

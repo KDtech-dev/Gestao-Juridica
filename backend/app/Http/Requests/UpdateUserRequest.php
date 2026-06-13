@@ -9,12 +9,19 @@ class UpdateUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->hasRole('admin') ?? false;
-    }
+        $userAlvo = $this->route('user');
+        $userLogado = $this->user();
 
+        if (!$userLogado) return false;
+
+        if ($userLogado->hasRole('admin')) return true;
+
+        return $userLogado->id === $userAlvo->id;
+    }
     public function rules(): array
     {
-        $userId    = $this->route('user');
+        $user = $this->route('user');
+        $userId = $user?->id;
         $advogadoId = optional($this->route('user'))->advogado?->id;
 
         return [
@@ -48,8 +55,8 @@ class UpdateUserRequest extends FormRequest
             'advogado.foto_perfil'          => ['sometimes', 'nullable', 'string', 'max:500'],
             'advogado.oab_numero'           => ['sometimes', 'string', 'max:20', "unique:advogados,oab_numero,{$advogadoId}"],
             'advogado.oab_uf'               => ['sometimes', 'string', 'size:2'],
-            'advogado.especialidade'        => ['sometimes', 'nullable', 'array'],
-            'advogado.especialidade.*'      => ['string', 'max:255'],
+            'advogado.categorias'   => ['sometimes', 'nullable', 'array'],
+            'advogado.categorias.*' => ['integer', 'exists:categorias,id'],
         ];
     }
 
@@ -59,7 +66,7 @@ class UpdateUserRequest extends FormRequest
             'role.in'          => 'A role deve ser: funcionario, advogado ou admin.',
             'cpf.size'         => 'O CPF deve ter exatamente 11 dígitos (sem pontuação).',
             'endereco.uf.size' => 'A UF do endereço deve ter 2 caracteres.',
-            'endereco.cep.size'=> 'O CEP deve ter exatamente 8 dígitos (sem hífen).',
+            'endereco.cep.size' => 'O CEP deve ter exatamente 8 dígitos (sem hífen).',
         ];
     }
 }

@@ -107,7 +107,7 @@ export type AdvogadoType = {
   foto_perfil_url: string | null;
   oab_numero: string;
   oab_uf: string;
-  especialidade: string | null;
+  categorias: CategoriaType[] | null;
   endereco: EnderecoType | null;
   created_at: string;
   updated_at: string;
@@ -127,8 +127,8 @@ export type UserType = {
 };
 
 export type CategoriaType = {
-  id?: string;
-  nome?: string;
+  id: string;
+  nome: string;
   descricao?: string;
 };
 

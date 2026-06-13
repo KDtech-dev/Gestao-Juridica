@@ -1,6 +1,5 @@
 import TextField, { TextFieldProps } from "@mui/material/TextField";
-import React, { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 export type InputProps = {
   field: string;
@@ -8,28 +7,27 @@ export type InputProps = {
 } & TextFieldProps;
 
 const InputBasico = ({ field, maxLength, ...props }: InputProps) => {
-  const {
-    register,
-    setValue,
-    formState: { errors },
-  } = useFormContext();
-
-  useEffect(() => {
-    if (props.defaultValue) setValue(field, props.defaultValue);
-  }, [props.defaultValue, setValue, field]);
+  const { control } = useFormContext();
 
   return (
-    <TextField
-      fullWidth
-      {...register(field)}
-      {...props}
-      error={!!errors[field]}
-      helperText={errors[field]?.message?.toString()}
-      inputProps={{
-        ...props.inputProps,
-        maxLength,
-      }}
-      InputLabelProps={{ shrink: true }}
+    <Controller
+      name={field}
+      control={control}
+      render={({ field: controllerField, fieldState }) => (
+        <TextField
+          fullWidth
+          {...props}
+          {...controllerField}
+          value={controllerField.value ?? ""}
+          error={!!fieldState.error}
+          helperText={fieldState.error?.message?.toString()}
+          inputProps={{
+            ...props.inputProps,
+            maxLength,
+          }}
+          InputLabelProps={{ shrink: true }}
+        />
+      )}
     />
   );
 };

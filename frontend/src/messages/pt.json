@@ -393,6 +393,10 @@
       "actions": {
         "saveChanges": "Salvar alterações"
       },
+      "toast": {
+        "saveSuccess": "Perfil atualizado com sucesso!",
+        "saveError": "Erro ao salvar o perfil. Tente novamente."
+      },
       "sections": {
         "personalInfo": "Informações Pessoais",
         "professionalData": "Dados Profissionais"

@@ -462,7 +462,9 @@
         },
         "toast": {
           "reviewFields": "Review the highlighted fields.",
-          "success": "Password updated successfully."
+          "success": "Password updated successfully.",
+          "saveSuccess": "Profile updated successfully!",
+          "saveError": "Error saving profile. Please try again."
         },
         "errors": {
           "update": "Could not update the password.",

@@ -12,7 +12,7 @@ const getUsers = async (page = 1): Promise<PaginatedResponseType<UserType>> => {
 
 const getUserById = async (id: string): Promise<UserType> => {
   const response = await getAxios().get(`/users/${id}`);
-  return response.data;
+  return response.data.data;
 };
 
 const postUser = async (data: CreateUserPayload): Promise<UserType> => {

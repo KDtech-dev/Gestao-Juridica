@@ -35,7 +35,7 @@ import {
   buscarPublicacaoClient,
   criarPublicacaoClient,
 } from "@/api/publicacoes/apiPublicacoesClient";
-import { listarCategoriasClient } from "@/api/categorias/apiCategoriasClient";
+import { listarCategoriasClient } from "@/api/apiCategoriasClient";
 import { getApiErrorMessage } from "@/configs/ApiError";
 import type { CategoriaOption } from "@/api/categorias/types";
 import type {

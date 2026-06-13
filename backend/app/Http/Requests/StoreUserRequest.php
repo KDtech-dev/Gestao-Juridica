@@ -45,8 +45,8 @@ class StoreUserRequest extends FormRequest
             'advogado.foto_perfil'              => ['nullable', 'string', 'max:500'],
             'advogado.oab_numero'               => ['required_if:role,advogado', 'string', 'max:20', 'unique:advogados,oab_numero'],
             'advogado.oab_uf'                   => ['required_if:role,advogado', 'string', 'size:2'],
-            'advogado.especialidade'            => ['nullable', 'array'],
-            'advogado.especialidade.*'          => ['string', 'max:255'],
+            'advogado.categorias'   => ['nullable', 'array'],
+            'advogado.categorias.*' => ['integer', 'exists:categorias,id'],
         ];
     }
 
