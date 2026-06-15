@@ -1,11 +1,6 @@
-import { CategoriaType } from "@/@core/types";
+import { CategoriaType, ExistingFile } from "@/@core/types";
 
-export type PublicacaoAnexo = {
-  id: string;
-  nome: string;
-  url: string;
-  viewUrl: string;
-};
+export type PublicacaoAnexo = ExistingFile
 
 export type PublicacaoItem = {
   id: string;

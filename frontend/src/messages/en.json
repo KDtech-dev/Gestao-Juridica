@@ -254,6 +254,112 @@
         "delete": "Error removing client."
       }
     },
+    "cases": {
+      "title": "Cases",
+      "subtitle": "Manage the firm's legal cases and proceedings.",
+      "newCase": "New Case",
+      "searchPlaceholder": "Search by title, case number, or practice area...",
+      "registeredCount": "{count, plural, =0 {No cases registered} one {# case registered} other {# cases registered}}",
+      "confirmDelete": "Do you want to delete the case \"{title}\"?",
+      "table": {
+        "case": "Case",
+        "status": "Status",
+        "area": "Area",
+        "openingDate": "Opening Date",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No cases found",
+        "action": "Add first case"
+      },
+      "status": {
+        "aberto": "Open",
+        "em_andamento": "In Progress",
+        "encerrado": "Closed",
+        "arquivado": "Archived"
+      },
+      "pagination": {
+        "showing": "Showing {shown} of {total} record(s)",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {current} of {total}"
+      },
+      "toast": {
+        "created": "Case created successfully!",
+        "updated": "Case updated successfully!",
+        "deleted": "Case deleted successfully!"
+      },
+      "errors": {
+        "load": "Error loading cases.",
+        "create": "Error creating case.",
+        "update": "Error updating case.",
+        "delete": "Error deleting case."
+      },
+      "form": {
+        "title": {
+          "create": "New Case",
+          "edit": "Edit Case",
+          "view": "Case Details"
+        },
+        "sections": {
+          "data": "Case Information",
+          "clients": "Linked Clients",
+          "attachments": "Attachments"
+        },
+        "fields": {
+          "title": "Title",
+          "processNumber": "Case Number",
+          "status": "Status",
+          "openingDate": "Opening Date",
+          "closingDate": "Closing Date",
+          "categories": "Practice Areas",
+          "loadingCategories": "Loading practice areas...",
+          "noCategories": "No practice areas registered",
+          "description": "Description",
+          "selectClient": "Client",
+          "selectClientPlaceholder": "Search client by name or document...",
+          "attachments": "Case Attachments",
+          "attachmentsHelper": "PDF, DOC, DOCX, JPG, or PNG."
+        },
+        "status": {
+          "aberto": "Open",
+          "em_andamento": "In Progress",
+          "encerrado": "Closed",
+          "arquivado": "Archived"
+        },
+        "papel": {
+          "autor": "Plaintiff",
+          "réu": "Defendant",
+          "interveniente": "Intervening Party",
+          "testemunha": "Witness"
+        },
+        "table": {
+          "client": "Client",
+          "document": "Document",
+          "role": "Role",
+          "actions": "Actions"
+        },
+        "clients": {
+          "empty": "No clients linked to this case."
+        },
+        "actions": {
+          "addClient": "Add Client",
+          "cancel": "Cancel",
+          "create": "Create Case",
+          "save": "Save Changes",
+          "saving": "Saving..."
+        },
+        "toast": {
+          "created": "Case created successfully!",
+          "updated": "Case updated successfully!"
+        },
+        "errors": {
+          "load": "Error loading case.",
+          "create": "Error creating case.",
+          "update": "Error updating case."
+        }
+      }
+    },
     "users": {
       "title": "Users",
       "subtitle": "Manage system administrators, lawyers, and staff.",

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PublicacaoController;
 use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\NotificacaoController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\CasoController;
 
 Route::prefix('auth')->group(function () {
     Route::post('login',          [AuthController::class, 'login']);
@@ -75,5 +76,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{user}',        [UserController::class, 'show']);
         Route::put('/{user}',        [UserController::class, 'update']);
         Route::delete('/{user}',     [UserController::class, 'destroy']);
+    });
+
+    Route::prefix('casos')->group(function () {
+        Route::get('/',            [CasoController::class, 'index']);
+        Route::post('/',           [CasoController::class, 'store']);
+        Route::get('/{caso}',      [CasoController::class, 'show']);
+        Route::put('/{caso}',      [CasoController::class, 'update']);
+        Route::delete('/{caso}',   [CasoController::class, 'destroy']);
+
+        Route::prefix('{caso}/clientes')->group(function () {
+            Route::post('/',           [CasoController::class, 'attachClientes']);
+            Route::put('/',            [CasoController::class, 'syncClientes']);
+            Route::delete('/{cliente}', [CasoController::class, 'detachCliente']);
+        });
     });
 });

@@ -15,43 +15,40 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { ClienteType } from "@/@core/types";
+import { ClienteType, CasoType, StatusCaso } from "@/@core/types";
 import { formatCpfCnpj } from "@/@core/format";
 import { getClienteById, updateCliente } from "@/api/ApiClientes";
+import { getCasos } from "@/api/apiCasos";
 import { CreateClientePayload } from "@/schemas/ClienteSchema";
 import DialogCliente from "@/components/DialogCliente";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { Icon } from "@/components/AppIcon";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { getApiErrorMessage } from "@/configs/ApiError";
-import { LegalCase, listCases } from "@/services/caseService";
 import { toast } from "@/utils/toast";
 
 type Props = {
-  clienteId: string;
+  mode: "create" | "edit" | "view";
+  clienteId?: string;
+};
+
+const STATUS_COLOR: Record<
+  StatusCaso,
+  "default" | "primary" | "success" | "warning" | "error"
+> = {
+  aberto: "primary",
+  em_andamento: "warning",
+  encerrado: "success",
+  arquivado: "default",
 };
 
 function detailValue(value?: string | null) {
   return value && value.trim() ? value : "-";
 }
 
-function statusColor(status: string) {
-  const normalized = status.toLowerCase();
-
-  if (normalized.includes("closed") || normalized.includes("finalizado")) {
-    return "default";
-  }
-
-  if (normalized.includes("pending") || normalized.includes("pendente")) {
-    return "warning";
-  }
-
-  return "success";
-}
-
-export default function ClienteDetalhesView({ clienteId }: Props) {
+export default function ClienteFormView({ clienteId }: Props) {
   const [cliente, setCliente] = useState<ClienteType | null>(null);
-  const [cases, setCases] = useState<LegalCase[]>([]);
+  const [casos, setCasos] = useState<CasoType[]>([]);
   const [loading, setLoading] = useState(true);
   const [editOpen, setEditOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -68,12 +65,16 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
     setLoading(true);
 
     try {
-      const [clienteResponse, casesResponse] = await Promise.all([
+      const [clienteResponse, casosResponse] = await Promise.all([
         getClienteById(clienteId),
-        listCases({ clientId: clienteId, limit: 100 }),
+        getCasos({ page: 1, per_page: 999 }),
       ]);
 
       setCliente(clienteResponse);
+      const casoDoCliente = casosResponse.data.filter((caso) =>
+        caso.clientes?.some((c) => String(c.id) === String(clienteId)),
+      );
+      setCasos(casoDoCliente);
     } catch {
       toast.error(t("errors.loadClient"));
     } finally {
@@ -87,9 +88,7 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
 
   const handleEditSubmit = async (data: CreateClientePayload) => {
     if (!cliente) return;
-
     setSubmitting(true);
-
     try {
       const updated = await updateCliente(cliente.id, data);
       setCliente(updated);
@@ -103,12 +102,7 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
   };
 
   return (
-    <Box
-      sx={{
-        bgcolor: "background.default",
-        minHeight: "100vh",
-      }}
-    >
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <SidebarDashboard activeKey="clientes" />
 
       <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
@@ -132,7 +126,10 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
                     px: 0,
                     color: "text.secondary",
                     textTransform: "none",
-                    "&:hover": { bgcolor: "transparent", color: "primary.main" },
+                    "&:hover": {
+                      bgcolor: "transparent",
+                      color: "primary.main",
+                    },
                   }}
                 >
                   {t("detail.back")}
@@ -147,21 +144,7 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
                 </Typography>
               </Box>
 
-              {cliente && (
-                <Button
-                  variant="outlined"
-                  onClick={() => setEditOpen(true)}
-                  startIcon={<Icon icon="mdi:pencil-outline" width={18} />}
-                  sx={{
-                    borderRadius: "12px",
-                    borderColor: "divider",
-                    textTransform: "none",
-                    minHeight: 42,
-                  }}
-                >
-                  {t("detail.edit")}
-                </Button>
-              )}
+              
             </Stack>
 
             <Paper
@@ -210,8 +193,8 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
                 }}
               >
                 {loading ? (
-                  [...Array(6)].map((_, index) => (
-                    <Skeleton key={index} variant="rounded" height={72} />
+                  [...Array(6)].map((_, i) => (
+                    <Skeleton key={i} variant="rounded" height={72} />
                   ))
                 ) : (
                   <>
@@ -273,9 +256,8 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
                     {t("detail.cases.subtitle")}
                   </Typography>
                 </Box>
-
                 <Chip
-                  label={t("detail.cases.count", { count: cases.length })}
+                  label={t("detail.cases.count", { count: casos.length })}
                   variant="outlined"
                   size="small"
                   sx={{ borderRadius: "10px" }}
@@ -284,31 +266,84 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
 
               <Stack divider={<Divider />} sx={{ minHeight: 92 }}>
                 {loading ? (
-                  [...Array(3)].map((_, index) => (
-                    <Box key={index} sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
+                  [...Array(3)].map((_, i) => (
+                    <Box key={i} sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
                       <Skeleton width="45%" />
                       <Skeleton width="70%" />
                     </Box>
                   ))
-                ) : cases.length === 0 ? (
+                ) : casos.length === 0 ? (
                   <Box sx={{ px: { xs: 2, sm: 3 }, py: 3 }}>
                     <Typography color="text.secondary">
                       {t("detail.cases.empty")}
                     </Typography>
                   </Box>
                 ) : (
-                  cases.map((caseItem) => (
-                    <CaseListItem
-                      key={caseItem.id}
-                      caseItem={caseItem}
-                      labels={{
-                        untitled: t("detail.cases.untitled"),
-                        process: t("detail.cases.process"),
-                        area: t("detail.cases.area"),
-                        lawyer: t("detail.cases.lawyer"),
-                        open: t("detail.cases.open"),
+                  casos.map((caso) => (
+                    <Box
+                      key={caso.id}
+                      sx={{
+                        px: { xs: 2, sm: 3 },
+                        py: 2,
+                        display: "grid",
+                        gridTemplateColumns: { xs: "1fr", md: "1fr auto" },
+                        gap: 1.5,
+                        alignItems: "center",
+                        "&:hover": { bgcolor: "action.hover" },
                       }}
-                    />
+                    >
+                      <Stack spacing={0.8}>
+                        <Stack
+                          direction={{ xs: "column", sm: "row" }}
+                          alignItems={{ xs: "flex-start", sm: "center" }}
+                          spacing={1}
+                        >
+                          <Typography color="text.primary" fontWeight={800}>
+                            {caso.titulo || t("detail.cases.untitled")}
+                          </Typography>
+                          <Chip
+                            label={caso.status}
+                            color={STATUS_COLOR[caso.status]}
+                            size="small"
+                            sx={{ borderRadius: "10px" }}
+                          />
+                        </Stack>
+
+                        <Stack
+                          direction={{ xs: "column", sm: "row" }}
+                          spacing={{ xs: 0.4, sm: 2 }}
+                          color="text.secondary"
+                        >
+                          <Typography fontSize="0.86rem">
+                            {t("detail.cases.process")}:{" "}
+                            {detailValue(caso.numero_processo)}
+                          </Typography>
+                          <Typography fontSize="0.86rem">
+                            {t("detail.cases.area")}:{" "}
+                            {caso.categorias?.map((c) => c.nome).join(", ") ||
+                              "-"}
+                          </Typography>
+                          <Typography fontSize="0.86rem">
+                            {t("detail.cases.lawyer")}:{" "}
+                            {detailValue(caso.advogado?.name)}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+
+                      <Button
+                        component={Link}
+                        href={`/casos/${caso.id}`}
+                        variant="outlined"
+                        endIcon={<Icon icon="mdi:arrow-right" width={18} />}
+                        sx={{
+                          borderRadius: "12px",
+                          justifySelf: { xs: "stretch", md: "end" },
+                          textTransform: "none",
+                        }}
+                      >
+                        {t("detail.cases.open")}
+                      </Button>
+                    </Box>
                   ))
                 )}
               </Stack>
@@ -329,7 +364,13 @@ export default function ClienteDetalhesView({ clienteId }: Props) {
   );
 }
 
-function DetailItem({ label, value }: { label: string; value?: string | null }) {
+function DetailItem({
+  label,
+  value,
+}: {
+  label: string;
+  value?: string | null;
+}) {
   return (
     <Box
       sx={{
@@ -350,92 +391,8 @@ function DetailItem({ label, value }: { label: string; value?: string | null }) 
         {label}
       </Typography>
       <Typography color="text.primary" fontWeight={600} sx={{ mt: 0.4 }}>
-        {detailValue(value)}
+        {value && value.trim() ? value : "-"}
       </Typography>
-    </Box>
-  );
-}
-
-function CaseListItem({
-  caseItem,
-  labels,
-}: {
-  caseItem: LegalCase;
-  labels: {
-    untitled: string;
-    process: string;
-    area: string;
-    lawyer: string;
-    open: string;
-  };
-}) {
-  const href =
-    caseItem.clientSlug && caseItem.caseSlug
-      ? `/acompanhamento/${caseItem.clientSlug}/${caseItem.caseSlug}`
-      : "/cases";
-
-  return (
-    <Box
-      sx={{
-        px: { xs: 2, sm: 3 },
-        py: 2,
-        display: "grid",
-        gridTemplateColumns: { xs: "1fr", md: "1fr auto" },
-        gap: 1.5,
-        alignItems: "center",
-        "&:hover": {
-          bgcolor: "action.hover",
-        },
-      }}
-    >
-      <Stack spacing={0.8}>
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          alignItems={{ xs: "flex-start", sm: "center" }}
-          spacing={1}
-        >
-          <Typography color="text.primary" fontWeight={800}>
-            {caseItem.title || labels.untitled}
-          </Typography>
-          <Chip
-            label={caseItem.status}
-            color={statusColor(caseItem.status)}
-            size="small"
-            sx={{ borderRadius: "10px", alignSelf: { xs: "flex-start", sm: "center" } }}
-          />
-        </Stack>
-
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 0.4, sm: 2 }}
-          color="text.secondary"
-        >
-          <Typography fontSize="0.86rem">
-            {labels.process}: {detailValue(caseItem.processNumber)}
-          </Typography>
-          <Typography fontSize="0.86rem">
-            {labels.area}: {detailValue(caseItem.practiceArea)}
-          </Typography>
-          <Typography fontSize="0.86rem">
-            {labels.lawyer}: {detailValue(caseItem.lawyerName)}
-          </Typography>
-        </Stack>
-      </Stack>
-
-      <Button
-        component={Link}
-        href={href}
-        variant="outlined"
-        endIcon={<Icon icon="mdi:arrow-right" width={18} />}
-        sx={{
-          borderRadius: "12px",
-          borderColor: "divider",
-          justifySelf: { xs: "stretch", md: "end" },
-          textTransform: "none",
-        }}
-      >
-        {labels.open}
-      </Button>
     </Box>
   );
 }

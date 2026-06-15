@@ -254,6 +254,112 @@
         "delete": "Error al eliminar cliente."
       }
     },
+    "cases": {
+      "title": "Casos",
+      "subtitle": "Gestiona los procesos y casos del despacho.",
+      "newCase": "Nuevo caso",
+      "searchPlaceholder": "Buscar por título, número de proceso o área...",
+      "registeredCount": "{count, plural, =0 {Ningún caso registrado} one {# caso registrado} other {# casos registrados}}",
+      "confirmDelete": "¿Deseas eliminar el caso \"{title}\"?",
+      "table": {
+        "case": "Caso",
+        "status": "Estado",
+        "area": "Área",
+        "openingDate": "Fecha de apertura",
+        "actions": "Acciones"
+      },
+      "empty": {
+        "title": "No se encontraron casos",
+        "action": "Agregar primer caso"
+      },
+      "status": {
+        "aberto": "Abierto",
+        "em_andamento": "En progreso",
+        "encerrado": "Cerrado",
+        "arquivado": "Archivado"
+      },
+      "pagination": {
+        "showing": "Mostrando {shown} de {total} registro(s)",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página {current} de {total}"
+      },
+      "toast": {
+        "created": "¡Caso creado con éxito!",
+        "updated": "¡Caso actualizado con éxito!",
+        "deleted": "¡Caso eliminado con éxito!"
+      },
+      "errors": {
+        "load": "Error al cargar los casos.",
+        "create": "Error al crear el caso.",
+        "update": "Error al actualizar el caso.",
+        "delete": "Error al eliminar el caso."
+      },
+      "form": {
+        "title": {
+          "create": "Nuevo caso",
+          "edit": "Editar caso",
+          "view": "Datos del caso"
+        },
+        "sections": {
+          "data": "Datos del caso",
+          "clients": "Clientes vinculados",
+          "attachments": "Adjuntos"
+        },
+        "fields": {
+          "title": "Título",
+          "processNumber": "Número de proceso",
+          "status": "Estado",
+          "openingDate": "Fecha de apertura",
+          "closingDate": "Fecha de cierre",
+          "categories": "Áreas de actuación",
+          "loadingCategories": "Cargando áreas...",
+          "noCategories": "Ninguna área registrada",
+          "description": "Descripción",
+          "selectClient": "Cliente",
+          "selectClientPlaceholder": "Buscar cliente por nombre o documento...",
+          "attachments": "Adjuntos del caso",
+          "attachmentsHelper": "PDF, DOC, DOCX, JPG o PNG."
+        },
+        "status": {
+          "aberto": "Abierto",
+          "em_andamento": "En progreso",
+          "encerrado": "Cerrado",
+          "arquivado": "Archivado"
+        },
+        "papel": {
+          "autor": "Demandante",
+          "réu": "Demandado",
+          "interveniente": "Interviniente",
+          "testemunha": "Testigo"
+        },
+        "table": {
+          "client": "Cliente",
+          "document": "Documento",
+          "role": "Rol",
+          "actions": "Acciones"
+        },
+        "clients": {
+          "empty": "Ningún cliente vinculado a este caso."
+        },
+        "actions": {
+          "addClient": "Agregar cliente",
+          "cancel": "Cancelar",
+          "create": "Crear caso",
+          "save": "Guardar cambios",
+          "saving": "Guardando..."
+        },
+        "toast": {
+          "created": "¡Caso creado con éxito!",
+          "updated": "¡Caso actualizado con éxito!"
+        },
+        "errors": {
+          "load": "Error al cargar el caso.",
+          "create": "Error al crear el caso.",
+          "update": "Error al actualizar el caso."
+        }
+      }
+    },
     "users": {
       "title": "Usuarios",
       "subtitle": "Gestiona administradores, abogados y funcionarios del sistema.",

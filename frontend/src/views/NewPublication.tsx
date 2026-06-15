@@ -18,6 +18,7 @@ import { StepDadosBasicos } from "@/components/publications/StepDadosBasicos";
 import { StepRevisao } from "@/components/publications/StepRevisao";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 import {
+  CategoriaType,
   PublicacaoFormData,
   PublicationErrors,
 } from "@/@core/types";
@@ -35,14 +36,13 @@ import {
   buscarPublicacaoClient,
   criarPublicacaoClient,
 } from "@/api/publicacoes/apiPublicacoesClient";
-import { listarCategoriasClient } from "@/api/apiCategoriasClient";
 import { getApiErrorMessage } from "@/configs/ApiError";
-import type { CategoriaOption } from "@/api/categorias/types";
 import type {
   PublicacaoItem,
   PublicacaoPayload,
 } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { getCategorias } from "@/api/ApiCategorias";
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
@@ -151,7 +151,11 @@ function buildPublicacaoRequestBody(form: PublicacaoFormData) {
   const anexos = getFormFiles(form.anexos);
   const anexosRemover = form.anexosRemovidos.filter(Boolean);
 
-  if (anexos.length === 0 && anexosRemover.length === 0 && !isFile(form.bannerImage)) {
+  if (
+    anexos.length === 0 &&
+    anexosRemover.length === 0 &&
+    !isFile(form.bannerImage)
+  ) {
     return payload;
   }
 
@@ -230,7 +234,7 @@ export default function NewPublicationView({ editSlug }: Props) {
     getFormSnapshot(initialResolvedForm),
   );
   const [errors, setErrors] = useState<PublicationErrors>({});
-  const [categorias, setCategorias] = useState<CategoriaOption[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [categoriasLoading, setCategoriasLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
@@ -277,7 +281,7 @@ export default function NewPublicationView({ editSlug }: Props) {
   useEffect(() => {
     let active = true;
 
-    listarCategoriasClient()
+    getCategorias()
       .then((items) => {
         if (active) {
           setCategorias(items);

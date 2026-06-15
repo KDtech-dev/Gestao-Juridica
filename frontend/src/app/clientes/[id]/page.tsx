@@ -1,11 +1,10 @@
-import ClienteDetalhesView from "@/views/ClienteDetalhes";
+import ClienteFormView from "@/views/Clientes/ClienteFormView";
 
-export default async function ClienteDetalhesPage({
-  params,
-}: {
+type Props = {
   params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+};
 
-  return <ClienteDetalhesView clienteId={id} />;
+export default async function VisualizarClientePage({ params }: Props) {
+  const { id } = await params;
+  return <ClienteFormView mode="view" clienteId={id} />;
 }

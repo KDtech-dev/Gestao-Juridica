@@ -1,4 +1,4 @@
-import AcompanhamentoView from "@/views/Acompanhamento";
+import AcompanhamentoView from "@/views/Casos/Acompanhamento";
 import { cases, findCase } from "@/data/cases";
 
 export function generateStaticParams() {

@@ -1,8 +1,7 @@
 "use client";
 
 import { Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
-import type { CategoriaOption } from "@/api/categorias/types";
-import { PublicacaoFormData, PublicationErrors } from "../../@core/types";
+import { CategoriaType, PublicacaoFormData, PublicationErrors } from "../../@core/types";
 import { HtmlTextEditor } from "./HtmlTextEditor";
 import InputSingleFile from "../InputSingleFile";
 import InputImage from "../InputImage";
@@ -14,7 +13,7 @@ type Props = {
   isEn?: boolean;
   data: PublicacaoFormData;
   errors: PublicationErrors;
-  categorias: CategoriaOption[];
+  categorias: CategoriaType[];
   categoriasLoading?: boolean;
   onChange: <K extends keyof PublicacaoFormData>(
     field: K,

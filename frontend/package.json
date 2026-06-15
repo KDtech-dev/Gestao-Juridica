@@ -21,6 +21,7 @@
     "@iconify/react": "^6.0.2",
     "@mui/material": "^7.3.9",
     "@mui/system": "^7.3.9",
+    "@mui/x-data-grid": "^9.5.0",
     "@mui/x-date-pickers": "^9.2.0",
     "axios": "^1.13.6",
     "date-fns": "^4.1.0",

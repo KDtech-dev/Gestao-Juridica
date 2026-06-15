@@ -33,6 +33,12 @@ const mainItems: NavItem[] = [
     href: "/agenda",
   },
   {
+    key: "publicacoes",
+    label: "",
+    icon: "mdi:newspaper-variant-outline",
+    href: "/publicacoes?modo=interna",
+  },
+  {
     key: "clientes",
     label: "",
     icon: "mdi:account-group-outline",
@@ -40,16 +46,10 @@ const mainItems: NavItem[] = [
   },
 
   {
-    key: "publicacoes",
-    label: "",
-    icon: "mdi:newspaper-variant-outline",
-    href: "/publicacoes?modo=interna",
-  },
-  {
     key: "cases",
     label: "",
     icon: "mdi:briefcase-outline",
-    href: "/cases",
+    href: "/casos",
   },
 ];
 

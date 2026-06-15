@@ -143,3 +143,36 @@ export type EnderecoType = {
   uf: string;
   cep: string;
 };
+
+export type StatusCaso = "aberto" | "em_andamento" | "encerrado" | "arquivado";
+
+export type PapelClienteCaso = "autor" | "réu" | "interveniente" | "testemunha";
+
+export type CasoClienteType = ClienteType & {
+  papel: PapelClienteCaso | null;
+};
+
+export type CasoType = {
+  id: string;
+  numero_processo: string | null;
+  titulo: string;
+  descricao: string | null;
+  status: StatusCaso;
+  categorias?: CategoriaType[];
+  data_abertura: string;
+  data_encerramento: string | null;
+  advogado_id: string | null;
+  advogado?: { id: string; name: string } | null;
+  clientes?: CasoClienteType[];
+  created_at: string;
+  updated_at: string;
+  anexos?: CasoAnexoType[];
+};
+
+export type CasoAnexoType = ExistingFile
+
+export type ExistingFile = {
+  id:       string;
+  nome:     string;
+  viewUrl?: string;
+}

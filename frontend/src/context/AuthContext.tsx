@@ -1,5 +1,4 @@
 "use client";
-
 import {
   createContext,
   useCallback,
@@ -29,6 +28,7 @@ type AuthContextValue = {
   setAuth: (userData: AuthUser, token: string, remember?: boolean) => void;
   logout: () => void;
   redirectByRole: () => void;
+  refreshUser: (partial: Partial<AuthUser>) => void; 
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -41,9 +41,7 @@ function safeParseUser(raw: string | null): AuthUser | null {
     const roles = Array.isArray(parsed.roles)
       ? parsed.roles.map(String)
       : parsed.roles && typeof parsed.roles === "object"
-        ? Object.values(parsed.roles as unknown as Record<string, unknown>).map(
-            String,
-          )
+        ? Object.values(parsed.roles as unknown as Record<string, unknown>).map(String)
         : [];
     if (
       !parsed.id ||
@@ -55,7 +53,6 @@ function safeParseUser(raw: string | null): AuthUser | null {
       parsed.idioma === "pt" || parsed.idioma === "en" || parsed.idioma === "es"
         ? parsed.idioma
         : null;
-
     return {
       id: parsed.id,
       name: parsed.name,
@@ -80,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.getItem(auth.userDataKeyName) ??
         sessionStorage.getItem(auth.userDataKeyName),
     );
-
     const nextUser = token && storedUser ? storedUser : null;
     queueMicrotask(() => {
       setUser(nextUser);
@@ -99,8 +95,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     (userData: AuthUser, token: string, remember = true) => {
       if (typeof window !== "undefined") {
         const targetStorage = remember ? localStorage : sessionStorage;
-        const otherStorage = remember ? sessionStorage : localStorage;
-
+        const otherStorage  = remember ? sessionStorage : localStorage;
         authStorage.set(token, remember);
         targetStorage.setItem(auth.userDataKeyName, JSON.stringify(userData));
         otherStorage.removeItem(auth.userDataKeyName);
@@ -117,10 +112,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem(auth.userDataKeyName);
       sessionStorage.removeItem(auth.userDataKeyName);
     }
-
     setUser(null);
     setLoading(false);
-
     router.replace("/");
   }, [router]);
 
@@ -130,8 +123,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.replace(route);
   }, [router, user]);
 
-  const value = useMemo<AuthContextValue>(() => {
-    return {
+  const refreshUser = useCallback((partial: Partial<AuthUser>) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+
+      const updated = { ...prev, ...partial };
+
+      if (typeof window !== "undefined") {
+        const serialized = JSON.stringify(updated);
+        if (localStorage.getItem(auth.userDataKeyName)) {
+          localStorage.setItem(auth.userDataKeyName, serialized);
+        } else {
+          sessionStorage.setItem(auth.userDataKeyName, serialized);
+        }
+      }
+
+      return updated;
+    });
+  }, []);
+
+  const value = useMemo<AuthContextValue>(
+    () => ({
       user,
       loading,
       isAuthenticated,
@@ -139,16 +151,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuth,
       logout,
       redirectByRole,
-    };
-  }, [
-    user,
-    loading,
-    isAuthenticated,
-    hasRole,
-    setAuth,
-    logout,
-    redirectByRole,
-  ]);
+      refreshUser,
+    }),
+    [user, loading, isAuthenticated, hasRole, setAuth, logout, redirectByRole, refreshUser],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             CompromissoSeeder::class,
             NotificacaoSeeder::class,
             ClienteSeeder::class,
+            CasoSeeder::class,
         ]);
     }
 }

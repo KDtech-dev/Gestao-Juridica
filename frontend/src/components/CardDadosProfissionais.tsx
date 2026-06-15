@@ -15,7 +15,6 @@ import InputBasico from "@/components/InputBasico";
 import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 import type { CategoriaType, UserType } from "@/@core/types";
 import { getCategorias } from "@/api/ApiCategorias";
-import { number } from "zod";
 
 type Props = {
   isAdvogado: boolean;
