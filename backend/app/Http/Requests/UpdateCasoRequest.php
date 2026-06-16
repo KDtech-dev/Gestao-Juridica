@@ -15,7 +15,7 @@ class UpdateCasoRequest extends FormRequest
     {
         return [
             'titulo'            => 'sometimes|required|string|max:255',
-            'numero_processo'   => 'nullable|string|unique:casos,numero_processo,' . $this->caso,
+            'numero_processo' => 'nullable|string|unique:casos,numero_processo,' . $this->caso->id,
             'descricao'         => 'nullable|string',
             'status'            => 'nullable|in:aberto,em_andamento,encerrado,arquivado',
             'data_abertura'     => 'sometimes|required|date',

@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/utils/toast";
 import { CasoType, StatusCaso } from "@/@core/types";
 import { deleteCaso, getCasos } from "@/api/apiCasos";
+import { formatNumeroProcesso } from "@/@core/format";
 
 const STATUS_COLOR: Record<
   StatusCaso,
@@ -108,7 +109,9 @@ export default function CasosView() {
             color="text.secondary"
             sx={{ fontFamily: "monospace" }}
           >
-            {row.numero_processo || "-"}
+            {row.numero_processo
+              ? formatNumeroProcesso(row.numero_processo)
+              : "-"}
           </Typography>
         </Stack>
       ),

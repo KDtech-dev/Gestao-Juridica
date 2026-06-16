@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Autocomplete,
   Box,
   Button,
-  Chip,
   CircularProgress,
   Container,
   IconButton,
@@ -31,7 +30,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { toast } from "@/utils/toast";
-import { formatCpfCnpj } from "@/@core/format";
+import { formatCpfCnpj, formatNumeroProcesso } from "@/@core/format";
 import { createCasoSchema, CreateCasoPayload } from "@/schemas/CasoSchema";
 import {
   CasoAnexoType,
@@ -94,6 +93,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
   const [loadingClientes, setLoadingClientes] = useState(true);
 
   const [clientesSelecionados, setClientesSelecionados] = useState<ClienteSelecionado[]>([]);
+  const [clientesIniciais, setClientesIniciais] = useState<ClienteSelecionado[]>([]);
   const [clienteParaAdicionar, setClienteParaAdicionar] = useState<ClienteType | null>(null);
   const [papelParaAdicionar, setPapelParaAdicionar] = useState<PapelClienteCaso>("autor");
 
@@ -114,7 +114,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
     },
   });
 
-  const { handleSubmit, reset, control } = methods;
+  const { handleSubmit, reset, formState: { isDirty } } = methods;
 
   useEffect(() => {
     let ativo = true;
@@ -165,7 +165,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
         if (!ativo) return;
 
         reset({
-          numero_processo: caso.numero_processo ?? "",
+          numero_processo: formatNumeroProcesso(caso.numero_processo ?? ""),
           titulo: caso.titulo ?? "",
           descricao: caso.descricao ?? "",
           status: caso.status ?? "aberto",
@@ -174,13 +174,13 @@ export default function CasoFormView({ mode, casoId }: Props) {
           data_encerramento: caso.data_encerramento ?? "",
         });
 
-        setClientesSelecionados(
-          (caso.clientes ?? []).map((cliente) => ({
-            cliente,
-            papel: cliente.papel ?? null,
-          })),
-        );
+        const clientes = (caso.clientes ?? []).map((cliente) => ({
+          cliente,
+          papel: (cliente.papel ?? null) as PapelClienteCaso | null,
+        }));
 
+        setClientesSelecionados(clientes);
+        setClientesIniciais(clientes);
         setAnexosExistentes(caso.anexos ?? []);
       })
       .catch(() => {
@@ -194,6 +194,24 @@ export default function CasoFormView({ mode, casoId }: Props) {
       ativo = false;
     };
   }, [isCreate, casoId, reset, t]);
+
+  const hasClientesChanged = useMemo(() => {
+    if (clientesSelecionados.length !== clientesIniciais.length) return true;
+    return clientesSelecionados.some((s, i) => {
+      const inicial = clientesIniciais[i];
+      return (
+        !inicial ||
+        s.cliente.id !== inicial.cliente.id ||
+        s.papel !== inicial.papel
+      );
+    });
+  }, [clientesSelecionados, clientesIniciais]);
+
+  const hasChanges =
+    isDirty ||
+    hasClientesChanged ||
+    anexosNovos.length > 0 ||
+    anexosRemovidos.length > 0;
 
   const clientesParaAutocomplete = clientesDisponiveis.filter(
     (cliente) => !clientesSelecionados.some((s) => s.cliente.id === cliente.id),
@@ -260,8 +278,8 @@ export default function CasoFormView({ mode, casoId }: Props) {
       }
 
       toast.success(isCreate ? t("toast.created") : t("toast.updated"));
-      router.push("/casos");
-    } catch (err) {
+      router.push(`/casos/${caso.id}`);
+    } catch {
       toast.error(isCreate ? t("errors.create") : t("errors.update"));
     } finally {
       setSaving(false);
@@ -304,7 +322,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
             <Typography
               variant="h4"
               fontWeight={800}
-              sx={{ color: "primary.main" }}
+              sx={{ color: "text.primary" }}
             >
               {titleMap[mode]}
             </Typography>
@@ -345,10 +363,27 @@ export default function CasoFormView({ mode, casoId }: Props) {
                     />
                   </Box>
 
-                  <InputBasico
-                    field="numero_processo"
-                    label={t("fields.processNumber")}
-                    disabled={isView}
+                  <Controller
+                    name="numero_processo"
+                    control={methods.control}
+                    render={({ field, fieldState }) => (
+                      <TextField
+                        {...field}
+                        value={
+                          isView
+                            ? formatNumeroProcesso(field.value ?? "")
+                            : field.value ?? ""
+                        }
+                        label={t("fields.processNumber")}
+                        disabled={isView}
+                        error={!!fieldState.error}
+                        helperText={fieldState.error?.message}
+                        inputProps={{ maxLength: 25 }}
+                        onChange={(e) =>
+                          field.onChange(formatNumeroProcesso(e.target.value))
+                        }
+                      />
+                    )}
                   />
 
                   <InputBasico
@@ -616,7 +651,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   </Button>
                   <Button
                     variant="contained"
-                    disabled={saving}
+                    disabled={saving || (!isCreate && !hasChanges)}
                     onClick={() => handleSubmit(onSubmitForm)()}
                   >
                     {saving

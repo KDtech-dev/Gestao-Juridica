@@ -1,5 +1,3 @@
-import { RoleType } from "./types";
-
 
 export const clearNumber = (value = "") => {
   return value.replace(/\D+/g, "");
@@ -79,4 +77,29 @@ export function formatCpfCnpj(value: string) {
     .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
     .replace(/\.(\d{3})(\d)/, ".$1/$2")
     .replace(/(\d{4})(\d)/, "$1-$2");
+}
+
+
+export function formatNumeroProcesso(value: string) {
+  const digits = clearNumber(value).slice(0, 20);
+
+  let result = digits;
+
+  if (digits.length > 7) {
+    result = `${digits.slice(0, 7)}-${digits.slice(7)}`;
+  }
+  if (digits.length > 9) {
+    result = `${digits.slice(0, 7)}-${digits.slice(7, 9)}.${digits.slice(9)}`;
+  }
+  if (digits.length > 13) {
+    result = `${digits.slice(0, 7)}-${digits.slice(7, 9)}.${digits.slice(9, 13)}.${digits.slice(13)}`;
+  }
+  if (digits.length > 14) {
+    result = `${digits.slice(0, 7)}-${digits.slice(7, 9)}.${digits.slice(9, 13)}.${digits.slice(13, 14)}.${digits.slice(14)}`;
+  }
+  if (digits.length > 16) {
+    result = `${digits.slice(0, 7)}-${digits.slice(7, 9)}.${digits.slice(9, 13)}.${digits.slice(13, 14)}.${digits.slice(14, 16)}.${digits.slice(16)}`;
+  }
+
+  return result;
 }
