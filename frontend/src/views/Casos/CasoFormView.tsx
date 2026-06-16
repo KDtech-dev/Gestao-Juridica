@@ -278,7 +278,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
       }
 
       toast.success(isCreate ? t("toast.created") : t("toast.updated"));
-      router.push(`/casos/${caso.id}`);
+      router.push(`/casos`);
     } catch {
       toast.error(isCreate ? t("errors.create") : t("errors.update"));
     } finally {

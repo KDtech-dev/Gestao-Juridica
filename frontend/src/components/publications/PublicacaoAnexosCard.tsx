@@ -59,7 +59,7 @@ export function PublicacaoAnexosCard({
                   <Box>
                     <Typography
                       component={Link}
-                      href={anexo.viewUrl || anexo.url}
+                      href={anexo.viewUrl as string}
                       target="_blank"
                       rel="noopener noreferrer"
                       color="text.primary"
@@ -74,11 +74,12 @@ export function PublicacaoAnexosCard({
                     >
                       {anexo.nome}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t("publicationDocument")}
-                    </Typography>
                   </Box>
                 </Stack>
+
+                <Typography variant="caption" color="text.secondary">
+                  {t("publicationDocument")}
+                </Typography>
               </Stack>
               {index < publicacao.anexos.length - 1 && (
                 <Divider sx={{ mt: 1.5 }} />

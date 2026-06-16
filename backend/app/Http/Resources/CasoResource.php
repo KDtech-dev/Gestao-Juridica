@@ -44,9 +44,9 @@ class CasoResource extends JsonResource
                 'anexos',
                 fn() =>
                 $this->anexos->map(fn($anexo) => [
-                    'id'   => $anexo->uuid,
-                    'nome' => $anexo->nome_arquivo,
-                    'url'  => $anexo->arquivo
+                    'id'      => $anexo->uuid,
+                    'nome'    => $anexo->nome_arquivo,
+                    'viewUrl' => $anexo->arquivo
                         ? asset('storage/' . $anexo->arquivo)
                         : null,
                 ])
