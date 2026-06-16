@@ -6,7 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCasoRequest extends FormRequest
 {
-    public function authorize(): bool { return true; }
+    public function authorize(): bool
+    {
+        return true;
+    }
 
     public function rules(): array
     {
@@ -19,7 +22,7 @@ class UpdateCasoRequest extends FormRequest
             'data_encerramento' => 'nullable|date|after_or_equal:data_abertura',
             'advogado_id'       => 'nullable|uuid|exists:users,id',
             'categorias'        => 'nullable|array',
-            'categorias.*'      => 'uuid|exists:categorias,id',
+            'categorias.*' => 'integer|exists:categorias,id',
         ];
     }
 }

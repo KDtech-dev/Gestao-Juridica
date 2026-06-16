@@ -13,12 +13,17 @@ export const createCasoSchema = z.object({
   data_abertura: z.string().min(1, "Data de abertura é obrigatória"),
   data_encerramento: z.string().optional().nullable(),
   advogado_id: z.string().uuid().optional().nullable(),
-  categorias: z.array(z.string().uuid()).optional(),
+  categorias: z
+    .array(z.union([z.string(), z.number()]))
+    .optional()
+    .nullable(),
   clientes: z.array(casoClientePayloadSchema).optional(),
 });
 
 export const updateCasoSchema = createCasoSchema.partial().extend({
-  status: z.enum(["aberto", "em_andamento", "encerrado", "arquivado"]).optional(),
+  status: z
+    .enum(["aberto", "em_andamento", "encerrado", "arquivado"])
+    .optional(),
 });
 
 export const syncClientesCasoSchema = z.object({

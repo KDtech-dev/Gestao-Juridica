@@ -7,29 +7,30 @@ import {
 } from "@/schemas/CasoSchema";
 
 export type GetCasosParams = {
-  page?:         number;
-  per_page?:     number;
-  search?:       string;
-  status?:       string;
+  page?: number;
+  per_page?: number;
+  search?: string;
+  status?: string;
   categoria_id?: string;
-  advogado_id?:  string;
+  advogado_id?: string;
 };
 
 const getCasos = async (
   params: GetCasosParams = {},
 ): Promise<PaginatedResponseType<CasoType>> => {
-  const response = await getAxios().get("/casos", { params: { page: 1, ...params } });
+  const response = await getAxios().get("/casos", {
+    params: { page: 1, ...params },
+  });
   return response.data;
 };
 
 const getCasoById = async (id: string): Promise<CasoType> => {
   const response = await getAxios().get(`/casos/${id}`);
-  return response.data.data ?? response.data;
+  return response.data;
 };
-
 const postCaso = async (data: CreateCasoPayload): Promise<CasoType> => {
   const response = await getAxios().post("/casos", data);
-  return response.data.data;
+  return response.data; 
 };
 
 const updateCaso = async (
@@ -37,7 +38,7 @@ const updateCaso = async (
   data: UpdateCasoPayload,
 ): Promise<CasoType> => {
   const response = await getAxios().put(`/casos/${id}`, data);
-  return response.data.data;
+  return response.data;
 };
 
 const deleteCaso = async (id: string): Promise<void> => {
@@ -57,7 +58,7 @@ const syncClientesCaso = async (
   data: SyncClientesCasoPayload,
 ): Promise<CasoType> => {
   const response = await getAxios().put(`/casos/${casoId}/clientes`, data);
-  return response.data.data;
+  return response.data;
 };
 
 const detachClienteCaso = async (

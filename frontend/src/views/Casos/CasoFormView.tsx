@@ -23,7 +23,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useForm, FormProvider } from "react-hook-form";
+import { useForm, FormProvider, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -90,18 +90,12 @@ export default function CasoFormView({ mode, casoId }: Props) {
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
-  const [clientesDisponiveis, setClientesDisponiveis] = useState<ClienteType[]>(
-    [],
-  );
+  const [clientesDisponiveis, setClientesDisponiveis] = useState<ClienteType[]>([]);
   const [loadingClientes, setLoadingClientes] = useState(true);
 
-  const [clientesSelecionados, setClientesSelecionados] = useState<
-    ClienteSelecionado[]
-  >([]);
-  const [clienteParaAdicionar, setClienteParaAdicionar] =
-    useState<ClienteType | null>(null);
-  const [papelParaAdicionar, setPapelParaAdicionar] =
-    useState<PapelClienteCaso>("autor");
+  const [clientesSelecionados, setClientesSelecionados] = useState<ClienteSelecionado[]>([]);
+  const [clienteParaAdicionar, setClienteParaAdicionar] = useState<ClienteType | null>(null);
+  const [papelParaAdicionar, setPapelParaAdicionar] = useState<PapelClienteCaso>("autor");
 
   const [anexosNovos, setAnexosNovos] = useState<File[]>([]);
   const [anexosExistentes, setAnexosExistentes] = useState<CasoAnexoType[]>([]);
@@ -120,7 +114,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
     },
   });
 
-  const { handleSubmit, reset } = methods;
+  const { handleSubmit, reset, control } = methods;
 
   useEffect(() => {
     let ativo = true;
@@ -221,10 +215,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
     );
   };
 
-  const handlePapelChange = (
-    clienteId: string | number,
-    papel: PapelClienteCaso,
-  ) => {
+  const handlePapelChange = (clienteId: string | number, papel: PapelClienteCaso) => {
     setClientesSelecionados((prev) =>
       prev.map((s) => (s.cliente.id === clienteId ? { ...s, papel } : s)),
     );
@@ -255,7 +246,6 @@ export default function CasoFormView({ mode, casoId }: Props) {
         caso = await postCaso(payload);
       } else {
         caso = await updateCaso(casoId!, payload);
-
         caso = await syncClientesCaso(caso.id, {
           clientes: payload.clientes ?? [],
         });
@@ -271,7 +261,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
 
       toast.success(isCreate ? t("toast.created") : t("toast.updated"));
       router.push("/casos");
-    } catch {
+    } catch (err) {
       toast.error(isCreate ? t("errors.create") : t("errors.update"));
     } finally {
       setSaving(false);
@@ -311,7 +301,11 @@ export default function CasoFormView({ mode, casoId }: Props) {
             <IconButton onClick={() => router.push("/casos")}>
               <Icon icon="mdi:arrow-left" width={22} />
             </IconButton>
-            <Typography variant="h4" fontWeight={800} sx={{ color: "primary.main" }}>
+            <Typography
+              variant="h4"
+              fontWeight={800}
+              sx={{ color: "primary.main" }}
+            >
               {titleMap[mode]}
             </Typography>
           </Stack>
@@ -386,49 +380,58 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   />
 
                   <Box sx={{ gridColumn: "1 / -1" }}>
-                    <InputBasico
-                      field="categorias"
-                      label={t("fields.categories")}
-                      select
-                      disabled={isView || loadingCategorias}
-                      SelectProps={{
-                        multiple: true,
-                        renderValue: (selected) => (
-                          <Box
-                            sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
-                          >
-                            {(selected as string[]).map((id) => {
-                              const categoria = categorias.find(
-                                (c) => c.id === id,
-                              );
-                              return (
-                                <Chip
-                                  key={id}
-                                  label={categoria?.nome ?? id}
-                                  size="small"
-                                />
-                              );
-                            })}
-                          </Box>
-                        ),
+                    <Controller
+                      name="categorias"
+                      control={methods.control}
+                      render={({ field }) => {
+                        const selectedIds = Array.isArray(field.value)
+                          ? field.value
+                          : [];
+                        const selectedCategorias = categorias.filter((c) =>
+                          selectedIds.includes(c.id),
+                        );
+
+                        return (
+                          <Autocomplete
+                            multiple
+                            loading={loadingCategorias}
+                            options={categorias}
+                            getOptionLabel={(option) => option.nome}
+                            isOptionEqualToValue={(option, value) =>
+                              option.id === value.id
+                            }
+                            value={selectedCategorias}
+                            onChange={(_, value) => {
+                              field.onChange(value.map((c) => c.id));
+                            }}
+                            disabled={isView || loadingCategorias}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                label={t("fields.categories")}
+                                placeholder={
+                                  selectedCategorias.length
+                                    ? ""
+                                    : t("fields.categories")
+                                }
+                                InputLabelProps={{ shrink: true }}
+                                InputProps={{
+                                  ...params.InputProps,
+                                  endAdornment: (
+                                    <>
+                                      {loadingCategorias && (
+                                        <CircularProgress size={18} />
+                                      )}
+                                      {params.InputProps.endAdornment}
+                                    </>
+                                  ),
+                                }}
+                              />
+                            )}
+                          />
+                        );
                       }}
-                    >
-                      {loadingCategorias && (
-                        <MenuItem value="" disabled>
-                          {t("fields.loadingCategories")}
-                        </MenuItem>
-                      )}
-                      {!loadingCategorias && categorias.length === 0 && (
-                        <MenuItem value="" disabled>
-                          {t("fields.noCategories")}
-                        </MenuItem>
-                      )}
-                      {categorias.map((categoria) => (
-                        <MenuItem key={categoria.id} value={categoria.id}>
-                          {categoria.nome}
-                        </MenuItem>
-                      ))}
-                    </InputBasico>
+                    />
                   </Box>
 
                   <Box sx={{ gridColumn: "1 / -1" }}>
@@ -483,9 +486,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                     <Select
                       value={papelParaAdicionar}
                       onChange={(e) =>
-                        setPapelParaAdicionar(
-                          e.target.value as PapelClienteCaso,
-                        )
+                        setPapelParaAdicionar(e.target.value as PapelClienteCaso)
                       }
                       sx={{ minWidth: { xs: "100%", sm: 180 } }}
                     >
@@ -516,9 +517,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                         <TableCell>{t("table.document")}</TableCell>
                         <TableCell>{t("table.role")}</TableCell>
                         {!isView && (
-                          <TableCell align="right">
-                            {t("table.actions")}
-                          </TableCell>
+                          <TableCell align="right">{t("table.actions")}</TableCell>
                         )}
                       </TableRow>
                     </TableHead>
@@ -535,9 +534,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                       {clientesSelecionados.map(({ cliente, papel }) => (
                         <TableRow key={cliente.id}>
                           <TableCell>
-                            <Typography fontWeight={600}>
-                              {cliente.name}
-                            </Typography>
+                            <Typography fontWeight={600}>{cliente.name}</Typography>
                           </TableCell>
 
                           <TableCell sx={{ fontFamily: "monospace" }}>
@@ -617,7 +614,11 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   >
                     {t("actions.cancel")}
                   </Button>
-                  <Button type="submit" variant="contained" disabled={saving}>
+                  <Button
+                    variant="contained"
+                    disabled={saving}
+                    onClick={() => handleSubmit(onSubmitForm)()}
+                  >
                     {saving
                       ? t("actions.saving")
                       : isCreate

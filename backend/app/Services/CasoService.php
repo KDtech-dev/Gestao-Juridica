@@ -42,7 +42,7 @@ class CasoService
 
     public function getCasoById(string $id): Caso
     {
-        return Caso::with(['clientes', 'advogado', 'categorias'])->findOrFail($id);
+        return Caso::with(['clientes', 'advogado', 'categorias', 'anexos'])->findOrFail($id);
     }
 
     public function createCaso(array $data): Caso
@@ -62,7 +62,7 @@ class CasoService
                 $this->syncCategorias($caso, $categorias);
             }
 
-            return $caso->load(['clientes', 'advogado', 'categorias']);
+            return $caso->load(['clientes', 'advogado', 'categorias','anexos']);
         });
     }
 
@@ -80,7 +80,7 @@ class CasoService
                 $this->syncCategorias($caso, $categorias);
             }
 
-            return $caso->fresh(['clientes', 'advogado', 'categorias']);
+            return $caso->fresh(['clientes', 'advogado', 'categorias','anexos']);
         });
     }
 
@@ -97,7 +97,7 @@ class CasoService
 
         $caso->clientes()->sync($payload);
 
-        return $caso->load(['clientes', 'advogado']);
+        return $caso->load(['clientes', 'advogado', 'categorias','anexos']);
     }
 
     public function attachClientes(Caso $caso, array $clientes): Caso
@@ -108,7 +108,7 @@ class CasoService
 
         $caso->clientes()->syncWithoutDetaching($payload);
 
-        return $caso->load(['clientes', 'advogado']);
+        return $caso->load(['clientes', 'advogado', 'categorias','anexos']);
     }
 
     public function detachCliente(Caso $caso, string $clienteId): void
@@ -120,6 +120,6 @@ class CasoService
     {
         $caso->categorias()->sync($categorias);
 
-        return $caso->load(['clientes', 'advogado', 'categorias']);
+        return $caso->load(['clientes', 'advogado', 'categorias','anexos']);
     }
 }

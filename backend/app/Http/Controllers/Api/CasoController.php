@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCasoRequest;
 use App\Http\Requests\UpdateCasoRequest;
 use App\Http\Requests\SyncClientesCasoRequest;
-use App\Http\Resources\CasoCollection;
 use App\Http\Resources\CasoResource;
+use App\Models\Anexo;
 use App\Models\Caso;
 use App\Services\CasoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CasoController extends Controller
 {
@@ -87,5 +88,36 @@ class CasoController extends Controller
         $this->casoService->detachCliente($caso, $clienteId);
 
         return response()->json(['message' => 'Cliente desvinculado do caso.']);
+    }
+
+    public function indexAnexos(Caso $caso): JsonResponse
+    {
+        return response()->json($caso->anexos);
+    }
+
+    public function storeAnexo(Request $request, Caso $caso): JsonResponse
+    {
+        $request->validate([
+            'arquivo' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'nome'    => 'nullable|string|max:255',
+        ]);
+
+        $file = $request->file('arquivo');
+        $path = $file->storePublicly("casos/{$caso->id}/anexos", 'public');
+
+        $anexo = $caso->anexos()->create([
+            'nome_arquivo' => $request->input('nome') ?? $file->getClientOriginalName(),
+            'arquivo'      => $path,
+        ]);
+
+        return response()->json($anexo, 201);
+    }
+
+    public function destroyAnexo(Caso $caso, Anexo $anexo): JsonResponse
+    {
+        Storage::disk('public')->delete($anexo->arquivo);
+        $anexo->delete();
+
+        return response()->json(['message' => 'Anexo removido.']);
     }
 }

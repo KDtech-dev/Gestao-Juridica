@@ -155,27 +155,36 @@ export default function CasosView() {
       field: "actions",
       headerName: t("table.actions"),
       sortable: false,
-      align: "right",
-      headerAlign: "right",
+      align: "left",
+      headerAlign: "center",
       renderCell: ({ row }) => (
         <Stack direction="row" spacing={0.5} justifyContent="flex-end">
           <IconButton
             size="small"
-            onClick={() => router.push(`/casos/${row.id}`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/casos/${row.id}`);
+            }}
             sx={{ "&:hover": { color: "info.main" } }}
           >
             <Icon icon="mdi:eye-outline" width={20} />
           </IconButton>
           <IconButton
             size="small"
-            onClick={() => router.push(`/casos/${row.id}/editar`)}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/casos/${row.id}/editar`);
+            }}
             sx={{ "&:hover": { color: "warning.main" } }}
           >
             <Icon icon="mdi:pencil-outline" width={20} />
           </IconButton>
           <IconButton
             size="small"
-            onClick={() => handleDelete(row)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(row);
+            }}
             sx={{ "&:hover": { color: "error.main" } }}
           >
             <Icon icon="mdi:trash-can-outline" width={20} />
@@ -310,7 +319,6 @@ export default function CasosView() {
               rowCount={totalCount}
               paginationMode={isSearching ? "client" : "server"}
               disableRowSelectionOnClick
-              onRowClick={({ row }) => router.push(`/casos/${row.id}`)}
               sx={{
                 border: "none",
                 "& .MuiDataGrid-columnHeaders": {

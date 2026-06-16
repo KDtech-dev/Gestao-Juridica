@@ -90,5 +90,10 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/',            [CasoController::class, 'syncClientes']);
             Route::delete('/{cliente}', [CasoController::class, 'detachCliente']);
         });
+        Route::prefix('{caso}/anexos')->group(function () {
+            Route::get('/',           [CasoController::class, 'indexAnexos']);
+            Route::post('/',          [CasoController::class, 'storeAnexo']);
+            Route::delete('/{anexo}', [CasoController::class, 'destroyAnexo']);
+        });
     });
 });
