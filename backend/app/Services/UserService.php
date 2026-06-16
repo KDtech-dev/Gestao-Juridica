@@ -6,8 +6,10 @@ use App\Models\User;
 use App\Models\Funcionario;
 use App\Models\Advogado;
 use App\Models\Endereco;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserService
 {
@@ -107,6 +109,23 @@ class UserService
             'advogado'    => $this->atualizarAdvogado($user, $dados['advogado'] ?? []),
             default       => null,
         };
+    }
+    public function atualizarFotoPerfil(User $user, UploadedFile $foto): string
+    {
+        $perfil = $user->advogado ?? $user->funcionario;
+
+        if (!$perfil) {
+            throw new \Exception('Usuário sem perfil vinculado.');
+        }
+
+        if ($perfil->foto_perfil) {
+            Storage::disk('public')->delete($perfil->foto_perfil);
+        }
+
+        $path = $foto->store('fotos-perfil', 'public');
+        $perfil->update(['foto_perfil' => $path]);
+
+        return Storage::url($path);
     }
 
     private function atualizarFuncionario(User $user, array $dados): void

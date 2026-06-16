@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Advogado extends Model
 {
@@ -33,5 +35,13 @@ class Advogado extends Model
     public function categorias()
     {
         return $this->belongsToMany(Categoria::class, 'advogado_categoria');
+    }
+    protected function fotoPerfisUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->foto_perfil
+                ? Storage::url($this->foto_perfil)
+                : null,
+        );
     }
 }

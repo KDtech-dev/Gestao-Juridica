@@ -1,6 +1,5 @@
 // views/ProfileView.tsx
 "use client";
-
 import {
   Avatar,
   Box,
@@ -34,6 +33,7 @@ import { useRouter } from "next/navigation";
 import { toast, formatToastErrorMessage } from "@/utils/toast";
 import { CardEndereco } from "@/components/CardEndereco";
 import PickColor from "@/components/PickColor";
+import { Icon } from "@/components/AppIcon";
 
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
@@ -41,10 +41,10 @@ export default function ProfileView() {
   const { hasRole, user } = useAuth();
   const { language, setLanguage } = useLanguage();
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [avatarHovered, setAvatarHovered] = useState(false);
   const [profileUser, setProfileUser] = useState<UserType | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-
   const router = useRouter();
 
   const isAdvogado = hasRole("advogado");
@@ -116,12 +116,10 @@ export default function ProfileView() {
             fetchedUser.funcionario?.foto_perfil_url ??
             null,
         );
-
         form.reset({
           name: fetchedUser.name ?? "",
           email: fetchedUser.email ?? "",
           cpf: fetchedUser.cpf ?? "",
-
           advogado: isAdvogadoRef.current
             ? {
                 celular: fetchedUser.advogado?.celular ?? "",
@@ -135,7 +133,6 @@ export default function ProfileView() {
                 resumo_pessoal: fetchedUser.advogado?.resumo_pessoal ?? "",
               }
             : undefined,
-
           funcionario: isFuncionarioRef.current
             ? {
                 celular: fetchedUser.funcionario?.celular ?? "",
@@ -144,12 +141,10 @@ export default function ProfileView() {
                 resumo_pessoal: fetchedUser.funcionario?.resumo_pessoal ?? "",
               }
             : undefined,
-
           endereco:
             fetchedUser.advogado?.endereco ??
             fetchedUser.funcionario?.endereco ??
             null,
-
           tema: themeModeRef.current,
           idioma: languageRef.current,
           cor_perfil: fetchedUser.cor_perfil ?? null,
@@ -178,7 +173,6 @@ export default function ProfileView() {
       router.refresh();
       toast.success(t("toast.saveSuccess"));
     } catch (err) {
-      console.log("erros de validação:", JSON.stringify(err, null, 2));
       toast.error(formatToastErrorMessage(err, t("toast.saveError")));
     }
   });
@@ -187,6 +181,7 @@ export default function ProfileView() {
     const file = event.target.files?.[0];
     if (file) setAvatar(URL.createObjectURL(file));
   };
+
   const corPerfil = form.watch("cor_perfil");
   const bannerBackground =
     corPerfil && corPerfil !== "#9e9e9e"
@@ -241,30 +236,83 @@ export default function ProfileView() {
                     sx={{ px: 2.5, mb: 2 }}
                   >
                     <Grid display="flex" alignItems="center" gap={2}>
-                      <Box sx={{ position: "relative" }}>
+                      {/* Avatar com indicador de edição */}
+                      <Box
+                        component="label"
+                        onMouseEnter={() => setAvatarHovered(true)}
+                        onMouseLeave={() => setAvatarHovered(false)}
+                        sx={{
+                          position: "relative",
+                          top: -25,
+                          cursor: "pointer",
+                          display: "inline-block",
+                          borderRadius: "50%",
+                        }}
+                      >
+                        {/* Avatar */}
                         <Avatar
                           src={avatar ?? undefined}
                           sx={{
                             width: 76,
                             height: 76,
                             border: "4px solid #fff",
-                            position: "relative",
-                            top: -25,
-                            cursor: "pointer",
+                            transition: "filter 0.2s",
+                            filter: avatarHovered ? "brightness(0.75)" : "none",
                           }}
                         />
+
+                        {/* Overlay escuro ao hover */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            inset: 0,
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            opacity: avatarHovered ? 1 : 0,
+                            transition: "opacity 0.2s",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          <Icon icon="mdi:camera" width={24} color="#fff" />
+                        </Box>
+
+                        {/* Badge de câmera no canto inferior direito */}
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            bottom: 2,
+                            right: 2,
+                            width: 22,
+                            height: 22,
+                            borderRadius: "50%",
+                            bgcolor: "primary.main",
+                            border: "2px solid #fff",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            boxShadow: 1,
+                            transition: "transform 0.2s",
+                            transform: avatarHovered
+                              ? "scale(1.15)"
+                              : "scale(1)",
+                          }}
+                        >
+                          <Icon icon="mdi:plus" width={13} color="#fff" />
+                        </Box>
+
+                        {/* Input oculto */}
                         <input
                           type="file"
                           accept="image/*"
                           style={{
-                            position: "absolute",
-                            inset: 0,
-                            opacity: 0,
-                            cursor: "pointer",
+                            display: "none",
                           }}
                           onChange={handleAvatarChange}
                         />
                       </Box>
+
                       <Box>
                         <Typography fontWeight={600}>{user?.name}</Typography>
                         <Typography variant="body2" color="text.secondary">
@@ -282,6 +330,7 @@ export default function ProfileView() {
                         )}
                       </Box>
                     </Grid>
+
                     <Grid>
                       <Button
                         type="submit"
@@ -320,7 +369,6 @@ export default function ProfileView() {
                         isFuncionario={isFuncionario}
                       />
                     </Box>
-
                     <Box
                       sx={{ display: "flex", flexDirection: "column", gap: 2 }}
                     >

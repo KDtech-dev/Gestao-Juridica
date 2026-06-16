@@ -76,6 +76,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{user}',        [UserController::class, 'show']);
         Route::put('/{user}',        [UserController::class, 'update']);
         Route::delete('/{user}',     [UserController::class, 'destroy']);
+
+        Route::post('/users/{user}/foto-perfil', [UserController::class, 'atualizarFoto'])
+            ->middleware('auth:sanctum');
     });
 
     Route::prefix('casos')->group(function () {

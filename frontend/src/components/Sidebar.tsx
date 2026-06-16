@@ -237,7 +237,7 @@ export function SidebarDashboard({ activeKey }: Props) {
       key: "admin-users",
       label: t("sidebar.items.adminUsers"),
       icon: "mdi:account-multiple-outline",
-      href: "/admin/users",
+      href: "/users",
     });
   }
 
