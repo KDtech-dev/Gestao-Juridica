@@ -10,14 +10,7 @@ import {
   InputAdornment,
   MenuItem,
   Paper,
-  Skeleton,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
   useTheme,
@@ -32,6 +25,7 @@ import { toast } from "@/utils/toast";
 import { UserType, RoleType } from "@/@core/types";
 import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
 import DialogUser from "@/components/modals/DialogUser";
+import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -60,19 +54,21 @@ export default function UsersView() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleType | "all">("all");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 10,
+  });
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
 
   const loadUsers = useCallback(
     async (page = 1) => {
       setLoading(true);
+
       try {
         const response = await getUsers(page);
+
         setUsers(response.data);
-        setCurrentPage(response.meta.current_page);
-        setLastPage(response.meta.last_page);
         setTotal(response.meta.total);
       } catch {
         toast.error(t("errors.load"));
@@ -82,10 +78,9 @@ export default function UsersView() {
     },
     [t],
   );
-
   useEffect(() => {
-    loadUsers();
-  }, [loadUsers]);
+    loadUsers(paginationModel.page + 1);
+  }, [paginationModel, loadUsers]);
 
   const usersFiltrados = users.filter((u) => {
     const matchSearch = [u.name, u.email, u.cpf].some((field) =>
@@ -94,6 +89,11 @@ export default function UsersView() {
     const matchRole = roleFilter === "all" || u.roles?.includes(roleFilter);
     return matchSearch && matchRole;
   });
+  const isSearching = search.trim().length > 0 || roleFilter !== "all";
+
+  const rowsExibidos = isSearching ? usersFiltrados : users;
+
+  const totalCount = isSearching ? usersFiltrados.length : total;
 
   const handleSubmit = async (data: CreateUserPayload | UpdateUserPayload) => {
     setSubmitting(true);
@@ -149,7 +149,122 @@ export default function UsersView() {
     setDialogOpen(false);
     setUserSelecionado(null);
   };
+  const columns: GridColDef<UserType>[] = [
+    {
+      field: "name",
+      headerName: t("table.name"),
+      flex: 1,
+      minWidth: 220,
+      renderCell: ({ row }) => (
+        <Typography fontWeight={700}>{row.name}</Typography>
+      ),
+    },
+    {
+      field: "contact",
+      headerName: t("table.contact"),
+      flex: 1,
+      minWidth: 250,
+      sortable: false,
+      renderCell: ({ row }) => {
+        const perfil = getUserPerfil(row);
 
+        return (
+          <Stack spacing={0.3}>
+            <Typography variant="body2">{row.email}</Typography>
+
+            {perfil?.celular && (
+              <Typography variant="caption" color="text.secondary">
+                {perfil.celular}
+              </Typography>
+            )}
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "cpf",
+      headerName: t("table.cpf"),
+      flex: 0.6,
+      minWidth: 150,
+      renderCell: ({ row }) => (
+        <Typography
+          sx={{
+            fontFamily: "monospace",
+          }}
+        >
+          {row.cpf
+            ? row.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
+            : "-"}
+        </Typography>
+      ),
+    },
+    {
+      field: "role",
+      headerName: t("table.role"),
+      flex: 0.5,
+      minWidth: 140,
+      sortable: false,
+      renderCell: ({ row }) => {
+        const role = getUserRole(row);
+
+        return role ? (
+          <Chip
+            label={t(`roles.${role}`)}
+            color={ROLE_COLOR[role]}
+            size="small"
+            sx={{
+              borderRadius: "8px",
+              fontWeight: 600,
+            }}
+          />
+        ) : (
+          <Typography color="text.disabled">—</Typography>
+        );
+      },
+    },
+    {
+      field: "actions",
+      headerName: t("table.actions"),
+      width: 140,
+      sortable: false,
+      filterable: false,
+      headerAlign: "center",
+      align: "center",
+      renderCell: ({ row }) => (
+        <Stack direction="row" spacing={0.5}>
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              openView(row);
+            }}
+          >
+            <Icon icon="mdi:eye-outline" width={20} />
+          </IconButton>
+
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              openEdit(row);
+            }}
+          >
+            <Icon icon="mdi:pencil-outline" width={20} />
+          </IconButton>
+
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDelete(row);
+            }}
+          >
+            <Icon icon="mdi:trash-can-outline" width={20} />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
   return (
     <Box
       sx={{
@@ -299,301 +414,73 @@ export default function UsersView() {
                 }}
               />
             </Stack>
-
-            <TableContainer sx={{ overflowX: "auto" }}>
-              <Table sx={{ minWidth: 760 }}>
-                <TableHead>
-                  <TableRow
-                    sx={{ bgcolor: alpha(theme.palette.primary.main, 0.04) }}
-                  >
-                    {[
-                      t("table.name"),
-                      t("table.contact"),
-                      t("table.cpf"),
-                      t("table.role"),
-                      t("table.actions"),
-                    ].map((col, i) => (
-                      <TableCell
-                        key={col}
-                        sx={{
-                          fontWeight: 800,
-                          letterSpacing: "0.5px",
-                          fontSize: "0.75rem",
-                          textAlign: i === 4 ? "right" : "left",
-                          pr: i === 4 ? 3 : undefined,
-                        }}
-                      >
-                        {col}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {loading &&
-                    [...Array(5)].map((_, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell colSpan={5} sx={{ py: 2 }}>
-                          <Stack spacing={1}>
-                            <Skeleton variant="text" width="80%" height={30} />
-                            <Skeleton variant="text" width="60%" height={20} />
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-
-                  {!loading && usersFiltrados.length === 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={5}
-                        sx={{ py: 8, textAlign: "center" }}
-                      >
-                        <Stack alignItems="center" spacing={2}>
-                          <Icon
-                            icon="mdi:account-group-outline"
-                            width={48}
-                            color={theme.palette.text.secondary}
-                          />
-                          <Typography color="text.secondary" variant="h6">
-                            {t("empty.title")}
-                          </Typography>
-                          <Button
-                            variant="outlined"
-                            onClick={openCreate}
-                            startIcon={<Icon icon="mdi:plus" />}
-                            sx={{ borderRadius: "12px" }}
-                          >
-                            {t("empty.action")}
-                          </Button>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  )}
-
-                  {!loading &&
-                    usersFiltrados.map((user, index) => {
-                      const role = getUserRole(user);
-                      const perfil = getUserPerfil(user);
-
-                      return (
-                        <TableRow
-                          key={user.id}
-                          sx={{
-                            transition: "all 0.2s ease",
-                            "&:hover": {
-                              bgcolor: alpha(theme.palette.primary.main, 0.04),
-                              "& .action-buttons": { opacity: 1 },
-                            },
-                            animation: `fadeIn 0.3s ease-out ${index * 0.05}s both`,
-                          }}
-                        >
-                          <TableCell>
-                            <Typography fontWeight={700} color="text.primary">
-                              {user.name}
-                            </Typography>
-                          </TableCell>
-
-                          <TableCell>
-                            <Typography
-                              color="text.primary"
-                              variant="body2"
-                              fontWeight={500}
-                            >
-                              {user.email}
-                            </Typography>
-                            {perfil?.celular && (
-                              <Stack
-                                direction="row"
-                                alignItems="center"
-                                spacing={0.5}
-                                mt={0.5}
-                              >
-                                <Icon
-                                  icon="mdi:phone"
-                                  width={14}
-                                  color={theme.palette.text.secondary}
-                                />
-                                <Typography
-                                  color="text.secondary"
-                                  variant="caption"
-                                >
-                                  {perfil.celular}
-                                </Typography>
-                              </Stack>
-                            )}
-                          </TableCell>
-
-                          <TableCell>
-                            <Typography
-                              color="text.secondary"
-                              sx={{
-                                fontFamily: "monospace",
-                                fontSize: "0.9rem",
-                              }}
-                            >
-                              {user.cpf
-                                ? user.cpf.replace(
-                                    /(\d{3})(\d{3})(\d{3})(\d{2})/,
-                                    "$1.$2.$3-$4",
-                                  )
-                                : "-"}
-                            </Typography>
-                          </TableCell>
-
-                          <TableCell>
-                            {role ? (
-                              <Chip
-                                label={t(`roles.${role}`)}
-                                color={ROLE_COLOR[role]}
-                                size="small"
-                                sx={{
-                                  borderRadius: "8px",
-                                  fontWeight: 600,
-                                  fontSize: "0.75rem",
-                                }}
-                              />
-                            ) : (
-                              <Typography color="text.disabled" variant="body2">
-                                —
-                              </Typography>
-                            )}
-                          </TableCell>
-
-                          <TableCell sx={{ textAlign: "right", pr: 2 }}>
-                            <Stack
-                              direction="row"
-                              spacing={0.5}
-                              justifyContent="flex-end"
-                              className="action-buttons"
-                              sx={{ opacity: { xs: 1, md: 0.6 } }}
-                            >
-                              <IconButton
-                                size="small"
-                                onClick={() => openView(user)}
-                                sx={{
-                                  "&:hover": {
-                                    bgcolor: alpha(
-                                      theme.palette.info.main,
-                                      0.08,
-                                    ),
-                                    color: "info.main",
-                                  },
-                                }}
-                              >
-                                <Icon icon="mdi:eye-outline" width={20} />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                onClick={() => openEdit(user)}
-                                sx={{
-                                  "&:hover": {
-                                    bgcolor: alpha(
-                                      theme.palette.warning.main,
-                                      0.08,
-                                    ),
-                                    color: "warning.main",
-                                  },
-                                }}
-                              >
-                                <Icon icon="mdi:pencil-outline" width={20} />
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                onClick={() => handleDelete(user)}
-                                sx={{
-                                  "&:hover": {
-                                    bgcolor: alpha(
-                                      theme.palette.error.main,
-                                      0.08,
-                                    ),
-                                    color: "error.main",
-                                  },
-                                }}
-                              >
-                                <Icon icon="mdi:trash-can-outline" width={20} />
-                              </IconButton>
-                            </Stack>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              justifyContent="space-between"
-              alignItems="center"
-              gap={2}
+            <DataGrid
+              rows={rowsExibidos}
+              columns={columns}
+              loading={loading}
+              getRowId={(row) => row.id}
+              autoHeight
+              getRowHeight={() => "auto"}
+              disableRowSelectionOnClick
+              paginationModel={paginationModel}
+              onPaginationModelChange={setPaginationModel}
+              pageSizeOptions={[10, 25, 50]}
+              rowCount={totalCount}
+              paginationMode={isSearching ? "client" : "server"}
               sx={{
-                px: { xs: 2, sm: 3 },
-                py: 2.5,
-                borderTop: `1px solid ${theme.palette.divider}`,
-                bgcolor: alpha(theme.palette.primary.main, 0.02),
+                border: "none",
+
+                "& .MuiDataGrid-columnHeaders": {
+                  bgcolor: `${theme.palette.primary.main}08`,
+                  fontWeight: 800,
+                },
+
+                "& .MuiDataGrid-row": {
+                  "&:hover": {
+                    bgcolor: alpha(theme.palette.primary.main, 0.04),
+                  },
+                },
+
+                "& .MuiDataGrid-cell": {
+                  borderColor: theme.palette.divider,
+                  alignItems: "center",
+                  py: 1,
+                },
               }}
-            >
-              <Typography color="text.secondary" variant="body2">
-                {t("pagination.showing", {
-                  shown: usersFiltrados.length,
-                  total,
-                })}
-              </Typography>
+              slots={{
+                noRowsOverlay: () => (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      minHeight: 200,
+                      gap: 1,
+                    }}
+                  >
+                    <Icon
+                      icon="mdi:account-group-outline"
+                      width={48}
+                      color={theme.palette.text.secondary}
+                    />
 
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Button
-                  variant="outlined"
-                  disabled={currentPage <= 1 || loading}
-                  onClick={() => loadUsers(currentPage - 1)}
-                  startIcon={<Icon icon="mdi:chevron-left" width={18} />}
-                  sx={{
-                    textTransform: "none",
-                    borderRadius: "10px",
-                    px: 2,
-                    minWidth: 120,
-                    borderColor: theme.palette.divider,
-                    transition: "all 0.2s ease",
-                    "&:hover:not(:disabled)": {
-                      borderColor: theme.palette.primary.main,
-                      bgcolor: alpha(theme.palette.primary.main, 0.04),
-                    },
-                  }}
-                >
-                  {t("pagination.previous")}
-                </Button>
+                    <Typography color="text.secondary" variant="h6">
+                      {t("empty.title")}
+                    </Typography>
 
-                <Chip
-                  label={t("pagination.page", {
-                    current: currentPage,
-                    total: lastPage,
-                  })}
-                  color="primary"
-                  variant="outlined"
-                  sx={{ borderRadius: "10px", fontWeight: 600 }}
-                />
-
-                <Button
-                  variant="outlined"
-                  disabled={currentPage >= lastPage || loading}
-                  onClick={() => loadUsers(currentPage + 1)}
-                  endIcon={<Icon icon="mdi:chevron-right" width={18} />}
-                  sx={{
-                    textTransform: "none",
-                    borderRadius: "10px",
-                    px: 2,
-                    minWidth: 120,
-                    borderColor: theme.palette.divider,
-                    transition: "all 0.2s ease",
-                    "&:hover:not(:disabled)": {
-                      borderColor: theme.palette.primary.main,
-                      bgcolor: alpha(theme.palette.primary.main, 0.04),
-                    },
-                  }}
-                >
-                  {t("pagination.next")}
-                </Button>
-              </Stack>
-            </Stack>
+                    <Button
+                      variant="outlined"
+                      onClick={openCreate}
+                      startIcon={<Icon icon="mdi:plus" />}
+                      sx={{ borderRadius: "12px" }}
+                    >
+                      {t("empty.action")}
+                    </Button>
+                  </Box>
+                ),
+              }}
+            />
           </Paper>
         </Container>
       </Box>
