@@ -11,6 +11,16 @@ class StoreCasoRequest extends FormRequest
         return true;
     }
 
+
+    public function prepareForValidation(): void
+    {
+        if ($this->numero_processo) {
+            $this->merge([
+                'numero_processo' => preg_replace('/\D/', '', $this->numero_processo),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [
@@ -26,6 +36,21 @@ class StoreCasoRequest extends FormRequest
             'clientes'          => 'nullable|array',
             'clientes.*.id'     => 'required|uuid|exists:clientes,id',
             'clientes.*.papel'  => 'nullable|in:autor,réu,interveniente,testemunha',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'titulo.required' => 'validation.titulo.required',
+            'titulo.string' => 'validation.titulo.string',
+            'titulo.max' => 'validation.titulo.max',
+            'numero_processo.unique' => 'validation.numero_processo.unique',
+            'status.in' => 'validation.status.in',
+            'data_abertura.required' => 'validation.data_abertura.required',
+            'data_abertura.date' => 'validation.data_abertura.invalid',
+            'data_encerramento.date' => 'validation.data_encerramento.invalid',
+            'data_encerramento.after_or_equal' => 'validation.data_encerramento.after_or_equal',
         ];
     }
 }

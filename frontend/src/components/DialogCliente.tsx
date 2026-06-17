@@ -9,7 +9,7 @@ import { ClienteType } from "@/@core/types";
 import { BaseModal } from "@/components/modals/BaseModal";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { formatCpfCnpj } from "@/@core/format";
+import { formatCpfCnpj, formatTelefone } from "@/@core/format";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -33,6 +33,7 @@ export function DialogCliente({
   cliente = null,
 }: Props) {
   const t = useTranslations("internal.clients.dialog");
+  const tv = useTranslations("validation");
   const isView = mode === "view";
   const isDisabled = submitting || isView;
   const titleMap: Record<DialogMode, string> = {
@@ -52,7 +53,7 @@ export function DialogCliente({
     reset,
     formState: { errors },
   } = useForm<CreateClientePayload>({
-    resolver: zodResolver(createClienteSchema),
+    resolver: zodResolver(createClienteSchema(tv)),
     defaultValues: {
       name: "",
       cpf_cnpj: "",
@@ -176,6 +177,8 @@ export function DialogCliente({
               label={t("fields.phone")}
               error={!!errors.telefone}
               helperText={errors.telefone?.message}
+              inputProps={{ maxLength: 15 }}
+              onChange={(e) => field.onChange(formatTelefone(e.target.value))}
             />
           )}
         />

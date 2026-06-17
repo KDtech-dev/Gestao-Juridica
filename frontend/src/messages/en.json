@@ -5,6 +5,10 @@
     "delete": "Delete",
     "edit": "Edit"
   },
+  "branding": {
+    "appName": "Central Jurídica",
+    "tagline": "Intelligent and modern legal management"
+  },
 
   "auth": {
     "login": {
@@ -840,6 +844,52 @@
       "dateTimeLabel": "Date and time",
       "dateTimeRequired": "Enter date and time.",
       "descriptionLabel": "Description/Agenda"
+    }
+  },
+  "validation": {
+    "name": {
+      "required": "Name is required.",
+      "max": "Name cannot exceed 255 characters."
+    },
+    "cpf_cnpj": {
+      "required": "CPF or CNPJ is required.",
+      "unique": "This CPF/CNPJ is already registered.",
+      "invalid": "CPF must contain 11 digits and CNPJ must contain 14 digits."
+    },
+    "email": {
+      "required": "Email is required.",
+      "invalid": "Please enter a valid email address.",
+      "unique": "This email is already registered."
+    },
+    "data_nascimento": {
+      "invalid": "Please enter a valid birth date.",
+      "before": "The birth date must be before today."
+    },
+    "foto_perfil": {
+      "image": "The file must be an image.",
+      "mimes": "The image must be JPG, PNG, GIF, or WebP.",
+      "max": "The image cannot be larger than 5MB."
+    },
+    "titulo": {
+      "required": "Title is required.",
+      "max": "Title cannot exceed 255 characters.",
+      "string": "Title must be a text string."
+    },
+    "numero_processo": {
+      "min": "The case number must have 20 digits.",
+      "max": "The case number cannot have more than 255 digits.",
+      "unique": "This case number is already registered."
+    },
+    "status": {
+      "in": "Invalid status."
+    },
+    "data_abertura": {
+      "required": "Opening date is required.",
+      "invalid": "Please enter a valid opening date."
+    },
+    "data_encerramento": {
+      "invalid": "Please enter a valid closing date.",
+      "after_or_equal": "The closing date must be equal to or later than the opening date."
     }
   }
 }

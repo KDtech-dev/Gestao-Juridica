@@ -5,6 +5,10 @@
     "delete": "Eliminar",
     "edit": "Editar"
   },
+  "branding": {
+    "appName": "Central Jurídica",
+    "tagline": "Gestión jurídica inteligente y moderna"
+  },
 
   "auth": {
     "login": {
@@ -842,6 +846,52 @@
       "dateTimeLabel": "Fecha y hora",
       "dateTimeRequired": "Informa fecha y hora.",
       "descriptionLabel": "Descripción/Pauta"
+    }
+  },
+  "validation": {
+    "name": {
+      "required": "El nombre es obligatorio.",
+      "max": "El nombre no puede tener más de 255 caracteres."
+    },
+    "cpf_cnpj": {
+      "required": "El CPF o CNPJ es obligatorio.",
+      "unique": "Este CPF/CNPJ ya está registrado.",
+      "invalid": "El CPF debe tener 11 dígitos y el CNPJ 14 dígitos."
+    },
+    "email": {
+      "required": "El correo electrónico es obligatorio.",
+      "invalid": "Ingrese un correo electrónico válido.",
+      "unique": "Este correo electrónico ya está registrado."
+    },
+    "data_nascimento": {
+      "invalid": "Ingrese una fecha de nacimiento válida.",
+      "before": "La fecha de nacimiento debe ser anterior a hoy."
+    },
+    "foto_perfil": {
+      "image": "El archivo debe ser una imagen.",
+      "mimes": "La imagen debe ser JPG, PNG, GIF o WebP.",
+      "max": "La imagen no puede superar los 5 MB."
+    },
+    "titulo": {
+      "required": "El título es obligatorio.",
+      "max": "El título no puede tener más de 255 caracteres.",
+      "string": "El título debe ser un texto."
+    },
+    "numero_processo": {
+      "max":"El nombre no puede tener más de 255 caracteres.",
+      "min": "El número de proceso debe tener al menos 20 caracteres.",
+      "unique": "Este número de proceso ya está registrado."
+    },
+    "status": {
+      "in": "Estado no válido."
+    },
+    "data_abertura": {
+      "required": "La fecha de apertura es obligatoria.",
+      "invalid": "Ingrese una fecha de apertura válida."
+    },
+    "data_encerramento": {
+      "invalid": "Ingrese una fecha de cierre válida.",
+      "after_or_equal": "La fecha de cierre debe ser igual o posterior a la fecha de apertura."
     }
   }
 }

@@ -5,6 +5,10 @@
     "delete": "Excluir",
     "edit": "Editar"
   },
+  "branding": {
+    "appName": "Central Jurídica",
+    "tagline": "Gestão jurídica inteligente e moderna"
+  },
 
   "auth": {
     "login": {
@@ -842,6 +846,52 @@
       "dateTimeLabel": "Data e horário",
       "dateTimeRequired": "Informe data e horário.",
       "descriptionLabel": "Descrição/Pauta"
+    }
+  },
+  "validation": {
+    "name": {
+      "required": "O nome é obrigatório.",
+      "max": "O nome não pode ter mais de 255 caracteres."
+    },
+    "cpf_cnpj": {
+      "required": "O CPF ou CNPJ é obrigatório.",
+      "unique": "Este CPF/CNPJ já está cadastrado.",
+      "invalid": "CPF deve ter 11 dígitos e CNPJ 14 dígitos."
+    },
+    "email": {
+      "required": "O e-mail é obrigatório.",
+      "invalid": "Informe um e-mail válido.",
+      "unique": "Este e-mail já está cadastrado."
+    },
+    "data_nascimento": {
+      "invalid": "Informe uma data de nascimento válida.",
+      "before": "A data de nascimento deve ser anterior a hoje."
+    },
+    "foto_perfil": {
+      "image": "O arquivo deve ser uma imagem.",
+      "mimes": "A imagem deve ser JPG, PNG, GIF ou WebP.",
+      "max": "A imagem não pode ser maior que 5MB."
+    },
+    "titulo": {
+      "required": "O título é obrigatório.",
+      "max": "O título não pode ter mais de 255 caracteres.",
+      "string": "O título deve ser um texto."
+    },
+    "numero_processo": {
+      "max": "O número do processo não pode ter mais de 255 caracteres.",
+      "min": "O número do processo deve ter pelo menos 20 caracteres.",
+      "unique": "Este número de processo já está cadastrado."
+    },
+    "status": {
+      "in": "Status inválido."
+    },
+    "data_abertura": {
+      "required": "A data de abertura é obrigatória.",
+      "invalid": "Informe uma data de abertura válida."
+    },
+    "data_encerramento": {
+      "invalid": "Informe uma data de encerramento válida.",
+      "after_or_equal": "A data de encerramento deve ser igual ou posterior à data de abertura."
     }
   }
 }

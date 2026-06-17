@@ -24,13 +24,19 @@ import { useRouter } from "next/navigation";
 import { postCliente, deleteCliente } from "@/api/ApiClientes";
 import { toast } from "@/utils/toast";
 import { ClienteType } from "@/@core/types";
-import { CreateClientePayload } from "@/schemas/ClienteSchema";
+import {
+  CreateClientePayload,
+  createClienteSchema,
+} from "@/schemas/ClienteSchema";
 import DialogCliente from "@/components/DialogCliente";
 import { formatCpfCnpj } from "@/@core/format";
 import { getAxios } from "@/configs/axios";
+import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 
 export default function ClientesView() {
+  const translateError = useApiErrorTranslator();
   const t = useTranslations("internal.clients");
+  const tv = useTranslations("validation");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [clientes, setClientes] = useState<ClienteType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,7 +49,6 @@ export default function ClientesView() {
   });
   const theme = useTheme();
   const router = useRouter();
-
   const loadClientes = useCallback(
     async (page = 1, perPage = 10) => {
       setLoading(true);
@@ -80,13 +85,12 @@ export default function ClientesView() {
       toast.success(t("toast.created"));
       setDialogOpen(false);
       loadClientes(paginationModel.page + 1);
-    } catch {
-      toast.error(t("errors.create"));
+    } catch (err) {
+      toast.error(translateError(err));
     } finally {
       setSubmitting(false);
     }
   };
-
   const handleDelete = async (cliente: ClienteType) => {
     if (!confirm(t("confirmDelete", { name: cliente.name }))) return;
     try {
@@ -307,7 +311,6 @@ export default function ClientesView() {
               getRowHeight={() => "auto"}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              pageSizeOptions={[10, 25, 50]}
               rowCount={totalCount}
               paginationMode={search.trim() ? "client" : "server"}
               disableRowSelectionOnClick

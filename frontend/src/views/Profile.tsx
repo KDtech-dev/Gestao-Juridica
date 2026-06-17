@@ -236,7 +236,6 @@ export default function ProfileView() {
                     sx={{ px: 2.5, mb: 2 }}
                   >
                     <Grid display="flex" alignItems="center" gap={2}>
-                      {/* Avatar com indicador de edição */}
                       <Box
                         component="label"
                         onMouseEnter={() => setAvatarHovered(true)}
@@ -249,7 +248,6 @@ export default function ProfileView() {
                           borderRadius: "50%",
                         }}
                       >
-                        {/* Avatar */}
                         <Avatar
                           src={avatar ?? undefined}
                           sx={{
@@ -261,7 +259,6 @@ export default function ProfileView() {
                           }}
                         />
 
-                        {/* Overlay escuro ao hover */}
                         <Box
                           sx={{
                             position: "absolute",

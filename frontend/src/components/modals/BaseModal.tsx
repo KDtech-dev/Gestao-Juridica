@@ -2,6 +2,7 @@
 
 import { Dialog, DialogContent, Button, Typography, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useTranslations } from "next-intl";
 import { BRANDING } from "@/configs/branding";
 
 interface BaseModalProps {
@@ -33,6 +34,7 @@ export function BaseModal({
 }: BaseModalProps) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
+  const t = useTranslations();
 
   return (
     <Dialog
@@ -83,7 +85,7 @@ export function BaseModal({
               </Typography>
 
               <Typography fontSize="0.95rem" sx={{ opacity: 0.9 }}>
-                {BRANDING.tagline}
+                {t("branding.tagline")}
               </Typography>
             </Box>
           </Box>
@@ -134,12 +136,14 @@ export function BaseModal({
                 color={isDark ? "inherit" : "primary"}
                 sx={{ whiteSpace: "nowrap" }}
               >
-                {cancelText ?? BRANDING.modal?.cancelText ?? "Cancelar"}
+                {cancelText ?? t("common.cancel")}
               </Button>
 
               <Button
                 onClick={
-                  confirmType === "submit" ? undefined : (onSubmit ?? onClose)
+                  confirmType === "submit"
+                    ? undefined
+                    : (onSubmit ?? onClose)
                 }
                 type={confirmType}
                 form={confirmFormId}
@@ -147,7 +151,7 @@ export function BaseModal({
                 disabled={confirmDisabled}
                 sx={{ whiteSpace: "nowrap" }}
               >
-                {confirmText ?? BRANDING.modal?.confirmText ?? "Salvar"}
+                {confirmText ?? t("common.save")}
               </Button>
             </Box>
           </Box>

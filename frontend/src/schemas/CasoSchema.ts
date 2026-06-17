@@ -1,44 +1,76 @@
 import { z } from "zod";
+import type { useTranslations } from "next-intl";
 
-const casoClientePayloadSchema = z.object({
-  id: z.string().uuid("ID do cliente inválido"),
-  papel: z.enum(["autor", "réu", "interveniente", "testemunha"]),
-});
+type TFunction = ReturnType<typeof useTranslations>;
 
-export const createCasoSchema = z.object({
-  titulo: z.string().min(1, "Título é obrigatório").max(255),
-  numero_processo: z.string().max(255).optional().nullable(),
-  descricao: z.string().optional().nullable(),
-  status: z.enum(["aberto", "em_andamento", "encerrado", "arquivado"]),
-  data_abertura: z.string().min(1, "Data de abertura é obrigatória"),
-  data_encerramento: z.string().optional().nullable(),
-  advogado_id: z.string().uuid().optional().nullable(),
-  categorias: z
-    .array(z.union([z.string(), z.number()]))
-    .optional()
-    .nullable(),
-  clientes: z.array(casoClientePayloadSchema).optional(),
-});
+export const createCasoClientePayloadSchema = () =>
+  z.object({
+    id: z.string(),
+    papel: z.enum(["autor", "réu", "interveniente", "testemunha"]),
+  });
 
-export const updateCasoSchema = createCasoSchema.partial().extend({
-  status: z
-    .enum(["aberto", "em_andamento", "encerrado", "arquivado"])
-    .optional(),
-});
+export const createCasoSchema = (t: TFunction) =>
+  z.object({
+    titulo: z.string().min(1, t("titulo.required")).max(255, t("titulo.max")),
 
-export const syncClientesCasoSchema = z.object({
-  clientes: z
-    .array(casoClientePayloadSchema)
-    .min(1, "Informe ao menos um cliente"),
-});
+    numero_processo: z
+      .string()
+      .min(20, t("numero_processo.min"))
+      .max(255, t("numero_processo.max"))
+      .optional()
+      .nullable(),
 
-export const uploadAnexoCasoSchema = z.object({
-  arquivo: z.instanceof(File, { message: "Arquivo é obrigatório" }),
-  nome: z.string().optional(),
-});
+    descricao: z.string().optional().nullable(),
 
-export type CreateCasoPayload = z.infer<typeof createCasoSchema>;
-export type UpdateCasoPayload = z.infer<typeof updateCasoSchema>;
-export type SyncClientesCasoPayload = z.infer<typeof syncClientesCasoSchema>;
-export type UploadAnexoCasoPayload = z.infer<typeof uploadAnexoCasoSchema>;
-export type CasoClientePayload = z.infer<typeof casoClientePayloadSchema>;
+    status: z.enum(["aberto", "em_andamento", "encerrado", "arquivado"], {
+      message: t("status.in"),
+    }),
+
+    data_abertura: z.string().min(1, t("data_abertura.required")),
+    data_encerramento: z.string().optional().nullable(),
+
+    advogado_id: z.string().optional().nullable(),
+
+    categorias: z
+      .array(z.union([z.string(), z.number()]))
+      .optional()
+      .nullable(),
+
+    clientes: z.array(createCasoClientePayloadSchema()).optional(),
+  });
+
+export const updateCasoSchema = (t: TFunction) =>
+  createCasoSchema(t)
+    .partial()
+    .extend({
+      status: z
+        .enum(["aberto", "em_andamento", "encerrado", "arquivado"])
+        .optional(),
+    });
+
+export const syncClientesCasoSchema = (t: TFunction) =>
+  z.object({
+    clientes: z.array(createCasoClientePayloadSchema()).optional(),
+  });
+
+export const uploadAnexoCasoSchema = (t: TFunction) =>
+  z.object({
+    arquivo: z.instanceof(File, {}),
+    nome: z.string().optional(),
+  });
+
+export type CreateCasoPayload = z.infer<ReturnType<typeof createCasoSchema>>;
+
+export type UpdateCasoPayload = z.infer<ReturnType<typeof updateCasoSchema>>;
+
+export type SyncClientesCasoPayload = z.infer<
+  ReturnType<typeof syncClientesCasoSchema>
+>;
+
+export type UploadAnexoCasoPayload = z.infer<
+  ReturnType<typeof uploadAnexoCasoSchema>
+>;
+
+export type CasoClientePayload = z.infer<
+  ReturnType<typeof createCasoClientePayloadSchema>
+>;

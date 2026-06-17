@@ -51,6 +51,7 @@ import {
 } from "@/api/apiCasos";
 import InputBasico from "@/components/InputBasico";
 import InputSingleFile from "@/components/InputSingleFile";
+import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 
 type ViewMode = "create" | "edit" | "view";
 
@@ -76,33 +77,38 @@ type Props = {
 };
 
 export default function CasoFormView({ mode, casoId }: Props) {
+  const translateError = useApiErrorTranslator();
   const t = useTranslations("internal.cases.form");
+  const tv = useTranslations("validation");
   const theme = useTheme();
   const router = useRouter();
-
   const isView = mode === "view";
   const isCreate = mode === "create";
-
   const [loading, setLoading] = useState(!isCreate);
   const [saving, setSaving] = useState(false);
-
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
-
-  const [clientesDisponiveis, setClientesDisponiveis] = useState<ClienteType[]>([]);
+  const [clientesDisponiveis, setClientesDisponiveis] = useState<ClienteType[]>(
+    [],
+  );
   const [loadingClientes, setLoadingClientes] = useState(true);
-
-  const [clientesSelecionados, setClientesSelecionados] = useState<ClienteSelecionado[]>([]);
-  const [clientesIniciais, setClientesIniciais] = useState<ClienteSelecionado[]>([]);
-  const [clienteParaAdicionar, setClienteParaAdicionar] = useState<ClienteType | null>(null);
-  const [papelParaAdicionar, setPapelParaAdicionar] = useState<PapelClienteCaso>("autor");
+  const [clientesSelecionados, setClientesSelecionados] = useState<
+    ClienteSelecionado[]
+  >([]);
+  const [clientesIniciais, setClientesIniciais] = useState<
+    ClienteSelecionado[]
+  >([]);
+  const [clienteParaAdicionar, setClienteParaAdicionar] =
+    useState<ClienteType | null>(null);
+  const [papelParaAdicionar, setPapelParaAdicionar] =
+    useState<PapelClienteCaso>("autor");
 
   const [anexosNovos, setAnexosNovos] = useState<File[]>([]);
   const [anexosExistentes, setAnexosExistentes] = useState<CasoAnexoType[]>([]);
   const [anexosRemovidos, setAnexosRemovidos] = useState<string[]>([]);
 
   const methods = useForm<CreateCasoPayload>({
-    resolver: zodResolver(createCasoSchema),
+    resolver: zodResolver(createCasoSchema(tv)),
     defaultValues: {
       numero_processo: "",
       titulo: "",
@@ -114,14 +120,18 @@ export default function CasoFormView({ mode, casoId }: Props) {
     },
   });
 
-  const { handleSubmit, reset, formState: { isDirty } } = methods;
+  const {
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = methods;
 
   useEffect(() => {
     let ativo = true;
 
     getCategorias()
       .then((data) => {
-        if (ativo) setCategorias(data);
+        if (ativo) setCategorias(Array.isArray(data) ? data : []);
       })
       .catch(() => {})
       .finally(() => {
@@ -233,7 +243,10 @@ export default function CasoFormView({ mode, casoId }: Props) {
     );
   };
 
-  const handlePapelChange = (clienteId: string | number, papel: PapelClienteCaso) => {
+  const handlePapelChange = (
+    clienteId: string | number,
+    papel: PapelClienteCaso,
+  ) => {
     setClientesSelecionados((prev) =>
       prev.map((s) => (s.cliente.id === clienteId ? { ...s, papel } : s)),
     );
@@ -279,8 +292,8 @@ export default function CasoFormView({ mode, casoId }: Props) {
 
       toast.success(isCreate ? t("toast.created") : t("toast.updated"));
       router.push(`/casos`);
-    } catch {
-      toast.error(isCreate ? t("errors.create") : t("errors.update"));
+    } catch (err) {
+      toast.error(translateError(err));
     } finally {
       setSaving(false);
     }
@@ -356,6 +369,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   <Box sx={{ gridColumn: "1 / -1" }}>
                     <InputBasico
                       field="titulo"
+                      placeholder={t("fields.title")}
                       label={t("fields.title")}
                       required={!isView}
                       disabled={isView}
@@ -372,7 +386,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                         value={
                           isView
                             ? formatNumeroProcesso(field.value ?? "")
-                            : field.value ?? ""
+                            : (field.value ?? "")
                         }
                         label={t("fields.processNumber")}
                         disabled={isView}
@@ -521,7 +535,9 @@ export default function CasoFormView({ mode, casoId }: Props) {
                     <Select
                       value={papelParaAdicionar}
                       onChange={(e) =>
-                        setPapelParaAdicionar(e.target.value as PapelClienteCaso)
+                        setPapelParaAdicionar(
+                          e.target.value as PapelClienteCaso,
+                        )
                       }
                       sx={{ minWidth: { xs: "100%", sm: 180 } }}
                     >
@@ -552,7 +568,9 @@ export default function CasoFormView({ mode, casoId }: Props) {
                         <TableCell>{t("table.document")}</TableCell>
                         <TableCell>{t("table.role")}</TableCell>
                         {!isView && (
-                          <TableCell align="right">{t("table.actions")}</TableCell>
+                          <TableCell align="right">
+                            {t("table.actions")}
+                          </TableCell>
                         )}
                       </TableRow>
                     </TableHead>
@@ -569,7 +587,9 @@ export default function CasoFormView({ mode, casoId }: Props) {
                       {clientesSelecionados.map(({ cliente, papel }) => (
                         <TableRow key={cliente.id}>
                           <TableCell>
-                            <Typography fontWeight={600}>{cliente.name}</Typography>
+                            <Typography fontWeight={600}>
+                              {cliente.name}
+                            </Typography>
                           </TableCell>
 
                           <TableCell sx={{ fontFamily: "monospace" }}>

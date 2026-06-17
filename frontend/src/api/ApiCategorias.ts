@@ -3,7 +3,8 @@ import { getAxios } from "@/configs/axios";
 
 const getCategorias = async (): Promise<CategoriaType[]> => {
   const response = await getAxios().get("/categorias");
-  return response.data;
+  return response.data.data 
 };
+
 
 export { getCategorias };

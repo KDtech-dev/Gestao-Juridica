@@ -33,13 +33,18 @@ class ResponseService
         );
     }
 
-    public static function exception(\Throwable $exception, ?int $code = null, ?string $message = null)
-    {
+    public static function exception(
+        \Throwable $exception,
+        ?int $code = null,
+        ?string $message = null,
+        ?array $errors = null
+    ) {
         return response()->json(
             [
                 'success' => false,
                 'message' => $message ?? $exception->getMessage(),
                 'code' => $code ?? $exception->getCode(),
+                'errors' => $errors,
             ],
             $code ?? Response::HTTP_INTERNAL_SERVER_ERROR
         );

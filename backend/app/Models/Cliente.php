@@ -33,11 +33,6 @@ class Cliente extends Model
         return $this->belongsTo(Endereco::class);
     }
 
-    public function processos()
-    {
-        return $this->hasMany(Processo::class);
-    }
-
     public function anexos()
     {
         return $this->morphMany(Anexo::class, 'anexavel');
