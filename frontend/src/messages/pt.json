@@ -858,6 +858,9 @@
       "unique": "Este CPF/CNPJ já está cadastrado.",
       "invalid": "CPF deve ter 11 dígitos e CNPJ 14 dígitos."
     },
+    "cpf": {
+      "size": "CPF deve ter exatamente 11 dígitos "
+    },
     "email": {
       "required": "O e-mail é obrigatório.",
       "invalid": "Informe um e-mail válido.",
@@ -892,6 +895,46 @@
     "data_encerramento": {
       "invalid": "Informe uma data de encerramento válida.",
       "after_or_equal": "A data de encerramento deve ser igual ou posterior à data de abertura."
+    },
+    "categoria_id": {
+      "required": "Selecione uma categoria.",
+      "exists": "Categoria inválida."
+    },
+    "imagem_caminho": {
+      "max": "O caminho da imagem deve ter no máximo 255 caracteres."
+    },
+    "imagem": {
+      "invalid": "O arquivo enviado não é uma imagem válida.",
+      "mimes": "A imagem deve ser nos formatos: jpg, jpeg, png, gif ou webp.",
+      "max": "A imagem deve ter no máximo 5MB."
+    },
+    "autor": {
+      "required": "Informe o nome do autor.",
+      "max": "O nome do autor deve ter no máximo 255 caracteres."
+    },
+    "resumo": {
+      "max": "O resumo deve ter no máximo 2000 caracteres."
+    },
+    "anexos": {
+      "invalid": "Arquivo inválido.",
+      "required": "Envie pelo menos um anexo.",
+      "mimes": "Os anexos devem ser: PDF, DOC, DOCX, JPG, JPEG ou PNG.",
+      "max": "Cada anexo deve ter no máximo 10MB."
+    },
+    "role": {
+      "in": "A role deve ser: funcionario, advogado ou admin."
+    },
+    "oab_numero": {
+      "required_if": "O número da OAB é obrigatório para advogados."
+    },
+    "oab_uf": {
+      "required_if": "A UF da OAB é obrigatória para advogados."
+    },
+    "uf": {
+      "size": "A UF deve tere exatamente 2 caracteres."
+    },
+    "cep": {
+      "size": "O CEP deve ter exatamente 8 dígitos"
     }
   }
 }

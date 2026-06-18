@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use App\Traits\HasSnowflakeId;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Spatie\Permission\Models\Permission as SpatiePermission;
-use Kra8\Snowflake\Snowflake;
 
 class Permission extends SpatiePermission
 {
-    use HasSnowflakeId;
+    use HasUuids;
 }

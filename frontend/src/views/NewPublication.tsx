@@ -3,19 +3,19 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
+  IconButton,
+  MenuItem,
   Paper,
   Stack,
-  Step,
-  StepLabel,
-  Stepper,
+  TextField,
   Typography,
+  useTheme,
 } from "@mui/material";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { StepDadosBasicos } from "@/components/publications/StepDadosBasicos";
-import { StepRevisao } from "@/components/publications/StepRevisao";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 import {
   CategoriaType,
@@ -30,7 +30,6 @@ import {
   getStoredPublicacoes,
   saveStoredPublicacao,
 } from "@/utils/publicationsStorage";
-import { publicationSchema } from "@/schemas/publication.schema";
 import {
   atualizarPublicacaoClient,
   buscarPublicacaoClient,
@@ -43,6 +42,15 @@ import type {
 } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
 import { getCategorias } from "@/api/ApiCategorias";
+import { Icon } from "@/components/AppIcon";
+import InputImage from "@/components/InputImage";
+import InputSingleFile from "@/components/InputSingleFile";
+import { HtmlTextEditor } from "@/components/publications/HtmlTextEditor";
+ 
+
+const  STATUS_OPTIONS ={
+  
+}
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
@@ -189,9 +197,9 @@ type Props = {
 export default function NewPublicationView({ editSlug }: Props) {
   const { user } = useAuth();
   const router = useRouter();
+  const theme = useTheme();
   const t = useTranslations("internal.publicationForm");
   const categoriesErrorMessage = t("errors.categories");
-  const steps = [t("steps.data"), t("steps.review")];
   const [fetchedEditItem, setFetchedEditItem] = useState<
     PublicacaoItem | undefined
   >();
@@ -228,7 +236,6 @@ export default function NewPublicationView({ editSlug }: Props) {
       anexosRemovidos: [],
     };
   }, [editItem, user?.name]);
-  const [activeStep, setActiveStep] = useState(0);
   const [form, setForm] = useState<PublicacaoFormData>(initialResolvedForm);
   const [initialSnapshot, setInitialSnapshot] = useState(() =>
     getFormSnapshot(initialResolvedForm),
@@ -245,6 +252,12 @@ export default function NewPublicationView({ editSlug }: Props) {
   const hasUnsavedChanges = useMemo(
     () => getFormSnapshot(form) !== initialSnapshot,
     [form, initialSnapshot],
+  );
+
+  const selectedCategoria = useMemo(
+    () =>
+      categorias.find((categoria) => String(categoria.id) === form.categoriaId),
+    [categorias, form.categoriaId],
   );
 
   useEffect(() => {
@@ -402,23 +415,28 @@ export default function NewPublicationView({ editSlug }: Props) {
   };
 
   const validateForm = () => {
-    const parsed = publicationSchema.safeParse(form);
+    const nextErrors: PublicationErrors = {};
+    const titulo = getTextValue(form.titulo).trim();
+    const categoriaId = getTextValue(form.categoriaId).trim();
+    const autor = getTextValue(form.autor).trim();
+    const resumo = getTextValue(form.resumo).trim();
+    const conteudo = getTextValue(form.conteudo).trim();
 
-    if (parsed.success) {
-      setErrors({});
-      return true;
+    if (!titulo) nextErrors.titulo = t("validation.titulo");
+    if (!categoriaId) nextErrors.categoriaId = t("validation.categoriaId");
+    if (!form.bannerImage) nextErrors.bannerImage = t("validation.bannerImage");
+    if (!autor) nextErrors.autor = t("validation.autor");
+    if (!resumo) nextErrors.resumo = t("validation.resumo");
+    if (!conteudo) nextErrors.conteudo = t("validation.conteudo");
+    if (!["rascunho", "publicado", "arquivado"].includes(form.status)) {
+      nextErrors.status = t("validation.status");
     }
 
-    const nextErrors: PublicationErrors = {};
+    if (resumo.length > 2000) nextErrors.resumo = t("validation.resumo");
 
-    for (const issue of parsed.error.issues) {
-      const key = issue.path[0];
-
-      if (typeof key === "string" && key !== "anexos") {
-        nextErrors[key as keyof PublicationErrors] = t(
-          `validation.${key as keyof PublicationErrors}`,
-        );
-      }
+    if (Object.keys(nextErrors).length === 0) {
+      setErrors({});
+      return true;
     }
 
     setErrors(nextErrors);
@@ -427,26 +445,10 @@ export default function NewPublicationView({ editSlug }: Props) {
     return false;
   };
 
-  const validateStep = () => {
-    if (activeStep === 0) {
-      return validateForm();
-    }
-
-    return true;
-  };
-
-  const nextStep = () => {
-    if (!validateStep()) return;
-    setActiveStep((prev) => Math.min(prev + 1, steps.length - 1));
-  };
-
-  const prevStep = () => setActiveStep((prev) => Math.max(prev - 1, 0));
-
   const publish = async () => {
     if (submitting) return;
 
     if (!validateForm()) {
-      setActiveStep(0);
       return;
     }
 
@@ -555,106 +557,259 @@ export default function NewPublicationView({ editSlug }: Props) {
       <SidebarDashboard activeKey="publicacoes" />
 
       <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
-        <HeaderDashboard />
+        <HeaderDashboard showSearch={false} />
 
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
-          <Box mb={2.2}>
-            <Typography variant="h4" fontWeight={700} color="text.primary">
+          <Stack direction="row" alignItems="center" spacing={1.5} mb={3.5}>
+            <IconButton onClick={requestCancel}>
+              <Icon icon="mdi:arrow-left" width={22} />
+            </IconButton>
+            <Typography
+              variant="h4"
+              fontWeight={800}
+              sx={{ color: "text.primary" }}
+            >
               {isEditMode ? t("title.edit") : t("title.new")}
             </Typography>
-            <Typography color="text.secondary" fontSize="0.94rem">
-              {isEditMode ? t("subtitle.edit") : t("subtitle.new")}
-            </Typography>
-          </Box>
+          </Stack>
 
-          <Paper
-            sx={{
-              p: { xs: 2, md: 2.5 },
-              borderRadius: "16px",
-              border: "1px solid",
-              borderColor: "divider",
-              bgcolor: "background.paper",
-              boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
+          <Box
+            component="form"
+            onSubmit={(event) => {
+              event.preventDefault();
+              publish();
             }}
+            sx={{ display: "flex", flexDirection: "column", gap: 3 }}
           >
-            <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-
-            {activeStep === 0 && (
-              <StepDadosBasicos
-                data={form}
-                errors={errors}
-                categorias={categorias}
-                categoriasLoading={categoriasLoading}
-                onChange={handleChange}
-              />
-            )}
-            {activeStep === 1 && <StepRevisao data={form} />}
-
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              mt={3}
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: "20px",
+                border: `1px solid ${theme.palette.divider}`,
+                p: 3,
+              }}
             >
-              <Stack direction="row" spacing={1}>
-                <Button
-                  variant="outlined"
-                  color="inherit"
-                  onClick={requestCancel}
-                  sx={{
-                    textTransform: "none",
-                    borderColor: "divider",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {t("actions.cancel")}
-                </Button>
+              <Typography fontWeight={700} mb={2}>
+                {t("steps.data")}
+              </Typography>
 
-                <Button
-                  variant="outlined"
-                  onClick={prevStep}
-                  disabled={activeStep === 0}
-                  sx={{
-                    textTransform: "none",
-                    borderColor: "divider",
-                    whiteSpace: "nowrap",
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+                  gap: 2,
+                }}
+              >
+                <Box sx={{ gridColumn: "1 / -1" }}>
+                  <TextField
+                    fullWidth
+                    label={t("fields.title")}
+                    value={form.titulo}
+                    onChange={(event) =>
+                      handleChange("titulo", event.target.value)
+                    }
+                    error={Boolean(errors.titulo)}
+                    helperText={errors.titulo}
+                    inputProps={{ maxLength: 255 }}
+                    InputLabelProps={{ shrink: true }}
+                    required
+                  />
+                </Box>
+
+                <TextField
+                  select
+                  fullWidth
+                  label={t("fields.category")}
+                  value={form.categoriaId}
+                  onChange={(event) => {
+                    const categoriaId = event.target.value;
+                    const categoria = categorias.find(
+                      (item) => String(item.id) === categoriaId,
+                    );
+
+                    handleChange("categoriaId", categoriaId);
+                    handleChange("categoria", categoria?.nome ?? "");
                   }}
+                  error={Boolean(errors.categoriaId || errors.categoria)}
+                  helperText={
+                    errors.categoriaId ||
+                    errors.categoria ||
+                    selectedCategoria?.descricao ||
+                    (categoriasLoading
+                      ? t("fields.categoriesLoading")
+                      : t("fields.categoryHelper"))
+                  }
+                  disabled={categoriasLoading}
+                  InputLabelProps={{ shrink: true }}
                 >
-                  {t("actions.back")}
-                </Button>
+                  {categoriasLoading && (
+                    <MenuItem value="">
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <CircularProgress size={16} />
+                        <span>{t("fields.categoriesLoading")}</span>
+                      </Stack>
+                    </MenuItem>
+                  )}
+                  {categorias.map((categoria) => (
+                    <MenuItem key={categoria.id} value={String(categoria.id)}>
+                      {categoria.nome}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <TextField
+                  fullWidth
+                  label={t("fields.author")}
+                  value={form.autor}
+                  onChange={(event) =>
+                    handleChange("autor", event.target.value)
+                  }
+                  error={Boolean(errors.autor)}
+                  helperText={errors.autor}
+                  inputProps={{ maxLength: 255 }}
+                  InputLabelProps={{ shrink: true }}
+                  required
+                />
+
+                <TextField
+                  select
+                  fullWidth
+                  label="Status"
+                  value={form.status}
+                  onChange={(event) =>
+                    handleChange(
+                      "status",
+                      event.target.value as PublicacaoFormData["status"],
+                    )
+                  }
+                  error={Boolean(errors.status)}
+                  helperText={errors.status || t("fields.statusHelper")}
+                  InputLabelProps={{ shrink: true }}
+                >
+                  {STATUS_OPTIONS.map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {t(`fields.statusOptions.${status}`)}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <Box sx={{ gridColumn: "1 / -1" }}>
+                  <Typography fontWeight={700} color="text.primary" mb={1}>
+                    {t("fields.bannerImage")}
+                  </Typography>
+                  <InputImage
+                    value={form.bannerImage}
+                    onImageChange={(file) =>
+                      handleChange("bannerImage", file ?? "")
+                    }
+                    cropImage
+                    aspect={16 / 9}
+                    imageHeight={300}
+                    subBoxInput={{
+                      sx: {
+                        borderColor: errors.bannerImage
+                          ? "error.main"
+                          : "divider",
+                        bgcolor: "background.default",
+                      },
+                    }}
+                  />
+                  <Typography
+                    color={errors.bannerImage ? "error.main" : "text.secondary"}
+                    fontSize="0.78rem"
+                    mt={0.75}
+                  >
+                    {errors.bannerImage || t("fields.bannerImageHelper")}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: "20px",
+                border: `1px solid ${theme.palette.divider}`,
+                p: 3,
+              }}
+            >
+              <Typography fontWeight={700} mb={2}>
+                {t("fields.content")}
+              </Typography>
+
+              <Stack spacing={2}>
+                <HtmlTextEditor
+                  label={t("fields.summary")}
+                  value={form.resumo}
+                  onChange={(value) => handleChange("resumo", value)}
+                  error={errors.resumo}
+                  minRows={4}
+                  helperText={t("fields.summaryCounter", {
+                    count: form.resumo.length,
+                  })}
+                />
+
+                <HtmlTextEditor
+                  label={t("fields.content")}
+                  value={form.conteudo}
+                  onChange={(value) => handleChange("conteudo", value)}
+                  error={errors.conteudo}
+                  minRows={8}
+                />
               </Stack>
+            </Paper>
 
-              {activeStep < steps.length - 1 ? (
-                <Button
-                  variant="contained"
-                  onClick={nextStep}
-                  sx={{ textTransform: "none", whiteSpace: "nowrap" }}
-                >
-                  {t("actions.next")}
-                </Button>
-              ) : (
-                <Button
-                  variant="contained"
-                  color="success"
-                  onClick={publish}
-                  disabled={submitting}
-                  sx={{ textTransform: "none", whiteSpace: "nowrap" }}
-                >
-                  {submitting
-                    ? t("actions.saving")
-                    : isEditMode
-                      ? t("actions.saveChanges")
-                      : t("actions.savePublication")}
-                </Button>
-              )}
+            <Paper
+              elevation={0}
+              sx={{
+                borderRadius: "20px",
+                border: `1px solid ${theme.palette.divider}`,
+                p: 3,
+              }}
+            >
+              <Typography fontWeight={700} mb={2}>
+                {t("review.attachments")}
+              </Typography>
+
+              <InputSingleFile
+                multiple
+                values={form.anexos}
+                existingFiles={form.anexosExistentes}
+                onFilesChange={(files) => handleChange("anexos", files)}
+                onRemoveExistingFile={(id) => {
+                  handleChange(
+                    "anexosExistentes",
+                    form.anexosExistentes.filter((anexo) => anexo.id !== id),
+                  );
+                  handleChange("anexosRemovidos", [
+                    ...form.anexosRemovidos,
+                    id,
+                  ]);
+                }}
+                tipos_aceitos={["pdf", "doc", "docx", "jpg", "jpeg", "png"]}
+                maxSize={10 * 1024 * 1024}
+                label={t("fields.attachment")}
+                helperText={t("fields.attachmentHelper")}
+              />
+            </Paper>
+
+            <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
+              <Button variant="outlined" onClick={requestCancel}>
+                {t("actions.cancel")}
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={submitting || (isEditMode && !hasUnsavedChanges)}
+              >
+                {submitting
+                  ? t("actions.saving")
+                  : isEditMode
+                    ? t("actions.saveChanges")
+                    : t("actions.savePublication")}
+              </Button>
             </Stack>
-          </Paper>
+          </Box>
         </Container>
       </Box>
 

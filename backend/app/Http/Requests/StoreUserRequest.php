@@ -4,12 +4,64 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Override;
 
 class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
         return $this->user()?->hasRole('admin') ?? false;
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $data = $this->all();
+
+        if (isset($data['cpf'])) {
+            $data['cpf'] = preg_replace('/\D/', '', $data['cpf']);
+        }
+
+        if (isset($data['funcionario']['data_nascimento'])) {
+            $data['funcionario']['data_nascimento'] = $this->formatDate($data['funcionario']['data_nascimento']);
+        }
+        if (isset($data['advogado']['data_nascimento'])) {
+            $data['advogado']['data_nascimento'] = $this->formatDate($data['advogado']['data_nascimento']);
+        }
+
+        if (isset($data['funcionario']['celular'])) {
+            $data['funcionario']['celular'] = preg_replace('/\D/', '', $data['funcionario']['celular']);
+        }
+
+        if (isset($data['advogado']['celular'])) {
+            $data['advogado']['celular'] = preg_replace('/\D/', '', $data['advogado']['celular']);
+        }
+
+        if (isset($data['endereco']['cep'])) {
+            $data['endereco']['cep'] = preg_replace('/\D/', '', $data['endereco']['cep']);
+        }
+
+        $this->replace($data);
+    }
+
+    private function formatDate(?string $date): ?string
+    {
+        if (empty($date)) {
+            return null;
+        }
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return $date;
+        }
+
+        if (preg_match('/^(\d{2})\/(\d{2})\/(\d{4})$/', $date, $matches)) {
+            return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+        }
+
+        if (preg_match('/^(\d{2})-(\d{2})-(\d{4})$/', $date, $matches)) {
+            return $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+        }
+
+        return $date;
     }
 
     public function rules(): array
@@ -53,12 +105,12 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'role.in'                       => 'A role deve ser: funcionario, advogado ou admin.',
-            'cpf.size'                       => 'O CPF deve ter exatamente 11 dígitos (sem pontuação).',
-            'advogado.oab_numero.required_if' => 'O número da OAB é obrigatório para advogados.',
-            'advogado.oab_uf.required_if'     => 'A UF da OAB é obrigatória para advogados.',
-            'endereco.uf.size'               => 'A UF do endereço deve ter 2 caracteres.',
-            'endereco.cep.size'              => 'O CEP deve ter exatamente 8 dígitos (sem hífen).',
+            'role.in'                       => 'validation.role.in',
+            'cpf.size'                       => 'validation.cpf.size',
+            'advogado.oab_numero.required_if' => 'validation.oab_numero.required_if',
+            'advogado.oab_uf.required_if'     => 'validation.oab_uf.required_if',
+            'endereco.uf.size'               => 'validation.uf.size',
+            'endereco.cep.size'              => 'validation.cep.size',
         ];
     }
 }

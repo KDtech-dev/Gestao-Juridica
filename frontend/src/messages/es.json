@@ -848,6 +848,7 @@
       "descriptionLabel": "Descripción/Pauta"
     }
   },
+
   "validation": {
     "name": {
       "required": "El nombre es obligatorio.",
@@ -857,6 +858,9 @@
       "required": "El CPF o CNPJ es obligatorio.",
       "unique": "Este CPF/CNPJ ya está registrado.",
       "invalid": "El CPF debe tener 11 dígitos y el CNPJ 14 dígitos."
+    },
+    "cpf": {
+      "size": "El CPF debe tener exactamente 11 dígitos."
     },
     "email": {
       "required": "El correo electrónico es obligatorio.",
@@ -870,20 +874,20 @@
     "foto_perfil": {
       "image": "El archivo debe ser una imagen.",
       "mimes": "La imagen debe ser JPG, PNG, GIF o WebP.",
-      "max": "La imagen no puede superar los 5 MB."
+      "max": "La imagen no puede ser mayor a 5MB."
     },
     "titulo": {
       "required": "El título es obligatorio.",
       "max": "El título no puede tener más de 255 caracteres.",
-      "string": "El título debe ser un texto."
+      "string": "El título debe ser texto."
     },
     "numero_processo": {
-      "max":"El nombre no puede tener más de 255 caracteres.",
+      "max": "El número de proceso no puede tener más de 255 caracteres.",
       "min": "El número de proceso debe tener al menos 20 caracteres.",
       "unique": "Este número de proceso ya está registrado."
     },
     "status": {
-      "in": "Estado no válido."
+      "in": "Estado inválido."
     },
     "data_abertura": {
       "required": "La fecha de apertura es obligatoria.",
@@ -892,6 +896,31 @@
     "data_encerramento": {
       "invalid": "Ingrese una fecha de cierre válida.",
       "after_or_equal": "La fecha de cierre debe ser igual o posterior a la fecha de apertura."
+    },
+    "imagem": {
+      "mimes": "La imagen debe ser JPG, PNG, GIF o WebP."
+    },
+    "autor": {
+      "string": "El autor debe ser texto.",
+      "max": "El autor no puede tener más de 255 caracteres."
+    },
+    "anexo": {
+      "mimes": "El anexo debe ser PDF, DOC, JPG o PNG."
+    },
+    "role": {
+      "in": "El rol debe ser: funcionario, advogado o admin."
+    },
+    "oab_numero": {
+      "required_if": "El número de la OAB es obligatorio para abogados."
+    },
+    "oab_uf": {
+      "required_if": "La UF de la OAB es obligatoria para abogados."
+    },
+    "uf": {
+      "size": "La UF debe tener exactamente 2 caracteres."
+    },
+    "cep": {
+      "size": "El CEP debe tener exactamente 8 dígitos."
     }
   }
 }

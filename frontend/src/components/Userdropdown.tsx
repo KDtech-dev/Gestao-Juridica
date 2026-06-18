@@ -121,7 +121,7 @@ const UserDropdown = () => {
             >
               <UserAvatar
                 name={userName}
-                sx={{ width: "2.5rem", height: "2.5rem" }}
+                sx={{ width: "2.0rem", height: "2.0rem" }}
               />
             </Badge>
             <Box

@@ -10,7 +10,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('notificacoes', function (Blueprint $table) {
-            $table->foreignId('compromisso_id')
+            $table->foreignUuid('compromisso_id')
                 ->nullable()
                 ->after('usuario_id')
                 ->constrained('compromissos')

@@ -64,10 +64,10 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'role.in'          => 'A role deve ser: funcionario, advogado ou admin.',
-            'cpf.size'         => 'O CPF deve ter exatamente 11 dígitos (sem pontuação).',
-            'endereco.uf.size' => 'A UF do endereço deve ter 2 caracteres.',
-            'endereco.cep.size' => 'O CEP deve ter exatamente 8 dígitos (sem hífen).',
+            'role.in'                       => 'validation.role.in',
+            'cpf.size'                       => 'validation.cpf.size',
+            'endereco.uf.size'               => 'validation.uf.size',
+            'endereco.cep.size'              => 'validation.cep.size',
         ];
     }
 }
