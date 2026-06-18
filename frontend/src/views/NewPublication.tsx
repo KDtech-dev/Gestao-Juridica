@@ -46,11 +46,8 @@ import { Icon } from "@/components/AppIcon";
 import InputImage from "@/components/InputImage";
 import InputSingleFile from "@/components/InputSingleFile";
 import { HtmlTextEditor } from "@/components/publications/HtmlTextEditor";
+import { STATUS_OPTIONS } from "@/schemas/PublicationSchema";
  
-
-const  STATUS_OPTIONS ={
-  
-}
 
 const initialForm: PublicacaoFormData = {
   titulo: "",

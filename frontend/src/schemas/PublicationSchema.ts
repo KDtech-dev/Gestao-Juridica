@@ -30,12 +30,7 @@ export const createPublicacaoSchema = (t: TFunction) =>
 
     publicado_em: z.string().datetime().optional().nullable(),
     anexos: z
-      .array(
-        z.object({
-          arquivo: z.instanceof(File, { message: t("anexos.invalid") }),
-          nome: z.string().optional(),
-        }),
-      )
+      .array(z.instanceof(File, { message: t("anexos.invalid") }))
       .optional()
       .nullable(),
   });
@@ -46,12 +41,7 @@ export const updatePublicacaoSchema = (t: TFunction) =>
 export const uploadAnexoPublicacaoSchema = (t: TFunction) =>
   z.object({
     anexos: z
-      .array(
-        z.object({
-          arquivo: z.instanceof(File, { message: t("anexos.invalid") }),
-          nome: z.string().optional(),
-        }),
-      )
+      .array(z.instanceof(File, { message: t("anexos.invalid") }))
       .min(1, t("anexos.required")),
   });
 
@@ -67,9 +57,7 @@ export type UploadAnexoPublicacaoPayload = z.infer<
   ReturnType<typeof uploadAnexoPublicacaoSchema>
 >;
 
-export type AnexoPublicacao = NonNullable<
-  CreatePublicacaoPayload["anexos"]
->[number];
+export type AnexoPublicacao = File;
 
 export const STATUS_OPTIONS = ["rascunho", "publicado", "arquivado"] as const;
 export type StatusPublicacao = (typeof STATUS_OPTIONS)[number];

@@ -19,7 +19,7 @@ class StorePublicacaoRequest extends FormRequest
             'imagem_caminho' => 'nullable|string|max:255',
             'imagem' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'autor' => 'required|string|max:255',
-            'resumo' => 'nullable|string',
+            'resumo' => 'nullable|string|max:2000',
             'conteudo' => 'nullable|string',
             'status' => 'required|in:rascunho,publicado,arquivado',
             'publicado_em' => 'nullable|date',
@@ -28,7 +28,7 @@ class StorePublicacaoRequest extends FormRequest
         ];
     }
 
-        public function messages(): array
+    public function messages(): array
     {
         return [
             'titulo.required' => 'validation.titulo.required',
