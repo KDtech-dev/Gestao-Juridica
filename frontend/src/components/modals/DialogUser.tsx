@@ -14,7 +14,11 @@ import {
   TextField,
 } from "@mui/material";
 import { BaseModal } from "@/components/modals/BaseModal";
-import { createUserSchema, UF_SIGLAS, updateUserSchema } from "@/schemas/UserSchema";
+import {
+  createUserSchema,
+  UF_SIGLAS,
+  updateUserSchema,
+} from "@/schemas/UserSchema";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
@@ -36,7 +40,6 @@ type Props = {
   mode: "create" | "edit" | "view";
   user?: UserType | null;
 };
-
 
 export default function DialogUser({
   open,
@@ -229,12 +232,25 @@ export default function DialogUser({
 
           {role === "advogado" && (
             <>
-              <InputBasico
-                field="advogado.celular"
-                label={t("fields.mobile")}
-                placeholder={t("fields.mobilePlaceholder")}
-                maxLength={20}
-                disabled={isReadOnly}
+              <Controller
+                name="advogado.celular"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    value={field.value ?? ""}
+                    fullWidth
+                    label={t("fields.mobile")}
+                    placeholder={t("fields.mobilePlaceholder")}
+                    disabled={isReadOnly}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    inputProps={{ maxLength: 15 }}
+                    onChange={(e) =>
+                      field.onChange(formatTelefone(e.target.value))
+                    }
+                  />
+                )}
               />
               <InputBasico
                 field="advogado.data_nascimento"
@@ -247,7 +263,7 @@ export default function DialogUser({
                 direction="row"
                 spacing={1.5}
                 flexWrap="wrap"
-                alignItems="flex-start"
+                alignItems="stretch" 
               >
                 <Controller
                   name="advogado.oab_numero"
@@ -287,7 +303,7 @@ export default function DialogUser({
                         onChange={(e) => field.onChange(e.target.value)}
                       >
                         <MenuItem value="">
-                          <>{t("fields.oabUfPlaceholder")}</>
+                          <em>{t("fields.oabUfPlaceholder")}</em>
                         </MenuItem>
                         {UF_SIGLAS.map((uf) => (
                           <MenuItem key={uf} value={uf}>
@@ -295,11 +311,9 @@ export default function DialogUser({
                           </MenuItem>
                         ))}
                       </Select>
-                      {fieldState.error && (
-                        <FormHelperText>
-                          {fieldState.error.message}
-                        </FormHelperText>
-                      )}
+                      <FormHelperText sx={{ minHeight: "1.5rem" }}>
+                        {fieldState.error?.message || "\u00A0"}
+                      </FormHelperText>
                     </FormControl>
                   )}
                 />

@@ -52,6 +52,7 @@ import {
 import InputBasico from "@/components/InputBasico";
 import InputSingleFile from "@/components/InputSingleFile";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
+import { categoriaNomeParaChave } from "@/constants/categorias";
 
 type ViewMode = "create" | "edit" | "view";
 
@@ -80,6 +81,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
   const translateError = useApiErrorTranslator();
   const t = useTranslations("internal.cases.form");
   const tv = useTranslations("validation");
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const theme = useTheme();
   const router = useRouter();
   const isView = mode === "view";
@@ -443,7 +445,12 @@ export default function CasoFormView({ mode, casoId }: Props) {
                             multiple
                             loading={loadingCategorias}
                             options={categorias}
-                            getOptionLabel={(option) => option.nome}
+                            getOptionLabel={(option) => {
+                              const chave = categoriaNomeParaChave[option.nome];
+                              return chave
+                                ? tPracticeAreas(chave)
+                                : option.nome; 
+                            }}
                             isOptionEqualToValue={(option, value) =>
                               option.id === value.id
                             }

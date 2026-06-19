@@ -16,6 +16,7 @@ import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 import type { CategoriaType, UserType } from "@/@core/types";
 import { getCategorias } from "@/api/ApiCategorias";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
+import { categoriaNomeParaChave } from "@/constants/categorias";
 
 type Props = {
   isAdvogado: boolean;
@@ -24,6 +25,7 @@ type Props = {
 
 export function CardDadosProfissionais({ isAdvogado }: Props) {
   const t = useTranslations("internal.profile");
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const { control } = useFormContext<ProfileFormSchemaType>();
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
@@ -88,9 +90,11 @@ export function CardDadosProfissionais({ isAdvogado }: Props) {
                     multiple
                     loading={loadingCategorias}
                     options={categorias}
-                    getOptionLabel={(option) =>
-                      typeof option === "string" ? option : option.nome
-                    }
+                    getOptionLabel={(option) => {
+                      if (typeof option === "string") return option;
+                      const chave = categoriaNomeParaChave[option.nome];
+                      return chave ? tPracticeAreas(chave) : option.nome; 
+                    }}
                     isOptionEqualToValue={(option, value) =>
                       option.id ===
                       (typeof value === "string" ? value : value.id)

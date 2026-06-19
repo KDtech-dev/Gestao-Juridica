@@ -49,6 +49,7 @@ import InputImage from "@/components/InputImage";
 import InputSingleFile from "@/components/InputSingleFile";
 import { HtmlTextEditor } from "@/components/publications/HtmlTextEditor";
 import { STATUS_OPTIONS } from "@/schemas/PublicationSchema";
+import { categoriaNomeParaChave } from "@/constants/categorias";
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
@@ -198,6 +199,7 @@ export default function NewPublicationView({ editSlug }: Props) {
   const theme = useTheme();
   const t = useTranslations("internal.publicationForm");
   const categoriesErrorMessage = t("errors.categories");
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const [fetchedEditItem, setFetchedEditItem] = useState<
     PublicacaoItem | undefined
   >();
@@ -608,9 +610,11 @@ export default function NewPublicationView({ editSlug }: Props) {
                   <Autocomplete
                     options={categorias}
                     loading={categoriasLoading}
-                    getOptionLabel={(option) =>
-                      typeof option === "string" ? option : option.nome
-                    }
+                    getOptionLabel={(option) => {
+                      if (typeof option === "string") return option;
+                      const chave = categoriaNomeParaChave[option.nome];
+                      return chave ? tPracticeAreas(chave) : option.nome;
+                    }}
                     isOptionEqualToValue={(option, value) =>
                       option.id ===
                       (typeof value === "string" ? value : value.id)
@@ -637,12 +641,22 @@ export default function NewPublicationView({ editSlug }: Props) {
                         helperText={
                           errors.categoriaId ||
                           errors.categoria ||
-                          (categorias.find(
-                            (c) => String(c.id) === form.categoriaId,
-                          )?.descricao ??
-                            (categoriasLoading
+                          (() => {
+                            const categoriaSelecionada = categorias.find(
+                              (c) => String(c.id) === form.categoriaId,
+                            );
+                            if (categoriaSelecionada?.descricao) {
+                              const chave =
+                                categoriaNomeParaChave[
+                                  categoriaSelecionada.nome
+                                ];
+
+                              return categoriaSelecionada.descricao;
+                            }
+                            return categoriasLoading
                               ? t("fields.categoriesLoading")
-                              : t("fields.categoryHelper")))
+                              : t("fields.categoryHelper");
+                          })()
                         }
                         InputLabelProps={{ shrink: true }}
                         InputProps={{

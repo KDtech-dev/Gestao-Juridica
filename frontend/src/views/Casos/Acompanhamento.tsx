@@ -25,6 +25,7 @@ import { toast } from "@/utils/toast";
 import { CasoType, StatusCaso } from "@/@core/types";
 import { deleteCaso, getCasos } from "@/api/apiCasos";
 import { formatNumeroProcesso } from "@/@core/format";
+import { categoriaNomeParaChave } from "@/constants/categorias";
 
 const STATUS_COLOR: Record<
   StatusCaso,
@@ -40,7 +41,7 @@ export default function CasosView() {
   const t = useTranslations("internal.cases");
   const theme = useTheme();
   const router = useRouter();
-
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const [casos, setCasos] = useState<CasoType[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -121,6 +122,7 @@ export default function CasosView() {
       minWidth: 140,
       field: "status",
       headerName: t("table.status"),
+      align: "center",
       renderCell: ({ row }) => (
         <Chip
           label={t(`status.${row.status}`)}
@@ -135,11 +137,21 @@ export default function CasosView() {
       minWidth: 180,
       field: "categorias",
       headerName: t("table.area"),
-      renderCell: ({ row }) => (
-        <Typography variant="body2" color="text.secondary">
-          {row.categorias?.map((c) => c.nome).join(", ") || "-"}
-        </Typography>
-      ),
+      renderCell: ({ row }) => {
+        const nomesTraduzidos =
+          row.categorias
+            ?.map((c) => {
+              const chave = categoriaNomeParaChave[c.nome];
+              return chave ? tPracticeAreas(chave) : c.nome;
+            })
+            .join(", ") || "-";
+
+        return (
+          <Typography variant="body2" color="text.secondary">
+            {nomesTraduzidos}
+          </Typography>
+        );
+      },
     },
     {
       flex: 0.5,
