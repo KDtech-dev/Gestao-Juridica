@@ -19,7 +19,6 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginInput, loginSchema } from "@/schemas/auth.schema";
 import { postLogin } from "@/api/apiAuth";
 import { handleRequest } from "@/configs/handleRequest";
 import { useAuth } from "@/hooks/useAuth";
@@ -30,6 +29,7 @@ import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornmen
 import { useTranslations } from "next-intl";
 import { Icon } from "@/components/AppIcon";
 import { useLanguage, type Language } from "@/context/LanguageContext";
+import { LoginInput, loginSchema } from "@/schemas/LoginSchema";
 
 const languageOptions: Record<
   Language,
@@ -41,6 +41,8 @@ const languageOptions: Record<
 };
 
 export default function LoginView() {
+  const t = useTranslations("auth.login");
+  const tValidation = useTranslations("validation");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const passwordRef = useRef<HTMLInputElement | null>(null);
@@ -51,7 +53,6 @@ export default function LoginView() {
     redirectByRole,
     setAuth,
   } = useAuth();
-  const t = useTranslations("auth.login");
   const headerT = useTranslations("public.header");
   const { language, setLanguage } = useLanguage();
   const currentLanguage = languageOptions[language];
@@ -65,7 +66,7 @@ export default function LoginView() {
     register,
     formState: { errors },
   } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema(tValidation)),
     defaultValues: {
       identifier: "",
       password: "",
@@ -127,10 +128,7 @@ export default function LoginView() {
             component="span"
           >
             <Icon icon="mdi:translate" width={18} />
-            <Box
-              component="span"
-              sx={{ fontSize: "0.72rem", fontWeight: 800 }}
-            >
+            <Box component="span" sx={{ fontSize: "0.72rem", fontWeight: 800 }}>
               {languageOptions[selected].shortLabel}
             </Box>
           </Stack>

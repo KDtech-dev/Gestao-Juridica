@@ -24,6 +24,8 @@ import { getCategorias } from "@/api/ApiCategorias";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
+import { Controller } from "react-hook-form";
+import { formatCpf, formatTelefone } from "@/@core/format";
 
 type Props = {
   open: boolean;
@@ -43,6 +45,7 @@ export default function DialogUser({
   user,
 }: Props) {
   const t = useTranslations("internal.users.dialog");
+  const tValidation = useTranslations("validation");
   const isEdit = mode === "edit";
   const isView = mode === "view";
   const isReadOnly = isView;
@@ -52,12 +55,16 @@ export default function DialogUser({
     password: false,
     confirmation: false,
   });
-
-  const methods = useForm<CreateUserPayload | UpdateUserPayload>({
-    resolver: zodResolver(isEdit ? updateUserSchema : createUserSchema),
-    defaultValues: buildDefaultValues(user, isEdit),
-  });
-
+const methods = useForm<CreateUserPayload | UpdateUserPayload>({
+  resolver: zodResolver(
+    isEdit
+      ? updateUserSchema(tValidation)
+      : createUserSchema(tValidation),
+  ),
+  defaultValues: buildDefaultValues(user, isEdit),
+  mode: "onChange",
+  reValidateMode: "onChange",
+});
   const {
     handleSubmit,
     reset,
@@ -68,10 +75,6 @@ export default function DialogUser({
   const role = useWatch({ control: methods.control, name: "role" }) as
     | RoleType
     | undefined;
-  const especialidades = useWatch({
-    control: methods.control,
-    name: "advogado.especialidade",
-  }) as string[] | undefined;
 
   useEffect(() => {
     getCategorias()
@@ -83,9 +86,7 @@ export default function DialogUser({
     if (open) reset(buildDefaultValues(user, isEdit));
   }, [open, user, isEdit, reset]);
 
-  const togglePasswordVisibility = (
-    field: keyof typeof visiblePasswords,
-  ) => {
+  const togglePasswordVisibility = (field: keyof typeof visiblePasswords) => {
     setVisiblePasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 
@@ -93,7 +94,7 @@ export default function DialogUser({
     if (role !== "advogado") {
       setValue("advogado.oab_numero" as never, "" as never);
       setValue("advogado.oab_uf" as never, "" as never);
-      setValue("advogado.especialidade" as never, [] as never);
+      setValue("advogado.categorias" as never, [] as never);
     }
     if (role !== "funcionario") {
       setValue("funcionario.celular" as never, "" as never);
@@ -160,29 +161,43 @@ export default function DialogUser({
           />
 
           {!isEdit && !isView && (
-            <InputBasico
-              field="cpf"
-              label={t("fields.cpf")}
-              maxLength={11}
-              disabled={isReadOnly}
-            />
-          )}
-          {(isEdit || isView) && user?.cpf && (
-            <InputBasico
-              field="cpf"
-              label={t("fields.cpf")}
-              disabled
-              value={user.cpf}
+            <Controller
+              name="cpf"
+              control={methods.control}
+              render={({ field, fieldState }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label={t("fields.cpf")}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message}
+                  inputProps={{ maxLength: 14 }}
+                  InputLabelProps={{ shrink: true }}
+                  onChange={(e) => field.onChange(formatCpf(e.target.value))}
+                />
+              )}
             />
           )}
 
           {role === "funcionario" && (
             <>
-              <InputBasico
-                field="funcionario.celular"
-                label={t("fields.mobile")}
-                maxLength={20}
-                disabled={isReadOnly}
+              <Controller
+                name="funcionario.celular"
+                control={methods.control}
+                render={({ field, fieldState }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label={t("fields.mobile")}
+                    disabled={isReadOnly}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    inputProps={{ maxLength: 15 }}
+                    onChange={(e) =>
+                      field.onChange(formatTelefone(e.target.value))
+                    }
+                  />
+                )}
               />
               <InputBasico
                 field="funcionario.data_nascimento"
@@ -229,27 +244,60 @@ export default function DialogUser({
                   sx={{ width: 100 }}
                 />
               </Stack>
-              <Autocomplete
-                multiple
-                freeSolo
-                options={categorias.map((c) => c.nome)}
-                disabled={isReadOnly}
-                value={especialidades ?? []}
-                onChange={(_, value) =>
-                  setValue(
-                    "advogado.especialidade" as never,
-                    value.map(String).filter(Boolean) as never,
-                  )
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label={t("fields.specialties")}
-                    placeholder={t("fields.addSpecialty")}
-                    slotProps={{ inputLabel: { shrink: true } }}
-                  />
-                )}
-              />
+              <FormControl fullWidth>
+                <Controller
+                  name="advogado.categorias"
+                  control={methods.control}
+                  render={({ field }) => {
+                    const selectedIds: (string | number)[] = Array.isArray(
+                      field.value,
+                    )
+                      ? field.value
+                      : [];
+                    const selectedCategorias = categorias.filter((c) =>
+                      selectedIds.includes(c.id),
+                    );
+
+                    return (
+                      <Autocomplete
+                        multiple
+                        options={categorias}
+                        getOptionLabel={(option) =>
+                          typeof option === "string" ? option : option.nome
+                        }
+                        isOptionEqualToValue={(option, value) =>
+                          option.id ===
+                          (typeof value === "string" ? value : value.id)
+                        }
+                        value={selectedCategorias}
+                        onChange={(_, value) => {
+                          const ids = value.map((c) =>
+                            typeof c === "string" ? c : c.id,
+                          );
+                          field.onChange(ids);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label={t("fields.specialties")}
+                            placeholder={
+                              selectedCategorias.length
+                                ? ""
+                                : t("fields.specialtiesPlaceholder")
+                            }
+                            error={false}
+                            helperText={undefined}
+                            InputLabelProps={{ shrink: true }}
+                            InputProps={{
+                              ...params.InputProps,
+                            }}
+                          />
+                        )}
+                      />
+                    );
+                  }}
+                />
+              </FormControl>
               <InputBasico
                 field="advogado.resumo_pessoal"
                 label={t("fields.personalSummary")}
@@ -304,7 +352,7 @@ function buildDefaultValues(
   user: UserType | null | undefined,
   isEdit: boolean,
 ): Partial<CreateUserPayload | UpdateUserPayload> {
-  const role = user?.roles?.[0] as RoleType | undefined;
+  const role = (user?.roles?.[0] ?? "admin") as RoleType;
 
   return {
     role,
@@ -328,8 +376,10 @@ function buildDefaultValues(
             celular: user?.advogado?.celular ?? "",
             oab_numero: user?.advogado?.oab_numero ?? "",
             oab_uf: user?.advogado?.oab_uf ?? "",
-            especialidade: Array.isArray(user?.advogado?.especialidade)
-              ? user.advogado.especialidade
+            categorias: Array.isArray(user?.advogado?.categorias)
+              ? user.advogado.categorias.map((c) =>
+                  typeof c === "object" ? c.id : c,
+                )
               : [],
             resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
           }

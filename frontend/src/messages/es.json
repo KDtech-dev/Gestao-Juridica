@@ -848,46 +848,86 @@
       "descriptionLabel": "Descripción/Pauta"
     }
   },
-
   "validation": {
     "name": {
       "required": "El nombre es obligatorio.",
-      "max": "El nombre no puede tener más de 255 caracteres."
+      "max": "El nombre no puede superar los 255 caracteres."
     },
     "cpf_cnpj": {
       "required": "El CPF o CNPJ es obligatorio.",
       "unique": "Este CPF/CNPJ ya está registrado.",
-      "invalid": "El CPF debe tener 11 dígitos y el CNPJ 14 dígitos."
-    },
-    "cpf": {
-      "size": "El CPF debe tener exactamente 11 dígitos."
+      "invalid": "El CPF debe contener 11 dígitos y el CNPJ debe contener 14 dígitos."
     },
     "email": {
       "required": "El correo electrónico es obligatorio.",
-      "invalid": "Ingrese un correo electrónico válido.",
+      "invalid": "Ingrese una dirección de correo electrónico válida.",
       "unique": "Este correo electrónico ya está registrado."
     },
     "data_nascimento": {
       "invalid": "Ingrese una fecha de nacimiento válida.",
-      "before": "La fecha de nacimiento debe ser anterior a hoy."
+      "before": "La fecha de nacimiento debe ser anterior a la fecha actual."
     },
     "foto_perfil": {
       "image": "El archivo debe ser una imagen.",
-      "mimes": "La imagen debe ser JPG, PNG, GIF o WebP.",
-      "max": "La imagen no puede ser mayor a 5MB."
+      "mimes": "La imagen debe estar en formato JPG, PNG, GIF o WebP.",
+      "max": "La imagen no puede superar los 5 MB."
     },
     "titulo": {
       "required": "El título es obligatorio.",
-      "max": "El título no puede tener más de 255 caracteres.",
-      "string": "El título debe ser texto."
-    },
-    "numero_processo": {
-      "max": "El número de proceso no puede tener más de 255 caracteres.",
-      "min": "El número de proceso debe tener al menos 20 caracteres.",
-      "unique": "Este número de proceso ya está registrado."
+      "string": "El título debe ser un texto.",
+      "max": "El título no puede superar los 255 caracteres."
     },
     "status": {
-      "in": "Estado inválido."
+      "required": "El estado es obligatorio.",
+      "in": "Estado no válido."
+    },
+    "autor": {
+      "required": "El nombre del autor es obligatorio.",
+      "string": "El autor debe ser un texto.",
+      "max": "El autor no puede superar los 255 caracteres."
+    },
+    "resumo": {
+      "string": "El resumen debe ser un texto.",
+      "max": "El resumen no puede superar los 2000 caracteres."
+    },
+    "conteudo": {
+      "string": "El contenido debe ser un texto."
+    },
+    "imagem": {
+      "file": "La imagen debe ser un archivo válido.",
+      "mimes": "La imagen debe estar en formato JPG, JPEG, PNG, GIF o WebP.",
+      "max": "La imagen no puede superar los 5 MB."
+    },
+    "imagem_caminho": {
+      "string": "La ruta de la imagen debe ser un texto.",
+      "max": "La ruta de la imagen no puede superar los 255 caracteres."
+    },
+    "categoria_id": {
+      "exists": "La categoría seleccionada no existe."
+    },
+    "publicado_em": {
+      "date": "Ingrese una fecha de publicación válida."
+    },
+    "anexos": {
+      "array": "Los archivos adjuntos deben ser una lista de archivos.",
+      "arquivo": {
+        "file": "Cada archivo adjunto debe ser un archivo válido.",
+        "mimes": "Los archivos adjuntos deben estar en formato PDF, DOC, DOCX, JPG, JPEG o PNG.",
+        "max": "Cada archivo adjunto no puede superar los 10 MB."
+      },
+      "nome": {
+        "string": "El nombre del archivo adjunto debe ser un texto.",
+        "max": "El nombre del archivo adjunto no puede superar los 255 caracteres."
+      }
+    },
+    "anexos_remover": {
+      "array": "Los archivos adjuntos a eliminar deben ser una lista.",
+      "uuid": "Cada ID de archivo adjunto a eliminar debe ser un UUID válido."
+    },
+    "numero_processo": {
+      "min": "El número de proceso debe contener 20 dígitos.",
+      "max": "El número de proceso no puede superar los 255 caracteres.",
+      "unique": "Este número de proceso ya está registrado."
     },
     "data_abertura": {
       "required": "La fecha de apertura es obligatoria.",
@@ -897,30 +937,30 @@
       "invalid": "Ingrese una fecha de cierre válida.",
       "after_or_equal": "La fecha de cierre debe ser igual o posterior a la fecha de apertura."
     },
-    "imagem": {
-      "mimes": "La imagen debe ser JPG, PNG, GIF o WebP."
-    },
-    "autor": {
-      "string": "El autor debe ser texto.",
-      "max": "El autor no puede tener más de 255 caracteres."
-    },
-    "anexo": {
-      "mimes": "El anexo debe ser PDF, DOC, JPG o PNG."
-    },
     "role": {
-      "in": "El rol debe ser: funcionario, advogado o admin."
+      "in": "Rol no válido. Valores permitidos: staff, lawyer, admin."
     },
-    "oab_numero": {
-      "required_if": "El número de la OAB es obligatorio para abogados."
-    },
-    "oab_uf": {
-      "required_if": "La UF de la OAB es obligatoria para abogados."
+    "cpf": {
+      "size": "El CPF debe contener exactamente 11 dígitos."
     },
     "uf": {
-      "size": "La UF debe tener exactamente 2 caracteres."
+      "size": "El estado debe tener un código de 2 letras."
     },
     "cep": {
-      "size": "El CEP debe tener exactamente 8 dígitos."
+      "size": "El código postal debe contener exactamente 8 dígitos."
+    },
+    "oab_numero": {
+      "required_if": "El número de OAB es obligatorio para los abogados."
+    },
+    "oab_uf": {
+      "required_if": "El estado de la OAB es obligatorio para los abogados."
+    },
+    "identifier": {
+      "required": "Ingrese su CPF o correo electrónico.",
+      "invalid": "Ingrese un CPF o correo electrónico válido."
+    },
+    "password": {
+      "required": "La contraseña es obligatoria."
     }
   }
 }

@@ -22,8 +22,8 @@ class AuthLoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'identifier.required' => 'Informe CPF ou email.',
-            'password.required' => 'Senha obrigatória.',
+            'identifier.required' => 'validation.identifier.required',
+            'password.required'   => 'validation.password.required',
         ];
     }
 
@@ -37,10 +37,7 @@ class AuthLoginRequest extends FormRequest
             $isCpf = preg_match('/^\d{11}$/', $cleanCpf);
 
             if (!$isEmail && !$isCpf) {
-                $validator->errors()->add(
-                    'identifier',
-                    'Informe um CPF ou email válido.'
-                );
+                $validator->errors()->add('identifier', 'validation.identifier.invalid');
             }
         });
     }

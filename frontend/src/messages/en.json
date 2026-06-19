@@ -565,6 +565,11 @@
           "label": "Language"
         }
       },
+      "toast": {
+        "saveSuccess": "Profile updated successfully!",
+        "saveError": "Error saving profile. Please try again."
+      },
+
       "security": {
         "title": "Security",
         "description": "Keep your account secure by updating your password regularly.",
@@ -576,7 +581,13 @@
         "description": "Keep your account secure by choosing a strong password.",
         "actions": {
           "save": "Save",
-          "updating": "Updating..."
+          "updating": "Updating...",
+          "passwordModal": {
+            "toast": {
+              "reviewFields": "Review the highlighted fields.",
+              "success": "Password updated successfully."
+            }
+          }
         },
         "fields": {
           "currentPassword": "Current password",
@@ -589,12 +600,7 @@
           "confirmRequired": "Confirm the new password.",
           "passwordsMatch": "Passwords must match."
         },
-        "toast": {
-          "reviewFields": "Review the highlighted fields.",
-          "success": "Password updated successfully.",
-          "saveSuccess": "Profile updated successfully!",
-          "saveError": "Error saving profile. Please try again."
-        },
+
         "errors": {
           "update": "Could not update the password.",
           "connection": "Could not connect to the server. Try again later."
@@ -872,16 +878,60 @@
     },
     "titulo": {
       "required": "Title is required.",
-      "max": "Title cannot exceed 255 characters.",
-      "string": "Title must be a text string."
+      "string": "Title must be a text string.",
+      "max": "Title cannot exceed 255 characters."
+    },
+    "status": {
+      "required": "Status is required.",
+      "in": "Invalid status."
+    },
+    "autor": {
+      "required": "Author name is required.",
+      "string": "Author must be a text string.",
+      "max": "Author cannot exceed 255 characters."
+    },
+    "resumo": {
+      "string": "Summary must be a text string.",
+      "max": "Summary cannot exceed 2000 characters."
+    },
+    "conteudo": {
+      "string": "Content must be a text string."
+    },
+    "imagem": {
+      "file": "The image must be a valid file.",
+      "mimes": "The image must be JPG, JPEG, PNG, GIF, or WebP.",
+      "max": "The image cannot be larger than 5MB."
+    },
+    "imagem_caminho": {
+      "string": "Image path must be a text string.",
+      "max": "Image path cannot exceed 255 characters."
+    },
+    "categoria_id": {
+      "exists": "The selected category does not exist."
+    },
+    "publicado_em": {
+      "date": "Please enter a valid publication date."
+    },
+    "anexos": {
+      "array": "Attachments must be a list of files.",
+      "arquivo": {
+        "file": "Each attachment must be a valid file.",
+        "mimes": "Attachments must be PDF, DOC, DOCX, JPG, JPEG, or PNG.",
+        "max": "Each attachment cannot be larger than 10MB."
+      },
+      "nome": {
+        "string": "Attachment name must be a text string.",
+        "max": "Attachment name cannot exceed 255 characters."
+      }
+    },
+    "anexos_remover": {
+      "array": "Attachments to remove must be a list.",
+      "uuid": "Each attachment ID to remove must be a valid UUID."
     },
     "numero_processo": {
       "min": "The case number must have 20 digits.",
       "max": "The case number cannot have more than 255 digits.",
       "unique": "This case number is already registered."
-    },
-    "status": {
-      "in": "Invalid status."
     },
     "data_abertura": {
       "required": "Opening date is required.",
@@ -890,6 +940,31 @@
     "data_encerramento": {
       "invalid": "Please enter a valid closing date.",
       "after_or_equal": "The closing date must be equal to or later than the opening date."
+    },
+    "role": {
+      "in": "Invalid role. Allowed values: staff, lawyer, admin."
+    },
+    "cpf": {
+      "size": "CPF must contain exactly 11 digits."
+    },
+    "uf": {
+      "size": "State must be a 2-letter code."
+    },
+    "cep": {
+      "size": "ZIP code must contain exactly 8 digits."
+    },
+    "oab_numero": {
+      "required_if": "OAB number is required for lawyers."
+    },
+    "oab_uf": {
+      "required_if": "OAB state is required for lawyers."
+    },
+    "identifier": {
+      "required": "Enter your CPF or email.",
+      "invalid": "Enter a valid CPF or email."
+    },
+    "password": {
+      "required": "Password is required."
     }
   }
 }

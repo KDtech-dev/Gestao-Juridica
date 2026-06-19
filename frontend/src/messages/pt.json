@@ -401,7 +401,11 @@
         "title": {
           "create": "Novo usuário",
           "edit": "Editar usuário",
-          "view": "Visualizar usuário"
+          "view": "Visualizar usuário",
+          "fields": {
+            "specialties": "Especialidades",
+            "specialtiesPlaceholder": "Selecione uma ou mais especialidades"
+          }
         },
         "actions": {
           "create": "Criar",
@@ -851,42 +855,83 @@
   "validation": {
     "name": {
       "required": "O nome é obrigatório.",
-      "max": "O nome não pode ter mais de 255 caracteres."
+      "max": "O nome não pode exceder 255 caracteres."
     },
     "cpf_cnpj": {
       "required": "O CPF ou CNPJ é obrigatório.",
       "unique": "Este CPF/CNPJ já está cadastrado.",
-      "invalid": "CPF deve ter 11 dígitos e CNPJ 14 dígitos."
-    },
-    "cpf": {
-      "size": "CPF deve ter exatamente 11 dígitos "
+      "invalid": "O CPF deve conter 11 dígitos e o CNPJ deve conter 14 dígitos."
     },
     "email": {
       "required": "O e-mail é obrigatório.",
-      "invalid": "Informe um e-mail válido.",
+      "invalid": "Informe um endereço de e-mail válido.",
       "unique": "Este e-mail já está cadastrado."
     },
     "data_nascimento": {
       "invalid": "Informe uma data de nascimento válida.",
-      "before": "A data de nascimento deve ser anterior a hoje."
+      "before": "A data de nascimento deve ser anterior à data atual."
     },
     "foto_perfil": {
       "image": "O arquivo deve ser uma imagem.",
-      "mimes": "A imagem deve ser JPG, PNG, GIF ou WebP.",
+      "mimes": "A imagem deve estar nos formatos JPG, PNG, GIF ou WebP.",
       "max": "A imagem não pode ser maior que 5MB."
     },
     "titulo": {
       "required": "O título é obrigatório.",
-      "max": "O título não pode ter mais de 255 caracteres.",
-      "string": "O título deve ser um texto."
-    },
-    "numero_processo": {
-      "max": "O número do processo não pode ter mais de 255 caracteres.",
-      "min": "O número do processo deve ter pelo menos 20 caracteres.",
-      "unique": "Este número de processo já está cadastrado."
+      "string": "O título deve ser um texto.",
+      "max": "O título não pode exceder 255 caracteres."
     },
     "status": {
+      "required": "O status é obrigatório.",
       "in": "Status inválido."
+    },
+    "autor": {
+      "required": "O nome do autor é obrigatório.",
+      "string": "O autor deve ser um texto.",
+      "max": "O autor não pode exceder 255 caracteres."
+    },
+    "resumo": {
+      "string": "O resumo deve ser um texto.",
+      "max": "O resumo não pode exceder 2000 caracteres."
+    },
+    "conteudo": {
+      "string": "O conteúdo deve ser um texto."
+    },
+    "imagem": {
+      "file": "A imagem deve ser um arquivo válido.",
+      "mimes": "A imagem deve estar nos formatos JPG, JPEG, PNG, GIF ou WebP.",
+      "max": "A imagem não pode ser maior que 5MB."
+    },
+    "imagem_caminho": {
+      "string": "O caminho da imagem deve ser um texto.",
+      "max": "O caminho da imagem não pode exceder 255 caracteres."
+    },
+    "categoria_id": {
+      "exists": "A categoria selecionada não existe."
+    },
+    "publicado_em": {
+      "date": "Informe uma data de publicação válida."
+    },
+    "anexos": {
+      "array": "Os anexos devem ser uma lista de arquivos.",
+      "arquivo": {
+        "file": "Cada anexo deve ser um arquivo válido.",
+        "mimes": "Os anexos devem estar nos formatos PDF, DOC, DOCX, JPG, JPEG ou PNG.",
+        "max": "Cada anexo não pode ser maior que 10MB."
+      },
+      "nome": {
+        "string": "O nome do anexo deve ser um texto.",
+        "max": "O nome do anexo não pode exceder 255 caracteres."
+      }
+    },
+    "anexos_remover": {
+      "array": "Os anexos a remover devem ser uma lista.",
+      "uuid": "Cada ID de anexo a remover deve ser um UUID válido."
+    },
+    "numero_processo": {
+      "min": "O número do processo deve possuir 20 dígitos.",
+      "max": "O número do processo não pode exceder 255 caracteres.",
+      "unique": "Este número de processo já está cadastrado."
     },
     "data_abertura": {
       "required": "A data de abertura é obrigatória.",
@@ -896,33 +941,32 @@
       "invalid": "Informe uma data de encerramento válida.",
       "after_or_equal": "A data de encerramento deve ser igual ou posterior à data de abertura."
     },
-    "categoria_id": {
-      "required": "Selecione uma categoria.",
-      "exists": "Categoria inválida."
-    },
-    "imagem_caminho": {
-      "max": "O caminho da imagem deve ter no máximo 255 caracteres."
-    },
-    "imagem": {
-      "invalid": "O arquivo enviado não é uma imagem válida.",
-      "mimes": "A imagem deve ser nos formatos: jpg, jpeg, png, gif ou webp.",
-      "max": "A imagem deve ter no máximo 5MB."
-    },
-    "autor": {
-      "required": "Informe o nome do autor.",
-      "max": "O nome do autor deve ter no máximo 255 caracteres."
-    },
-    "resumo": {
-      "max": "O resumo deve ter no máximo 2000 caracteres."
-    },
-    "anexos": {
-      "invalid": "Arquivo inválido.",
-      "required": "Envie pelo menos um anexo.",
-      "mimes": "Os anexos devem ser: PDF, DOC, DOCX, JPG, JPEG ou PNG.",
-      "max": "Cada anexo deve ter no máximo 10MB."
-    },
     "role": {
-      "in": "A role deve ser: funcionario, advogado ou admin."
+      "in": "Função inválida. Valores permitidos: staff, lawyer, admin."
+    },
+    "cpf": {
+      "size": "O CPF deve conter exatamente 11 dígitos."
+    },
+    "uf": {
+      "size": "A UF deve conter 2 letras."
+    },
+    "complemento": {
+      "max": "O complemento não pode exceder 100 caracteres."
+    },
+    "logradouro": {
+      "required": "O logradouro é obrigatório.",
+      "max": "O logradouro não pode exceder 255 caracteres."
+    },
+    "numero": {
+      "required": "O número é obrigatório.",
+      "max": "O número não pode exceder 20 caracteres."
+    },
+    "cep": {
+      "size": "O CEP deve conter exatamente 8 dígitos."
+    },
+    "bairro": {
+      "required": "O bairro é obrigatório.",
+      "max": "O bairro não pode exceder 100 caracteres."
     },
     "oab_numero": {
       "required_if": "O número da OAB é obrigatório para advogados."
@@ -930,11 +974,21 @@
     "oab_uf": {
       "required_if": "A UF da OAB é obrigatória para advogados."
     },
-    "uf": {
-      "size": "A UF deve tere exatamente 2 caracteres."
+    "cidade": {
+      "required": "A cidade é obrigatória.",
+      "max": "A cidade não pode exceder 100 caracteres."
     },
-    "cep": {
-      "size": "O CEP deve ter exatamente 8 dígitos"
+    "identifier": {
+      "required": "Informe seu CPF ou e-mail.",
+      "invalid": "Informe um CPF ou e-mail válido."
+    },
+    "password": {
+      "required": "A senha é obrigatória.",
+      "min": "A senha deve ter pelo menos 8 caracteres."
+    },
+    "password_confirmation": {
+      "required": "A confirmação de senha é obrigatória.",
+      "same": "As senhas não coincidem."
     }
   }
 }

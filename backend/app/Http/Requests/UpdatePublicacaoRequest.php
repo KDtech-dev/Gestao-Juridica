@@ -19,27 +19,38 @@ class UpdatePublicacaoRequest extends FormRequest
             'imagem_caminho' => 'nullable|string|max:255',
             'imagem' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp|max:5120',
             'autor' => 'sometimes|string|max:255',
-            'resumo' => 'nullable|string',
+            'resumo' => 'nullable|string|max:2000',
             'conteudo' => 'nullable|string',
             'status' => 'sometimes|in:rascunho,publicado,arquivado',
             'publicado_em' => 'nullable|date',
             'anexos' => 'nullable|array',
             'anexos.*' => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
             'anexos_remover' => 'nullable|array',
-            'anexos_remover.*' => 'required|exists:anexos,id',
+            'anexos_remover.*' => 'string|uuid',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'titulo.required' => 'validation.titulo.required',
-            'titulo.string' => 'validation.titulo.string',
-            'titulo.max' => 'validation.titulo.max',
-            'imagem.mimes' => 'validation.imagem.mimes',
-            'autor.required' => 'validation.autor.required',
-            'autor.max' => 'validation.autor.max',
-            'anexo.mimes' => 'validation.anexo.mimes',
+            'titulo.string'          => 'validation.titulo.string',
+            'titulo.max'             => 'validation.titulo.max',
+            'categoria_id.exists'    => 'validation.categoria_id.exists',
+            'imagem.file'            => 'validation.imagem.file',
+            'imagem.mimes'           => 'validation.imagem.mimes',
+            'imagem.max'             => 'validation.imagem.max',
+            'autor.string'           => 'validation.autor.string',
+            'autor.max'              => 'validation.autor.max',
+            'resumo.string'          => 'validation.resumo.string',
+            'resumo.max'             => 'validation.resumo.max',
+            'conteudo.string'        => 'validation.conteudo.string',
+            'status.in'              => 'validation.status.in',
+            'publicado_em.date'      => 'validation.publicado_em.date',
+            'anexos.array'           => 'validation.anexos.array',
+            'anexos.*.mimes'         => 'validation.anexos.arquivo.mimes',
+            'anexos.*.max'           => 'validation.anexos.arquivo.max',
+            'anexos_remover.array'   => 'validation.anexos_remover.array',
+            'anexos_remover.*.uuid'  => 'validation.anexos_remover.uuid',
         ];
     }
 }

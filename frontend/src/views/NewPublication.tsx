@@ -47,7 +47,6 @@ import InputImage from "@/components/InputImage";
 import InputSingleFile from "@/components/InputSingleFile";
 import { HtmlTextEditor } from "@/components/publications/HtmlTextEditor";
 import { STATUS_OPTIONS } from "@/schemas/PublicationSchema";
- 
 
 const initialForm: PublicacaoFormData = {
   titulo: "",
@@ -293,9 +292,8 @@ export default function NewPublicationView({ editSlug }: Props) {
 
     getCategorias()
       .then((items) => {
-        if (active) {
-          setCategorias(items);
-        }
+        console.log("categorias recebidas:", items); // undefined aqui?
+        if (active) setCategorias(items);
       })
       .catch((error) => {
         if (active) {

@@ -1,7 +1,7 @@
 import { getAxios } from "@/configs/axios";
 import auth from "@/configs/auth";
 import { buildLoginPayload } from "@/utils/auth";
-import { LoginInput } from "@/schemas/auth.schema";
+import { LoginInput } from "@/schemas/LoginSchema";
 
 export const postLogin = async (input: LoginInput) => {
   const payload = buildLoginPayload(input.identifier, input.password);
