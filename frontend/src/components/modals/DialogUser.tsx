@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Autocomplete,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
@@ -13,7 +14,7 @@ import {
   TextField,
 } from "@mui/material";
 import { BaseModal } from "@/components/modals/BaseModal";
-import { createUserSchema, updateUserSchema } from "@/schemas/UserSchema";
+import { createUserSchema, UF_SIGLAS, updateUserSchema } from "@/schemas/UserSchema";
 import type {
   CreateUserPayload,
   UpdateUserPayload,
@@ -36,6 +37,7 @@ type Props = {
   user?: UserType | null;
 };
 
+
 export default function DialogUser({
   open,
   onClose,
@@ -55,31 +57,29 @@ export default function DialogUser({
     password: false,
     confirmation: false,
   });
-const methods = useForm<CreateUserPayload | UpdateUserPayload>({
-  resolver: zodResolver(
-    isEdit
-      ? updateUserSchema(tValidation)
-      : createUserSchema(tValidation),
-  ),
-  defaultValues: buildDefaultValues(user, isEdit),
-  mode: "onChange",
-  reValidateMode: "onChange",
-});
-  const {
-    handleSubmit,
-    reset,
-    setValue,
-    formState: { isValid },
-  } = methods;
+  const methods = useForm<CreateUserPayload | UpdateUserPayload>({
+    resolver: zodResolver(
+      isEdit ? updateUserSchema(tValidation) : createUserSchema(tValidation),
+    ),
+    defaultValues: buildDefaultValues(user, isEdit),
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  const { handleSubmit, reset, setValue } = methods;
 
   const role = useWatch({ control: methods.control, name: "role" }) as
     | RoleType
     | undefined;
 
   useEffect(() => {
-    getCategorias()
-      .then(setCategorias)
-      .catch(() => {});
+    const loadCategorias = async () => {
+      try {
+        const { data } = await getCategorias();
+        setCategorias(data);
+      } catch {}
+    };
+
+    loadCategorias();
   }, []);
 
   useEffect(() => {
@@ -92,14 +92,22 @@ const methods = useForm<CreateUserPayload | UpdateUserPayload>({
 
   useEffect(() => {
     if (role !== "advogado") {
-      setValue("advogado.oab_numero" as never, "" as never);
-      setValue("advogado.oab_uf" as never, "" as never);
-      setValue("advogado.categorias" as never, [] as never);
+      setValue("advogado", {
+        celular: "",
+        data_nascimento: "",
+        resumo_pessoal: "",
+        oab_numero: "",
+        oab_uf: "",
+        categorias: [],
+      });
     }
+
     if (role !== "funcionario") {
-      setValue("funcionario.celular" as never, "" as never);
-      setValue("funcionario.data_nascimento" as never, "" as never);
-      setValue("funcionario.resumo_pessoal" as never, "" as never);
+      setValue("funcionario", {
+        celular: "",
+        data_nascimento: "",
+        resumo_pessoal: "",
+      });
     }
   }, [role, setValue]);
 
@@ -115,7 +123,9 @@ const methods = useForm<CreateUserPayload | UpdateUserPayload>({
     setVisiblePasswords({ password: false, confirmation: false });
     onClose();
   };
-
+  console.log("categorias", categorias);
+  console.log("isArray", Array.isArray(categorias));
+  console.log("typeof", typeof categorias);
   return (
     <FormProvider {...methods}>
       <BaseModal
@@ -130,7 +140,7 @@ const methods = useForm<CreateUserPayload | UpdateUserPayload>({
               : t("actions.create")
         }
         cancelText={isView ? t("actions.close") : t("actions.cancel")}
-        confirmDisabled={submitting || (!isView && !isValid)}
+        confirmDisabled={submitting}
         onSubmit={isView ? handleClose : handleSubmit(onSubmit)}
         maxWidth="md"
       >
@@ -151,12 +161,14 @@ const methods = useForm<CreateUserPayload | UpdateUserPayload>({
           <InputBasico
             field="name"
             label={t("fields.name")}
+            placeholder={t("fields.namePlaceholder")}
             disabled={isReadOnly}
           />
           <InputBasico
             field="email"
             label={t("fields.email")}
             type="email"
+            placeholder={t("fields.emailPlaceholder")}
             disabled={isReadOnly}
           />
 
@@ -220,28 +232,76 @@ const methods = useForm<CreateUserPayload | UpdateUserPayload>({
               <InputBasico
                 field="advogado.celular"
                 label={t("fields.mobile")}
+                placeholder={t("fields.mobilePlaceholder")}
                 maxLength={20}
                 disabled={isReadOnly}
               />
               <InputBasico
                 field="advogado.data_nascimento"
                 label={t("fields.birthDate")}
+                placeholder={t("fields.birthDatePlaceholder")}
                 type="date"
                 disabled={isReadOnly}
               />
-              <Stack direction="row" spacing={1.5}>
-                <InputBasico
-                  field="advogado.oab_numero"
-                  label={t("fields.oabNumber")}
-                  maxLength={20}
-                  disabled={isReadOnly}
+              <Stack
+                direction="row"
+                spacing={1.5}
+                flexWrap="wrap"
+                alignItems="flex-start"
+              >
+                <Controller
+                  name="advogado.oab_numero"
+                  control={methods.control}
+                  render={({ field, fieldState }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label={t("fields.oabNumber")}
+                      placeholder={t("fields.oabNumberPlaceholder")}
+                      disabled={isReadOnly}
+                      error={!!fieldState.error}
+                      helperText={fieldState.error?.message}
+                      inputProps={{ maxLength: 20 }}
+                      sx={{ flex: 1, minWidth: 150 }}
+                    />
+                  )}
                 />
-                <InputBasico
-                  field="advogado.oab_uf"
-                  label={t("fields.oabUf")}
-                  maxLength={2}
-                  disabled={isReadOnly}
-                  sx={{ width: 100 }}
+
+                <Controller
+                  name="advogado.oab_uf"
+                  control={methods.control}
+                  render={({ field, fieldState }) => (
+                    <FormControl
+                      sx={{ minWidth: 120, flexShrink: 0 }}
+                      error={!!fieldState.error}
+                      disabled={isReadOnly}
+                    >
+                      <InputLabel id="oab-uf-label">
+                        {t("fields.oabUf")}
+                      </InputLabel>
+                      <Select
+                        {...field}
+                        labelId="oab-uf-label"
+                        label={t("fields.oabUf")}
+                        value={field.value ?? ""}
+                        onChange={(e) => field.onChange(e.target.value)}
+                      >
+                        <MenuItem value="">
+                          <>{t("fields.oabUfPlaceholder")}</>
+                        </MenuItem>
+                        {UF_SIGLAS.map((uf) => (
+                          <MenuItem key={uf} value={uf}>
+                            {uf}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {fieldState.error && (
+                        <FormHelperText>
+                          {fieldState.error.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
+                  )}
                 />
               </Stack>
               <FormControl fullWidth>
@@ -301,6 +361,7 @@ const methods = useForm<CreateUserPayload | UpdateUserPayload>({
               <InputBasico
                 field="advogado.resumo_pessoal"
                 label={t("fields.personalSummary")}
+                placeholder={t("fields.personalSummaryPlaceholder")}
                 multiline
                 rows={3}
                 disabled={isReadOnly}

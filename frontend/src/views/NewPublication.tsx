@@ -1,10 +1,12 @@
 "use client";
 
 import {
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
   Container,
+  FormControl,
   IconButton,
   MenuItem,
   Paper,
@@ -288,27 +290,18 @@ export default function NewPublicationView({ editSlug }: Props) {
   }, [initialResolvedForm]);
 
   useEffect(() => {
-    let active = true;
-
-    getCategorias()
-      .then((items) => {
-        console.log("categorias recebidas:", items); // undefined aqui?
-        if (active) setCategorias(items);
-      })
-      .catch((error) => {
-        if (active) {
-          toast.error(getApiErrorMessage(error) || categoriesErrorMessage);
-        }
-      })
-      .finally(() => {
-        if (active) {
-          setCategoriasLoading(false);
-        }
-      });
-
-    return () => {
-      active = false;
+    const loadCategorias = async () => {
+      try {
+        const { data } = await getCategorias();
+        setCategorias(data);
+      } catch (error) {
+        toast.error(getApiErrorMessage(error) || categoriesErrorMessage);
+      } finally {
+        setCategoriasLoading(false);
+      }
     };
+
+    loadCategorias();
   }, [categoriesErrorMessage]);
 
   useEffect(() => {
@@ -611,46 +604,62 @@ export default function NewPublicationView({ editSlug }: Props) {
                   />
                 </Box>
 
-                <TextField
-                  select
-                  fullWidth
-                  label={t("fields.category")}
-                  value={form.categoriaId}
-                  onChange={(event) => {
-                    const categoriaId = event.target.value;
-                    const categoria = categorias.find(
-                      (item) => String(item.id) === categoriaId,
-                    );
-
-                    handleChange("categoriaId", categoriaId);
-                    handleChange("categoria", categoria?.nome ?? "");
-                  }}
-                  error={Boolean(errors.categoriaId || errors.categoria)}
-                  helperText={
-                    errors.categoriaId ||
-                    errors.categoria ||
-                    selectedCategoria?.descricao ||
-                    (categoriasLoading
-                      ? t("fields.categoriesLoading")
-                      : t("fields.categoryHelper"))
-                  }
-                  disabled={categoriasLoading}
-                  InputLabelProps={{ shrink: true }}
-                >
-                  {categoriasLoading && (
-                    <MenuItem value="">
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <CircularProgress size={16} />
-                        <span>{t("fields.categoriesLoading")}</span>
-                      </Stack>
-                    </MenuItem>
-                  )}
-                  {categorias.map((categoria) => (
-                    <MenuItem key={categoria.id} value={String(categoria.id)}>
-                      {categoria.nome}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                <FormControl fullWidth>
+                  <Autocomplete
+                    options={categorias}
+                    loading={categoriasLoading}
+                    getOptionLabel={(option) =>
+                      typeof option === "string" ? option : option.nome
+                    }
+                    isOptionEqualToValue={(option, value) =>
+                      option.id ===
+                      (typeof value === "string" ? value : value.id)
+                    }
+                    value={
+                      categorias.find(
+                        (categoria) =>
+                          String(categoria.id) === form.categoriaId,
+                      ) ?? null
+                    }
+                    onChange={(_, value) => {
+                      handleChange(
+                        "categoriaId",
+                        value ? String(value.id) : "",
+                      );
+                      handleChange("categoria", value?.nome ?? "");
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={t("fields.category")}
+                        placeholder={t("fields.category")}
+                        error={Boolean(errors.categoriaId || errors.categoria)}
+                        helperText={
+                          errors.categoriaId ||
+                          errors.categoria ||
+                          (categorias.find(
+                            (c) => String(c.id) === form.categoriaId,
+                          )?.descricao ??
+                            (categoriasLoading
+                              ? t("fields.categoriesLoading")
+                              : t("fields.categoryHelper")))
+                        }
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {categoriasLoading && (
+                                <CircularProgress size={18} />
+                              )}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </FormControl>
 
                 <TextField
                   fullWidth

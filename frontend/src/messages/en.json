@@ -401,7 +401,52 @@
         "title": {
           "create": "New user",
           "edit": "Edit user",
-          "view": "View user"
+          "view": "View user",
+          "fields": {
+            "role": "Role",
+            "name": "Name",
+            "email": "Email",
+            "cpf": "CPF",
+            "mobile": "Mobile",
+            "birthDate": "Birth date",
+            "personalSummary": "Personal summary",
+            "oabNumber": "OAB number",
+            "oabUf": "State",
+            "specialties": "Specialties",
+            "specialtiesPlaceholder": "Select one or more specialties",
+            "addSpecialty": "Add specialty...",
+            "password": "Password",
+            "confirmPassword": "Confirm password",
+            "ufs": {
+              "AC": "Acre",
+              "AL": "Alagoas",
+              "AP": "Amapá",
+              "AM": "Amazonas",
+              "BA": "Bahia",
+              "CE": "Ceará",
+              "DF": "Federal District",
+              "ES": "Espírito Santo",
+              "GO": "Goiás",
+              "MA": "Maranhão",
+              "MT": "Mato Grosso",
+              "MS": "Mato Grosso do Sul",
+              "MG": "Minas Gerais",
+              "PA": "Pará",
+              "PB": "Paraíba",
+              "PR": "Paraná",
+              "PE": "Pernambuco",
+              "PI": "Piauí",
+              "RJ": "Rio de Janeiro",
+              "RN": "Rio Grande do Norte",
+              "RS": "Rio Grande do Sul",
+              "RO": "Rondônia",
+              "RR": "Roraima",
+              "SC": "Santa Catarina",
+              "SP": "São Paulo",
+              "SE": "Sergipe",
+              "TO": "Tocantins"
+            }
+          }
         },
         "actions": {
           "create": "Create",
@@ -418,17 +463,28 @@
         "fields": {
           "role": "Role",
           "name": "Name",
+          "namePlaceholder": "Enter full name",
           "email": "Email",
+          "emailPlaceholder": "Enter email",
           "cpf": "CPF",
+          "cpfPlaceholder": "Enter CPF",
           "mobile": "Mobile",
+          "mobilePlaceholder": "Enter mobile number",
           "birthDate": "Birth date",
+          "birthDatePlaceholder": "Select birth date",
           "personalSummary": "Personal summary",
+          "personalSummaryPlaceholder": "Enter a professional summary",
           "oabNumber": "OAB number",
+          "oabNumberPlaceholder": "Enter OAB number",
           "oabUf": "State",
+          "oabUfPlaceholder": "State",
           "specialties": "Specialties",
+          "specialtiesPlaceholder": "Select one or more specialties",
           "addSpecialty": "Add specialty...",
           "password": "Password",
-          "confirmPassword": "Confirm password"
+          "passwordPlaceholder": "Enter password",
+          "confirmPassword": "Confirm password",
+          "confirmPasswordPlaceholder": "Confirm password"
         }
       },
       "toast": {
@@ -852,6 +908,7 @@
       "descriptionLabel": "Description/Agenda"
     }
   },
+
   "validation": {
     "name": {
       "required": "Name is required.",
@@ -930,7 +987,7 @@
     },
     "numero_processo": {
       "min": "The case number must have 20 digits.",
-      "max": "The case number cannot have more than 255 digits.",
+      "max": "The case number cannot exceed 255 characters.",
       "unique": "This case number is already registered."
     },
     "data_abertura": {
@@ -950,21 +1007,50 @@
     "uf": {
       "size": "State must be a 2-letter code."
     },
+    "complemento": {
+      "max": "Complement cannot exceed 100 characters."
+    },
+    "logradouro": {
+      "required": "Street address is required.",
+      "max": "Street address cannot exceed 255 characters."
+    },
+    "numero": {
+      "required": "Number is required.",
+      "max": "Number cannot exceed 20 characters."
+    },
     "cep": {
       "size": "ZIP code must contain exactly 8 digits."
     },
+    "bairro": {
+      "required": "Neighborhood is required.",
+      "max": "Neighborhood cannot exceed 100 characters."
+    },
     "oab_numero": {
-      "required_if": "OAB number is required for lawyers."
+      "required_if": "OAB number is required for lawyers.",
+      "invalid": "OAB number must have 1-6 digits, optionally followed by A, B, or D."
     },
     "oab_uf": {
-      "required_if": "OAB state is required for lawyers."
+      "required_if": "OAB state is required for lawyers.",
+      "invalid": "Invalid state code."
+    },
+    "cidade": {
+      "required": "City is required.",
+      "max": "City cannot exceed 100 characters."
     },
     "identifier": {
       "required": "Enter your CPF or email.",
       "invalid": "Enter a valid CPF or email."
     },
     "password": {
-      "required": "Password is required."
+      "required": "Password is required.",
+      "min": "Password must be at least 8 characters."
+    },
+    "password_confirmation": {
+      "required": "Password confirmation is required.",
+      "same": "Passwords do not match."
+    },
+    "celular": {
+      "size": "Mobile number must have 10 or 11 digits."
     }
   }
 }

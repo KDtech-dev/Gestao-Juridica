@@ -1,7 +1,4 @@
-import {
-  ClienteType,
-  PaginatedResponseType,
-} from "@/@core/types";
+import { ClienteType, PaginatedResponseType } from "@/@core/types";
 import { getAxios } from "@/configs/axios";
 import {
   CreateClientePayload,
@@ -10,8 +7,11 @@ import {
 
 const getClientes = async (
   page = 1,
+  perPage = 10,
 ): Promise<PaginatedResponseType<ClienteType>> => {
-  const response = await getAxios().get("/clientes", { params: { page } });
+  const response = await getAxios().get("/clientes", {
+    params: { page, perPage },
+  });
 
   return response.data;
 };
@@ -19,7 +19,7 @@ const getClientes = async (
 const getClienteById = async (id: number | string): Promise<ClienteType> => {
   const response = await getAxios().get(`/clientes/${id}`);
 
-  return response.data.data ?? response.data;
+  return response.data.data;
 };
 
 const postCliente = async (

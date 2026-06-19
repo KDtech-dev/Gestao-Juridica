@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Chip, MenuItem } from "@mui/material";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  createCasoSchema,
-  CreateCasoPayload,
-} from "@/schemas/CasoSchema";
+import { createCasoSchema, CreateCasoPayload } from "@/schemas/CasoSchema";
 import { CasoType, CategoriaType } from "@/@core/types";
 import { BaseModal } from "@/components/modals/BaseModal";
 import { useTranslations } from "next-intl";
@@ -41,6 +38,7 @@ export function DialogCaso({
   caso = null,
 }: Props) {
   const t = useTranslations("internal.cases.dialog");
+  const tValidation = useTranslations("validation");
   const isView = mode === "view";
   const isDisabled = submitting || isView;
 
@@ -59,7 +57,7 @@ export function DialogCaso({
   };
 
   const methods = useForm<CreateCasoPayload>({
-    resolver: zodResolver(createCasoSchema),
+    resolver: zodResolver(createCasoSchema(tValidation)),
     defaultValues: {
       numero_processo: "",
       titulo: "",
@@ -74,20 +72,14 @@ export function DialogCaso({
   const { handleSubmit, reset } = methods;
 
   useEffect(() => {
-    let ativo = true;
-
-    getCategorias()
-      .then((data) => {
-        if (ativo) setCategorias(data);
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (ativo) setLoadingCategorias(false);
-      });
-
-    return () => {
-      ativo = false;
+    const loadCategorias = async () => {
+      try {
+        const { data } = await getCategorias();
+        setCategorias(data);
+      } catch {}
     };
+
+    loadCategorias();
   }, []);
 
   useEffect(() => {

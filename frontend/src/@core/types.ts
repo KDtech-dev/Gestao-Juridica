@@ -3,24 +3,6 @@ import type {
   StatusPublicacao,
 } from "@/api/publicacoes/types";
 
-export type PublicacaoFormData = {
-  titulo: string;
-  categoria: string;
-  categoriaId: string;
-  bannerImage: File | string;
-  autor: string;
-  resumo: string;
-  conteudo: string;
-  status: StatusPublicacao;
-  anexos: File[];
-  anexosExistentes: PublicacaoAnexo[];
-  anexosRemovidos: string[];
-};
-
-export type PublicationErrors = Partial<
-  Record<keyof Omit<PublicacaoFormData, "anexos">, string>
->;
-
 export type ResponseType<T> = {
   success: boolean;
   message: string;
@@ -68,6 +50,24 @@ export type PaginatedResponseType<T> = {
   meta: PaginationMetaType;
   links: PaginationLinksType;
 };
+export type PublicacaoFormData = {
+  titulo: string;
+  categoria: string;
+  categoriaId: string;
+  bannerImage: File | string;
+  autor: string;
+  resumo: string;
+  conteudo: string;
+  status: StatusPublicacao;
+  anexos: File[];
+  anexosExistentes: PublicacaoAnexo[];
+  anexosRemovidos: string[];
+};
+
+export type PublicationErrors = Partial<
+  Record<keyof Omit<PublicacaoFormData, "anexos">, string>
+>;
+
 
 export type ClienteType = {
   id: number | string;

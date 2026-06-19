@@ -21,7 +21,7 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getUsers, postUser, updateUser, deleteUser } from "@/api/ApiUsers";
-import { toast } from "@/utils/toast";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { UserType, RoleType } from "@/@core/types";
 import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
 import DialogUser from "@/components/modals/DialogUser";
@@ -64,14 +64,12 @@ export default function UsersView() {
   const loadUsers = useCallback(
     async (page = 1) => {
       setLoading(true);
-
       try {
         const response = await getUsers(page);
-
         setUsers(response.data);
         setTotal(response.meta.total);
-      } catch {
-        toast.error(t("errors.load"));
+      } catch (err) {
+        toast.error(formatToastErrorMessage(err, t("errors.load")));
       } finally {
         setLoading(false);
       }
@@ -421,12 +419,11 @@ export default function UsersView() {
               getRowId={(row) => row.id}
               autoHeight
               getRowHeight={() => "auto"}
-              disableRowSelectionOnClick
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              pageSizeOptions={[10, 25, 50]}
               rowCount={totalCount}
               paginationMode={isSearching ? "client" : "server"}
+              disableRowSelectionOnClick
               sx={{
                 border: "none",
 

@@ -127,20 +127,18 @@ export default function CasoFormView({ mode, casoId }: Props) {
   } = methods;
 
   useEffect(() => {
-    let ativo = true;
-
-    getCategorias()
-      .then((data) => {
-        if (ativo) setCategorias(Array.isArray(data) ? data : []);
-      })
-      .catch(() => {})
-      .finally(() => {
-        if (ativo) setLoadingCategorias(false);
-      });
-
-    return () => {
-      ativo = false;
+    const loadCategorias = async () => {
+      try {
+        const { data } = await getCategorias();
+        setCategorias(data);
+      } catch {
+        setCategorias([]);
+      } finally {
+        setLoadingCategorias(false);
+      }
     };
+
+    loadCategorias();
   }, []);
 
   useEffect(() => {

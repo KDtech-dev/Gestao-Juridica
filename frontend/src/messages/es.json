@@ -9,7 +9,6 @@
     "appName": "Central Jurídica",
     "tagline": "Gestión jurídica inteligente y moderna"
   },
-
   "auth": {
     "login": {
       "brand": "Central Jurídica",
@@ -29,7 +28,6 @@
       "error": "No fue posible iniciar sesión."
     }
   },
-
   "dashboard": {
     "welcome": "Bienvenido al sistema"
   },
@@ -368,7 +366,7 @@
       "title": "Usuarios",
       "subtitle": "Gestiona administradores, abogados y funcionarios del sistema.",
       "newUser": "Nuevo usuario",
-      "searchPlaceholder": "Buscar por nombre, e-mail o CPF...",
+      "searchPlaceholder": "Buscar por nombre, correo o CPF...",
       "registeredCount": "{count, plural, =0 {Ningún usuario registrado} one {# usuario registrado} other {# usuarios registrados}}",
       "confirmDelete": "¿Deseas eliminar a {name}?",
       "roles": {
@@ -401,7 +399,52 @@
         "title": {
           "create": "Nuevo usuario",
           "edit": "Editar usuario",
-          "view": "Visualizar usuario"
+          "view": "Visualizar usuario",
+          "fields": {
+            "role": "Perfil",
+            "name": "Nombre",
+            "email": "Correo electrónico",
+            "cpf": "CPF",
+            "mobile": "Celular",
+            "birthDate": "Fecha de nacimiento",
+            "personalSummary": "Resumen personal",
+            "oabNumber": "Número OAB",
+            "oabUf": "UF",
+            "specialties": "Especialidades",
+            "specialtiesPlaceholder": "Seleccione una o más especialidades",
+            "addSpecialty": "Agregar especialidad...",
+            "password": "Contraseña",
+            "confirmPassword": "Confirmar contraseña",
+            "ufs": {
+              "AC": "Acre",
+              "AL": "Alagoas",
+              "AP": "Amapá",
+              "AM": "Amazonas",
+              "BA": "Bahia",
+              "CE": "Ceará",
+              "DF": "Distrito Federal",
+              "ES": "Espírito Santo",
+              "GO": "Goiás",
+              "MA": "Maranhão",
+              "MT": "Mato Grosso",
+              "MS": "Mato Grosso do Sul",
+              "MG": "Minas Gerais",
+              "PA": "Pará",
+              "PB": "Paraíba",
+              "PR": "Paraná",
+              "PE": "Pernambuco",
+              "PI": "Piauí",
+              "RJ": "Rio de Janeiro",
+              "RN": "Rio Grande do Norte",
+              "RS": "Rio Grande do Sul",
+              "RO": "Rondônia",
+              "RR": "Roraima",
+              "SC": "Santa Catarina",
+              "SP": "São Paulo",
+              "SE": "Sergipe",
+              "TO": "Tocantins"
+            }
+          }
         },
         "actions": {
           "create": "Crear",
@@ -418,17 +461,28 @@
         "fields": {
           "role": "Perfil",
           "name": "Nombre",
-          "email": "E-mail",
+          "namePlaceholder": "Ingrese el nombre completo",
+          "email": "Correo electrónico",
+          "emailPlaceholder": "Ingrese el correo electrónico",
           "cpf": "CPF",
+          "cpfPlaceholder": "Ingrese el CPF",
           "mobile": "Celular",
+          "mobilePlaceholder": "Ingrese el número de celular",
           "birthDate": "Fecha de nacimiento",
+          "birthDatePlaceholder": "Seleccione la fecha de nacimiento",
           "personalSummary": "Resumen personal",
+          "personalSummaryPlaceholder": "Ingrese un resumen profesional",
           "oabNumber": "Número OAB",
+          "oabNumberPlaceholder": "Ingrese el número de OAB",
           "oabUf": "UF",
+          "oabUfPlaceholder": "UF",
           "specialties": "Especialidades",
+          "specialtiesPlaceholder": "Seleccione una o más especialidades",
           "addSpecialty": "Agregar especialidad...",
           "password": "Contraseña",
-          "confirmPassword": "Confirmar contraseña"
+          "passwordPlaceholder": "Ingrese la contraseña",
+          "confirmPassword": "Confirmar contraseña",
+          "confirmPasswordPlaceholder": "Confirme la contraseña"
         }
       },
       "toast": {
@@ -848,6 +902,7 @@
       "descriptionLabel": "Descripción/Pauta"
     }
   },
+
   "validation": {
     "name": {
       "required": "El nombre es obligatorio.",
@@ -946,21 +1001,50 @@
     "uf": {
       "size": "El estado debe tener un código de 2 letras."
     },
+    "complemento": {
+      "max": "El complemento no puede superar los 100 caracteres."
+    },
+    "logradouro": {
+      "required": "La dirección es obligatoria.",
+      "max": "La dirección no puede superar los 255 caracteres."
+    },
+    "numero": {
+      "required": "El número es obligatorio.",
+      "max": "El número no puede superar los 20 caracteres."
+    },
     "cep": {
       "size": "El código postal debe contener exactamente 8 dígitos."
     },
+    "bairro": {
+      "required": "El barrio es obligatorio.",
+      "max": "El barrio no puede superar los 100 caracteres."
+    },
     "oab_numero": {
-      "required_if": "El número de OAB es obligatorio para los abogados."
+      "required_if": "El número de OAB es obligatorio para los abogados.",
+      "invalid": "El número de OAB debe tener de 1 a 6 dígitos, opcionalmente seguido de A, B o D."
     },
     "oab_uf": {
-      "required_if": "El estado de la OAB es obligatorio para los abogados."
+      "required_if": "El estado de la OAB es obligatorio para los abogados.",
+      "invalid": "Código de estado inválido."
+    },
+    "cidade": {
+      "required": "La ciudad es obligatoria.",
+      "max": "La ciudad no puede superar los 100 caracteres."
     },
     "identifier": {
       "required": "Ingrese su CPF o correo electrónico.",
       "invalid": "Ingrese un CPF o correo electrónico válido."
     },
     "password": {
-      "required": "La contraseña es obligatoria."
+      "required": "La contraseña es obligatoria.",
+      "min": "La contraseña debe tener al menos 8 caracteres."
+    },
+    "password_confirmation": {
+      "required": "La confirmación de contraseña es obligatoria.",
+      "same": "Las contraseñas no coinciden."
+    },
+    "celular": {
+      "size": "El celular debe tener 10 u 11 dígitos."
     }
   }
 }

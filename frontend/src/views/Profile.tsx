@@ -34,8 +34,12 @@ import { toast, formatToastErrorMessage } from "@/utils/toast";
 import { CardEndereco } from "@/components/CardEndereco";
 import PickColor from "@/components/PickColor";
 import { Icon } from "@/components/AppIcon";
+import { updateUserBaseSchema } from "@/schemas/UserSchema";
+import z from "zod";
+
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
+  const tValidation = useTranslations("validation");
   const { themeMode, setThemeMode } = useThemeMode();
   const { hasRole, user } = useAuth();
   const { language, setLanguage } = useLanguage();
@@ -58,6 +62,12 @@ export default function ProfileView() {
     themeModeRef.current = themeMode;
     languageRef.current = language;
   });
+
+  const profileFormSchema = updateUserBaseSchema(tValidation).extend({
+    tema: z.enum(["system", "light", "dark"]),
+    idioma: z.enum(["pt", "en", "es"]),
+  });
+
   const roleNormalized: RoleType | undefined = isAdvogado
     ? "advogado"
     : isFuncionario
@@ -99,14 +109,19 @@ export default function ProfileView() {
   const { isDirty } = form.formState;
   useEffect(() => {
     if (!user?.id) return;
-    getUserById(String(user.id))
-      .then((fetchedUser) => {
+
+    const loadUser = async () => {
+      try {
+        const { data: fetchedUser } = await getUserById(String(user.id));
+
         setProfileUser(fetchedUser);
+
         setAvatar(
           fetchedUser.advogado?.foto_perfil_url ??
             fetchedUser.funcionario?.foto_perfil_url ??
             null,
         );
+
         form.reset({
           name: fetchedUser.name ?? "",
           email: fetchedUser.email ?? "",
@@ -140,9 +155,13 @@ export default function ProfileView() {
           idioma: languageRef.current,
           cor_perfil: fetchedUser.cor_perfil ?? null,
         });
-      })
-      .catch(() => {});
-  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+      } catch (err) {
+        toast.error(formatToastErrorMessage(err, t("toast.loadProfileError")));
+      }
+    };
+
+    loadUser();
+  }, [user?.id]);
   const formRef = useRef(form);
   useEffect(() => {
     formRef.current.setValue("tema", themeMode);
@@ -255,7 +274,6 @@ export default function ProfileView() {
                         >
                           <Icon icon="mdi:camera" width={24} color="#fff" />
                         </Box>
-                        {/* Badge de câmera no canto inferior direito */}
                         <Box
                           sx={{
                             position: "absolute",
@@ -278,7 +296,6 @@ export default function ProfileView() {
                         >
                           <Icon icon="mdi:plus" width={13} color="#fff" />
                         </Box>
-                        {/* Input oculto */}
                         <input
                           type="file"
                           accept="image/*"

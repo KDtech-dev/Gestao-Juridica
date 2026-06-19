@@ -21,7 +21,7 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { postCliente, deleteCliente } from "@/api/ApiClientes";
+import { postCliente, deleteCliente, getClientes } from "@/api/ApiClientes";
 import { toast } from "@/utils/toast";
 import { ClienteType } from "@/@core/types";
 import {
@@ -52,12 +52,12 @@ export default function ClientesView() {
   const loadClientes = useCallback(
     async (page = 1, perPage = 10) => {
       setLoading(true);
+
       try {
-        const response = await getAxios().get("/clientes", {
-          params: { page, per_page: perPage },
-        });
-        setClientes(response.data?.data ?? []);
-        setTotal(response.data?.meta?.total ?? 0);
+        const { data, meta } = await getClientes(page, perPage);
+
+        setClientes(data);
+        setTotal(meta.total);
       } catch {
         toast.error(t("errors.load"));
       } finally {
@@ -66,10 +66,10 @@ export default function ClientesView() {
     },
     [t],
   );
-
   useEffect(() => {
     loadClientes(paginationModel.page + 1, paginationModel.pageSize);
   }, [paginationModel, loadClientes]);
+
   const clientesFiltrados = clientes.filter((c) =>
     [c.name, c.cpf_cnpj, c.email].some((field) =>
       field?.toLowerCase().includes(search.toLowerCase()),
@@ -304,6 +304,8 @@ export default function ClientesView() {
 
             <DataGrid
               rows={search.trim() ? clientesFiltrados : clientes}
+              rowCount={search.trim() ? clientesFiltrados.length : total}
+              paginationMode="server"
               columns={columns}
               loading={loading}
               getRowId={(row) => row.id}
@@ -311,8 +313,6 @@ export default function ClientesView() {
               getRowHeight={() => "auto"}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              rowCount={totalCount}
-              paginationMode={search.trim() ? "client" : "server"}
               disableRowSelectionOnClick
               sx={{
                 border: "none",

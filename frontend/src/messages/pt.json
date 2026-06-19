@@ -403,8 +403,49 @@
           "edit": "Editar usuário",
           "view": "Visualizar usuário",
           "fields": {
+            "role": "Perfil",
+            "name": "Nome",
+            "email": "E-mail",
+            "cpf": "CPF",
+            "mobile": "Celular",
+            "birthDate": "Data de nascimento",
+            "personalSummary": "Resumo pessoal",
+            "oabNumber": "OAB Número",
+            "oabUf": "UF",
             "specialties": "Especialidades",
-            "specialtiesPlaceholder": "Selecione uma ou mais especialidades"
+            "specialtiesPlaceholder": "Selecione uma ou mais especialidades",
+            "addSpecialty": "Adicionar especialidade...",
+            "password": "Senha",
+            "confirmPassword": "Confirmar senha"
+          },
+          "ufs": {
+            "AC": "Acre",
+            "AL": "Alagoas",
+            "AP": "Amapá",
+            "AM": "Amazonas",
+            "BA": "Bahia",
+            "CE": "Ceará",
+            "DF": "Distrito Federal",
+            "ES": "Espírito Santo",
+            "GO": "Goiás",
+            "MA": "Maranhão",
+            "MT": "Mato Grosso",
+            "MS": "Mato Grosso do Sul",
+            "MG": "Minas Gerais",
+            "PA": "Pará",
+            "PB": "Paraíba",
+            "PR": "Paraná",
+            "PE": "Pernambuco",
+            "PI": "Piauí",
+            "RJ": "Rio de Janeiro",
+            "RN": "Rio Grande do Norte",
+            "RS": "Rio Grande do Sul",
+            "RO": "Rondônia",
+            "RR": "Roraima",
+            "SC": "Santa Catarina",
+            "SP": "São Paulo",
+            "SE": "Sergipe",
+            "TO": "Tocantins"
           }
         },
         "actions": {
@@ -422,19 +463,31 @@
         "fields": {
           "role": "Perfil",
           "name": "Nome",
+          "namePlaceholder": "Digite o nome completo",
           "email": "E-mail",
+          "emailPlaceholder": "Digite o e-mail",
           "cpf": "CPF",
+          "cpfPlaceholder": "Digite o CPF",
           "mobile": "Celular",
+          "mobilePlaceholder": "Digite o número de celular",
           "birthDate": "Data de nascimento",
+          "birthDatePlaceholder": "Selecione a data de nascimento",
           "personalSummary": "Resumo pessoal",
+          "personalSummaryPlaceholder": "Digite um resumo sobre o profissional",
           "oabNumber": "OAB Número",
+          "oabNumberPlaceholder": "Digite o número da OAB",
           "oabUf": "UF",
+          "oabUfPlaceholder": "UF",
           "specialties": "Especialidades",
+          "specialtiesPlaceholder": "Selecione uma ou mais especialidades",
           "addSpecialty": "Adicionar especialidade...",
           "password": "Senha",
-          "confirmPassword": "Confirmar senha"
+          "passwordPlaceholder": "Digite a senha",
+          "confirmPassword": "Confirmar senha",
+          "confirmPasswordPlaceholder": "Confirme a senha"
         }
       },
+
       "toast": {
         "created": "Usuário criado com sucesso!",
         "updated": "Usuário atualizado com sucesso!",
@@ -969,10 +1022,12 @@
       "max": "O bairro não pode exceder 100 caracteres."
     },
     "oab_numero": {
-      "required_if": "O número da OAB é obrigatório para advogados."
+      "required_if": "O número da OAB é obrigatório para advogados.",
+      "invalid": "Número OAB deve ter de 1 a 6 dígitos, podendo conter A, B ou D no final."
     },
     "oab_uf": {
-      "required_if": "A UF da OAB é obrigatória para advogados."
+      "required_if": "UF obrigatória.",
+      "invalid": "UF inválida"
     },
     "cidade": {
       "required": "A cidade é obrigatória.",
@@ -989,6 +1044,9 @@
     "password_confirmation": {
       "required": "A confirmação de senha é obrigatória.",
       "same": "As senhas não coincidem."
+    },
+    "celular": {
+      "size": "O celular deve ter 10 ou 11 dígitos."
     }
   }
 }
