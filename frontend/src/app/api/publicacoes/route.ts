@@ -1,5 +1,5 @@
 import { getPublicApiOrigin } from "@/configs/apiUrl";
-import { mapApiPublicacaoToItem } from "@/api/publicacoes/apiPublicacoes";
+import { mapApiPublicacaoToItem } from "@/api/apiPublicacoes";
 import type { ApiPublicacao } from "@/api/publicacoes/types";
 import { getSafePayloadErrorMessage } from "@/utils/safeErrorMessage";
 import { NextRequest, NextResponse } from "next/server";

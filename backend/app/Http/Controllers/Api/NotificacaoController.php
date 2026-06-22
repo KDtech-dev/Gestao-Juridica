@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\NotificacaoResource;
 use App\Models\Notificacao;
 use App\Services\NotificacaoService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\JsonResponse; 
 use Illuminate\Http\Request;
 
 class NotificacaoController extends Controller

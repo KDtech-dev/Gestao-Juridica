@@ -14,14 +14,15 @@ import { Footer } from "@/components/Footer";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { LawyerCarousel } from "@/components/team/LawyerCarousel";
-import { teamLawyers, teamSpecialties } from "@/data/team";
+import { TeamLawyer, teamLawyers, teamSpecialties } from "@/data/team";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 
 type HomeViewProps = {
-  publicacoes: PublicacaoItem[];
+  publicacoes?: PublicacaoItem[];
+  lawyers: TeamLawyer[];
 };
 
-export default function HomeView({ publicacoes }: HomeViewProps) {
+export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>
       <Header />
@@ -211,7 +212,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
             mt={{ xs: 7, md: 9 }}
             mb={4}
           >
-            <LawyerCarousel lawyers={teamLawyers} />
+            <LawyerCarousel lawyers={lawyers} />
           </Box>
         </Container>
       </Box>

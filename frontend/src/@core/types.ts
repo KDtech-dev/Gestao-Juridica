@@ -1,7 +1,3 @@
-import type {
-  PublicacaoAnexo,
-  StatusPublicacao,
-} from "@/api/publicacoes/types";
 
 export type ResponseType<T> = {
   success: boolean;
@@ -64,10 +60,36 @@ export type PublicacaoFormData = {
   anexosRemovidos: string[];
 };
 
+export type StatusPublicacao = "rascunho" | "publicado" | "arquivado";
+
+export type PublicacaoAnexo = {
+  id: string;
+  nome_arquivo: string | null;
+  descricao: string | null;
+  arquivo: string | null;
+  url: string | null;
+};
+
+export type PublicacaoType = {
+  id: string;
+  titulo: string | null;
+  resumo: string | null;
+  conteudo: string | null;
+  imagem_caminho: string | null;
+  autor: string | null;
+  status: StatusPublicacao | null;
+  publicado_em: string | null;
+  created_at: string;
+  updated_at: string;
+  categoria_id: string | number | null;
+  categoria: CategoriaType | null;
+  user: UserType | null;
+  anexos: PublicacaoAnexo[];
+};
+
 export type PublicationErrors = Partial<
   Record<keyof Omit<PublicacaoFormData, "anexos">, string>
 >;
-
 
 export type ClienteType = {
   id: number | string;
@@ -96,6 +118,19 @@ export type FuncionarioType = {
   endereco: EnderecoType | null;
   created_at: string;
   updated_at: string;
+};
+
+export type AdvogadoPublicoType = {
+  id: string;
+  name: string;
+  cor_perfil: string | null;
+  advogado: {
+    resumo_pessoal: string | null;
+    foto_perfil_url: string | null;
+    oab_numero: string;
+    oab_uf: string;
+    categorias: { id: string; nome: string }[];
+  } | null;
 };
 
 export type AdvogadoType = {

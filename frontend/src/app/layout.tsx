@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Box } from "@mui/material";
@@ -15,16 +16,19 @@ export const metadata: Metadata = {
     "Sistema de gestão jurídica para advogados e escritórios de advocacia, com controle de clientes, processos e prazos.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const locale = (headersList.get("x-locale") ?? "pt") as "pt" | "en" | "es";
+
   return (
     <html lang="pt-BR">
       <body style={{ margin: 0 }}>
         <ThemeRegistry>
-          <LanguageProvider>
+          <LanguageProvider initialLocale={locale}>
             <AuthProvider>
               <PublicI18nProvider>
                 <NotificationsProvider>

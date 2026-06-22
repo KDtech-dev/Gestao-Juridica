@@ -2,7 +2,7 @@ import PublicationDetailView from "@/views/PublicationDetail";
 import {
   getPublicacaoPublicaBySlug,
   getPublicacoesPublicas,
-} from "@/api/publicacoes/apiPublicacoes";
+} from "@/api/apiPublicacoes";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
