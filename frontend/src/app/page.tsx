@@ -1,9 +1,8 @@
-
 import { getPublicacoesPublicas } from "@/api/apiPublicacoes";
 import HomeView from "@/views/Home";
 
 export default async function HomePage() {
-  const publicacoesPublicas = await getPublicacoesPublicas();
+  const response = await getPublicacoesPublicas();
 
-  return <HomeView publicacoes={publicacoesPublicas} />;
+  return <HomeView publicacoes={response.data} />;
 }

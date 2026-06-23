@@ -41,7 +41,7 @@ class PublicacaoController extends Controller
         ], 201);
     }
 
-    public function updatePublicacao(UpdatePublicacaoRequest $request, string $id)
+    public function update(UpdatePublicacaoRequest $request, string $id)
     {
         $publicacao = $this->service->updatePublicacao(
             $id,

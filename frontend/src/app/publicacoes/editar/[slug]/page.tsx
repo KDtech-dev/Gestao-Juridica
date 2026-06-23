@@ -1,4 +1,4 @@
-import NewPublicationView from "@/views/NewPublication";
+import PublicacaoFormView from "@/views/NewPublication";
 
 export default async function EditarPublicacaoPage({
   params,
@@ -6,5 +6,5 @@ export default async function EditarPublicacaoPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  return <NewPublicationView editSlug={slug} />;
+  return <PublicacaoFormView mode="edit" editId={slug} />;
 }

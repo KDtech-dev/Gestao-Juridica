@@ -83,7 +83,6 @@ export default function PublicationsView() {
     loadPublicacoes();
   }, [loadErrorFallback]);
 
-  // archivePost:
   const archivePost = async (post: PublicacaoType) => {
     if (processingPostId) return;
     setProcessingPostId(post.id);

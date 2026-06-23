@@ -66,28 +66,33 @@ class PublicacaoService
 
     public function updatePublicacao(string $id, array $data)
     {
-        unset(
-            $data['anexos'],
-            $data['imagem'],
-            $data['anexos_remover']
-        );
+        $imagem = $data['imagem'] ?? null;
+        $anexosNovos = $data['anexos'] ?? [];
+        $anexosRemover = $data['anexos_remover'] ?? [];
+
+        unset($data['anexos'], $data['imagem'], $data['anexos_remover']);
 
         $publicacao = Publicacao::query()
             ->where('user_id', Auth::id())
             ->findOrFail($id);
 
-        $this->handlePublishedAt(
-            $data,
-            $publicacao
-        );
+        $this->handlePublishedAt($data, $publicacao);
+
+        if ($imagem instanceof UploadedFile) {
+            $this->storeImagem($data, $imagem);
+        }
 
         $publicacao->update($data);
 
-        return $publicacao->fresh([
-            'categoria',
-            'user',
-            'anexos',
-        ]);
+        if (!empty($anexosNovos)) {
+            $this->storeAnexos($publicacao, $anexosNovos);
+        }
+
+        if (!empty($anexosRemover)) {
+            $this->removeAnexos($publicacao, $anexosRemover);
+        }
+
+        return $publicacao->fresh(['categoria', 'user', 'anexos']);
     }
 
     public function deletePublicacao(string $id)

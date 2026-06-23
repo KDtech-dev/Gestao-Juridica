@@ -63,10 +63,10 @@ const updatePublicacao = async (
   id: string,
   payload: FormData,
 ): Promise<ResponseType<PublicacaoType>> => {
+  payload.append("_method", "PUT");
   const { data } = await getAxios({
     contentType: "formData",
-  }).put(`/publicacoes/${id}`, payload);
-
+  }).post(`/publicacoes/${id}`, payload);
   return data;
 };
 
