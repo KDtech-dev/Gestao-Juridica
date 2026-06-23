@@ -48,7 +48,7 @@ export type PaginatedResponseType<T> = {
 };
 export type PublicacaoFormData = {
   titulo: string;
-  categoria: string;
+  categoria: CategoriaType;
   categoriaId: string;
   bannerImage: File | string;
   autor: string;

@@ -3,15 +3,35 @@
 import Link from "next/link";
 import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
-
+import { PublicacaoType } from "@/@core/types";
+import {
+  estimateReadTime,
+  formatDate,
+  slugify,
+  stripHtml,
+} from "@/@core/format";
 type CardPublicacaoProps = {
-  publicacao: PublicacaoItem;
+  publicacao: PublicacaoType;
 };
 
 export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
   const t = useTranslations("public.publications");
+
+  const titulo = publicacao.titulo?.trim() || "Publicação";
+  const slug = `${slugify(titulo) || "publicacao"}-${publicacao.id}`;
+  const resumo =
+    publicacao.resumo?.trim() ||
+    stripHtml(publicacao.conteudo ?? "").slice(0, 180);
+  const categoria = publicacao.categoria?.nome?.trim() || "Publicação";
+  const data = formatDate(publicacao.publicado_em ?? publicacao.created_at);
+  const readTime = estimateReadTime(publicacao.conteudo);
+  const autor =
+    publicacao.autor?.trim() ||
+    publicacao.user?.name?.trim() ||
+    "Autor não informado";
+  const bannerImage =
+    publicacao.imagem_caminho || "/storage/publicacoes/default-publication.png";
 
   return (
     <Paper
@@ -33,17 +53,11 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
         },
       }}
     >
-      <Box
-        sx={{
-          position: "relative",
-          height: 150,
-          bgcolor: "action.hover",
-        }}
-      >
+      <Box sx={{ position: "relative", height: 150, bgcolor: "action.hover" }}>
         <Box
           component="img"
-          src={publicacao.bannerImage}
-          alt={publicacao.titulo}
+          src={bannerImage}
+          alt={titulo}
           sx={{
             width: "100%",
             height: "100%",
@@ -52,7 +66,7 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
           }}
         />
         <Chip
-          label={publicacao.categoria}
+          label={categoria}
           size="small"
           sx={{
             position: "absolute",
@@ -70,43 +84,40 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
           <Stack direction="row" alignItems="center" spacing={0.5}>
             <Icon icon="mdi:clock-outline" width={16} />
             <Typography variant="caption" color="text.secondary">
-              {publicacao.readTime}
+              {readTime}
             </Typography>
           </Stack>
         </Stack>
 
         <Typography fontWeight={800} color="text.primary" mb={1}>
-          {publicacao.titulo}
+          {titulo}
         </Typography>
-
         <Typography
           variant="body2"
           color="text.secondary"
           mb={2}
           sx={{ flex: 1 }}
         >
-          {publicacao.resumo}
+          {resumo}
         </Typography>
 
         <Stack spacing={1.5}>
           <Stack direction="row" alignItems="center" spacing={0.75}>
             <Icon icon="mdi:calendar-month-outline" width={16} />
             <Typography variant="caption" color="text.secondary">
-              {publicacao.data}
+              {data}
             </Typography>
           </Stack>
-
           <Stack direction="row" alignItems="center" spacing={0.75}>
             <Icon icon="mdi:account-outline" width={16} />
             <Typography variant="caption" color="text.secondary">
-              {publicacao.autor}
+              {autor}
             </Typography>
           </Stack>
-
           <Box pt={1}>
             <Button
               component={Link}
-              href={`/publicacoes/${publicacao.slug}`}
+              href={`/publicacoes/${slug}`}
               variant="outlined"
               fullWidth
               sx={{ textTransform: "none", borderColor: "divider" }}

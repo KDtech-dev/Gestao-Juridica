@@ -48,12 +48,25 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('publicacoes')->group(function () {
-        Route::get('/',                  [PublicacaoController::class, 'index'])->name('publicacoes.index');
-        Route::post('/',                 [PublicacaoController::class, 'store'])->name('publicacoes.store');
-        Route::get('/{publicacao}',      [PublicacaoController::class, 'show'])->name('publicacoes.show');
-        Route::put('/{publicacao}',      [PublicacaoController::class, 'update'])->name('publicacoes.update');
-        Route::delete('/{publicacao}',   [PublicacaoController::class, 'destroy'])->name('publicacoes.destroy');
+
+        Route::get('/',                [PublicacaoController::class, 'index']);
+        Route::post('/',               [PublicacaoController::class, 'store']);
+        Route::get('/{publicacao}',    [PublicacaoController::class, 'show']);
+        Route::put('/{publicacao}',    [PublicacaoController::class, 'update']);
+        Route::delete('/{publicacao}', [PublicacaoController::class, 'destroy']);
+
+        Route::prefix('{publicacao}/anexos')->group(function () {
+            Route::get('/',           [PublicacaoController::class, 'indexAnexos']);
+            Route::post('/',          [PublicacaoController::class, 'storeAnexo']);
+            Route::delete('/{anexo}', [PublicacaoController::class, 'destroyAnexo']);
+        });
+
+        Route::post(
+            '/{publicacao}/banner',
+            [PublicacaoController::class, 'storeBanner']
+        );
     });
+
 
     Route::prefix('compromissos')->group(function () {
         Route::get('/',                   [CompromissoController::class, 'index'])->name('compromissos.index');

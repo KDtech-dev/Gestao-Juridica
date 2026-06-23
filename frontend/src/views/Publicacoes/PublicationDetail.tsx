@@ -5,10 +5,10 @@ import { PublicacaoAnexosCard } from "@/components/publications/PublicacaoAnexos
 import { PublicacaoDetailBanner } from "@/components/publications/PublicacaoDetailBanner";
 import { PublicacaoResumoCard } from "@/components/publications/PublicacaoResumoCard";
 import { PublicacaoTextoCard } from "@/components/publications/PublicacaoTextoCard";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { PublicacaoType } from "@/@core/types";
 
 type Props = {
-  publicacao: PublicacaoItem;
+  publicacao: PublicacaoType;
 };
 
 export default function PublicationDetailView({ publicacao }: Props) {

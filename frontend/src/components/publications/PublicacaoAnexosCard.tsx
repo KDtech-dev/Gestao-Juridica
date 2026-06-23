@@ -5,9 +5,10 @@ import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
 
 type PublicacaoAnexosCardProps = {
-  publicacao: PublicacaoItem;
+  publicacao: PublicacaoType;
 };
 
 export function PublicacaoAnexosCard({
@@ -59,7 +60,7 @@ export function PublicacaoAnexosCard({
                   <Box>
                     <Typography
                       component={Link}
-                      href={anexo.viewUrl as string}
+                      href={anexo.url as string}
                       target="_blank"
                       rel="noopener noreferrer"
                       color="text.primary"
@@ -72,7 +73,7 @@ export function PublicacaoAnexosCard({
                         },
                       }}
                     >
-                      {anexo.nome}
+                      {anexo.nome_arquivo}
                     </Typography>
                   </Box>
                 </Stack>

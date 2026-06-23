@@ -1,6 +1,4 @@
 import { getPublicApiOrigin } from "@/configs/apiUrl";
-import { mapApiPublicacaoToItem } from "@/api/apiPublicacoes";
-import type { ApiPublicacao } from "@/api/publicacoes/types";
 import { getSafePayloadErrorMessage } from "@/utils/safeErrorMessage";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,14 +6,11 @@ export const dynamic = "force-dynamic";
 
 const getBackendApiBaseUrl = () => {
   const origin = getPublicApiOrigin() || "http://127.0.0.1:8000";
-
   return `${origin.replace(/\/$/, "")}/api`;
 };
 
 const getForwardHeaders = (request: NextRequest, hasBody = false) => {
-  const headers = new Headers({
-    Accept: "application/json",
-  });
+  const headers = new Headers({ Accept: "application/json" });
   const authorization = request.headers.get("authorization");
   const cookieToken = request.cookies.get("authToken")?.value;
   const contentType = request.headers.get("content-type") ?? "";
@@ -23,7 +18,6 @@ const getForwardHeaders = (request: NextRequest, hasBody = false) => {
   if (hasBody && !contentType.includes("multipart/form-data")) {
     headers.set("Content-Type", "application/json");
   }
-
   if (authorization) {
     headers.set("Authorization", authorization);
   } else if (cookieToken) {
@@ -35,7 +29,6 @@ const getForwardHeaders = (request: NextRequest, hasBody = false) => {
 
 const getId = async (params: Promise<{ id: string }>) => {
   const { id } = await params;
-
   return encodeURIComponent(id);
 };
 
@@ -49,16 +42,12 @@ const proxyPublicacao = async (
     cache: "no-store",
     headers: getForwardHeaders(request, Boolean(init.body)),
   });
+
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
     return NextResponse.json(
-      {
-        message: getSafePayloadErrorMessage(
-          payload,
-          "Erro ao processar publicação.",
-        ),
-      },
+      { message: getSafePayloadErrorMessage(payload, "Erro ao processar publicação.") },
       { status: response.status },
     );
   }
@@ -67,14 +56,7 @@ const proxyPublicacao = async (
     return NextResponse.json(payload ?? { message: "Publicação removida." });
   }
 
-  const data =
-    typeof payload === "object" && payload !== null && "data" in payload
-      ? (payload as { data: unknown }).data
-      : payload;
-
-  return NextResponse.json(mapApiPublicacaoToItem(data as ApiPublicacao), {
-    status: response.status,
-  });
+  return NextResponse.json(payload, { status: response.status });
 };
 
 export const GET = async (
@@ -108,16 +90,10 @@ export const POST = async (
   const isMultipart = contentType.includes("multipart/form-data");
   const body = isMultipart ? await request.formData() : await request.text();
 
-  return proxyPublicacao(request, await getId(params), {
-    method: "POST",
-    body,
-  });
+  return proxyPublicacao(request, await getId(params), { method: "POST", body });
 };
 
 export const DELETE = async (
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
-) =>
-  proxyPublicacao(request, await getId(params), {
-    method: "DELETE",
-  });
+) => proxyPublicacao(request, await getId(params), { method: "DELETE" });

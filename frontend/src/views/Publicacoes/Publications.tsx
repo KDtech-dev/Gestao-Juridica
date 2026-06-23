@@ -21,15 +21,16 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import type { PublicacaoItem, StatusPublicacao } from "@/api/publicacoes/types";
+import type { PublicacaoType, StatusPublicacao } from "@/@core/types";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  atualizarPublicacaoClient,
-  deletarPublicacaoClient,
-  listarPublicacoesClient,
-} from "@/api/publicacoes/apiPublicacoesClient";
+  deletePublicacao,
+  getPublicacoes,
+  updatePublicacao,
+} from "@/api/apiPublicacoes";
 import { toast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
+import { formatDate, estimateReadTime, stripHtml } from "@/@core/format";
 
 function normalize(value: string) {
   return value
@@ -41,104 +42,59 @@ function normalize(value: string) {
 
 const STATUS_TABS: StatusPublicacao[] = ["publicado", "rascunho", "arquivado"];
 
+const getCategoria = (post: PublicacaoType) =>
+  post.categoria?.nome?.trim() ?? "Publicação";
+const getAutor = (post: PublicacaoType) =>
+  post.autor?.trim() ?? post.user?.name?.trim() ?? "Autor não informado";
+const getResumo = (post: PublicacaoType) =>
+  post.resumo?.trim() ?? stripHtml(post.conteudo ?? "").slice(0, 180);
+const getData = (post: PublicacaoType) =>
+  formatDate(post.publicado_em ?? post.created_at);
+const getReadTime = (post: PublicacaoType) => estimateReadTime(post.conteudo);
+
 export default function PublicationsView() {
   const { hasRole } = useAuth();
   const t = useTranslations("internal.publications");
   const loadErrorFallback = t("errors.load");
   const [search, setSearch] = useState("");
-  const [posts, setPosts] = useState<PublicacaoItem[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [activeStatus, setActiveStatus] =
     useState<StatusPublicacao>("publicado");
-  const [deleteTarget, setDeleteTarget] = useState<PublicacaoItem | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PublicacaoType | null>(null);
   const [processingPostId, setProcessingPostId] = useState<string | null>(null);
   const canManagePublications = hasRole("admin") || hasRole("advogado");
-
+  const [posts, setPosts] = useState<PublicacaoType[]>([]);
   useEffect(() => {
-    let active = true;
-
     const loadPublicacoes = async () => {
       setLoadingPosts(true);
       setLoadError(null);
-
       try {
-        const data = await listarPublicacoesClient();
-
-        if (active) {
-          setPosts(data);
-        }
+        const { data } = await getPublicacoes();
+        setPosts(data ?? []);
       } catch (error) {
-        if (active) {
-          setLoadError(
-            error instanceof Error ? error.message : loadErrorFallback,
-          );
-        }
+        setLoadError(
+          error instanceof Error ? error.message : loadErrorFallback,
+        );
       } finally {
-        if (active) {
-          setLoadingPosts(false);
-        }
+        setLoadingPosts(false);
       }
     };
-
     loadPublicacoes();
-
-    return () => {
-      active = false;
-    };
   }, [loadErrorFallback]);
 
-  const filteredPosts = useMemo(() => {
-    const term = normalize(search);
-    const postsByStatus = posts.filter(
-      (post) => (post.status ?? "publicado") === activeStatus,
-    );
-
-    if (!term) return postsByStatus;
-
-    return postsByStatus.filter((post) =>
-      [
-        post.titulo,
-        post.categoria,
-        post.autor,
-        post.tipo,
-        post.resumo,
-        post.cliente,
-        post.processo,
-      ].some((value) => normalize(value).includes(term)),
-    );
-  }, [activeStatus, posts, search]);
-
-  const statusCounts = useMemo(() => {
-    return STATUS_TABS.reduce(
-      (acc, status) => ({
-        ...acc,
-        [status]: posts.filter(
-          (post) => (post.status ?? "publicado") === status,
-        ).length,
-      }),
-      {} as Record<StatusPublicacao, number>,
-    );
-  }, [posts]);
-
-  const archivePost = async (post: PublicacaoItem) => {
+  // archivePost:
+  const archivePost = async (post: PublicacaoType) => {
     if (processingPostId) return;
-
     setProcessingPostId(post.id);
-
     try {
-      const updated = await atualizarPublicacaoClient(post.id, {
-        status: "arquivado",
-      });
-
+      const body = new FormData();
+      body.append("status", "arquivado");
+      const updated = await updatePublicacao(post.id, body);
       setPosts((current) =>
         current.map((item) =>
           item.id === post.id
-            ? {
-                ...item,
-                ...updated,
-                status: "arquivado",
-              }
+            ? { ...item, ...updated, status: "arquivado" }
             : item,
         ),
       );
@@ -152,11 +108,9 @@ export default function PublicationsView() {
 
   const confirmDeletePost = async () => {
     if (!deleteTarget || processingPostId) return;
-
     setProcessingPostId(deleteTarget.id);
-
     try {
-      await deletarPublicacaoClient(deleteTarget.id);
+      await deletePublicacao(deleteTarget.id);
       setPosts((current) =>
         current.filter((item) => item.id !== deleteTarget.id),
       );
@@ -169,6 +123,33 @@ export default function PublicationsView() {
     }
   };
 
+  const filteredPosts = useMemo(() => {
+    const term = normalize(search);
+    const postsByStatus = (posts ?? []).filter(
+      (post) => (post.status ?? "publicado") === activeStatus,
+    );
+    if (!term) return postsByStatus;
+    return postsByStatus.filter((post) =>
+      [post.titulo, getCategoria(post), getAutor(post), getResumo(post)].some(
+        (value) => normalize(value ?? "").includes(term),
+      ),
+    );
+  }, [activeStatus, posts, search]);
+
+  const statusCounts = useMemo(
+    () =>
+      STATUS_TABS.reduce(
+        (acc, status) => ({
+          ...acc,
+          [status]: posts.filter(
+            (post) => (post.status ?? "publicado") === status,
+          ).length,
+        }),
+        {} as Record<StatusPublicacao, number>,
+      ),
+    [posts],
+  );
+
   return (
     <Box
       sx={{
@@ -178,10 +159,8 @@ export default function PublicationsView() {
       }}
     >
       <SidebarDashboard activeKey="publicacoes" />
-
       <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
         <HeaderDashboard showSearch={false} />
-
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
           <Stack
             direction={{ xs: "column", md: "row" }}
@@ -198,21 +177,17 @@ export default function PublicationsView() {
                 {t("subtitle")}
               </Typography>
             </Box>
-
-            {canManagePublications ? (
+            {canManagePublications && (
               <Button
                 component={Link}
                 href="/publicacoes/nova"
                 variant="contained"
                 startIcon={<Icon icon="mdi:plus" />}
-                sx={{
-                  textTransform: "none",
-                  borderRadius: "12px",
-                }}
+                sx={{ textTransform: "none", borderRadius: "12px" }}
               >
                 {t("add")}
               </Button>
-            ) : null}
+            )}
           </Stack>
 
           <Paper
@@ -249,11 +224,10 @@ export default function PublicationsView() {
                 />
               ))}
             </Tabs>
-
             <TextField
               fullWidth
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
               placeholder={t("searchPlaceholder")}
               InputProps={{
                 startAdornment: (
@@ -279,7 +253,6 @@ export default function PublicationsView() {
                 border: "1px solid",
                 borderColor: "divider",
                 bgcolor: "background.paper",
-                boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
                 textAlign: "center",
               }}
             >
@@ -295,7 +268,6 @@ export default function PublicationsView() {
                 border: "1px solid",
                 borderColor: "divider",
                 bgcolor: "background.paper",
-                boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
                 textAlign: "center",
               }}
             >
@@ -323,22 +295,17 @@ export default function PublicationsView() {
                       ? t("empty.manageSubtitle")
                       : t("empty.userSubtitle")}
               </Typography>
-
-              {canManagePublications && !search ? (
+              {canManagePublications && !search && (
                 <Button
                   component={Link}
                   href="/publicacoes/nova"
                   variant="contained"
                   startIcon={<Icon icon="mdi:plus" />}
-                  sx={{
-                    textTransform: "none",
-                    borderRadius: "12px",
-                    mt: 2,
-                  }}
+                  sx={{ textTransform: "none", borderRadius: "12px", mt: 2 }}
                 >
                   {t("add")}
                 </Button>
-              ) : null}
+              )}
             </Paper>
           ) : (
             <Stack spacing={1.5}>
@@ -357,15 +324,12 @@ export default function PublicationsView() {
                   <Stack
                     direction={{ xs: "column", md: "row" }}
                     justifyContent="space-between"
-                    alignItems={{
-                      xs: "flex-start",
-                      md: "center",
-                    }}
+                    alignItems={{ xs: "flex-start", md: "center" }}
                     gap={1}
                     mb={1}
                   >
                     <Chip
-                      label={post.categoria}
+                      label={getCategoria(post)}
                       sx={{
                         bgcolor: "action.hover",
                         color: "primary.main",
@@ -373,11 +337,10 @@ export default function PublicationsView() {
                       }}
                     />
                     <Typography color="text.secondary" fontSize="0.82rem">
-                      {t(`status.${post.status ?? "publicado"}`)} • {post.data}{" "}
-                      • {post.readTime}
+                      {t(`status.${post.status ?? "publicado"}`)} •{" "}
+                      {getData(post)} • {getReadTime(post)}
                     </Typography>
                   </Stack>
-
                   <Typography
                     fontWeight={700}
                     color="text.primary"
@@ -387,16 +350,15 @@ export default function PublicationsView() {
                     {post.titulo}
                   </Typography>
                   <Typography color="text.secondary" fontSize="0.9rem" mb={1.2}>
-                    {post.resumo}
+                    {getResumo(post)}
                   </Typography>
-
                   <Stack
                     direction="row"
                     justifyContent="space-between"
                     alignItems="center"
                   >
                     <Typography color="text.secondary" fontSize="0.84rem">
-                      {t("byAuthor", { author: post.autor })}
+                      {t("byAuthor", { author: getAutor(post) })}
                     </Typography>
                     <Stack direction="row" spacing={0.5}>
                       <Tooltip title={t("actions.edit")}>
@@ -405,15 +367,11 @@ export default function PublicationsView() {
                           href={`/publicacoes/editar/${post.id}`}
                           aria-label={t("actions.edit")}
                           size="small"
-                          sx={{
-                            border: "1px solid",
-                            borderColor: "divider",
-                          }}
+                          sx={{ border: "1px solid", borderColor: "divider" }}
                         >
                           <Icon icon="mdi:pencil-outline" width={19} />
                         </IconButton>
                       </Tooltip>
-
                       <Tooltip title={t("actions.archive")}>
                         <span>
                           <IconButton
@@ -424,16 +382,12 @@ export default function PublicationsView() {
                               processingPostId === post.id
                             }
                             onClick={() => archivePost(post)}
-                            sx={{
-                              border: "1px solid",
-                              borderColor: "divider",
-                            }}
+                            sx={{ border: "1px solid", borderColor: "divider" }}
                           >
                             <Icon icon="mdi:archive-outline" width={19} />
                           </IconButton>
                         </span>
                       </Tooltip>
-
                       <Tooltip title={t("actions.delete")}>
                         <span>
                           <IconButton
@@ -465,7 +419,9 @@ export default function PublicationsView() {
         title={t("deleteDialog.title")}
         description={
           deleteTarget
-            ? t("deleteDialog.description", { title: deleteTarget.titulo })
+            ? t("deleteDialog.description", {
+                title: deleteTarget.titulo ?? "",
+              })
             : undefined
         }
         confirmText={t("deleteDialog.confirm")}

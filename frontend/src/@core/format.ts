@@ -1,4 +1,3 @@
-
 export const clearNumber = (value = "") => {
   return value.replace(/\D+/g, "");
 };
@@ -79,7 +78,6 @@ export function formatCpfCnpj(value: string) {
     .replace(/(\d{4})(\d)/, "$1-$2");
 }
 
-
 export function formatNumeroProcesso(value: string) {
   const digits = clearNumber(value).slice(0, 20);
 
@@ -103,3 +101,51 @@ export function formatNumeroProcesso(value: string) {
 
   return result;
 }
+
+export const slugify = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+export const stripHtml = (value: string) =>
+  value
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+export const formatDate = (value?: string | null) => {
+  if (!value) return "Sem data";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Sem data";
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  })
+    .format(date)
+    .replace(".", "");
+};
+
+export const estimateReadTime = (content?: string | null) => {
+  const words = stripHtml(content ?? "")
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return `${Math.max(1, Math.ceil(words / 180))} min`;
+};
+
+export const slugifyPublicacao = (titulo: string, id: string) =>
+  `${slugify(titulo) || "publicacao"}-${id}`;
+
+export const extractIdFromSlug = (slug: string): string | null => {
+  return (
+    slug.match(
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    )?.[0] ??
+    slug.split("-").pop() ??
+    null
+  );
+};

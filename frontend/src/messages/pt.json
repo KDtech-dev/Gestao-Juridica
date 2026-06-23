@@ -984,20 +984,23 @@
     "imagem": {
       "file": "A imagem deve ser um arquivo válido.",
       "mimes": "A imagem deve estar nos formatos JPG, JPEG, PNG, GIF ou WebP.",
-      "max": "A imagem não pode ser maior que 5MB."
+      "max": "A imagem não pode ser maior que 5MB.",
+      "invalid": "A imagem não pode ser maior que 5MB."
     },
     "imagem_caminho": {
       "string": "O caminho da imagem deve ser um texto.",
       "max": "O caminho da imagem não pode exceder 255 caracteres."
     },
     "categoria_id": {
-      "exists": "A categoria selecionada não existe."
+      "exists": "A categoria selecionada não existe.",
+      "required": "A categoria selecionada não existe."
     },
     "publicado_em": {
       "date": "Informe uma data de publicação válida."
     },
     "anexos": {
       "array": "Os anexos devem ser uma lista de arquivos.",
+      "invalid": "A imagem não pode ser maior que 5MB.",
       "arquivo": {
         "file": "Cada anexo deve ser um arquivo válido.",
         "mimes": "Os anexos devem estar nos formatos PDF, DOC, DOCX, JPG, JPEG ou PNG.",

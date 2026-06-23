@@ -12,11 +12,12 @@ import {
 import { Icon } from "@/components/AppIcon";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
+import { formatDate, slugifyPublicacao } from "@/@core/format";
 
 type PublicacoesHeroSliderProps = {
-  publicacoes: PublicacaoItem[];
+  publicacoes: PublicacaoType[];
   searchCard?: ReactNode;
 };
 
@@ -27,6 +28,19 @@ export function PublicacoesHeroSlider({
   const t = useTranslations("public.publications");
   const slides = useMemo(() => publicacoes.slice(0, 5), [publicacoes]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const activeSlide = slides[activeIndex];
+  const activeCategoria = activeSlide.categoria?.nome ?? "Publicação";
+  const activeData = formatDate(
+    activeSlide.publicado_em ?? activeSlide.created_at,
+  );
+  const activeSlug = slugifyPublicacao(
+    activeSlide.titulo ?? "publicacao",
+    activeSlide.id,
+  );
+  const activeBanner =
+    activeSlide.imagem_caminho ||
+    "/storage/publicacoes/default-publication.png";
+  const activeResumo = activeSlide.resumo?.trim() ?? "";
 
   useEffect(() => {
     if (slides.length <= 1) return;
@@ -39,8 +53,6 @@ export function PublicacoesHeroSlider({
   }, [slides.length]);
 
   if (slides.length === 0) return null;
-
-  const activeSlide = slides[activeIndex];
 
   const goToPrevious = () => {
     setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
@@ -69,7 +81,7 @@ export function PublicacoesHeroSlider({
             inset: 0,
             opacity: index === activeIndex ? 1 : 0,
             transition: "opacity 0.6s ease",
-            backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(15,23,42,0.66), rgba(15,23,42,0.24)), url(${publicacao.bannerImage})`,
+            backgroundImage: `linear-gradient(...), url(${publicacao.imagem_caminho || "/storage/publicacoes/default-publication.png"})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
           }}
@@ -106,7 +118,7 @@ export function PublicacoesHeroSlider({
                 fontWeight: 800,
               }}
             >
-              {activeSlide.categoria}
+              {activeCategoria}
             </Typography>
             <Typography
               component="span"
@@ -120,7 +132,7 @@ export function PublicacoesHeroSlider({
                 fontWeight: 700,
               }}
             >
-              {activeSlide.data}
+              {activeData}
             </Typography>
           </Stack>
 
@@ -146,13 +158,13 @@ export function PublicacoesHeroSlider({
               mb: 4,
             }}
           >
-            {activeSlide.resumo}
+            {activeResumo}
           </Typography>
 
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <Button
               component={Link}
-              href={`/publicacoes/${activeSlide.slug}`}
+              href={`/publicacoes/${activeSlug}`}
               variant="contained"
               size="large"
               sx={{ textTransform: "none", fontWeight: 800 }}
@@ -228,7 +240,7 @@ export function PublicacoesHeroSlider({
                 component="button"
                 key={publicacao.id}
                 aria-label={t("goToPublication", {
-                  title: publicacao.titulo,
+                  title: publicacao.titulo ?? "",
                 })}
                 onClick={() => setActiveIndex(index)}
                 sx={{

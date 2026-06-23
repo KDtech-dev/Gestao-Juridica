@@ -3,9 +3,10 @@
 import { Paper, Typography } from "@mui/material";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
 
 type PublicacaoResumoCardProps = {
-  publicacao: PublicacaoItem;
+  publicacao: PublicacaoType;
 };
 
 export function PublicacaoResumoCard({

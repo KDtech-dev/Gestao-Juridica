@@ -18,12 +18,14 @@ if (typeof window === "undefined") {
 
 export const authStorage = {
   get(): string | null {
+    if (typeof window === "undefined") return null;
     return (
       localStorage.getItem(auth.storageTokenKeyName) ??
       sessionStorage.getItem(auth.storageTokenKeyName)
     );
   },
   set(token: string | null, remember = true): void {
+    if (typeof window === "undefined") return;
     if (token) {
       const targetStorage = remember ? localStorage : sessionStorage;
       const otherStorage = remember ? sessionStorage : localStorage;

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCasoRequest;
 use App\Http\Requests\UpdateCasoRequest;
 use App\Http\Requests\SyncClientesCasoRequest;
+use App\Http\Resources\AnexoResource;
 use App\Http\Resources\CasoResource;
 use App\Models\Anexo;
 use App\Models\Caso;
@@ -92,7 +93,10 @@ class CasoController extends Controller
 
     public function indexAnexos(Caso $caso): JsonResponse
     {
-        return response()->json($caso->anexos);
+        return response()->json([
+            'success' => true,
+            'data'    => AnexoResource::collection($caso->anexos),
+        ]);
     }
 
     public function storeAnexo(Request $request, Caso $caso): JsonResponse
@@ -110,14 +114,19 @@ class CasoController extends Controller
             'arquivo'      => $path,
         ]);
 
-        return response()->json($anexo, 201);
+        return response()->json([
+            'success' => true,
+            'data'    => new AnexoResource($anexo),
+        ], 201);
     }
 
     public function destroyAnexo(Caso $caso, Anexo $anexo): JsonResponse
     {
         Storage::disk('public')->delete($anexo->arquivo);
         $anexo->delete();
-
-        return response()->json(['message' => 'Anexo removido.']);
+        return response()->json([
+            'success' => true,
+            'data'    => null,
+        ]);
     }
 }

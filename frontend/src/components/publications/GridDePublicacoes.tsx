@@ -12,12 +12,12 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { CardPublicacao } from "@/components/publications/CardPublicacao";
 import { useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
 
 type GridDePublicacoesProps = {
-  publicacoes: PublicacaoItem[];
+  publicacoes: PublicacaoType[];
   title?: string;
   subtitle?: string;
   hideVerMais?: boolean;

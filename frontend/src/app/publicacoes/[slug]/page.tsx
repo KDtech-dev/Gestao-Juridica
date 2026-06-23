@@ -1,14 +1,17 @@
-import PublicationDetailView from "@/views/PublicationDetail";
+import PublicationDetailView from "@/views/Publicacoes/PublicationDetail";
 import {
   getPublicacaoPublicaBySlug,
   getPublicacoesPublicas,
 } from "@/api/apiPublicacoes";
 import { notFound } from "next/navigation";
 
+import { slugifyPublicacao } from "@/@core/format";
+
 export async function generateStaticParams() {
   const publicacoes = await getPublicacoesPublicas();
-
-  return publicacoes.map((item) => ({ slug: item.slug }));
+  return publicacoes.map((item) => ({
+    slug: slugifyPublicacao(item.titulo ?? "publicacao", item.id),
+  }));
 }
 
 export default async function PublicacaoDetalhePage({

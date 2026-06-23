@@ -2,14 +2,14 @@
 
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useAuth } from "@/hooks/useAuth";
-import PublicationsView from "@/views/Publications";
-import PublicacoesView from "@/views/Publicacoes";
 import { usePathname } from "next/navigation";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import PublicacoesView from "./Publicacoes";
+import { PublicacaoType } from "@/@core/types";
+import PublicationsView from "./Publicacoes/Publications";
 
 type PublicacoesRouteViewProps = {
-  publicacoesPublicas: PublicacaoItem[];
+  publicacoesPublicas: PublicacaoType[];
 };
 
 export default function PublicacoesRouteView({

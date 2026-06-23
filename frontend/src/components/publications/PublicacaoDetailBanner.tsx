@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
 
 type PublicacaoDetailBannerProps = {
-  publicacao: PublicacaoItem;
+  publicacao: PublicacaoType;
 };
 
 export function PublicacaoDetailBanner({
@@ -19,7 +19,7 @@ export function PublicacaoDetailBanner({
     <Box
       component="section"
       sx={{
-        backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72)), url(${publicacao.bannerImage})`,
+        backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72)), url(${publicacao.imagem_caminho})`,
         backgroundPosition: "center",
         backgroundSize: "cover",
         color: "#fff",
@@ -54,7 +54,7 @@ export function PublicacaoDetailBanner({
             variant="overline"
             sx={{ opacity: 0.78, letterSpacing: 0, fontWeight: 700 }}
           >
-            {publicacao.categoria}
+            <Typography>{publicacao.categoria?.nome}</Typography>
           </Typography>
           <Typography
             variant="h3"
@@ -78,12 +78,16 @@ export function PublicacaoDetailBanner({
             <Stack direction="row" spacing={0.75} alignItems="center">
               <Icon icon="mdi:account-outline" width={18} />
               <Typography variant="body2">
-                {t("byAuthor", { author: publicacao.autor })}
+                <Typography variant="subtitle1">
+                  {t("byAuthor", {
+                    author: publicacao.autor ?? "Autor não informado",
+                  })}
+                </Typography>
               </Typography>
             </Stack>
             <Stack direction="row" spacing={0.75} alignItems="center">
               <Icon icon="mdi:calendar-month-outline" width={18} />
-              <Typography variant="body2">{publicacao.data}</Typography>
+              <Typography variant="body2">{publicacao.publicado_em}</Typography>
             </Stack>
           </Stack>
         </Box>

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\StatusPublicacao;
+use App\Models\Anexo;
 use App\Models\Publicacao;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
@@ -44,45 +45,43 @@ class PublicacaoService
 
     public function createPublicacao(array $data)
     {
-        $anexos = $data['anexos'] ?? [];
-        $imagem = $data['imagem'] ?? null;
-        unset($data['anexos'], $data['imagem']);
+        unset(
+            $data['anexos'],
+            $data['imagem'],
+            $data['anexos_remover']
+        );
 
         $data['user_id'] = Auth::id();
 
         $this->handlePublishedAt($data);
-        $this->storeImagem($data, $imagem);
 
-        $publicacao = Publicacao::create($data);
-
-        $this->storeAnexos($publicacao, $anexos);
-
-        return $publicacao->fresh([
-            'categoria',
-            'user',
-            'anexos',
-        ]);
+        return Publicacao::create($data)
+            ->fresh([
+                'categoria',
+                'user',
+                'anexos',
+            ]);
     }
+
 
     public function updatePublicacao(string $id, array $data)
     {
-        $anexos = $data['anexos'] ?? [];
-        $anexosRemover = $data['anexos_remover'] ?? [];
-        $imagem = $data['imagem'] ?? null;
-        unset($data['anexos'], $data['anexos_remover'], $data['imagem']);
+        unset(
+            $data['anexos'],
+            $data['imagem'],
+            $data['anexos_remover']
+        );
 
         $publicacao = Publicacao::query()
             ->where('user_id', Auth::id())
-            ->where('id', $id)
-            ->firstOrFail();
+            ->findOrFail($id);
 
-        $this->handlePublishedAt($data, $publicacao);
-        $this->storeImagem($data, $imagem);
+        $this->handlePublishedAt(
+            $data,
+            $publicacao
+        );
 
         $publicacao->update($data);
-
-        $this->removeAnexos($publicacao, $anexosRemover);
-        $this->storeAnexos($publicacao, $anexos);
 
         return $publicacao->fresh([
             'categoria',
@@ -195,5 +194,66 @@ class PublicacaoService
 
                 $anexo->delete();
             });
+    }
+    public function uploadBanner(
+        Publicacao $publicacao,
+        UploadedFile $imagem
+    ): Publicacao {
+
+        if ($publicacao->imagem_caminho) {
+            $oldPath = str_replace(
+                asset('storage/') . '/',
+                '',
+                $publicacao->imagem_caminho
+            );
+
+            Storage::disk('public')->delete($oldPath);
+        }
+
+        $path = $imagem->storePublicly(
+            'publicacoes/banners',
+            'public'
+        );
+
+        $publicacao->update([
+            'imagem_caminho' => asset("storage/{$path}")
+        ]);
+
+        return $publicacao->fresh([
+            'categoria',
+            'user',
+            'anexos',
+        ]);
+    }
+
+    public function uploadAnexo(
+        Publicacao $publicacao,
+        UploadedFile $arquivo
+    ): Anexo {
+
+        $path = $arquivo->storePublicly(
+            "publicacoes/{$publicacao->id}/anexos",
+            'public'
+        );
+
+        return $publicacao->anexos()->create([
+            'descricao' => 'Anexo da publicação',
+            'arquivo' => $path,
+            'nome_arquivo' => $arquivo->getClientOriginalName(),
+        ]);
+    }
+
+    public function deleteAnexo(
+        Publicacao $publicacao,
+        Anexo $anexo
+    ): void {
+
+        if ($anexo->arquivo) {
+            Storage::disk('public')->delete(
+                $anexo->arquivo
+            );
+        }
+
+        $anexo->delete();
     }
 }

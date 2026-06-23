@@ -2,11 +2,12 @@
 
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
+import { formatDate } from "@/@core/format";
 
 type PublicacaoTextoCardProps = {
-  publicacao: PublicacaoItem;
+  publicacao: PublicacaoType;
 };
 
 export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
@@ -36,12 +37,16 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
         <Stack direction="row" spacing={0.75} alignItems="center">
           <Icon icon="mdi:account-outline" width={18} />
           <Typography variant="subtitle1">
-            {t("byAuthor", { author: publicacao.autor })}
+            {t("byAuthor", {
+              author: publicacao.autor ?? "Autor não informado",
+            })}
           </Typography>
         </Stack>
         <Stack direction="row" spacing={0.75} alignItems="center">
           <Icon icon="mdi:calendar-month-outline" width={18} />
-          <Typography variant="subtitle1">{publicacao.data}</Typography>
+          <Typography variant="subtitle1">
+            {formatDate(publicacao.publicado_em ?? publicacao.created_at)}
+          </Typography>
         </Stack>
       </Stack>
 
@@ -55,7 +60,7 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
           "& p": { mb: 2 },
         }}
         dangerouslySetInnerHTML={{
-          __html: publicacao.conteudoHtml,
+          __html: publicacao.conteudo ?? "",
         }}
       />
     </Paper>

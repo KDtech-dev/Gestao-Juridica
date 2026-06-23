@@ -2,7 +2,6 @@
 import {
   Box,
   Button,
-  Chip,
   Container,
   Grid,
   Paper,
@@ -14,15 +13,14 @@ import { Footer } from "@/components/Footer";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { LawyerCarousel } from "@/components/team/LawyerCarousel";
-import { TeamLawyer, teamLawyers, teamSpecialties } from "@/data/team";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { teamLawyers, teamSpecialties } from "@/data/team";
+import { PublicacaoType } from "@/@core/types";
 
 type HomeViewProps = {
-  publicacoes?: PublicacaoItem[];
-  lawyers: TeamLawyer[];
+  publicacoes: PublicacaoType[];
 };
 
-export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
+export default function HomeView({ publicacoes }: HomeViewProps) {
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>
       <Header />
@@ -35,7 +33,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
       >
         <HomeCard />
       </Box>
-
       <Box
         id="areas"
         sx={{ scrollMarginTop: "80px" }}
@@ -46,7 +43,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
           <Typography variant="h4" textAlign="center" mb={4}>
             Especialidades
           </Typography>
-
           <Stack
             direction="row"
             flexWrap="wrap"
@@ -84,7 +80,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
               <Typography variant="h4" fontWeight={800} mb={2}>
                 Sobre o Escritório
               </Typography>
-
               <Typography
                 color="text.secondary"
                 fontSize="1.02rem"
@@ -96,7 +91,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
                 demandas nas áreas do Direito Público, Trabalhista, Cível,
                 Previdenciário e Bancário.
               </Typography>
-
               <Typography
                 color="text.secondary"
                 fontSize="1.02rem"
@@ -109,7 +103,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
                 complementares, incluindo direito previdenciário, consultoria
                 legislativa e demandas judiciais estratégicas.
               </Typography>
-
               <Box sx={{ position: "relative" }}>
                 <Typography
                   id="expandable-text"
@@ -152,7 +145,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
                   cada cliente.
                 </Typography>
               </Box>
-
               <Button
                 onClick={(e) => {
                   const el = document.getElementById("expandable-text");
@@ -162,7 +154,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
                     e.currentTarget.textContent = isExpanded
                       ? "Ler mais"
                       : "Ler menos";
-
                     if (!isExpanded) {
                       setTimeout(() => {
                         el.scrollIntoView({
@@ -178,7 +169,6 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
                 Ler mais
               </Button>
             </Grid>
-
             <Grid size={{ xs: 12, md: 6 }}>
               <Paper
                 sx={{
@@ -205,14 +195,13 @@ export default function HomeView({ publicacoes, lawyers }: HomeViewProps) {
               </Paper>
             </Grid>
           </Grid>
-
           <Box
             id="equipe"
             sx={{ scrollMarginTop: "80px" }}
             mt={{ xs: 7, md: 9 }}
             mb={4}
           >
-            <LawyerCarousel lawyers={lawyers} />
+            <LawyerCarousel lawyers={teamLawyers} />
           </Box>
         </Container>
       </Box>
