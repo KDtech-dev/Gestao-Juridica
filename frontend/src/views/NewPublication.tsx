@@ -95,7 +95,7 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
     reset,
     watch,
     control,
-    formState: { isDirty, },
+    formState: { isDirty },
   } = methods;
 
   useEffect(() => {
@@ -141,7 +141,9 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
           (publicacao.anexos ?? []).map((a) => ({
             id: String(a.id),
             nome: a.nome_arquivo ?? "",
-            viewUrl: a.arquivo ?? "",
+            viewUrl: a.arquivo
+              ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${a.arquivo}`
+              : "",
           })),
         );
       } catch {

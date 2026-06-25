@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -13,6 +14,10 @@ class AnexoResource extends JsonResource
             'nome_arquivo' => $this->nome_arquivo,
             'descricao'    => $this->descricao,
             'arquivo'      => $this->arquivo,
+            'url'          => $this->arquivo
+                ? asset("storage/{$this->arquivo}")
+                : null,
+
         ];
     }
 }
