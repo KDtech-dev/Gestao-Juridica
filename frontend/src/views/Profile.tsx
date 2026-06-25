@@ -227,7 +227,10 @@ export default function ProfileView() {
                       {roleLabel}
                     </Typography>
                   </Grid>
-                  <PickColor name="cor_perfil" defaultColor="#9e9e9e" />
+                  <PickColor
+                    name="cor_perfil"
+                    defaultColor={profileUser?.cor_perfil ?? "#9e9e9e"}
+                  />
                 </Box>
                 <Box sx={{ px: 2.5, pb: 3 }}>
                   <Grid

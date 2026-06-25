@@ -77,18 +77,18 @@ export function PublicacaoDetailBanner({
           >
             <Stack direction="row" spacing={0.75} alignItems="center">
               <Icon icon="mdi:account-outline" width={18} />
-              <Typography variant="body2">
-                <Typography variant="subtitle1">
-                  {t("byAuthor", {
-                    author: publicacao.autor ?? "Autor não informado",
-                  })}
-                </Typography>
+              <Typography variant="subtitle1">
+                {t("byAuthor", {
+                  author: publicacao.autor ?? "Autor não informado",
+                })}
               </Typography>
             </Stack>
-            <Stack direction="row" spacing={0.75} alignItems="center">
-              <Icon icon="mdi:calendar-month-outline" width={18} />
-              <Typography variant="body2">{publicacao.publicado_em}</Typography>
-            </Stack>
+            <Typography
+              variant="overline"
+              sx={{ opacity: 0.78, letterSpacing: 0, fontWeight: 700 }}
+            >
+              {publicacao.categoria?.nome}
+            </Typography>
           </Stack>
         </Box>
       </Container>

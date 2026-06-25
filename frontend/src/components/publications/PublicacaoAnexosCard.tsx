@@ -1,9 +1,14 @@
 "use client";
-
-import Link from "next/link";
-import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Paper,
+  Stack,
+  Tooltip,
+  IconButton,
+  Typography,
+} from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
 
@@ -17,13 +22,7 @@ export function PublicacaoAnexosCard({
   const t = useTranslations("public.publicationDetail");
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        p: { xs: 2.5, md: 4 },
-        borderRadius: 2,
-      }}
-    >
+    <Paper elevation={3} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2 }}>
       <Stack direction="row" alignItems="center" spacing={1} mb={2}>
         <Icon icon="mdi:paperclip" width={22} />
         <Typography variant="h6" fontWeight={800}>
@@ -34,59 +33,61 @@ export function PublicacaoAnexosCard({
       {publicacao.anexos.length === 0 ? (
         <Typography color="text.secondary">{t("noAttachments")}</Typography>
       ) : (
-        <Stack spacing={1.5}>
-          {publicacao.anexos.map((anexo, index) => (
-            <Box key={anexo.id}>
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                justifyContent="space-between"
-                alignItems={{ xs: "flex-start", sm: "center" }}
-                gap={1.5}
+        <Stack spacing={1}>
+          {publicacao.anexos.map((anexo) => {
+            const url =
+              anexo.url ??
+              (anexo.arquivo
+                ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${anexo.arquivo}`
+                : undefined);
+            return (
+              <Box
+                key={anexo.id}
+                sx={{
+                  width: "100%",
+                  bgcolor: "background.paper",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 2,
+                  px: 1.5,
+                  py: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                <Stack direction="row" alignItems="center" spacing={1.2}>
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 2,
-                      display: "grid",
-                      placeItems: "center",
-                      bgcolor: "action.hover",
-                      color: "primary.main",
-                    }}
-                  >
-                    <Icon icon="mdi:file-document-outline" width={22} />
-                  </Box>
-                  <Box>
-                    <Typography
-                      component={Link}
-                      href={anexo.url as string}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      color="text.primary"
-                      fontWeight={700}
-                      sx={{
-                        textDecoration: "none",
-                        "&:hover": {
-                          color: "primary.main",
-                          textDecoration: "underline",
-                        },
+                <Typography
+                  sx={{
+                    flex: 1,
+                    minWidth: 0,
+                    pr: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    cursor: url ? "pointer" : "default",
+                    ":hover": url ? { color: "primary.main" } : undefined,
+                  }}
+                  title={anexo.nome_arquivo ?? ""}
+                  onClick={() => url && window.open(url, "_blank")}
+                >
+                  {anexo.nome_arquivo || "Anexo"}
+                </Typography>
+
+                {url && (
+                  <Tooltip title={t("view")}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(url, "_blank");
                       }}
                     >
-                      {anexo.nome_arquivo}
-                    </Typography>
-                  </Box>
-                </Stack>
-
-                <Typography variant="caption" color="text.secondary">
-                  {t("publicationDocument")}
-                </Typography>
-              </Stack>
-              {index < publicacao.anexos.length - 1 && (
-                <Divider sx={{ mt: 1.5 }} />
-              )}
-            </Box>
-          ))}
+                      <Icon icon="mdi:eye-outline" width="1em" height="1em" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Box>
+            );
+          })}
         </Stack>
       )}
     </Paper>

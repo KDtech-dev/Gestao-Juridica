@@ -111,6 +111,7 @@ class PublicacaoService
             ->select([
                 'id',
                 'titulo',
+                'user_id',
                 'categoria_id',
                 'imagem_caminho',
                 'autor',

@@ -8,8 +8,8 @@ import { notFound } from "next/navigation";
 import { slugifyPublicacao } from "@/@core/format";
 
 export async function generateStaticParams() {
-  const publicacoes = await getPublicacoesPublicas();
-  return publicacoes.map((item) => ({
+  const response = await getPublicacoesPublicas();
+  return response.data.map((item) => ({
     slug: slugifyPublicacao(item.titulo ?? "publicacao", item.id),
   }));
 }
@@ -20,11 +20,13 @@ export default async function PublicacaoDetalhePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const publicacao = await getPublicacaoPublicaBySlug(slug);
 
-  if (!publicacao) {
+  const response = await getPublicacaoPublicaBySlug(slug);
+  console.log("anexos:", JSON.stringify(response?.data?.anexos));
+
+  if (!response) {
     notFound();
   }
 
-  return <PublicationDetailView publicacao={publicacao} />;
+  return <PublicationDetailView publicacao={response.data} />;
 }

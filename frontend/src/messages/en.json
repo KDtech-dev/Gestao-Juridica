@@ -830,7 +830,8 @@
       "attachments": "Attachments",
       "noAttachments": "This publication has no attachments available.",
       "publicationDocument": "Publication document",
-      "download": "Download"
+      "download": "Download",
+      "view": "View"
     }
   },
 
@@ -939,7 +940,6 @@
       "descriptionLabel": "Description/Agenda"
     }
   },
-
   "validation": {
     "name": {
       "required": "Name is required.",
@@ -957,16 +957,16 @@
     },
     "data_nascimento": {
       "invalid": "Please enter a valid birth date.",
-      "before": "The birth date must be before today."
+      "before": "Birth date must be before the current date."
     },
     "foto_perfil": {
       "image": "The file must be an image.",
-      "mimes": "The image must be JPG, PNG, GIF, or WebP.",
+      "mimes": "The image must be in JPG, PNG, GIF, or WebP format.",
       "max": "The image cannot be larger than 5MB."
     },
     "titulo": {
       "required": "Title is required.",
-      "string": "Title must be a text string.",
+      "string": "Title must be a text.",
       "max": "Title cannot exceed 255 characters."
     },
     "status": {
@@ -975,40 +975,43 @@
     },
     "autor": {
       "required": "Author name is required.",
-      "string": "Author must be a text string.",
+      "string": "Author must be a text.",
       "max": "Author cannot exceed 255 characters."
     },
     "resumo": {
-      "string": "Summary must be a text string.",
+      "string": "Summary must be a text.",
       "max": "Summary cannot exceed 2000 characters."
     },
     "conteudo": {
-      "string": "Content must be a text string."
+      "string": "Content must be a text."
     },
     "imagem": {
       "file": "The image must be a valid file.",
-      "mimes": "The image must be JPG, JPEG, PNG, GIF, or WebP.",
-      "max": "The image cannot be larger than 5MB."
+      "mimes": "The image must be in JPG, JPEG, PNG, GIF, or WebP format.",
+      "max": "The image cannot be larger than 5MB.",
+      "invalid": "The image cannot be larger than 5MB."
     },
     "imagem_caminho": {
-      "string": "Image path must be a text string.",
+      "string": "Image path must be a text.",
       "max": "Image path cannot exceed 255 characters."
     },
     "categoria_id": {
-      "exists": "The selected category does not exist."
+      "exists": "The selected category does not exist.",
+      "required": "The selected category does not exist."
     },
     "publicado_em": {
-      "date": "Please enter a valid publication date."
+      "date": "Please provide a valid publication date."
     },
     "anexos": {
       "array": "Attachments must be a list of files.",
+      "invalid": "The file cannot be larger than 5MB.",
       "arquivo": {
         "file": "Each attachment must be a valid file.",
-        "mimes": "Attachments must be PDF, DOC, DOCX, JPG, JPEG, or PNG.",
+        "mimes": "Attachments must be in PDF, DOC, DOCX, JPG, JPEG, or PNG format.",
         "max": "Each attachment cannot be larger than 10MB."
       },
       "nome": {
-        "string": "Attachment name must be a text string.",
+        "string": "Attachment name must be a text.",
         "max": "Attachment name cannot exceed 255 characters."
       }
     },
@@ -1017,17 +1020,17 @@
       "uuid": "Each attachment ID to remove must be a valid UUID."
     },
     "numero_processo": {
-      "min": "The case number must have 20 digits.",
+      "min": "The case number must contain 20 digits.",
       "max": "The case number cannot exceed 255 characters.",
       "unique": "This case number is already registered."
     },
     "data_abertura": {
       "required": "Opening date is required.",
-      "invalid": "Please enter a valid opening date."
+      "invalid": "Please provide a valid opening date."
     },
     "data_encerramento": {
-      "invalid": "Please enter a valid closing date.",
-      "after_or_equal": "The closing date must be equal to or later than the opening date."
+      "invalid": "Please provide a valid closing date.",
+      "after_or_equal": "Closing date must be equal to or later than the opening date."
     },
     "role": {
       "in": "Invalid role. Allowed values: staff, lawyer, admin."
@@ -1036,7 +1039,7 @@
       "size": "CPF must contain exactly 11 digits."
     },
     "uf": {
-      "size": "State must be a 2-letter code."
+      "size": "State code must contain 2 letters."
     },
     "complemento": {
       "max": "Complement cannot exceed 100 characters."
@@ -1058,10 +1061,10 @@
     },
     "oab_numero": {
       "required_if": "OAB number is required for lawyers.",
-      "invalid": "OAB number must have 1-6 digits, optionally followed by A, B, or D."
+      "invalid": "OAB number must contain 1 to 6 digits and may end with A, B, or D."
     },
     "oab_uf": {
-      "required_if": "OAB state is required for lawyers.",
+      "required_if": "State code is required.",
       "invalid": "Invalid state code."
     },
     "cidade": {
@@ -1069,19 +1072,19 @@
       "max": "City cannot exceed 100 characters."
     },
     "identifier": {
-      "required": "Enter your CPF or email.",
-      "invalid": "Enter a valid CPF or email."
+      "required": "Please enter your CPF or email.",
+      "invalid": "Please enter a valid CPF or email."
     },
     "password": {
       "required": "Password is required.",
-      "min": "Password must be at least 8 characters."
+      "min": "Password must be at least 8 characters long."
     },
     "password_confirmation": {
       "required": "Password confirmation is required.",
       "same": "Passwords do not match."
     },
     "celular": {
-      "size": "Mobile number must have 10 or 11 digits."
+      "size": "Mobile phone number must contain 10 or 11 digits."
     }
   }
 }
