@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -14,13 +15,18 @@ import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { LawyerCarousel } from "@/components/team/LawyerCarousel";
 import { teamLawyers, teamSpecialties } from "@/data/team";
-import { PublicacaoType } from "@/@core/types";
+import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
+import { useTranslations } from "next-intl";
 
 type HomeViewProps = {
   publicacoes: PublicacaoType[];
+  advogados: AdvogadoPublicoType[];
 };
 
-export default function HomeView({ publicacoes }: HomeViewProps) {
+export default function HomeView({ publicacoes,advogados }: HomeViewProps) {
+  const t = useTranslations("public.home");
+  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
+
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>
       <Header />
@@ -78,18 +84,14 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
           <Grid container spacing={{ xs: 4, md: 6 }} alignItems="flex-start">
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h4" fontWeight={800} mb={2}>
-                Sobre o Escritório
+                {t("about.title")}
               </Typography>
               <Typography
                 color="text.secondary"
                 fontSize="1.02rem"
                 lineHeight={1.75}
               >
-                Com atuação pautada na ética, responsabilidade e compromisso com
-                resultados, o escritório Manfrine Chaves de Almeida & Advogados
-                reúne uma equipe multidisciplinar preparada para atender
-                demandas nas áreas do Direito Público, Trabalhista, Cível,
-                Previdenciário e Bancário.
+                {t("about.paragraph1")}
               </Typography>
               <Typography
                 color="text.secondary"
@@ -97,11 +99,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
                 lineHeight={1.75}
                 mt={2}
               >
-                À frente do escritório está Manfrine Chaves de Almeida, advogado
-                e contador, especialista em Direito Público, Trabalhista e
-                Cível. A equipe é formada por profissionais com atuações
-                complementares, incluindo direito previdenciário, consultoria
-                legislativa e demandas judiciais estratégicas.
+                {t("about.paragraph2")}
               </Typography>
               <Box sx={{ position: "relative" }}>
                 <Typography
@@ -112,61 +110,34 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
                   mt={2}
                   sx={{
                     display: "-webkit-box",
-                    WebkitLineClamp: 3,
+                    WebkitLineClamp: isAboutExpanded ? "unset" : 3,
                     WebkitBoxOrient: "vertical",
                     overflow: "hidden",
                     transition: "all 0.3s ease",
                   }}
                 >
-                  Integra a equipe Carollaine Damasceno Barros, advogada e
-                  contadora, especialista em Direito Público e Cível. Com
-                  atuação destacada na assessoria jurídica legislativa e
-                  consultoria técnica, contribui com análises precisas e
-                  fundamentadas, especialmente nas áreas que envolvem gestão
-                  pública e controle de legalidade. Na área previdenciária, o
-                  escritório conta com Luiz Fernando Novais Neves, advogado com
-                  atuação focada na garantia de direitos e benefícios junto aos
-                  órgãos competentes. O Direito Público também é representado
-                  por Anderson Fazendeiro, especialista na área, com experiência
-                  em demandas administrativas e judiciais envolvendo entes
-                  públicos. Compõe ainda a equipe Saiara Tavares Almeida,
-                  advogada especialista em Direito Público e Previdenciário,
-                  atuando com dedicação na defesa de direitos sociais e
-                  administrativos. Na área bancária e pública, destaca-se
-                  Andressa Fazendeiro, especialista em Direito Público e
-                  Bancário, com atuação estratégica em demandas contratuais e
-                  financeiras. Na área trabalhista e previdenciária, Abraão
-                  Lincoln Prates de Almeida, que atua na defesa dos direitos
-                  individuais e coletivos nas relações de trabalho e garantia de
-                  direitos e benefícios junto ao INSS. O escritório se consolida
-                  como referência regional pela atuação técnica, atendimento
-                  personalizado e compromisso com a justiça, oferecendo soluções
-                  jurídicas seguras, eficientes e alinhadas às necessidades de
-                  cada cliente.
+                  {t("about.details")}
                 </Typography>
               </Box>
               <Button
-                onClick={(e) => {
+                onClick={() => {
                   const el = document.getElementById("expandable-text");
-                  if (el) {
-                    const isExpanded = el.style.webkitLineClamp === "unset";
-                    el.style.webkitLineClamp = isExpanded ? "3" : "unset";
-                    e.currentTarget.textContent = isExpanded
-                      ? "Ler mais"
-                      : "Ler menos";
-                    if (!isExpanded) {
-                      setTimeout(() => {
-                        el.scrollIntoView({
-                          behavior: "smooth",
-                          block: "nearest",
-                        });
-                      }, 100);
-                    }
+                  const shouldExpand = !isAboutExpanded;
+
+                  setIsAboutExpanded(shouldExpand);
+
+                  if (el && shouldExpand) {
+                    setTimeout(() => {
+                      el.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest",
+                      });
+                    }, 100);
                   }
                 }}
                 sx={{ mt: 1, p: 0, textTransform: "none", fontWeight: 500 }}
               >
-                Ler mais
+                {t(isAboutExpanded ? "about.readLess" : "about.readMore")}
               </Button>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
@@ -183,7 +154,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
               >
                 <Box
                   component="img"
-                  alt={"Equipe do escritório em reunião"}
+                  alt={t("about.imageAlt")}
                   src="https://advbox.com.br/blog/wp-content/uploads/2021/11/area-juridica-profissionais.jpg"
                   sx={{
                     width: "100%",
@@ -201,7 +172,7 @@ export default function HomeView({ publicacoes }: HomeViewProps) {
             mt={{ xs: 7, md: 9 }}
             mb={4}
           >
-            <LawyerCarousel lawyers={teamLawyers} />
+            <LawyerCarousel lawyers={advogados} />
           </Box>
         </Container>
       </Box>

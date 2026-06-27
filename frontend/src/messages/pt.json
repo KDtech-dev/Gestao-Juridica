@@ -748,6 +748,53 @@
   },
 
   "public": {
+    "home": {
+      "hero": {
+        "title": "Direito Tributário e Empresarial",
+        "subtitle": "Especialistas em soluções jurídicas corporativas.",
+        "cta": "Consulta Gratuita"
+      },
+      "about": {
+        "title": "Sobre o Escritório",
+        "paragraph1": "Com atuação pautada na ética, responsabilidade e compromisso com resultados, o escritório Manfrine Chaves de Almeida & Advogados reúne uma equipe multidisciplinar preparada para atender demandas nas áreas do Direito Público, Trabalhista, Cível, Previdenciário e Bancário.",
+        "paragraph2": "À frente do escritório está Manfrine Chaves de Almeida, advogado e contador, especialista em Direito Público, Trabalhista e Cível. A equipe é formada por profissionais com atuações complementares, incluindo direito previdenciário, consultoria legislativa e demandas judiciais estratégicas.",
+        "details": "Integra a equipe Carollaine Damasceno Barros, advogada e contadora, especialista em Direito Público e Cível. Com atuação destacada na assessoria jurídica legislativa e consultoria técnica, contribui com análises precisas e fundamentadas, especialmente nas áreas que envolvem gestão pública e controle de legalidade. Na área previdenciária, o escritório conta com Luiz Fernando Novais Neves, advogado com atuação focada na garantia de direitos e benefícios junto aos órgãos competentes. O Direito Público também é representado por Anderson Fazendeiro, especialista na área, com experiência em demandas administrativas e judiciais envolvendo entes públicos. Compõe ainda a equipe Saiara Tavares Almeida, advogada especialista em Direito Público e Previdenciário, atuando com dedicação na defesa de direitos sociais e administrativos. Na área bancária e pública, destaca-se Andressa Fazendeiro, especialista em Direito Público e Bancário, com atuação estratégica em demandas contratuais e financeiras. Na área trabalhista e previdenciária, Abraão Lincoln Prates de Almeida atua na defesa dos direitos individuais e coletivos nas relações de trabalho e na garantia de direitos e benefícios junto ao INSS. O escritório se consolida como referência regional pela atuação técnica, atendimento personalizado e compromisso com a justiça, oferecendo soluções jurídicas seguras, eficientes e alinhadas às necessidades de cada cliente.",
+        "readMore": "Ler mais",
+        "readLess": "Ler menos",
+        "imageAlt": "Equipe do escritório em reunião"
+      },
+      "team": {
+        "title": "Nossa Equipe",
+        "subtitle": "Perfis multidisciplinares para demandas jurídicas estratégicas.",
+        "button": "Conhecer toda a equipe"
+      }
+    },
+    "teamPage": {
+      "eyebrow": "Equipe jurídica",
+      "title": "Profissionais preparados para demandas estratégicas.",
+      "subtitle": "Conheça os advogados do escritório por área de atuação e encontre o perfil mais alinhado à sua necessidade jurídica.",
+      "stats": {
+        "professionals": "profissionais",
+        "specialties": "áreas de atuação"
+      },
+      "filters": {
+        "title": "Filtrar por especialidade",
+        "subtitle": "Explore a equipe a partir das áreas de prática disponíveis.",
+        "all": "Todas"
+      },
+      "resultCount": "{count, plural, =0 {Nenhum profissional} one {# profissional} other {# profissionais}}",
+      "lawyersTitle": "Advogados",
+      "showingAll": "Mostrando todas as especialidades",
+      "showingSpecialty": "Mostrando {specialty}",
+      "empty": {
+        "title": "Nenhum advogado disponível",
+        "subtitle": "Os perfis da equipe aparecerão aqui quando estiverem cadastrados."
+      },
+      "emptyFilter": {
+        "title": "Nenhum profissional encontrado",
+        "subtitle": "Tente selecionar outra especialidade para visualizar mais perfis."
+      }
+    },
     "header": {
       "home": "Início",
       "publications": "Publicações",

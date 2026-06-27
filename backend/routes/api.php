@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdvogadoPublicoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PasswordController;
@@ -24,6 +25,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('categorias', [CategoriaController::class, 'index']);
+Route::get('/advogados', [AdvogadoPublicoController::class, 'index']);
 
 Route::prefix('posts')->group(function () {
     Route::get('/',                        [PostController::class, 'index']);

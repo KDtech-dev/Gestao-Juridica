@@ -131,7 +131,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const { data } = await getCategorias();
+        const data = await getCategorias();
         setCategorias(data);
       } catch {
         setCategorias([]);
@@ -449,7 +449,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                               const chave = categoriaNomeParaChave[option.nome];
                               return chave
                                 ? tPracticeAreas(chave)
-                                : option.nome; 
+                                : option.nome;
                             }}
                             isOptionEqualToValue={(option, value) =>
                               option.id === value.id

@@ -751,6 +751,53 @@
   },
 
   "public": {
+    "home": {
+      "hero": {
+        "title": "Tax and Business Law",
+        "subtitle": "Specialists in corporate legal solutions.",
+        "cta": "Free Consultation"
+      },
+      "about": {
+        "title": "About the Firm",
+        "paragraph1": "Guided by ethics, responsibility, and a commitment to results, Manfrine Chaves de Almeida & Advogados brings together a multidisciplinary team prepared to handle matters in Public, Labor, Civil, Social Security, and Banking Law.",
+        "paragraph2": "The firm is led by Manfrine Chaves de Almeida, an attorney and accountant specializing in Public, Labor, and Civil Law. The team is made up of professionals with complementary practices, including social security law, legislative consulting, and strategic litigation.",
+        "details": "Carollaine Damasceno Barros, an attorney and accountant specializing in Public and Civil Law, is part of the team. With notable work in legislative legal advisory and technical consulting, she contributes precise and well-founded analysis, especially in matters involving public administration and legality control. In social security law, the firm relies on Luiz Fernando Novais Neves, an attorney focused on securing rights and benefits before the competent agencies. Public Law is also represented by Anderson Fazendeiro, a specialist in the field with experience in administrative and judicial matters involving public entities. Saiara Tavares Almeida, an attorney specializing in Public and Social Security Law, also joins the team, working with dedication in the defense of social and administrative rights. In Banking and Public Law, Andressa Fazendeiro stands out as a specialist in Public and Banking Law, with strategic work in contractual and financial matters. In Labor and Social Security Law, Abraão Lincoln Prates de Almeida works to defend individual and collective rights in labor relations and to secure rights and benefits before the INSS. The firm has established itself as a regional reference through technical practice, personalized service, and a commitment to justice, offering secure, efficient legal solutions aligned with each client's needs.",
+        "readMore": "Read more",
+        "readLess": "Read less",
+        "imageAlt": "Firm team in a meeting"
+      },
+      "team": {
+        "title": "Our Team",
+        "subtitle": "Multidisciplinary profiles for strategic legal matters.",
+        "button": "Meet the full team"
+      }
+    },
+    "teamPage": {
+      "eyebrow": "Legal team",
+      "title": "Professionals prepared for strategic matters.",
+      "subtitle": "Meet the firm's lawyers by practice area and find the profile best aligned with your legal needs.",
+      "stats": {
+        "professionals": "professionals",
+        "specialties": "practice areas"
+      },
+      "filters": {
+        "title": "Filter by specialty",
+        "subtitle": "Explore the team through the available practice areas.",
+        "all": "All"
+      },
+      "resultCount": "{count, plural, =0 {No professionals} one {# professional} other {# professionals}}",
+      "lawyersTitle": "Lawyers",
+      "showingAll": "Showing all specialties",
+      "showingSpecialty": "Showing {specialty}",
+      "empty": {
+        "title": "No lawyers available",
+        "subtitle": "Team profiles will appear here once they are registered."
+      },
+      "emptyFilter": {
+        "title": "No professionals found",
+        "subtitle": "Try selecting another specialty to see more profiles."
+      }
+    },
     "header": {
       "home": "Home",
       "publications": "Publications",

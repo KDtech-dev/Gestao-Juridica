@@ -1,4 +1,3 @@
-
 export type ResponseType<T> = {
   success: boolean;
   message: string;
@@ -129,7 +128,7 @@ export type AdvogadoPublicoType = {
     foto_perfil_url: string | null;
     oab_numero: string;
     oab_uf: string;
-    categorias: { id: string; nome: string }[];
+    categorias: { id: number; nome: string }[];
   } | null;
 };
 

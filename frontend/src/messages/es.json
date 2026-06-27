@@ -745,6 +745,53 @@
   },
 
   "public": {
+    "home": {
+      "hero": {
+        "title": "Derecho Tributario y Empresarial",
+        "subtitle": "Especialistas en soluciones jurídicas corporativas.",
+        "cta": "Consulta Gratuita"
+      },
+      "about": {
+        "title": "Sobre el Despacho",
+        "paragraph1": "Con una actuación guiada por la ética, la responsabilidad y el compromiso con los resultados, el despacho Manfrine Chaves de Almeida & Advogados reúne a un equipo multidisciplinario preparado para atender demandas en las áreas de Derecho Público, Laboral, Civil, Previsional y Bancario.",
+        "paragraph2": "Al frente del despacho está Manfrine Chaves de Almeida, abogado y contador, especialista en Derecho Público, Laboral y Civil. El equipo está formado por profesionales con actuaciones complementarias, incluyendo derecho previsional, consultoría legislativa y demandas judiciales estratégicas.",
+        "details": "Integra el equipo Carollaine Damasceno Barros, abogada y contadora, especialista en Derecho Público y Civil. Con una actuación destacada en asesoría jurídica legislativa y consultoría técnica, contribuye con análisis precisos y fundamentados, especialmente en áreas relacionadas con la gestión pública y el control de legalidad. En el área previsional, el despacho cuenta con Luiz Fernando Novais Neves, abogado con actuación enfocada en garantizar derechos y beneficios ante los órganos competentes. El Derecho Público también está representado por Anderson Fazendeiro, especialista en el área, con experiencia en demandas administrativas y judiciales que involucran entes públicos. También forma parte del equipo Saiara Tavares Almeida, abogada especialista en Derecho Público y Previsional, que actúa con dedicación en la defensa de derechos sociales y administrativos. En el área bancaria y pública, se destaca Andressa Fazendeiro, especialista en Derecho Público y Bancario, con actuación estratégica en demandas contractuales y financieras. En el área laboral y previsional, Abraão Lincoln Prates de Almeida actúa en la defensa de los derechos individuales y colectivos en las relaciones laborales y en la garantía de derechos y beneficios ante el INSS. El despacho se consolida como referencia regional por su actuación técnica, atención personalizada y compromiso con la justicia, ofreciendo soluciones jurídicas seguras, eficientes y alineadas con las necesidades de cada cliente.",
+        "readMore": "Leer más",
+        "readLess": "Leer menos",
+        "imageAlt": "Equipo del despacho en reunión"
+      },
+      "team": {
+        "title": "Nuestro Equipo",
+        "subtitle": "Perfiles multidisciplinarios para demandas jurídicas estratégicas.",
+        "button": "Conocer a todo el equipo"
+      }
+    },
+    "teamPage": {
+      "eyebrow": "Equipo jurídico",
+      "title": "Profesionales preparados para demandas estratégicas.",
+      "subtitle": "Conoce a los abogados del despacho por área de actuación y encuentra el perfil más alineado con tu necesidad jurídica.",
+      "stats": {
+        "professionals": "profesionales",
+        "specialties": "áreas de actuación"
+      },
+      "filters": {
+        "title": "Filtrar por especialidad",
+        "subtitle": "Explora el equipo a partir de las áreas de práctica disponibles.",
+        "all": "Todas"
+      },
+      "resultCount": "{count, plural, =0 {Ningún profesional} one {# profesional} other {# profesionales}}",
+      "lawyersTitle": "Abogados",
+      "showingAll": "Mostrando todas las especialidades",
+      "showingSpecialty": "Mostrando {specialty}",
+      "empty": {
+        "title": "Ningún abogado disponible",
+        "subtitle": "Los perfiles del equipo aparecerán aquí cuando estén registrados."
+      },
+      "emptyFilter": {
+        "title": "Ningún profesional encontrado",
+        "subtitle": "Intenta seleccionar otra especialidad para ver más perfiles."
+      }
+    },
     "header": {
       "home": "Inicio",
       "publications": "Publicaciones",
