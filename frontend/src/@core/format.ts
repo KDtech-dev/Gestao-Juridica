@@ -149,3 +149,11 @@ export const extractIdFromSlug = (slug: string): string | null => {
     null
   );
 };
+
+export const storageUrl = (
+  caminho: string | null | undefined,
+): string | null => {
+  if (!caminho) return null;
+  if (caminho.startsWith("http")) return caminho;
+  return `/storage/${caminho}`;
+};

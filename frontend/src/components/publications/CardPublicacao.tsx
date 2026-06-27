@@ -9,6 +9,7 @@ import {
   estimateReadTime,
   formatDate,
   slugify,
+  storageUrl,
   stripHtml,
 } from "@/@core/format";
 type CardPublicacaoProps = {
@@ -31,7 +32,8 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
     publicacao.user?.name?.trim() ||
     "Autor não informado";
   const bannerImage =
-    publicacao.imagem_caminho || "/storage/publicacoes/default-publication.png";
+    storageUrl(publicacao.imagem_caminho) ??
+    `/storage/publicacoes/default-publication.png`;
 
   return (
     <Paper
