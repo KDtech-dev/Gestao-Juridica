@@ -77,7 +77,7 @@ export default function DialogUser({
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const { data } = await getCategorias();
+        const data = await getCategorias();
         setCategorias(data);
       } catch {}
     };
@@ -263,7 +263,7 @@ export default function DialogUser({
                 direction="row"
                 spacing={1.5}
                 flexWrap="wrap"
-                alignItems="stretch" 
+                alignItems="stretch"
               >
                 <Controller
                   name="advogado.oab_numero"
