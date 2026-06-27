@@ -6,7 +6,6 @@ import {
   Button,
   CircularProgress,
   Container,
-  FormControl,
   IconButton,
   MenuItem,
   Paper,
@@ -40,7 +39,7 @@ import {
   STATUS_OPTIONS,
 } from "@/schemas/PublicationSchema";
 import { categoriaNomeParaChave } from "@/constants/categorias";
-import { extractIdFromSlug } from "@/@core/format";
+import { extractIdFromSlug, storageUrl } from "@/@core/format";
 import { FormProvider, useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -59,6 +58,7 @@ type Props = {
 export default function PublicacaoFormView({ mode, editId }: Props) {
   const { user } = useAuth();
   const router = useRouter();
+
   const theme = useTheme();
   const t = useTranslations("internal.publicationForm");
   const tv = useTranslations("validation");
@@ -73,7 +73,6 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
   const [editItem, setEditItem] = useState<PublicacaoType>();
   const [anexosExistentes, setAnexosExistentes] = useState<ExistingFile[]>([]);
   const [anexosRemovidos, setAnexosRemovidos] = useState<string[]>([]);
-
   const methods = useForm<CreatePublicacaoPayload>({
     resolver: zodResolver(createPublicacaoSchema(tv)),
     defaultValues: {
@@ -122,11 +121,10 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
     const loadPublicacao = async () => {
       try {
         const { data: publicacao } = await getPublicacaoById(id);
-
         reset({
           titulo: publicacao.titulo ?? "",
           categoria_id: String(publicacao.categoria_id ?? ""),
-          imagem_caminho: publicacao.imagem_caminho ?? "",
+          imagem_caminho: storageUrl(publicacao.imagem_caminho) ?? "", // 👈
           imagem: null,
           autor: publicacao.autor ?? "",
           resumo: publicacao.resumo ?? "",
@@ -141,9 +139,7 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
           (publicacao.anexos ?? []).map((a) => ({
             id: String(a.id),
             nome: a.nome_arquivo ?? "",
-            viewUrl: a.arquivo
-              ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${a.arquivo}`
-              : "",
+            viewUrl: storageUrl(a.arquivo) ?? "", // 👈 também aqui
           })),
         );
       } catch {

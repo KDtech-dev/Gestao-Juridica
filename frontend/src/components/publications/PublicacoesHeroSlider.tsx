@@ -14,7 +14,7 @@ import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
-import { formatDate, slugifyPublicacao } from "@/@core/format";
+import { formatDate, slugifyPublicacao, storageUrl } from "@/@core/format";
 
 type PublicacoesHeroSliderProps = {
   publicacoes: PublicacaoType[];
@@ -30,6 +30,7 @@ export function PublicacoesHeroSlider({
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = slides[activeIndex];
   const activeCategoria = activeSlide.categoria?.nome ?? "Publicação";
+  const activeResumo = activeSlide.resumo;
   const activeData = formatDate(
     activeSlide.publicado_em ?? activeSlide.created_at,
   );
@@ -38,10 +39,8 @@ export function PublicacoesHeroSlider({
     activeSlide.id,
   );
   const activeBanner =
-    activeSlide.imagem_caminho ||
-    "/storage/publicacoes/default-publication.png";
-  const activeResumo = activeSlide.resumo?.trim() ?? "";
-
+    storageUrl(activeSlide.imagem_caminho) ??
+    `/storage/publicacoes/default-publication.png`;
   useEffect(() => {
     if (slides.length <= 1) return;
 
@@ -73,20 +72,16 @@ export function PublicacoesHeroSlider({
         backgroundColor: "#0f172a",
       }}
     >
-      {slides.map((publicacao, index) => (
-        <Box
-          key={publicacao.id}
-          sx={{
-            position: "absolute",
-            inset: 0,
-            opacity: index === activeIndex ? 1 : 0,
-            transition: "opacity 0.6s ease",
-            backgroundImage: `linear-gradient(...), url(${publicacao.imagem_caminho || "/storage/publicacoes/default-publication.png"})`,
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-          }}
-        />
-      ))}
+      <Box
+        sx={{
+          position: "absolute",
+          inset: 0,
+          transition: "background-image 0.6s ease",
+          backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72)), url(${activeBanner})`,
+          backgroundPosition: "center",
+          backgroundSize: "cover",
+        }}
+      />
 
       <Container
         maxWidth="xl"

@@ -5,6 +5,7 @@ import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
+import { storageUrl } from "@/@core/format";
 
 type PublicacaoDetailBannerProps = {
   publicacao: PublicacaoType;
@@ -15,11 +16,14 @@ export function PublicacaoDetailBanner({
 }: PublicacaoDetailBannerProps) {
   const t = useTranslations("public.publicationDetail");
 
+  const imagemUrl = storageUrl(publicacao.imagem_caminho);
   return (
     <Box
       component="section"
       sx={{
-        backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72)), url(${publicacao.imagem_caminho})`,
+        backgroundImage: imagemUrl
+          ? `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72)), url(${imagemUrl})`
+          : `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72))`,
         backgroundPosition: "center",
         backgroundSize: "cover",
         color: "#fff",

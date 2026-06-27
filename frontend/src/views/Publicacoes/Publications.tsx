@@ -3,22 +3,23 @@
 import {
   Box,
   Button,
-  Chip,
   Container,
-  IconButton,
   InputAdornment,
   Paper,
   Stack,
   Tab,
   Tabs,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
+import {
+  CardPublicacaoInterna,
+  getTextoBuscaPublicacaoInterna,
+} from "@/components/publications/CardPublicacaoInterna";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { PublicacaoType, StatusPublicacao } from "@/@core/types";
@@ -30,7 +31,6 @@ import {
 } from "@/api/apiPublicacoes";
 import { toast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
-import { formatDate, estimateReadTime, stripHtml } from "@/@core/format";
 
 function normalize(value: string) {
   return value
@@ -41,16 +41,6 @@ function normalize(value: string) {
 }
 
 const STATUS_TABS: StatusPublicacao[] = ["publicado", "rascunho", "arquivado"];
-
-const getCategoria = (post: PublicacaoType) =>
-  post.categoria?.nome?.trim() ?? "Publicação";
-const getAutor = (post: PublicacaoType) =>
-  post.autor?.trim() ?? post.user?.name?.trim() ?? "Autor não informado";
-const getResumo = (post: PublicacaoType) =>
-  post.resumo?.trim() ?? stripHtml(post.conteudo ?? "").slice(0, 180);
-const getData = (post: PublicacaoType) =>
-  formatDate(post.publicado_em ?? post.created_at);
-const getReadTime = (post: PublicacaoType) => estimateReadTime(post.conteudo);
 
 export default function PublicationsView() {
   const { hasRole } = useAuth();
@@ -129,8 +119,8 @@ export default function PublicationsView() {
     );
     if (!term) return postsByStatus;
     return postsByStatus.filter((post) =>
-      [post.titulo, getCategoria(post), getAutor(post), getResumo(post)].some(
-        (value) => normalize(value ?? "").includes(term),
+      getTextoBuscaPublicacaoInterna(post).some((value) =>
+        normalize(value ?? "").includes(term),
       ),
     );
   }, [activeStatus, posts, search]);
@@ -309,104 +299,13 @@ export default function PublicationsView() {
           ) : (
             <Stack spacing={1.5}>
               {filteredPosts.map((post) => (
-                <Paper
+                <CardPublicacaoInterna
                   key={post.id}
-                  sx={{
-                    p: 2.1,
-                    borderRadius: "14px",
-                    border: "1px solid",
-                    borderColor: "divider",
-                    bgcolor: "background.paper",
-                    boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
-                  }}
-                >
-                  <Stack
-                    direction={{ xs: "column", md: "row" }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: "flex-start", md: "center" }}
-                    gap={1}
-                    mb={1}
-                  >
-                    <Chip
-                      label={getCategoria(post)}
-                      sx={{
-                        bgcolor: "action.hover",
-                        color: "primary.main",
-                        fontWeight: 600,
-                      }}
-                    />
-                    <Typography color="text.secondary" fontSize="0.82rem">
-                      {t(`status.${post.status ?? "publicado"}`)} •{" "}
-                      {getData(post)} • {getReadTime(post)}
-                    </Typography>
-                  </Stack>
-                  <Typography
-                    fontWeight={700}
-                    color="text.primary"
-                    fontSize="1.08rem"
-                    mb={0.7}
-                  >
-                    {post.titulo}
-                  </Typography>
-                  <Typography color="text.secondary" fontSize="0.9rem" mb={1.2}>
-                    {getResumo(post)}
-                  </Typography>
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                  >
-                    <Typography color="text.secondary" fontSize="0.84rem">
-                      {t("byAuthor", { author: getAutor(post) })}
-                    </Typography>
-                    <Stack direction="row" spacing={0.5}>
-                      <Tooltip title={t("actions.edit")}>
-                        <IconButton
-                          component={Link}
-                          href={`/publicacoes/editar/${post.id}`}
-                          aria-label={t("actions.edit")}
-                          size="small"
-                          sx={{ border: "1px solid", borderColor: "divider" }}
-                        >
-                          <Icon icon="mdi:pencil-outline" width={19} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title={t("actions.archive")}>
-                        <span>
-                          <IconButton
-                            aria-label={t("actions.archive")}
-                            size="small"
-                            disabled={
-                              post.status === "arquivado" ||
-                              processingPostId === post.id
-                            }
-                            onClick={() => archivePost(post)}
-                            sx={{ border: "1px solid", borderColor: "divider" }}
-                          >
-                            <Icon icon="mdi:archive-outline" width={19} />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
-                      <Tooltip title={t("actions.delete")}>
-                        <span>
-                          <IconButton
-                            aria-label={t("actions.delete")}
-                            size="small"
-                            disabled={processingPostId === post.id}
-                            onClick={() => setDeleteTarget(post)}
-                            sx={{
-                              border: "1px solid",
-                              borderColor: "divider",
-                              color: "error.main",
-                            }}
-                          >
-                            <Icon icon="mdi:trash-can-outline" width={19} />
-                          </IconButton>
-                        </span>
-                      </Tooltip>
-                    </Stack>
-                  </Stack>
-                </Paper>
+                  publicacao={post}
+                  processingPostId={processingPostId}
+                  onArchive={archivePost}
+                  onDelete={setDeleteTarget}
+                />
               ))}
             </Stack>
           )}
