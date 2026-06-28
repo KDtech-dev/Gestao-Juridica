@@ -24,25 +24,24 @@ import { useRouter } from "next/navigation";
 import { postCliente, deleteCliente, getClientes } from "@/api/ApiClientes";
 import { toast } from "@/utils/toast";
 import { ClienteType } from "@/@core/types";
-import {
-  CreateClientePayload,
-  createClienteSchema,
-} from "@/schemas/ClienteSchema";
+import { CreateClientePayload } from "@/schemas/ClienteSchema";
 import DialogCliente from "@/components/DialogCliente";
+import ConfirmDialog from "@/components/users/ConfirmDialog";
 import { formatCpfCnpj } from "@/@core/format";
-import { getAxios } from "@/configs/axios";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 
 export default function ClientesView() {
   const translateError = useApiErrorTranslator();
   const t = useTranslations("internal.clients");
-  const tv = useTranslations("validation");
+  const tCommon = useTranslations("common");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<ClienteType | null>(null);
   const [clientes, setClientes] = useState<ClienteType[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 10,
@@ -91,14 +90,19 @@ export default function ClientesView() {
       setSubmitting(false);
     }
   };
-  const handleDelete = async (cliente: ClienteType) => {
-    if (!confirm(t("confirmDelete", { name: cliente.name }))) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
     try {
-      await deleteCliente(cliente.id);
+      await deleteCliente(deleteTarget.id);
       toast.success(t("toast.deleted"));
       loadClientes(paginationModel.page + 1);
+      setDeleteTarget(null);
     } catch {
       toast.error(t("errors.delete"));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -189,7 +193,7 @@ export default function ClientesView() {
           </IconButton>
           <IconButton
             size="small"
-            onClick={() => handleDelete(row)}
+            onClick={() => setDeleteTarget(row)}
             sx={{ "&:hover": { color: "error.main" } }}
           >
             <Icon icon="mdi:trash-can-outline" width={20} />
@@ -373,6 +377,23 @@ export default function ClientesView() {
           submitting={submitting}
           mode="create"
           cliente={null}
+        />
+        <ConfirmDialog
+          open={Boolean(deleteTarget)}
+          title={tCommon("delete")}
+          description={
+            deleteTarget
+              ? t("confirmDelete", { name: deleteTarget.name })
+              : undefined
+          }
+          confirmText={tCommon("delete")}
+          cancelText={tCommon("cancel")}
+          loading={deleting}
+          onConfirm={handleDelete}
+          onClose={() => {
+            if (deleting) return;
+            setDeleteTarget(null);
+          }}
         />
       </Box>
     </Box>

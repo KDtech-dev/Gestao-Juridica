@@ -17,7 +17,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  profileFormSchema,
   ProfileFormSchemaType,
 } from "@/schemas/ProfileSchema";
 import CardSeguranca from "@/components/users/CardSeguranca";

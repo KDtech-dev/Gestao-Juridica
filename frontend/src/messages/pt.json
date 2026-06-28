@@ -2,6 +2,7 @@
   "common": {
     "save": "Salvar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "delete": "Excluir",
     "edit": "Editar"
   },
@@ -227,6 +228,11 @@
         "loadingTitle": "Dados do cliente",
         "fallbackTitle": "Cliente",
         "subtitle": "Informações cadastrais e casos vinculados.",
+        "editTitle": "Editando {name}",
+        "editSubtitle": "Altere as informações cadastrais do cliente.",
+        "cancel": "Cancelar",
+        "save": "Salvar alterações",
+        "saving": "Salvando...",
         "edit": "Editar cliente",
         "infoTitle": "Informações do cliente",
         "infoSubtitle": "Dados usados no cadastro e no vínculo dos casos.",
@@ -236,6 +242,7 @@
         "cases": {
           "title": "Casos",
           "subtitle": "Processos vinculados a este cliente.",
+          "subtitleEdit": "Casos vinculados — somente visualização.",
           "count": "{count, plural, =0 {Nenhum caso} one {# caso} other {# casos}}",
           "empty": "Nenhum caso encontrado para este cliente.",
           "untitled": "Caso sem título",

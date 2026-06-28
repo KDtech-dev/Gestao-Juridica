@@ -14,7 +14,7 @@ import { Footer } from "@/components/Footer";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { LawyerCarousel } from "@/components/team/LawyerCarousel";
-import { teamLawyers, teamSpecialties } from "@/data/team";
+import {  teamSpecialties } from "@/data/team";
 import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
 import { useTranslations } from "next-intl";
 

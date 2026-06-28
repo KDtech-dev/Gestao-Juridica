@@ -26,6 +26,7 @@ import { UserType, RoleType } from "@/@core/types";
 import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
 import DialogUser from "@/components/modals/DialogUser";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
+import ConfirmDialog from "@/components/users/ConfirmDialog";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -45,12 +46,14 @@ function getUserPerfil(user: UserType) {
 
 export default function UsersView() {
   const t = useTranslations("internal.users");
+  const tCommon = useTranslations("common");
   const theme = useTheme();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>("create");
   const [users, setUsers] = useState<UserType[]>([]);
   const [userSelecionado, setUserSelecionado] = useState<UserType | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleType | "all">("all");
@@ -60,6 +63,7 @@ export default function UsersView() {
   });
   const [total, setTotal] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadUsers = useCallback(
     async (page = 1) => {
@@ -114,14 +118,19 @@ export default function UsersView() {
     }
   };
 
-  const handleDelete = async (user: UserType) => {
-    if (!confirm(t("confirmDelete", { name: user.name }))) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
     try {
-      await deleteUser(user.id);
+      await deleteUser(deleteTarget.id);
       toast.success(t("toast.deleted"));
       loadUsers();
+      setDeleteTarget(null);
     } catch {
       toast.error(t("errors.delete"));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -254,7 +263,7 @@ export default function UsersView() {
             size="small"
             onClick={(e) => {
               e.stopPropagation();
-              handleDelete(row);
+              setDeleteTarget(row);
             }}
           >
             <Icon icon="mdi:trash-can-outline" width={20} />
@@ -489,6 +498,23 @@ export default function UsersView() {
         submitting={submitting}
         mode={dialogMode}
         user={userSelecionado}
+      />
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        title={tCommon("delete")}
+        description={
+          deleteTarget
+            ? t("confirmDelete", { name: deleteTarget.name })
+            : undefined
+        }
+        confirmText={tCommon("delete")}
+        cancelText={tCommon("cancel")}
+        loading={deleting}
+        onConfirm={handleDelete}
+        onClose={() => {
+          if (deleting) return;
+          setDeleteTarget(null);
+        }}
       />
     </Box>
   );
