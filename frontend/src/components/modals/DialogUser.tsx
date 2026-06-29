@@ -31,6 +31,7 @@ import { useTranslations } from "next-intl";
 import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
 import { Controller } from "react-hook-form";
 import { formatCpf, formatTelefone } from "@/@core/format";
+import { categoriaNomeParaChave } from "@/constants/categorias";
 
 type Props = {
   open: boolean;
@@ -51,6 +52,7 @@ export default function DialogUser({
 }: Props) {
   const t = useTranslations("internal.users.dialog");
   const tValidation = useTranslations("validation");
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const isEdit = mode === "edit";
   const isView = mode === "view";
   const isReadOnly = isView;
@@ -126,9 +128,6 @@ export default function DialogUser({
     setVisiblePasswords({ password: false, confirmation: false });
     onClose();
   };
-  console.log("categorias", categorias);
-  console.log("isArray", Array.isArray(categorias));
-  console.log("typeof", typeof categorias);
   return (
     <FormProvider {...methods}>
       <BaseModal
@@ -336,9 +335,11 @@ export default function DialogUser({
                       <Autocomplete
                         multiple
                         options={categorias}
-                        getOptionLabel={(option) =>
-                          typeof option === "string" ? option : option.nome
-                        }
+                        getOptionLabel={(option) => {
+                          if (typeof option === "string") return option;
+                          const chave = categoriaNomeParaChave[option.nome];
+                          return chave ? tPracticeAreas(chave) : option.nome;
+                        }}
                         isOptionEqualToValue={(option, value) =>
                           option.id ===
                           (typeof value === "string" ? value : value.id)
