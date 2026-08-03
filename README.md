@@ -147,7 +147,7 @@ Instale na máquina:
 ### 1. Clonar o projeto
 
 ```bash
-git clone <url-do-repositorio>
+git clone <git@github.com:DiegoAndreAfonso/advocacia-gestao.git>
 cd advocacia-gestao
 ```
 ### 2. Backend
