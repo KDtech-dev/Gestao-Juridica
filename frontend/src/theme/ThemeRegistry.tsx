@@ -191,6 +191,17 @@ export default function ThemeRegistry({
             },
       },
 
+      typography: {
+        fontFamily: "var(--font-open-sans), Arial, sans-serif",
+        h1: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 },
+        h2: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 700 },
+        h3: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
+        h4: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
+        h5: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
+        h6: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 500 },
+        button: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
+      },
+
       components: {
         MuiCssBaseline: {
           styleOverrides: {

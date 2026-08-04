@@ -74,7 +74,6 @@ export function Header() {
   const navItems = [
     { href: "/", label: t("home"), active: pathname === "/" },
     { href: "/posts", label: t("publications"), active: pathname === "/posts" },
-    { href: "/equipe", label: t("team"), active: pathname === "/equipe" },
   ];
   
   const handleFloatingPointerDown = (
