@@ -488,6 +488,12 @@
           "confirmPasswordPlaceholder": "Confirm password"
         }
       },
+      "deleteDialog": {
+        "title": "Delete user?",
+        "description": "The user \"{name}\" will be permanently deleted. This action cannot be undone.",
+        "confirm": "Delete user",
+        "cancel": "Cancel"
+      },
       "toast": {
         "created": "User created successfully!",
         "updated": "User updated successfully!",
@@ -497,7 +503,8 @@
         "load": "Error loading users.",
         "create": "Error creating user.",
         "update": "Error updating user.",
-        "delete": "Error removing user."
+        "delete": "Error removing user.",
+        "lastAdmin": "This user is the only administrator of the system and cannot be removed."
       }
     },
     "newUser": {
@@ -598,47 +605,12 @@
         }
       },
       "practiceAreas": {
-        "civil": "Civil Law",
-        "criminal": "Criminal Law",
-        "labor": "Labor Law",
+        "public": "Public Law",
         "socialSecurity": "Social Security Law",
-        "tax": "Tax Law",
-        "business": "Business Law",
-        "consumer": "Consumer Law",
-        "family": "Family Law",
-        "succession": "Succession Law (Inheritance and Probate)",
-        "realEstate": "Real Estate Law",
-        "administrative": "Administrative Law",
-        "constitutional": "Constitutional Law",
-        "environmental": "Environmental Law",
-        "digital": "Digital Law",
-        "electoral": "Electoral Law",
-        "international": "International Law",
+        "labor": "Labor Law",
+        "civil": "Civil Law",
         "banking": "Banking Law",
-        "health": "Health Law",
-        "military": "Military Law",
-        "sports": "Sports Law",
-        "agrarian": "Agrarian Law",
-        "maritime": "Maritime Law",
-        "aeronautical": "Aeronautical Law",
-        "intellectualProperty": "Intellectual Property Law",
-        "copyright": "Copyright Law",
-        "childAndAdolescent": "Child and Adolescent Law",
-        "lgbt": "LGBT+ Law",
-        "fashion": "Fashion Law",
-        "energy": "Energy Law",
-        "mining": "Mining Law",
-        "customs": "Customs Law",
-        "financial": "Financial Law",
-        "urban": "Urban Law",
-        "cooperative": "Cooperative Law",
-        "educational": "Educational Law",
-        "mediation": "Mediation and Arbitration",
-        "compliance": "Compliance and Corporate Governance",
-        "dataProtection": "Data Protection (LGPD)",
-        "insurance": "Insurance Law",
-        "condominium": "Condominium Law",
-        "penalExecution": "Penal Execution Law"
+        "legislativeConsulting": "Legislative Consulting"
       },
       "customization": {
         "title": "Customization",
@@ -771,6 +743,14 @@
         "title": "Our Team",
         "subtitle": "Multidisciplinary profiles for strategic legal matters.",
         "button": "Meet the full team"
+      },
+      "specialities": {
+        "title": "Our Team",
+        "subtitle": "Select a specialty to see who is in charge.",
+        "expertsIn": "Experts in ",
+        "errorNoLawyersForSpecialty": "No lawyers found for this specialty.",
+        "previous": "Previous",
+        "next": "Next"
       }
     },
     "teamPage": {

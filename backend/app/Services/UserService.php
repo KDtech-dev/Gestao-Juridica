@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\LastAdminException;
 use App\Models\User;
 use App\Models\Funcionario;
 use App\Models\Advogado;
@@ -225,5 +226,27 @@ class UserService
             'advogado'    => $user->load('advogado.endereco', 'advogado.categorias', 'roles'),
             default       => $user->load('roles'),
         };
+    }
+
+
+    public function deletar(User $user): void
+    {
+        if ($user->hasRole('admin')) {
+            $totalAdmins = User::role('admin')->count();
+
+            if ($totalAdmins <= 1) {
+                throw new LastAdminException();
+            }
+        }
+
+        DB::transaction(function () use ($user) {
+            $perfil = $user->funcionario ?? $user->advogado;
+
+            if ($perfil?->endereco_id) {
+                Endereco::destroy($perfil->endereco_id);
+            }
+
+            $user->delete();
+        });
     }
 }

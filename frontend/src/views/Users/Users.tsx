@@ -127,8 +127,15 @@ export default function UsersView() {
       toast.success(t("toast.deleted"));
       loadUsers();
       setDeleteTarget(null);
-    } catch {
-      toast.error(t("errors.delete"));
+    } catch (err: any) {
+      const errorCode = err?.response?.data?.error_code;
+
+      if (errorCode === "last_admin") {
+        toast.error(t("errors.lastAdmin"));
+        setDeleteTarget(null);
+      } else {
+        toast.error(formatToastErrorMessage(err, t("errors.delete")));
+      }
     } finally {
       setDeleting(false);
     }

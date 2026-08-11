@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\LastAdminException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
@@ -54,10 +55,18 @@ class UserController extends Controller
     }
 
 
-    public function destroy(User $user): JsonResponse
+    public function destroy(User $user)
     {
-        $user->delete();
+        try {
+            $this->userService->deletar($user);
 
-        return response()->json(null, 204);
+            return response()->json([
+                'message' => 'Usuário removido com sucesso.',
+            ]);
+        } catch (LastAdminException) {
+            return response()->json([
+                'error_code' => 'last_admin',
+            ], 422);
+        }
     }
 }

@@ -1,27 +1,56 @@
-// components/SpecialtiesSection.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Typography,
   Stack,
   Box,
-  Collapse,
-  List,
-  ListItem,
-  ListItemAvatar,
   Avatar,
-  ListItemText,
-  Chip,
-  IconButton,
+  CircularProgress,
 } from "@mui/material";
-import { teamSpecialties, teamLawyers } from "@/data/team";
+import { teamLawyers } from "@/data/team";
+import { useTranslations } from "next-intl";
+import { CategoriaType } from "@/@core/types";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
+import { categoriaNomeParaChave } from "@/constants/categorias";
+import { getCategorias } from "@/api/ApiCategorias";
+import SpecialtyLawyersCarousel from "./SpecialtyLawyersCarousel";
 
-export default function SpecialtiesSection() {
+type Props = {
+  translations: ReturnType<typeof useTranslations>;
+};
+
+export default function SpecialtiesSection({ translations }: Props) {
+  const t = translations;
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
+
   const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
     null,
   );
+  const [categorias, setCategorias] = useState<CategoriaType[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
+
+  useEffect(() => {
+    const loadCategorias = async () => {
+      try {
+        const { data } = await getCategorias();
+        setCategorias(data);
+      } catch (err) {
+        toast.error(
+          formatToastErrorMessage(err, t("toast.loadCategoriesError")),
+        );
+      } finally {
+        setLoadingCategorias(false);
+      }
+    };
+    loadCategorias();
+  }, [t]);
+
+  const traduzirNome = (nome: string) => {
+    const chave = categoriaNomeParaChave[nome];
+    return chave ? tPracticeAreas(chave) : nome;
+  };
 
   const lawyersForSpecialty = selectedSpecialty
     ? teamLawyers.filter((lawyer) =>
@@ -29,144 +58,66 @@ export default function SpecialtiesSection() {
       )
     : [];
 
-  const handleToggle = (area: string) => {
-    setSelectedSpecialty((prev) => (prev === area ? null : area));
+  const handleToggle = (nome: string) => {
+    setSelectedSpecialty((prev) => (prev === nome ? null : nome));
   };
 
   return (
     <Container>
       <Typography variant="h4" textAlign="center" mb={4}>
-        Nossa Equipe
+        {t("specialities.title")}
       </Typography>
       <Typography variant="h6" textAlign="center" mb={6}>
-        Selecione uma especialidade para conhecer os responsáveis
+        {t("specialities.subtitle")}
       </Typography>
 
-      <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
-        {teamSpecialties.map((area, i) => {
-          const isSelected = selectedSpecialty === area;
-          return (
-            <Box
-              key={i}
-              onClick={() => handleToggle(area)}
-              sx={{
-                width: { xs: "45%", md: "30%" },
-                p: 3,
-                textAlign: "center",
-                borderRadius: 2,
-                bgcolor: isSelected ? "primary.main" : "background.paper",
-                border: "1px solid",
-                borderColor: isSelected ? "primary.main" : "divider",
-                cursor: "pointer",
-                transition: "all 0.2s ease-in-out",
-                "&:hover": {
-                  borderColor: "primary.main",
-                  boxShadow: 3,
-                  transform: "translateY(-4px)",
-                },
-              }}
-            >
-              <Typography
-                fontWeight="bold"
-                color={isSelected ? "primary.contrastText" : "text.primary"}
+      {loadingCategorias ? (
+        <Stack alignItems="center" py={4}>
+          <CircularProgress size={28} />
+        </Stack>
+      ) : (
+        <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
+          {categorias.map((categoria) => {
+            const isSelected = selectedSpecialty === categoria.nome;
+            return (
+              <Box
+                key={categoria.id}
+                onClick={() => handleToggle(categoria.nome)}
+                sx={{
+                  width: { xs: "45%", md: "30%" },
+                  p: 3,
+                  textAlign: "center",
+                  borderRadius: 2,
+                  bgcolor: isSelected ? "primary.main" : "background.paper",
+                  border: "1px solid",
+                  borderColor: isSelected ? "primary.main" : "divider",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease-in-out",
+                  "&:hover": {
+                    borderColor: "primary.main",
+                    boxShadow: 3,
+                    transform: "translateY(-4px)",
+                  },
+                }}
               >
-                {area}
-              </Typography>
-            </Box>
-          );
-        })}
-      </Stack>
+                <Typography
+                  fontWeight="bold"
+                  color={isSelected ? "primary.contrastText" : "text.primary"}
+                >
+                  {traduzirNome(categoria.nome)}
+                </Typography>
+              </Box>
+            );
+          })}
+        </Stack>
+      )}
 
       {selectedSpecialty && (
-        <Box mt={5}>
-          <Box
-            sx={{
-              borderTop: "1px solid",
-              borderColor: "divider",
-              pt: 4,
-            }}
-          >
-            <Typography variant="h5" fontWeight={700} textAlign="center" mb={4}>
-              Especialistas em {selectedSpecialty}
-            </Typography>
-
-            {lawyersForSpecialty.length === 0 ? (
-              <Typography color="text.secondary" textAlign="center">
-                Nenhum advogado encontrado.
-              </Typography>
-            ) : (
-              <Stack
-                direction="row"
-                flexWrap="wrap"
-                justifyContent="center"
-                gap={3}
-              >
-                {lawyersForSpecialty.map((lawyer) => (
-                  <Box
-                    key={lawyer.id}
-                    sx={{
-                      width: {
-                        xs: "100%",
-                        sm: "45%",
-                        md: "30%",
-                      },
-                      p: 3,
-                      borderRadius: 2,
-                      bgcolor: "background.paper",
-                      border: "1px solid",
-                      borderColor: "divider",
-                      textAlign: "center",
-                      transition: "all 0.2s ease-in-out",
-                    }}
-                  >
-                    <Stack alignItems="center" spacing={1.5}>
-                      <Avatar
-                        src={lawyer.image}
-                        alt={lawyer.name}
-                        sx={{
-                          width: 90,
-                          height: 90,
-                        }}
-                      />
-
-                      <Typography fontWeight={700} fontSize="1.05rem">
-                        {lawyer.name}
-                      </Typography>
-
-                      <Typography variant="body2" color="text.secondary">
-                        {lawyer.role}
-                      </Typography>
-
-                      <Typography variant="body2" color="primary">
-                        {lawyer.oab}
-                      </Typography>
-
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{
-                          maxWidth: 260,
-                        }}
-                      >
-                        {lawyer.description}
-                      </Typography>
-
-                     
-                    </Stack>
-                  </Box>
-                ))}
-              </Stack>
-            )}
-          </Box>
-
-          <Box
-            sx={{
-              borderBottom: "1px solid",
-              borderColor: "divider",
-              mt: 5,
-            }}
-          />
-        </Box>
+        <SpecialtyLawyersCarousel
+          translations={t}
+          title={`${t("specialities.expertsIn")}${traduzirNome(selectedSpecialty)}`}
+          lawyers={lawyersForSpecialty}
+        />
       )}
     </Container>
   );

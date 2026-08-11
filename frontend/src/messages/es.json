@@ -486,6 +486,12 @@
           "confirmPasswordPlaceholder": "Confirme la contraseña"
         }
       },
+      "deleteDialog": {
+        "title": "¿Eliminar usuario?",
+        "description": "El usuario \"{name}\" será eliminado permanentemente. Esta acción no se puede deshacer.",
+        "confirm": "Eliminar usuario",
+        "cancel": "Cancelar"
+      },
       "toast": {
         "created": "¡Usuario creado con éxito!",
         "updated": "¡Usuario actualizado con éxito!",
@@ -495,7 +501,8 @@
         "load": "Error al cargar usuarios.",
         "create": "Error al crear usuario.",
         "update": "Error al actualizar usuario.",
-        "delete": "Error al eliminar usuario."
+        "delete": "Error al eliminar usuario.",
+        "lastAdmin": "Este usuario es el único administrador del sistema y no puede ser eliminado."
       }
     },
     "newUser": {
@@ -600,47 +607,12 @@
         }
       },
       "practiceAreas": {
-        "civil": "Derecho Civil",
-        "criminal": "Derecho Penal",
+        "public": "Derecho Público",
+        "socialSecurity": "Derecho de la Seguridad Social",
         "labor": "Derecho Laboral",
-        "socialSecurity": "Derecho Previsional",
-        "tax": "Derecho Tributario",
-        "business": "Derecho Empresarial",
-        "consumer": "Derecho del Consumidor",
-        "family": "Derecho de Familia",
-        "succession": "Derecho Sucesorio (Herencia e Inventario)",
-        "realEstate": "Derecho Inmobiliario",
-        "administrative": "Derecho Administrativo",
-        "constitutional": "Derecho Constitucional",
-        "environmental": "Derecho Ambiental",
-        "digital": "Derecho Digital",
-        "electoral": "Derecho Electoral",
-        "international": "Derecho Internacional",
+        "civil": "Derecho Civil",
         "banking": "Derecho Bancario",
-        "health": "Derecho de la Salud",
-        "military": "Derecho Militar",
-        "sports": "Derecho Deportivo",
-        "agrarian": "Derecho Agrario",
-        "maritime": "Derecho Marítimo",
-        "aeronautical": "Derecho Aeronáutico",
-        "intellectualProperty": "Derecho de Propiedad Intelectual",
-        "copyright": "Derecho de Autor",
-        "childAndAdolescent": "Derecho del Niño y Adolescente",
-        "lgbt": "Derecho LGBT+",
-        "fashion": "Derecho de la Moda",
-        "energy": "Derecho de la Energía",
-        "mining": "Derecho Minero",
-        "customs": "Derecho Aduanero",
-        "financial": "Derecho Financiero",
-        "urban": "Derecho Urbanístico",
-        "cooperative": "Derecho Cooperativo",
-        "educational": "Derecho Educacional",
-        "mediation": "Mediación y Arbitraje",
-        "compliance": "Compliance y Gobierno Corporativo",
-        "dataProtection": "Protección de Datos (LGPD)",
-        "insurance": "Derecho de Seguros",
-        "condominium": "Derecho Condominal",
-        "penalExecution": "Ejecución Penal"
+        "legislativeConsulting": "Consultoría Legislativa"
       },
       "customization": {
         "title": "Personalización",
@@ -765,6 +737,14 @@
         "title": "Nuestro Equipo",
         "subtitle": "Perfiles multidisciplinarios para demandas jurídicas estratégicas.",
         "button": "Conocer a todo el equipo"
+      },
+      "specialities": {
+        "title": "Nuestro equipo",
+        "subtitle": "Seleccione una especialidad para conocer a los responsables.",
+        "expertsIn": "Especialistas en ",
+        "errorNoLawyersForSpecialty": "No hay abogados disponibles para esta especialidad.",
+        "previous": "Anterior",
+        "next": "Siguiente"
       }
     },
     "teamPage": {
@@ -783,7 +763,7 @@
       "resultCount": "{count, plural, =0 {Ningún profesional} one {# profesional} other {# profesionales}}",
       "lawyersTitle": "Abogados",
       "showingAll": "Mostrando todas las especialidades",
-      "showingSpecialty": "Mostrando {specialty}",
+      "showingSpecialty": "Mostrando ",
       "empty": {
         "title": "Ningún abogado disponible",
         "subtitle": "Los perfiles del equipo aparecerán aquí cuando estén registrados."
