@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\RoleEnum;
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Concerns\HasUuids; // <-- adicionar
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -84,5 +85,10 @@ class User extends Authenticatable
     public function notificacoes()
     {
         return $this->hasMany(Notificacao::class, 'usuario_id');
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

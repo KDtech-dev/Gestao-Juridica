@@ -28,6 +28,15 @@
       "heroText": "Manage clients, cases, and appointments in one secure, modern interface.",
       "rights": "© 2026 Central Jurídica. All rights reserved.",
       "error": "Could not sign in."
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email to receive the reset link.",
+      "email": "Email",
+      "send": "Send Link",
+      "back": "Back to Login",
+      "success": "If the email exists, we will send a link to reset your password.",
+      "error": "No fue posible enviar el correo. Inténtalo de nuevo."
     }
   },
 

@@ -27,6 +27,15 @@
       "heroText": "Controla clientes, procesos y compromisos en un solo lugar, con una interfaz moderna y segura.",
       "rights": "© 2026 Central Jurídica. Todos los derechos reservados.",
       "error": "No fue posible iniciar sesión."
+    },
+    "forgotPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Ingresa tu correo electrónico para recibir el enlace de restablecimiento.",
+      "email": "Correo electrónico",
+      "send": "Enviar enlace",
+      "back": "Volver al login",
+      "success": "Si el correo existe, enviaremos un enlace para restablecer la contraseña.",
+      "error": "No fue posible enviar el correo. Inténtalo de nuevo."
     }
   },
   "dashboard": {

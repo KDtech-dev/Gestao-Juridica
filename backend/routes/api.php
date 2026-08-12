@@ -13,10 +13,13 @@ use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\NotificacaoController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CasoController;
+use App\Http\Controllers\Auth\PasswordResetController;
 
 Route::prefix('auth')->group(function () {
     Route::post('login',          [AuthController::class, 'login']);
     Route::post('forgot-password', [PasswordController::class, 'sendResetLinkEmail']);
+    Route::post('reset-password', [PasswordResetController::class, 'reset']);
+
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout',  [AuthController::class, 'logout']);

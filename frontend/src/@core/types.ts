@@ -210,3 +210,19 @@ export type ExistingFile = {
   nome: string;
   viewUrl?: string;
 };
+
+export type ForgotPasswordResponse = {
+  message: string;
+  success: boolean;
+};
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+};

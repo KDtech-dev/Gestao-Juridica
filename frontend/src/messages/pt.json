@@ -28,6 +28,34 @@
       "heroText": "Controle clientes, processos e compromissos em um único lugar, com interface moderna e segura.",
       "rights": "© 2026 Central Jurídica. Todos os direitos reservados.",
       "error": "Erro ao realizar login."
+    },
+    "forgotPassword": {
+      "title": "Esqueci a senha",
+      "subtitle": "Digite seu e-mail para receber o link de redefinição.",
+      "email": "Email",
+      "send": "Enviar link",
+      "back": "Voltar para o login",
+      "success": "Se o e-mail existir, enviaremos um link para redefinir sua senha.",
+      "error": "Não foi possível enviar o e-mail. Tente novamente."
+    },
+    "resetPassword": {
+      "title": "Redefinir senha",
+      "subtitle": "Digite sua nova senha para recuperar o acesso à sua conta.",
+      "email": "E-mail",
+      "password": "Nova senha",
+      "passwordConfirmation": "Confirmar nova senha",
+      "submit": "Redefinir senha",
+      "loading": "Redefinindo...",
+      "back": "Voltar para o login",
+      "success": "Senha redefinida com sucesso!",
+      "error": "Não foi possível redefinir sua senha.",
+      "invalidToken": "O link de redefinição é inválido ou está incompleto.",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Ocultar senha",
+      "validation": {
+        "passwordMinLength": "A senha deve ter pelo menos 8 caracteres.",
+        "passwordMismatch": "As senhas não coincidem."
+      }
     }
   },
 
@@ -971,6 +999,16 @@
     }
   },
   "validation": {
+    "resetPassword": {
+      "success": "Senha redefinida com sucesso.",
+      "invalidToken": "Este link de redefinição é inválido ou já expirou.",
+      "invalidUser": "Não encontramos uma conta com esse e-mail.",
+      "throttled": "Aguarde um momento antes de tentar novamente.",
+      "error": "Não foi possível redefinir sua senha. Tente novamente."
+    },
+    "token": {
+      "required": "O token é obrigatório."
+    },
     "name": {
       "required": "O nome é obrigatório.",
       "max": "O nome não pode exceder 255 caracteres."
