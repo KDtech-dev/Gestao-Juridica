@@ -1,6 +1,6 @@
 import { CategoriaType, ExistingFile } from "@/@core/types";
 
-export type PublicacaoAnexo = ExistingFile
+export type PublicacaoAnexo = ExistingFile;
 
 export type PublicacaoItem = {
   id: string;

@@ -14,7 +14,7 @@ import type {
 const getPublicacoesPublicas = async (): Promise<
   ArrayResponseType<PublicacaoType>
 > => {
- const response = await getAxios().get("/posts");
+  const response = await getAxios().get("/posts");
   return response.data;
 };
 

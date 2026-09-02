@@ -199,7 +199,10 @@ export default function ThemeRegistry({
         h4: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
         h5: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
         h6: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 500 },
-        button: { fontFamily: "var(--font-poppins), sans-serif", fontWeight: 600 },
+        button: {
+          fontFamily: "var(--font-poppins), sans-serif",
+          fontWeight: 600,
+        },
       },
 
       components: {

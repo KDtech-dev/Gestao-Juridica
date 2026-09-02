@@ -100,7 +100,7 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const {data} = await getCategorias();
+        const { data } = await getCategorias();
         setCategorias(data);
       } catch {
         setCategorias([]);

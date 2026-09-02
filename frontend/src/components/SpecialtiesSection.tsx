@@ -34,8 +34,8 @@ export default function SpecialtiesSection({ translations }: Props) {
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const { data } = await getCategorias();
-        setCategorias(data);
+        const response = await getCategorias();
+        setCategorias(response.data);
       } catch (err) {
         toast.error(
           formatToastErrorMessage(err, t("toast.loadCategoriesError")),
@@ -44,6 +44,7 @@ export default function SpecialtiesSection({ translations }: Props) {
         setLoadingCategorias(false);
       }
     };
+
     loadCategorias();
   }, [t]);
 

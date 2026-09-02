@@ -22,10 +22,7 @@ import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { resetPassword } from "@/api/apiResetPassword";
 
 import { Icon } from "@/components/AppIcon";
-import {
-  useLanguage,
-  type Language,
-} from "@/context/LanguageContext";
+import { useLanguage, type Language } from "@/context/LanguageContext";
 
 import { useTranslations } from "next-intl";
 
@@ -62,9 +59,7 @@ export default function ResetPasswordView() {
 
   const currentLanguage = languageOptions[language];
 
-  const languageLabel = headerT(
-    `language.${currentLanguage.labelKey}`,
-  );
+  const languageLabel = headerT(`language.${currentLanguage.labelKey}`);
 
   /**
    * Token e e-mail enviados pelo link recebido no e-mail.
@@ -76,8 +71,7 @@ export default function ResetPasswordView() {
   const email = searchParams.get("email") ?? "";
 
   const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] =
-    useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
@@ -85,17 +79,13 @@ export default function ResetPasswordView() {
 
   const [loading, setLoading] = useState(false);
 
-  const handleLanguageChange = (
-    event: SelectChangeEvent<Language>,
-  ) => {
+  const handleLanguageChange = (event: SelectChangeEvent<Language>) => {
     setLanguage(event.target.value as Language);
   };
 
-  const passwordsMatch =
-    password === passwordConfirmation;
+  const passwordsMatch = password === passwordConfirmation;
 
-  const passwordIsValid =
-    password.length >= 8;
+  const passwordIsValid = password.length >= 8;
 
   const canSubmit =
     !!token &&
@@ -136,12 +126,7 @@ export default function ResetPasswordView() {
     );
 
     if (error) {
-      toast.error(
-        formatToastErrorMessage(
-          error,
-          t("error"),
-        ),
-      );
+      toast.error(formatToastErrorMessage(error, t("error")));
 
       setLoading(false);
       return;
@@ -185,10 +170,7 @@ export default function ResetPasswordView() {
             alignItems="center"
             component="span"
           >
-            <Icon
-              icon="mdi:translate"
-              width={18}
-            />
+            <Icon icon="mdi:translate" width={18} />
 
             <Box
               component="span"
@@ -208,11 +190,9 @@ export default function ResetPasswordView() {
               minWidth: 148,
               bgcolor: "#070b14",
               color: "#d7dce5",
-              border:
-                "1px solid rgba(148, 163, 184, 0.18)",
+              border: "1px solid rgba(148, 163, 184, 0.18)",
               borderRadius: 0.75,
-              boxShadow:
-                "0 18px 44px rgba(0,0,0,0.35)",
+              boxShadow: "0 18px 44px rgba(0,0,0,0.35)",
             },
           },
 
@@ -260,32 +240,26 @@ export default function ResetPasswordView() {
           },
         }}
       >
-        {Object.entries(languageOptions).map(
-          ([value, option]) => (
-            <MenuItem
-              key={value}
-              value={value}
-              sx={{
-                minHeight: 34,
-                fontSize: "0.86rem",
+        {Object.entries(languageOptions).map(([value, option]) => (
+          <MenuItem
+            key={value}
+            value={value}
+            sx={{
+              minHeight: 34,
+              fontSize: "0.86rem",
 
-                "&.Mui-selected": {
-                  bgcolor:
-                    "rgba(59, 130, 246, 0.18)",
-                },
+              "&.Mui-selected": {
+                bgcolor: "rgba(59, 130, 246, 0.18)",
+              },
 
-                "&.Mui-selected:hover, &:hover": {
-                  bgcolor:
-                    "rgba(59, 130, 246, 0.24)",
-                },
-              }}
-            >
-              {headerT(
-                `language.${option.labelKey}`,
-              )}
-            </MenuItem>
-          ),
-        )}
+              "&.Mui-selected:hover, &:hover": {
+                bgcolor: "rgba(59, 130, 246, 0.24)",
+              },
+            }}
+          >
+            {headerT(`language.${option.labelKey}`)}
+          </MenuItem>
+        ))}
       </Select>
 
       {/* Painel esquerdo */}
@@ -308,19 +282,12 @@ export default function ResetPasswordView() {
             "linear-gradient(145deg, #0a1834 0%, #122a5f 60%, #1f46b6 100%)",
         }}
       >
-        <Typography
-          fontSize="1.08rem"
-          fontWeight={700}
-        >
+        <Typography fontSize="1.08rem" fontWeight={700}>
           {tLogin("brand")}
         </Typography>
 
         <Box>
-          <Typography
-            fontSize="2rem"
-            fontWeight={700}
-            mb={1.2}
-          >
+          <Typography fontSize="2rem" fontWeight={700} mb={1.2}>
             {t("title")}
           </Typography>
 
@@ -369,8 +336,7 @@ export default function ResetPasswordView() {
             border: "1px solid",
             borderColor: "divider",
 
-            boxShadow:
-              "0 10px 30px rgba(15,23,42,0.08)",
+            boxShadow: "0 10px 30px rgba(15,23,42,0.08)",
 
             bgcolor: "background.paper",
           }}
@@ -394,10 +360,7 @@ export default function ResetPasswordView() {
                   {t("title")}
                 </Typography>
 
-                <Typography
-                  color="text.secondary"
-                  fontSize="0.88rem"
-                >
+                <Typography color="text.secondary" fontSize="0.88rem">
                   {t("subtitle")}
                 </Typography>
               </Box>
@@ -417,27 +380,15 @@ export default function ResetPasswordView() {
               <TextField
                 label={t("password")}
                 fullWidth
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) =>
-                  setPassword(e.target.value)
-                }
+                onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
                 autoComplete="new-password"
-                error={
-                  password.length > 0 &&
-                  !passwordIsValid
-                }
+                error={password.length > 0 && !passwordIsValid}
                 helperText={
-                  password.length > 0 &&
-                  !passwordIsValid
-                    ? t(
-                        "validation.passwordMinLength",
-                      )
+                  password.length > 0 && !passwordIsValid
+                    ? t("validation.passwordMinLength")
                     : ""
                 }
                 slotProps={{
@@ -445,17 +396,11 @@ export default function ResetPasswordView() {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          onClick={() =>
-                            setShowPassword(
-                              (prev) => !prev,
-                            )
-                          }
+                          onClick={() => setShowPassword((prev) => !prev)}
                           edge="end"
                           disabled={loading}
                           aria-label={
-                            showPassword
-                              ? t("hidePassword")
-                              : t("showPassword")
+                            showPassword ? t("hidePassword") : t("showPassword")
                           }
                         >
                           <Icon
@@ -476,33 +421,17 @@ export default function ResetPasswordView() {
               {/* Confirmar nova senha */}
 
               <TextField
-                label={t(
-                  "passwordConfirmation",
-                )}
+                label={t("passwordConfirmation")}
                 fullWidth
-                type={
-                  showPasswordConfirmation
-                    ? "text"
-                    : "password"
-                }
+                type={showPasswordConfirmation ? "text" : "password"}
                 value={passwordConfirmation}
-                onChange={(e) =>
-                  setPasswordConfirmation(
-                    e.target.value,
-                  )
-                }
+                onChange={(e) => setPasswordConfirmation(e.target.value)}
                 disabled={loading}
                 autoComplete="new-password"
-                error={
-                  passwordConfirmation.length > 0 &&
-                  !passwordsMatch
-                }
+                error={passwordConfirmation.length > 0 && !passwordsMatch}
                 helperText={
-                  passwordConfirmation.length > 0 &&
-                  !passwordsMatch
-                    ? t(
-                        "validation.passwordMismatch",
-                      )
+                  passwordConfirmation.length > 0 && !passwordsMatch
+                    ? t("validation.passwordMismatch")
                     : ""
                 }
                 slotProps={{
@@ -511,9 +440,7 @@ export default function ResetPasswordView() {
                       <InputAdornment position="end">
                         <IconButton
                           onClick={() =>
-                            setShowPasswordConfirmation(
-                              (prev) => !prev,
-                            )
+                            setShowPasswordConfirmation((prev) => !prev)
                           }
                           edge="end"
                           disabled={loading}
@@ -551,18 +478,13 @@ export default function ResetPasswordView() {
                   fontWeight: 600,
                 }}
               >
-                {loading
-                  ? t("loading")
-                  : t("submit")}
+                {loading ? t("loading") : t("submit")}
               </Button>
-
 
               <Box
                 component="button"
                 type="button"
-                onClick={() =>
-                  router.push("/login")
-                }
+                onClick={() => router.push("/login")}
                 disabled={loading}
                 sx={{
                   border: 0,

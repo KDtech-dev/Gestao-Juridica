@@ -131,7 +131,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const {data} = await getCategorias();
+        const { data } = await getCategorias();
         setCategorias(data);
       } catch {
         setCategorias([]);

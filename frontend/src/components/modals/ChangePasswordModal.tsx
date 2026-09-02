@@ -79,9 +79,7 @@ export function ChangePasswordModal({ open, onClose }: Props) {
     setFieldErrors({});
   };
 
-  const togglePasswordVisibility = (
-    field: keyof typeof visiblePasswords,
-  ) => {
+  const togglePasswordVisibility = (field: keyof typeof visiblePasswords) => {
     setVisiblePasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
 

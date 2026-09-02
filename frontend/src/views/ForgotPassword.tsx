@@ -19,7 +19,10 @@ import { Icon } from "@/components/AppIcon";
 import { useLanguage, type Language } from "@/context/LanguageContext";
 import { useTranslations } from "next-intl";
 
-const languageOptions: Record<Language, { shortLabel: string; labelKey: "portuguese" | "english" | "spanish" }> = {
+const languageOptions: Record<
+  Language,
+  { shortLabel: string; labelKey: "portuguese" | "english" | "spanish" }
+> = {
   pt: { shortLabel: "PT", labelKey: "portuguese" },
   en: { shortLabel: "EN", labelKey: "english" },
   es: { shortLabel: "ES", labelKey: "spanish" },

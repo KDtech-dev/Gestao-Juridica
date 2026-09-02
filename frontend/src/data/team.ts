@@ -24,11 +24,7 @@ export const teamLawyers: TeamLawyer[] = [
     role: "Sócio Fundador | Advogado e Contador",
     description:
       "Especialista em Direito Público, Trabalhista e Cível. Atua na condução estratégica de demandas judiciais e consultivas, aliando conhecimento jurídico e contábil para oferecer soluções seguras e personalizadas.",
-    specialties: [
-      "Direito Público",
-      "Direito Trabalhista",
-      "Direito Cível",
-    ],
+    specialties: ["Direito Público", "Direito Trabalhista", "Direito Cível"],
     image: "/images/team/manfrine.jpeg",
     oab: "OAB/MG 148.359",
   },
@@ -72,10 +68,7 @@ export const teamLawyers: TeamLawyer[] = [
     role: "Advogada",
     description:
       "Especialista em Direito Público e Previdenciário. Atua na defesa dos direitos sociais e administrativos, prestando atendimento personalizado e focado na melhor solução para cada cliente.",
-    specialties: [
-      "Direito Público",
-      "Direito Previdenciário",
-    ],
+    specialties: ["Direito Público", "Direito Previdenciário"],
     image: "/images/team/saiara.jpg",
     oab: "OAB/MG",
   },
@@ -85,10 +78,7 @@ export const teamLawyers: TeamLawyer[] = [
     role: "Advogada",
     description:
       "Especialista em Direito Público e Bancário. Atua em demandas contratuais, financeiras e bancárias, oferecendo soluções jurídicas estratégicas para pessoas físicas, empresas e instituições.",
-    specialties: [
-      "Direito Público",
-      "Direito Bancário",
-    ],
+    specialties: ["Direito Público", "Direito Bancário"],
     image: "/images/team/andressa.jpeg",
     oab: "OAB/MG 232.143",
   },
@@ -98,10 +88,7 @@ export const teamLawyers: TeamLawyer[] = [
     role: "Advogado",
     description:
       "Atua nas áreas Trabalhista e Previdenciária, defendendo os direitos dos trabalhadores e segurados, com experiência em ações judiciais e processos administrativos perante o INSS.",
-    specialties: [
-      "Direito Trabalhista",
-      "Direito Previdenciário",
-    ],
+    specialties: ["Direito Trabalhista", "Direito Previdenciário"],
     image: "/images/team/abraao.jpeg",
     oab: "OAB/MG 248.337",
   },

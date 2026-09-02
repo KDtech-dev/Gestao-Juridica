@@ -36,7 +36,7 @@ const languageOptions: Record<
 
 export function Header() {
   const [mounted, setMounted] = useState(false);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -55,14 +55,15 @@ export function Header() {
     offsetX: 0,
     offsetY: 0,
   });
-  
+
   // Compute values that depend on client state
   const isDark = theme.palette.mode === "dark";
   const accessHref =
     isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
-  
+
   // These values depend on client state and should be computed after mount
-  const getThemeToggleLabel = () => isDark ? t("theme.light") : t("theme.dark");
+  const getThemeToggleLabel = () =>
+    isDark ? t("theme.light") : t("theme.dark");
   const getAccessibilityLabel = () => t("accessibility");
   const currentLanguage = languageOptions[language];
   const getLanguageLabel = () => t(`language.${currentLanguage.labelKey}`);
@@ -70,12 +71,12 @@ export function Header() {
   const handleLanguageChange = (event: SelectChangeEvent<Language>) => {
     setLanguage(event.target.value as Language);
   };
-  
+
   const navItems = [
     { href: "/", label: t("home"), active: pathname === "/" },
     { href: "/posts", label: t("publications"), active: pathname === "/posts" },
   ];
-  
+
   const handleFloatingPointerDown = (
     event: PointerEvent<HTMLButtonElement>,
   ) => {
@@ -88,7 +89,7 @@ export function Header() {
       offsetY: event.clientY - floatingPosition.y,
     };
   };
-  
+
   const handleFloatingPointerMove = (
     event: PointerEvent<HTMLButtonElement>,
   ) => {
@@ -119,10 +120,8 @@ export function Header() {
 
     setFloatingPosition({ x: nextX, y: nextY });
   };
-  
-  const handleFloatingPointerUp = (
-    event: PointerEvent<HTMLButtonElement>,
-  ) => {
+
+  const handleFloatingPointerUp = (event: PointerEvent<HTMLButtonElement>) => {
     event.currentTarget.releasePointerCapture(event.pointerId);
     const wasMoved = dragRef.current.moved;
     dragRef.current.active = false;
@@ -499,7 +498,9 @@ export function Header() {
               variant="outlined"
               startIcon={
                 <Icon
-                  icon={isDark ? "mdi:white-balance-sunny" : "mdi:weather-night"}
+                  icon={
+                    isDark ? "mdi:white-balance-sunny" : "mdi:weather-night"
+                  }
                   width={18}
                 />
               }

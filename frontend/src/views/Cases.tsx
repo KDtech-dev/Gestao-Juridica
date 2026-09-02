@@ -24,11 +24,7 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { useState } from "react";
 import Link from "next/link";
 import { useNotifications } from "@/context/NotificationsContext";
-import {
-  CasePayload,
-  LegalCase,
-  createCase,
-} from "@/services/caseService";
+import { CasePayload, LegalCase, createCase } from "@/services/caseService";
 import { getApiErrorMessage } from "@/configs/ApiError";
 
 export default function CasesView() {
@@ -186,9 +182,7 @@ export default function CasesView() {
                   <TableRow>
                     <TableCell sx={headCellStyle}>CLIENTE</TableCell>
                     <TableCell sx={headCellStyle}>TÍTULO DO CASO</TableCell>
-                    <TableCell sx={headCellStyle}>
-                      NÚMERO DO PROCESSO
-                    </TableCell>
+                    <TableCell sx={headCellStyle}>NÚMERO DO PROCESSO</TableCell>
                     <TableCell sx={headCellStyle}>PRÓXIMA AUDIÊNCIA</TableCell>
                     <TableCell sx={headCellStyle}>ADVOGADO</TableCell>
                     <TableCell

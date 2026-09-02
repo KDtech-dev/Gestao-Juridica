@@ -1,8 +1,8 @@
 // ** Icon Imports
-import { Icon, type IconProps } from '@/components/AppIcon'
+import { Icon, type IconProps } from "@/components/AppIcon";
 
 const IconifyIcon = ({ icon, ...rest }: IconProps) => {
-  return <Icon icon={icon} fontSize='1.5rem' {...rest} />
-}
+  return <Icon icon={icon} fontSize="1.5rem" {...rest} />;
+};
 
-export default IconifyIcon
+export default IconifyIcon;

@@ -5,10 +5,7 @@ type TFunction = ReturnType<typeof useTranslations>;
 
 export const createClienteSchema = (t: TFunction) =>
   z.object({
-    name: z
-      .string()
-      .min(1, t("name.required"))
-      .max(255, t("name.max")),
+    name: z.string().min(1, t("name.required")).max(255, t("name.max")),
 
     cpf_cnpj: z
       .string()
@@ -18,10 +15,7 @@ export const createClienteSchema = (t: TFunction) =>
         return digits.length === 11 || digits.length === 14;
       }, t("cpf_cnpj.invalid")),
 
-    email: z
-      .string()
-      .min(1, t("email.required"))
-      .email(t("email.invalid")),
+    email: z.string().min(1, t("email.required")).email(t("email.invalid")),
 
     telefone: z.string().max(20).optional(),
 
@@ -29,11 +23,12 @@ export const createClienteSchema = (t: TFunction) =>
 
     data_nascimento: z.string().optional(),
 
-    foto_perfil: z.instanceof(File, {
-      message: t("foto_perfil.image"),
-    }).optional(),
+    foto_perfil: z
+      .instanceof(File, {
+        message: t("foto_perfil.image"),
+      })
+      .optional(),
   });
-
 
 export const updateClienteSchema = (t: TFunction) =>
   createClienteSchema(t).partial();

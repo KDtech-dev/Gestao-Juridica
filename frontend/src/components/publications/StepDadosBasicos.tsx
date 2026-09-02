@@ -1,7 +1,11 @@
 "use client";
 
 import { Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
-import { CategoriaType, PublicacaoFormData, PublicationErrors } from "../../@core/types";
+import {
+  CategoriaType,
+  PublicacaoFormData,
+  PublicationErrors,
+} from "../../@core/types";
 import { HtmlTextEditor } from "./HtmlTextEditor";
 import InputSingleFile from "../InputSingleFile";
 import InputImage from "../InputImage";
@@ -172,10 +176,7 @@ export function StepDadosBasicos({
                 "anexosExistentes",
                 data.anexosExistentes.filter((anexo) => anexo.id !== id),
               );
-              onChange("anexosRemovidos", [
-                ...data.anexosRemovidos,
-                id,
-              ]);
+              onChange("anexosRemovidos", [...data.anexosRemovidos, id]);
             }}
             tipos_aceitos={["pdf", "doc", "docx", "jpg", "jpeg", "png"]}
             maxSize={10 * 1024 * 1024}

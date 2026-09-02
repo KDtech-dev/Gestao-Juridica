@@ -46,7 +46,7 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
         py={8}
         bgcolor="background.default"
       >
-        <SpecialtiesSection  translations={t} />
+        <SpecialtiesSection translations={t} />
       </Box>
       <Box
         id="institucional"

@@ -29,7 +29,13 @@ interface BaseModalProps {
   headerAction?: ReactNode;
 }
 
-export function BaseModal({ open, onClose, title, sections, headerAction }: BaseModalProps) {
+export function BaseModal({
+  open,
+  onClose,
+  title,
+  sections,
+  headerAction,
+}: BaseModalProps) {
   return (
     <Dialog
       open={open}
@@ -69,7 +75,11 @@ export function BaseModal({ open, onClose, title, sections, headerAction }: Base
         </Stack>
         <Stack direction="row" spacing={1} alignItems="center">
           {headerAction}
-          <IconButton onClick={onClose} size="small" sx={{ color: "text.secondary" }}>
+          <IconButton
+            onClick={onClose}
+            size="small"
+            sx={{ color: "text.secondary" }}
+          >
             <Icon icon="mdi:close" width={20} />
           </IconButton>
         </Stack>
@@ -83,7 +93,8 @@ export function BaseModal({ open, onClose, title, sections, headerAction }: Base
               spacing={0.5}
               sx={{
                 pb: index < sections.length - 1 ? 2 : 0,
-                borderBottom: index < sections.length - 1 ? "1px solid" : "none",
+                borderBottom:
+                  index < sections.length - 1 ? "1px solid" : "none",
                 borderColor: "divider",
               }}
             >
@@ -100,7 +111,11 @@ export function BaseModal({ open, onClose, title, sections, headerAction }: Base
                 <Icon icon="mdi:circle-small" width={16} color="primary.main" />
                 {section.title}
               </Typography>
-              <Typography variant="body2" color="text.secondary" lineHeight={1.7}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                lineHeight={1.7}
+              >
                 {section.body}
               </Typography>
             </Stack>

@@ -252,7 +252,10 @@ export default function NotificacoesView() {
                         flexShrink: 0,
                       }}
                     >
-                      <Icon icon={notificationIcon(notification.type)} width={20} />
+                      <Icon
+                        icon={notificationIcon(notification.type)}
+                        width={20}
+                      />
                     </Box>
 
                     <Box
@@ -337,9 +340,7 @@ export default function NotificacoesView() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setSelected(null)}>
-            {t("dialog.close")}
-          </Button>
+          <Button onClick={() => setSelected(null)}>{t("dialog.close")}</Button>
         </DialogActions>
       </Dialog>
     </Box>

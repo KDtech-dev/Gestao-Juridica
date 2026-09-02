@@ -16,9 +16,7 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ProfileFormSchemaType,
-} from "@/schemas/ProfileSchema";
+import { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 import CardSeguranca from "@/components/users/CardSeguranca";
 import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { useThemeMode } from "@/theme/ThemeRegistry";

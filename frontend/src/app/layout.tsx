@@ -40,10 +40,7 @@ export default async function RootLayout({
   const locale = (headersList.get("x-locale") ?? "pt") as "pt" | "en" | "es";
 
   return (
-    <html
-      lang="pt-BR"
-      className={`${openSans.variable} ${poppins.variable}`}
-    >
+    <html lang="pt-BR" className={`${openSans.variable} ${poppins.variable}`}>
       <body style={{ margin: 0 }}>
         <ThemeRegistry>
           <LanguageProvider initialLocale={locale}>

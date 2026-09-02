@@ -47,7 +47,12 @@ const proxyPublicacao = async (
 
   if (!response.ok) {
     return NextResponse.json(
-      { message: getSafePayloadErrorMessage(payload, "Erro ao processar publicação.") },
+      {
+        message: getSafePayloadErrorMessage(
+          payload,
+          "Erro ao processar publicação.",
+        ),
+      },
       { status: response.status },
     );
   }
@@ -90,7 +95,10 @@ export const POST = async (
   const isMultipart = contentType.includes("multipart/form-data");
   const body = isMultipart ? await request.formData() : await request.text();
 
-  return proxyPublicacao(request, await getId(params), { method: "POST", body });
+  return proxyPublicacao(request, await getId(params), {
+    method: "POST",
+    body,
+  });
 };
 
 export const DELETE = async (

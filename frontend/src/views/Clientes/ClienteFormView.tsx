@@ -61,7 +61,6 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
   const router = useRouter();
   const isEdit = mode === "edit";
 
-
   const loadCliente = useCallback(async () => {
     if (!clienteId) {
       toast.error(t("errors.loadClient"));
@@ -180,9 +179,7 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
                     <EditItem
                       label={t("dialog.fields.document")}
                       value={form.cpf_cnpj}
-                      onChange={(v) =>
-                        setForm((f) => ({ ...f, cpf_cnpj: v }))
-                      }
+                      onChange={(v) => setForm((f) => ({ ...f, cpf_cnpj: v }))}
                     />
                     <EditItem
                       label={t("dialog.fields.email")}
@@ -192,9 +189,7 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
                     <EditItem
                       label={t("dialog.fields.phone")}
                       value={form.telefone}
-                      onChange={(v) =>
-                        setForm((f) => ({ ...f, telefone: v }))
-                      }
+                      onChange={(v) => setForm((f) => ({ ...f, telefone: v }))}
                     />
                     <EditItem
                       label={t("dialog.fields.birthDate")}
