@@ -41,7 +41,6 @@
   "dashboard": {
     "welcome": "Bienvenido al sistema"
   },
-
   "internal": {
     "publications": {
       "title": "Publicaciones",
@@ -702,13 +701,11 @@
       }
     }
   },
-
   "clients": {
     "title": "Clientes",
     "newClient": "Nuevo cliente",
     "search": "Buscar cliente"
   },
-
   "sidebar": {
     "mainMenu": "Menú principal",
     "items": {
@@ -725,7 +722,6 @@
       "sair": "Salir"
     }
   },
-
   "public": {
     "home": {
       "hero": {
@@ -835,6 +831,31 @@
       "copyrightRights": "Todos los derechos reservados",
       "developedBy": "Desarrollado por"
     },
+    "privacyPolicy": {
+      "title": "Política de Privacidad",
+      "sections": [
+        {
+          "title": "Introducción",
+          "body": "Esta Política de Privacidad describe cómo tratamos los datos personales de los usuarios para proporcionar nuestros servicios y garantizar la transparencia sobre cómo se recopila, utiliza y protege la información."
+        },
+        {
+          "title": "Qué datos recopilamos",
+          "body": "Podemos recopilar datos como nombre, información de contacto, información relacionada con asuntos jurídicos y otros datos necesarios para la atención, elaboración de presupuestos y seguimiento de casos."
+        },
+        {
+          "title": "Cómo utilizamos los datos",
+          "body": "Utilizamos los datos para prestar servicios jurídicos, comunicarnos sobre el avance de los asuntos, responder a solicitudes y cumplir con las obligaciones legales."
+        },
+        {
+          "title": "Compartición de datos",
+          "body": "Podremos compartir datos con socios y autoridades únicamente cuando sea necesario para cumplir con la ley, prestar servicios contratados o proteger derechos, respetando siempre la legislación aplicable."
+        },
+        {
+          "title": "Seguridad y sus derechos",
+          "body": "Mantenemos medidas de seguridad para proteger sus datos. Puede solicitar el acceso, corrección, actualización, eliminación y otras medidas relacionadas con sus datos, de acuerdo con la legislación aplicable."
+        }
+      ]
+    },
     "publications": {
       "sectionTitle": "Publicaciones",
       "sectionSubtitle": "Noticias jurídicas, análisis práctico y contenidos del despacho",
@@ -865,7 +886,6 @@
       "view": "Ver"
     }
   },
-
   "agenda": {
     "title": "Agenda",
     "subtitle": "Gestiona compromisos, audiencias, plazos y recordatorios.",

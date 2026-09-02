@@ -10,7 +10,6 @@
     "appName": "Central Jurídica",
     "tagline": "Gestão jurídica inteligente e moderna"
   },
-
   "auth": {
     "login": {
       "brand": "Central Jurídica",
@@ -58,11 +57,9 @@
       }
     }
   },
-
   "dashboard": {
     "welcome": "Bem-vindo ao sistema"
   },
-
   "internal": {
     "publications": {
       "title": "Publicações",
@@ -729,13 +726,11 @@
       }
     }
   },
-
   "clients": {
     "title": "Clientes",
     "newClient": "Novo cliente",
     "search": "Pesquisar cliente"
   },
-
   "sidebar": {
     "mainMenu": "Menu Principal",
     "items": {
@@ -752,7 +747,6 @@
       "sair": "Sair"
     }
   },
-
   "public": {
     "home": {
       "hero": {
@@ -862,6 +856,31 @@
       "copyrightRights": "Todos os direitos reservados",
       "developedBy": "Desenvolvido por"
     },
+    "privacyPolicy": {
+      "title": "Política de Privacidade",
+      "sections": [
+        {
+          "title": "Introdução",
+          "body": "Esta Política de Privacidade descreve como tratamos os dados pessoais dos usuários para fornecer nossos serviços e garantir transparência sobre como as informações são coletadas, usadas e protegidas."
+        },
+        {
+          "title": "Quais dados coletamos",
+          "body": "Podemos coletar dados como nome, contatos, informações sobre demandas jurídicas, e outras informações necessárias para atendimento, orçamento e acompanhamento de casos."
+        },
+        {
+          "title": "Como utilizamos",
+          "body": "Utilizamos os dados para prestar serviços jurídicos, comunicar sobre o andamento de demandas, responder solicitações e cumprir obrigações legais."
+        },
+        {
+          "title": "Compartilhamento",
+          "body": "Poderemos compartilhar dados com parceiros e autoridades apenas quando necessário para cumprir a lei, executar serviços contratados ou proteger direitos, sempre respeitando a legislação aplicável."
+        },
+        {
+          "title": "Segurança e seus direitos",
+          "body": "Mantemos medidas de segurança para proteger os dados. Você pode solicitar acesso, correção, atualização, exclusão e outras providências relacionadas aos seus dados conforme a legislação."
+        }
+      ]
+    },
     "publications": {
       "sectionTitle": "Publicações",
       "sectionSubtitle": "Notícias jurídicas, análises práticas e conteúdos do escritório",
@@ -892,7 +911,6 @@
       "view": "Visualizar"
     }
   },
-
   "agenda": {
     "title": "Agenda",
     "subtitle": "Gerencie compromissos, audiências, prazos e lembretes.",

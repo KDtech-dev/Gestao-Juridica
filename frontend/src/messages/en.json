@@ -10,7 +10,6 @@
     "appName": "Central Jurídica",
     "tagline": "Intelligent and modern legal management"
   },
-
   "auth": {
     "login": {
       "brand": "Central Jurídica",
@@ -39,11 +38,9 @@
       "error": "No fue posible enviar el correo. Inténtalo de nuevo."
     }
   },
-
   "dashboard": {
     "welcome": "Welcome to the system"
   },
-
   "internal": {
     "publications": {
       "title": "Publications",
@@ -638,7 +635,6 @@
         "saveSuccess": "Profile updated successfully!",
         "saveError": "Error saving profile. Please try again."
       },
-
       "security": {
         "title": "Security",
         "description": "Keep your account secure by updating your password regularly.",
@@ -669,7 +665,6 @@
           "confirmRequired": "Confirm the new password.",
           "passwordsMatch": "Passwords must match."
         },
-
         "errors": {
           "update": "Could not update the password.",
           "connection": "Could not connect to the server. Try again later."
@@ -708,13 +703,11 @@
       }
     }
   },
-
   "clients": {
     "title": "Clients",
     "newClient": "New client",
     "search": "Search client"
   },
-
   "sidebar": {
     "mainMenu": "Main Menu",
     "items": {
@@ -731,7 +724,6 @@
       "sair": "Logout"
     }
   },
-
   "public": {
     "home": {
       "hero": {
@@ -841,6 +833,31 @@
       "copyrightRights": "All rights reserved",
       "developedBy": "Developed by"
     },
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "sections": [
+        {
+          "title": "Introduction",
+          "body": "This Privacy Policy describes how we handle users' personal data to provide our services and ensure transparency regarding how information is collected, used, and protected."
+        },
+        {
+          "title": "What Data We Collect",
+          "body": "We may collect data such as name, contact information, details about legal matters, and other information necessary for consultations, quotes, and case management."
+        },
+        {
+          "title": "How We Use Your Data",
+          "body": "We use the data to provide legal services, communicate about the progress of legal matters, respond to requests, and comply with legal obligations."
+        },
+        {
+          "title": "Data Sharing",
+          "body": "We may share data with partners and authorities only when necessary to comply with the law, provide contracted services, or protect rights, always in accordance with applicable legislation."
+        },
+        {
+          "title": "Security and Your Rights",
+          "body": "We maintain security measures to protect your data. You may request access, correction, updating, deletion, and other measures concerning your data, as provided by applicable legislation."
+        }
+      ]
+    },
     "publications": {
       "sectionTitle": "Publications",
       "sectionSubtitle": "Legal news, practical analysis, and firm insights",
@@ -871,7 +888,6 @@
       "view": "View"
     }
   },
-
   "agenda": {
     "title": "Calendar",
     "subtitle": "Manage appointments, hearings, deadlines, and reminders.",
