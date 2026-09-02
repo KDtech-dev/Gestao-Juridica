@@ -66,7 +66,7 @@ export function PublicacoesHeroSlider({
       component="section"
       sx={{
         position: "relative",
-        minHeight: { xs: 380, md: 440 },
+        height: { xs: 720, sm: 620, md: 500 },
         color: "#fff",
         overflow: "hidden",
         backgroundColor: "#0f172a",
@@ -88,15 +88,18 @@ export function PublicacoesHeroSlider({
         sx={{
           position: "relative",
           zIndex: 1,
-          minHeight: { xs: 380, md: 440 },
+          height: "100%",
           display: "grid",
           gridTemplateColumns: {
             xs: "1fr",
-            md: searchCard ? "minmax(0, 1fr) minmax(360px, 420px)" : "1fr",
+            md: searchCard
+              ? "minmax(0, 1fr) minmax(360px, 420px)"
+              : "1fr",
           },
           gap: { xs: 4, md: 7 },
           alignItems: "center",
-          py: { xs: 6, md: 8 },
+          py: { xs: 4, md: 5 },
+          boxSizing: "border-box",
         }}
       >
         <Box sx={{ maxWidth: 760 }}>
