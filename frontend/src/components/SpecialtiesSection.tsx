@@ -31,22 +31,26 @@ export default function SpecialtiesSection({ translations }: Props) {
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
-  useEffect(() => {
-    const loadCategorias = async () => {
-      try {
-        const response = await getCategorias();
-        setCategorias(response.data);
-      } catch (err) {
-        toast.error(
-          formatToastErrorMessage(err, t("toast.loadCategoriesError")),
-        );
-      } finally {
-        setLoadingCategorias(false);
-      }
-    };
+ useEffect(() => {
+  const loadCategorias = async () => {
+    try {
+      const response = await getCategorias();
+      setCategorias(response.data);
+    } catch (err) {
 
-    loadCategorias();
-  }, [t]);
+      toast.error(
+        formatToastErrorMessage(
+          err,
+          t("toast.loadCategoriesError"),
+        ),
+      );
+    } finally {
+      setLoadingCategorias(false);
+    }
+  };
+
+  loadCategorias();
+}, [t]);
 
   const traduzirNome = (nome: string) => {
     const chave = categoriaNomeParaChave[nome];
