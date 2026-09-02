@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import type { Metadata } from "next";
-import { Open_Sans, Poppins } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Box } from "@mui/material";
 import ThemeRegistry from "@/theme/ThemeRegistry";
@@ -11,10 +11,10 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import ToastProvider from "@/components/ToastProvider";
 import { PublicI18nProvider } from "@/context/PublicI18nProvider";
 
-const openSans = Open_Sans({
+const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
-  variable: "--font-open-sans",
+  variable: "--font-inter",
   display: "swap",
 });
 
@@ -40,7 +40,7 @@ export default async function RootLayout({
   const locale = (headersList.get("x-locale") ?? "pt") as "pt" | "en" | "es";
 
   return (
-    <html lang="pt-BR" className={`${openSans.variable} ${poppins.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${poppins.variable}`}>
       <body style={{ margin: 0 }}>
         <ThemeRegistry>
           <LanguageProvider initialLocale={locale}>
@@ -52,6 +52,7 @@ export default async function RootLayout({
                       <AuthGate>{children}</AuthGate>
                     </Box>
                   </Box>
+
                   <ToastProvider />
                 </NotificationsProvider>
               </PublicI18nProvider>
