@@ -12,9 +12,9 @@ import {
 import { Icon } from "@/components/AppIcon";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
-import { formatDate, slugifyPublicacao, storageUrl } from "@/@core/format";
+import { formatDateByLocale, slugifyPublicacao, storageUrl } from "@/@core/format";
 
 type PublicacoesHeroSliderProps = {
   publicacoes: PublicacaoType[];
@@ -25,14 +25,16 @@ export function PublicacoesHeroSlider({
   publicacoes,
   searchCard,
 }: PublicacoesHeroSliderProps) {
+  const locale = useLocale();
   const t = useTranslations("public.publications");
   const slides = useMemo(() => publicacoes.slice(0, 5), [publicacoes]);
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = slides[activeIndex];
   const activeCategoria = activeSlide.categoria?.nome ?? "Publicação";
   const activeResumo = activeSlide.resumo;
-  const activeData = formatDate(
+  const activeData = formatDateByLocale(
     activeSlide.publicado_em ?? activeSlide.created_at,
+    locale
   );
   const activeSlug = slugifyPublicacao(
     activeSlide.titulo ?? "publicacao",
@@ -97,12 +99,18 @@ export function PublicacoesHeroSlider({
               : "1fr",
           },
           gap: { xs: 4, md: 7 },
-          alignItems: "center",
+          alignItems: "stretch",
           py: { xs: 4, md: 5 },
           boxSizing: "border-box",
         }}
       >
-        <Box sx={{ maxWidth: 760 }}>
+        <Box
+          sx={{
+            maxWidth: 760,
+            alignSelf: "center",
+            minWidth: 0,
+          }}
+        >
           <Stack direction="row" flexWrap="wrap" gap={1.2} mb={2}>
             <Typography
               component="span"
@@ -142,6 +150,19 @@ export function PublicacoesHeroSlider({
               fontSize: { xs: "2.1rem", md: "3.35rem" },
               lineHeight: 1.08,
               mb: 2,
+
+              height: {
+                xs: "6.8rem",
+                md: "7.25rem",
+              },
+
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: {
+                xs: 3,
+                md: 2,
+              },
+              overflow: "hidden",
             }}
           >
             {activeSlide.titulo}

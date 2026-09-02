@@ -2,15 +2,16 @@
 
 import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
-import { formatDate } from "@/@core/format";
+import { formatDateByLocale } from "@/@core/format";
 
 type PublicacaoTextoCardProps = {
   publicacao: PublicacaoType;
 };
 
 export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
+  const locale = useLocale();
   const t = useTranslations("public.publicationDetail");
 
   return (
@@ -45,7 +46,11 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
         <Stack direction="row" spacing={0.75} alignItems="center">
           <Icon icon="mdi:calendar-month-outline" width={18} />
           <Typography variant="subtitle1">
-            {formatDate(publicacao.publicado_em ?? publicacao.created_at)}
+            {formatDateByLocale(
+              publicacao.publicado_em ?? publicacao.created_at,
+              locale,
+            )}
+
           </Typography>
         </Stack>
       </Stack>

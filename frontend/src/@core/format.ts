@@ -157,3 +157,21 @@ export const storageUrl = (
   if (caminho.startsWith("http")) return caminho;
   return `/storage/${caminho}`;
 };
+
+export function formatDateByLocale(
+  date: string | Date,
+  locale: string,
+): string {
+  const dateLocale =
+    locale === "pt"
+      ? "pt-BR"
+      : locale === "en"
+        ? "en-US"
+        : "es-ES";
+
+  return new Intl.DateTimeFormat(dateLocale, {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(date));
+}
