@@ -157,6 +157,8 @@ export type UserType = {
   funcionario: FuncionarioType | null;
   advogado: AdvogadoType | null;
   cor_perfil: string | null;
+  foto_perfil: string | null;
+  foto_perfil_url: string | null;
   created_at: string;
   updated_at: string;
 };

@@ -633,7 +633,9 @@
       },
       "toast": {
         "saveSuccess": "Profile updated successfully!",
-        "saveError": "Error saving profile. Please try again."
+        "saveError": "Error saving profile. Please try again.",
+        "avatarUploadSuccess": "Profile picture updated successfully!",
+        "avatarUploadError": "Error updating profile picture. Please try again."
       },
       "security": {
         "title": "Security",

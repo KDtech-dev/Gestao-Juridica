@@ -95,8 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{user}',        [UserController::class, 'update']);
         Route::delete('/{user}',     [UserController::class, 'destroy']);
 
-        Route::post('/users/{user}/foto-perfil', [UserController::class, 'atualizarFoto'])
-            ->middleware('auth:sanctum');
+        Route::post('{user}/foto', [UserController::class, 'atualizarFoto']);
+        Route::delete('{user}/foto', [UserController::class, 'removerFoto']);
     });
 
     Route::prefix('casos')->group(function () {

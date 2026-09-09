@@ -94,7 +94,6 @@ function serialize_user_row(array $row): array
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-// Very small router
 if ($method === 'POST' && $path === '/auth/login') {
     $body = json_input();
     $identifier = trim((string) ($body['identifier'] ?? ''));

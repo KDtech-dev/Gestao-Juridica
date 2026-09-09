@@ -32,6 +32,7 @@ import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornmen
 import { Controller } from "react-hook-form";
 import { formatCpf, formatTelefone } from "@/@core/format";
 import { categoriaNomeParaChave } from "@/constants/categorias";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 
 type Props = {
   open: boolean;
@@ -58,6 +59,7 @@ export default function DialogUser({
   const isReadOnly = isView;
 
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [visiblePasswords, setVisiblePasswords] = useState({
     password: false,
     confirmation: false,
@@ -79,13 +81,23 @@ export default function DialogUser({
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const data = await getCategorias();
-        setCategorias(data);
-      } catch {}
+        const response = await getCategorias();
+        setCategorias(response.data);
+      } catch (err) {
+
+        toast.error(
+          formatToastErrorMessage(
+            err,
+            t("toast.loadCategoriesError"),
+          ),
+        );
+      } finally {
+        setLoadingCategorias(false);
+      }
     };
 
     loadCategorias();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (open) reset(buildDefaultValues(user, isEdit));
@@ -440,25 +452,25 @@ function buildDefaultValues(
     funcionario:
       role === "funcionario"
         ? {
-            celular: user?.funcionario?.celular ?? "",
-            data_nascimento: user?.funcionario?.data_nascimento ?? "",
-            resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
-          }
+          celular: user?.funcionario?.celular ?? "",
+          data_nascimento: user?.funcionario?.data_nascimento ?? "",
+          resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
+        }
         : undefined,
 
     advogado:
       role === "advogado"
         ? {
-            celular: user?.advogado?.celular ?? "",
-            oab_numero: user?.advogado?.oab_numero ?? "",
-            oab_uf: user?.advogado?.oab_uf ?? "",
-            categorias: Array.isArray(user?.advogado?.categorias)
-              ? user.advogado.categorias.map((c) =>
-                  typeof c === "object" ? c.id : c,
-                )
-              : [],
-            resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
-          }
+          celular: user?.advogado?.celular ?? "",
+          oab_numero: user?.advogado?.oab_numero ?? "",
+          oab_uf: user?.advogado?.oab_uf ?? "",
+          categorias: Array.isArray(user?.advogado?.categorias)
+            ? user.advogado.categorias.map((c) =>
+              typeof c === "object" ? c.id : c,
+            )
+            : [],
+          resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
+        }
         : undefined,
   };
 }

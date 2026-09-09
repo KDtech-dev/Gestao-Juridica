@@ -32,6 +32,8 @@ class UserResource extends JsonResource
                 $this->advogado ? new AdvogadoResource($this->advogado) : null
             ),
             'cor_perfil' => $this->cor_perfil,
+            'foto_perfil'     => $this->foto_perfil,
+            'foto_perfil_url' => $this->foto_perfil_url,
             'created_at'        => $this->created_at,
             'updated_at'        => $this->updated_at,
         ];

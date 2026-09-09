@@ -18,6 +18,7 @@ export type AuthUser = {
   email: string;
   roles: string[];
   idioma?: "pt" | "en" | "es" | null;
+  foto_perfil_url?: string | null;
 };
 
 type AuthContextValue = {
@@ -61,6 +62,8 @@ function safeParseUser(raw: string | null): AuthUser | null {
       email: parsed.email,
       roles,
       idioma,
+      foto_perfil_url:
+        typeof parsed.foto_perfil_url === "string" ? parsed.foto_perfil_url : null,
     };
   } catch {
     return null;
@@ -77,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = authStorage.get();
     const storedUser = safeParseUser(
       localStorage.getItem(auth.userDataKeyName) ??
-        sessionStorage.getItem(auth.userDataKeyName),
+      sessionStorage.getItem(auth.userDataKeyName),
     );
     const nextUser = token && storedUser ? storedUser : null;
     queueMicrotask(() => {

@@ -4,7 +4,8 @@ namespace App\Models;
 
 use App\Enums\RoleEnum;
 use App\Notifications\ResetPasswordNotification;
-use Illuminate\Database\Eloquent\Concerns\HasUuids; // <-- adicionar
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -30,6 +31,7 @@ class User extends Authenticatable
         'api_token',
         'password',
         'cor_perfil',
+        'foto_perfil',
     ];
 
     protected $hidden = [
@@ -57,6 +59,12 @@ class User extends Authenticatable
             'advogado'    => RoleEnum::ADVOGADO,
             default       => null,
         };
+    }
+    public function getFotoPerfilUrlAttribute(): ?string
+    {
+        return $this->foto_perfil
+            ? Storage::disk('public')->url($this->foto_perfil)
+            : null;
     }
     public function funcionario()
     {

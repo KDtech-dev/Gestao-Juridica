@@ -600,7 +600,9 @@
       },
       "toast": {
         "saveSuccess": "Perfil atualizado com sucesso!",
-        "saveError": "Erro ao salvar o perfil. Tente novamente."
+        "saveError": "Erro ao salvar o perfil. Tente novamente.",
+        "avatarUploadSuccess": "Foto de perfil atualizada com sucesso!",
+        "avatarUploadError": "Erro ao atualizar foto de perfil. Tente novamente."
       },
       "sections": {
         "personalInfo": "Informações Pessoais",

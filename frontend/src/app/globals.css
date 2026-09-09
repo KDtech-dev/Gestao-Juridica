@@ -119,14 +119,22 @@
 }
 
 @layer base {
+
   html,
   body {
     margin: 0;
     padding: 0;
     width: 100%;
+    min-height: 100%;
+    background-color: #111827;
+  }
+
+  body {
     overflow-x: hidden;
-    scroll-behavior: smooth;
-    font-size: var(--font-size);
+  }
+
+  #__next {
+    min-height: 100vh;
   }
 
   h1 {

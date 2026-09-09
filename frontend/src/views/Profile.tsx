@@ -22,7 +22,7 @@ import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { useLanguage } from "@/context/LanguageContext";
 import { ChangePasswordModal } from "@/components/modals/ChangePasswordModal";
-import { getUserById, updateUser } from "@/api/ApiUsers";
+import { getUserById, postFotoPerfil, updateUser } from "@/api/ApiUsers";
 import type { CategoriaType, RoleType, UserType } from "@/@core/types";
 import { CardDadosProfissionais } from "@/components/CardDadosProfissionais";
 import { CardDadosPessoais } from "@/components/CardDadosPessoais";
@@ -38,10 +38,12 @@ export default function ProfileView() {
   const t = useTranslations("internal.profile");
   const tValidation = useTranslations("validation");
   const { themeMode, setThemeMode } = useThemeMode();
-  const { hasRole, user } = useAuth();
+  const { hasRole, user, refreshUser } = useAuth();
   const { language, setLanguage } = useLanguage();
   const [avatar, setAvatar] = useState<string | null>(null);
   const [avatarHovered, setAvatarHovered] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [profileUser, setProfileUser] = useState<UserType | null>(null);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
@@ -113,11 +115,7 @@ export default function ProfileView() {
 
         setProfileUser(fetchedUser);
 
-        setAvatar(
-          fetchedUser.advogado?.foto_perfil_url ??
-            fetchedUser.funcionario?.foto_perfil_url ??
-            null,
-        );
+        setAvatar(fetchedUser.foto_perfil_url ?? null);
 
         form.reset({
           name: fetchedUser.name ?? "",
@@ -125,24 +123,24 @@ export default function ProfileView() {
           cpf: fetchedUser.cpf ?? "",
           advogado: isAdvogadoRef.current
             ? {
-                celular: fetchedUser.advogado?.celular ?? "",
-                oab_numero: fetchedUser.advogado?.oab_numero ?? "",
-                oab_uf: fetchedUser.advogado?.oab_uf ?? "",
-                categorias:
-                  fetchedUser.advogado?.categorias?.map(
-                    (c: CategoriaType) => c.id,
-                  ) ?? [],
-                sexo: fetchedUser.advogado?.sexo ?? null,
-                resumo_pessoal: fetchedUser.advogado?.resumo_pessoal ?? "",
-              }
+              celular: fetchedUser.advogado?.celular ?? "",
+              oab_numero: fetchedUser.advogado?.oab_numero ?? "",
+              oab_uf: fetchedUser.advogado?.oab_uf ?? "",
+              categorias:
+                fetchedUser.advogado?.categorias?.map(
+                  (c: CategoriaType) => c.id,
+                ) ?? [],
+              sexo: fetchedUser.advogado?.sexo ?? null,
+              resumo_pessoal: fetchedUser.advogado?.resumo_pessoal ?? "",
+            }
             : undefined,
           funcionario: isFuncionarioRef.current
             ? {
-                celular: fetchedUser.funcionario?.celular ?? "",
-                data_nascimento: fetchedUser.funcionario?.data_nascimento ?? "",
-                sexo: fetchedUser.funcionario?.sexo ?? null,
-                resumo_pessoal: fetchedUser.funcionario?.resumo_pessoal ?? "",
-              }
+              celular: fetchedUser.funcionario?.celular ?? "",
+              data_nascimento: fetchedUser.funcionario?.data_nascimento ?? "",
+              sexo: fetchedUser.funcionario?.sexo ?? null,
+              resumo_pessoal: fetchedUser.funcionario?.resumo_pessoal ?? "",
+            }
             : undefined,
           endereco:
             fetchedUser.advogado?.endereco ??
@@ -181,9 +179,40 @@ export default function ProfileView() {
       toast.error(formatToastErrorMessage(err, t("toast.saveError")));
     }
   });
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleAvatarChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
-    if (file) setAvatar(URL.createObjectURL(file));
+    if (!file || !user?.id) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    const avatarAnterior = avatar;
+    setAvatar(previewUrl);
+    setAvatarUploading(true);
+
+    try {
+      const { data: usuarioAtualizado } = await postFotoPerfil(
+        String(user.id),
+        file,
+      );
+
+      setAvatar(usuarioAtualizado.foto_perfil_url ?? null);
+      setProfileUser((prev) =>
+        prev ? { ...prev, foto_perfil_url: usuarioAtualizado.foto_perfil_url } : prev,
+      );
+      refreshUser({ foto_perfil_url: usuarioAtualizado.foto_perfil_url });
+      toast.success(t("toast.avatarUploadSuccess"));
+    } catch (err) {
+      setAvatar(avatarAnterior);
+      toast.error(formatToastErrorMessage(err, t("toast.avatarUploadError")));
+    } finally {
+      setAvatarUploading(false);
+      URL.revokeObjectURL(previewUrl);
+      if (avatarInputRef.current) {
+        avatarInputRef.current.value = "";
+      }
+    }
   };
   const corPerfil = form.watch("cor_perfil");
   const bannerBackground =
