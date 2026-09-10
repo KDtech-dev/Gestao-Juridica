@@ -141,9 +141,7 @@ export function BaseModal({
 
               <Button
                 onClick={
-                  confirmType === "submit"
-                    ? undefined
-                    : (onSubmit ?? onClose)
+                  confirmType === "submit" ? undefined : (onSubmit ?? onClose)
                 }
                 type={confirmType}
                 form={confirmFormId}

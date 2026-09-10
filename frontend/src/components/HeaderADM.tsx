@@ -282,7 +282,9 @@ export function HeaderDashboard({
         />
       )}
 
-      <Box sx={{ flex: 1, minWidth: 0, display: { xs: "none", md: "block" } }} />
+      <Box
+        sx={{ flex: 1, minWidth: 0, display: { xs: "none", md: "block" } }}
+      />
 
       <Box
         sx={{

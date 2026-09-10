@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AdvogadoPublicoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PasswordController;
@@ -12,10 +13,13 @@ use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\NotificacaoController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CasoController;
+use App\Http\Controllers\Auth\PasswordResetController;
 
 Route::prefix('auth')->group(function () {
     Route::post('login',          [AuthController::class, 'login']);
     Route::post('forgot-password', [PasswordController::class, 'sendResetLinkEmail']);
+    Route::post('reset-password', [PasswordResetController::class, 'reset']);
+
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout',  [AuthController::class, 'logout']);
@@ -24,6 +28,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::get('categorias', [CategoriaController::class, 'index']);
+Route::get('/advogados', [AdvogadoPublicoController::class, 'index']);
 
 Route::prefix('posts')->group(function () {
     Route::get('/',                        [PostController::class, 'index']);
@@ -90,8 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{user}',        [UserController::class, 'update']);
         Route::delete('/{user}',     [UserController::class, 'destroy']);
 
-        Route::post('/users/{user}/foto-perfil', [UserController::class, 'atualizarFoto'])
-            ->middleware('auth:sanctum');
+        Route::post('{user}/foto', [UserController::class, 'atualizarFoto']);
+        Route::delete('{user}/foto', [UserController::class, 'removerFoto']);
     });
 
     Route::prefix('casos')->group(function () {

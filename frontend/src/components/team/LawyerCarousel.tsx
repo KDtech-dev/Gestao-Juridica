@@ -11,14 +11,16 @@ import {
 import Link from "next/link";
 import { Icon } from "@/components/AppIcon";
 import { useMemo, useState } from "react";
-import { TeamLawyer } from "@/data/team";
 import { LawyerProfileCard } from "@/components/team/LawyerProfileCard";
+import { AdvogadoPublicoType } from "@/@core/types";
+import { useTranslations } from "next-intl";
 
 type Props = {
-  lawyers: TeamLawyer[];
+  lawyers: AdvogadoPublicoType[];
 };
 
 export function LawyerCarousel({ lawyers }: Props) {
+  const t = useTranslations("public.home.team");
   const [activeIndex, setActiveIndex] = useState(0);
 
   const visibleLawyers = useMemo(() => {
@@ -50,10 +52,10 @@ export function LawyerCarousel({ lawyers }: Props) {
       >
         <Box>
           <Typography variant="h4" fontWeight={800}>
-            Nossa Equipe
+            {t("title")}
           </Typography>
           <Typography color="text.secondary" mt={1}>
-            Perfis multidisciplinares para demandas jurídicas estratégicas.
+            {t("subtitle")}
           </Typography>
         </Box>
 
@@ -98,7 +100,7 @@ export function LawyerCarousel({ lawyers }: Props) {
           endIcon={<Icon icon="mdi:arrow-right" />}
           sx={{ textTransform: "none", borderRadius: "999px", px: 3 }}
         >
-          Conhecer toda a equipe
+          {t("button")}
         </Button>
       </Stack>
     </Container>

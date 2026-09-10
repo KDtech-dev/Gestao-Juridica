@@ -1,4 +1,3 @@
-
 export type ResponseType<T> = {
   success: boolean;
   message: string;
@@ -129,7 +128,7 @@ export type AdvogadoPublicoType = {
     foto_perfil_url: string | null;
     oab_numero: string;
     oab_uf: string;
-    categorias: { id: string; nome: string }[];
+    categorias: { id: number; nome: string }[];
   } | null;
 };
 
@@ -158,6 +157,8 @@ export type UserType = {
   funcionario: FuncionarioType | null;
   advogado: AdvogadoType | null;
   cor_perfil: string | null;
+  foto_perfil: string | null;
+  foto_perfil_url: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -210,4 +211,20 @@ export type ExistingFile = {
   id: string;
   nome: string;
   viewUrl?: string;
+};
+
+export type ForgotPasswordResponse = {
+  message: string;
+  success: boolean;
+};
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ResetPasswordPayload = {
+  token: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
 };

@@ -5,16 +5,10 @@ import { Button } from "@mui/material";
 
 const Icon = dynamic(
   () => import("@/components/AppIcon").then((mod) => mod.Icon),
-  { ssr: false }
+  { ssr: false },
 );
 
-export function DownloadButton({
-  url,
-  label,
-}: {
-  url: string;
-  label: string;
-}) {
+export function DownloadButton({ url, label }: { url: string; label: string }) {
   return (
     <Button
       component="a"

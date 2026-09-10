@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { Icon } from "@/components/AppIcon";
 import { useState } from "react";
+import { teamSpecialties } from "@/data/team";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { useTranslations } from "next-intl";
@@ -22,10 +23,8 @@ export function Footer() {
   const t = useTranslations("public.footer");
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openTerms, setOpenTerms] = useState(false);
-  const specialties = t.raw("specialties.items") as string[];
 
   const telefone = "5533999377986";
-
   const email = "contato@centraljuridica.com.br";
 
   const mensagem = t("whatsappMessage");
@@ -202,7 +201,7 @@ export function Footer() {
                 spacing={0.9}
                 sx={{ listStyle: "none", p: 0, m: 0 }}
               >
-                {specialties.map((specialty) => (
+                {teamSpecialties.map((specialty) => (
                   <Box key={specialty} component="li">
                     <Typography
                       color="rgba(255,255,255,0.66)"
@@ -233,7 +232,6 @@ export function Footer() {
               >
                 {[
                   { label: t("navigation.home"), href: "/" },
-                  { label: t("navigation.about"), href: "/sobre" },
                   { label: t("navigation.publications"), href: "/posts" },
                   { label: t("navigation.contact"), href: whatsappHref },
                   {
@@ -303,11 +301,19 @@ export function Footer() {
 
               <Stack spacing={1.1}>
                 <Stack direction="row" spacing={1.1} alignItems="flex-start">
-                  <Icon
-                    icon="mdi:map-marker-outline"
-                    width={50}
-                    style={{ marginTop: 2 }}
-                  />
+                  <Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      mt: 0.3,
+                    }}
+                  >
+                    <Icon icon="ph:map-pin" width={22} />
+                  </Box>
                   <Typography
                     color="rgba(255,255,255,0.66)"
                     sx={{ lineHeight: 1.55 }}
@@ -317,7 +323,18 @@ export function Footer() {
                 </Stack>
 
                 <Stack direction="row" spacing={1.1} alignItems="center">
-                  <Icon icon="mdi:phone-outline" width={25} />
+                  <Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Icon icon="ph:phone" width={22} />
+                  </Box>
                   <Typography
                     color="rgba(255,255,255,0.66)"
                     sx={{ fontWeight: 850 }}
@@ -327,7 +344,18 @@ export function Footer() {
                 </Stack>
 
                 <Stack direction="row" spacing={1.1} alignItems="center">
-                  <Icon icon="mdi:email-outline" width={30} />
+                  <Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Icon icon="ph:envelope-simple" width={22} />
+                  </Box>
                   <Typography
                     color="rgba(255,255,255,0.66)"
                     sx={{ fontWeight: 850 }}

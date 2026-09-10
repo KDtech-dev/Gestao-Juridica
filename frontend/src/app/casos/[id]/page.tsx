@@ -6,6 +6,6 @@ type Props = {
 
 export default async function VisualizarCasoPage({ params }: Props) {
   const { id } = await params;
-  
+
   return <CasoFormView mode="view" casoId={id} />;
 }

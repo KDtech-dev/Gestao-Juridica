@@ -154,214 +154,214 @@ export default function MenuNotificacoes({
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-      <Box sx={{ px: 2, py: 1.5 }}>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography
-              sx={{
-                fontSize: "0.9rem",
-                fontWeight: 700,
-                color: "text.primary",
-              }}
-            >
-              {t("title")}
-            </Typography>
-            {naoLidas > 0 && (
-              <Box
-                sx={{
-                  bgcolor: "primary.main",
-                  color: "primary.contrastText",
-                  fontSize: "0.68rem",
-                  fontWeight: 700,
-                  px: "7px",
-                  py: "1px",
-                  borderRadius: "999px",
-                  lineHeight: 1.6,
-                }}
-              >
-                {naoLidas}
-              </Box>
-            )}
-          </Stack>
-
-          <Stack direction="row" spacing={0.5}>
-            <Box
-              component="button"
-              onClick={aoMarcarTodasComoLidas}
-              disabled={naoLidas === 0}
-              sx={actionButtonSx}
-            >
-              <Icon icon="mdi:check-all" width={15} />
-              {t("actions.read")}
-            </Box>
-
-            <Box
-              component="button"
-              onClick={aoLimparTodas}
-              disabled={!temNotificacoes}
-              sx={actionButtonSx}
-            >
-              <Icon icon="mdi:trash-can-outline" width={15} />
-              {t("actions.clear")}
-            </Box>
-          </Stack>
-        </Stack>
-      </Box>
-
-      <Divider
-        sx={{
-          borderColor: "divider",
-        }}
-      />
-
-      <Box sx={{ maxHeight: 380, overflowY: "auto" }}>
-        {notificacoes.length === 0 ? (
-          <Box
-            sx={{
-              py: 4,
-              textAlign: "center",
-              color: "text.disabled",
-            }}
+        <Box sx={{ px: 2, py: 1.5 }}>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
           >
-            <Icon icon="mdi:bell-sleep-outline" width={24} />
-            <Typography fontSize="0.8rem">{t("empty")}</Typography>
-          </Box>
-        ) : (
-          notificacoes.slice(0, 8).map((item) => {
-            const config = tipoConfig[item.tipo ?? ""] ?? defaultConfig;
-            const tone = getTone(config);
-
-            return (
-              <Box
-                key={item.id}
-                onClick={aoClicarItem(item)}
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography
                 sx={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: 1.5,
-                  px: 2,
-                  py: 1.5,
-                  cursor: "pointer",
-                  bgcolor: item.lida ? "transparent" : tone.unreadBg,
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                  transition: "background 0.15s",
-                  "&:last-child": { borderBottom: "none" },
-                  "&:hover": {
-                    bgcolor: "action.hover",
-                  },
+                  fontSize: "0.9rem",
+                  fontWeight: 700,
+                  color: "text.primary",
                 }}
               >
+                {t("title")}
+              </Typography>
+              {naoLidas > 0 && (
                 <Box
                   sx={{
-                    width: 34,
-                    height: 34,
-                    borderRadius: "50%",
-                    bgcolor: tone.bg,
-                    border: "1px solid",
-                    borderColor: alpha(tone.color, isDark ? 0.24 : 0.16),
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.85rem",
-                    flexShrink: 0,
+                    bgcolor: "primary.main",
+                    color: "primary.contrastText",
+                    fontSize: "0.68rem",
+                    fontWeight: 700,
+                    px: "7px",
+                    py: "1px",
+                    borderRadius: "999px",
+                    lineHeight: 1.6,
                   }}
                 >
-                  <Icon icon={config.icon} width={18} color={tone.color} />
+                  {naoLidas}
                 </Box>
+              )}
+            </Stack>
 
-                <Box sx={{ flex: 1, minWidth: 0 }}>
-                  <Stack
-                    direction="row"
-                    justifyContent="space-between"
-                    alignItems="flex-start"
-                    mb={0.2}
+            <Stack direction="row" spacing={0.5}>
+              <Box
+                component="button"
+                onClick={aoMarcarTodasComoLidas}
+                disabled={naoLidas === 0}
+                sx={actionButtonSx}
+              >
+                <Icon icon="mdi:check-all" width={15} />
+                {t("actions.read")}
+              </Box>
+
+              <Box
+                component="button"
+                onClick={aoLimparTodas}
+                disabled={!temNotificacoes}
+                sx={actionButtonSx}
+              >
+                <Icon icon="mdi:trash-can-outline" width={15} />
+                {t("actions.clear")}
+              </Box>
+            </Stack>
+          </Stack>
+        </Box>
+
+        <Divider
+          sx={{
+            borderColor: "divider",
+          }}
+        />
+
+        <Box sx={{ maxHeight: 380, overflowY: "auto" }}>
+          {notificacoes.length === 0 ? (
+            <Box
+              sx={{
+                py: 4,
+                textAlign: "center",
+                color: "text.disabled",
+              }}
+            >
+              <Icon icon="mdi:bell-sleep-outline" width={24} />
+              <Typography fontSize="0.8rem">{t("empty")}</Typography>
+            </Box>
+          ) : (
+            notificacoes.slice(0, 8).map((item) => {
+              const config = tipoConfig[item.tipo ?? ""] ?? defaultConfig;
+              const tone = getTone(config);
+
+              return (
+                <Box
+                  key={item.id}
+                  onClick={aoClicarItem(item)}
+                  sx={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 1.5,
+                    px: 2,
+                    py: 1.5,
+                    cursor: "pointer",
+                    bgcolor: item.lida ? "transparent" : tone.unreadBg,
+                    borderBottom: "1px solid",
+                    borderColor: "divider",
+                    transition: "background 0.15s",
+                    "&:last-child": { borderBottom: "none" },
+                    "&:hover": {
+                      bgcolor: "action.hover",
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: "50%",
+                      bgcolor: tone.bg,
+                      border: "1px solid",
+                      borderColor: alpha(tone.color, isDark ? 0.24 : 0.16),
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "0.85rem",
+                      flexShrink: 0,
+                    }}
                   >
+                    <Icon icon={config.icon} width={18} color={tone.color} />
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="flex-start"
+                      mb={0.2}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: "0.8rem",
+                          fontWeight: 700,
+                          color: "text.primary",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "80%",
+                        }}
+                      >
+                        {item.titulo}
+                      </Typography>
+                      {item.tempo && (
+                        <Typography
+                          sx={{
+                            fontSize: "0.68rem",
+                            color: "text.disabled",
+                            flexShrink: 0,
+                            ml: 1,
+                          }}
+                        >
+                          {item.tempo}
+                        </Typography>
+                      )}
+                    </Stack>
+
                     <Typography
                       sx={{
-                        fontSize: "0.8rem",
-                        fontWeight: 700,
-                        color: "text.primary",
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                        maxWidth: "80%",
                       }}
                     >
-                      {item.titulo}
+                      {item.descricao}
                     </Typography>
-                    {item.tempo && (
-                      <Typography
-                        sx={{
-                          fontSize: "0.68rem",
-                          color: "text.disabled",
-                          flexShrink: 0,
-                          ml: 1,
-                        }}
-                      >
-                        {item.tempo}
-                      </Typography>
-                    )}
-                  </Stack>
+                  </Box>
 
-                  <Typography
-                    sx={{
-                      fontSize: "0.75rem",
-                      color: "text.secondary",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    {item.descricao}
-                  </Typography>
+                  {!item.lida && (
+                    <Box
+                      sx={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: "50%",
+                        bgcolor: "primary.main",
+                        flexShrink: 0,
+                        mt: 0.8,
+                      }}
+                    />
+                  )}
                 </Box>
+              );
+            })
+          )}
+        </Box>
 
-                {!item.lida && (
-                  <Box
-                    sx={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
-                      bgcolor: "primary.main",
-                      flexShrink: 0,
-                      mt: 0.8,
-                    }}
-                  />
-                )}
-              </Box>
-            );
-          })
-        )}
-      </Box>
-
-      <Divider
-        sx={{
-          borderColor: "divider",
-        }}
-      />
-      <Box sx={{ py: 1.2, textAlign: "center" }}>
-        <Typography
-          component={Link}
-          href="/notificacoes"
-          onClick={aoFechar}
+        <Divider
           sx={{
-            fontSize: "0.78rem",
-            color: "text.disabled",
-            cursor: "pointer",
-            textDecoration: "none",
-            "&:hover": {
-              color: "text.secondary",
-            },
+            borderColor: "divider",
           }}
-        >
-          {t("viewHistory")}
-        </Typography>
-      </Box>
+        />
+        <Box sx={{ py: 1.2, textAlign: "center" }}>
+          <Typography
+            component={Link}
+            href="/notificacoes"
+            onClick={aoFechar}
+            sx={{
+              fontSize: "0.78rem",
+              color: "text.disabled",
+              cursor: "pointer",
+              textDecoration: "none",
+              "&:hover": {
+                color: "text.secondary",
+              },
+            }}
+          >
+            {t("viewHistory")}
+          </Typography>
+        </Box>
       </Menu>
 
       <Dialog
@@ -401,9 +401,12 @@ export default function MenuNotificacoes({
 
             <Divider />
 
-            <Typography color="text.secondary" fontSize="0.94rem" lineHeight={1.7}>
-              {notificacaoSelecionada?.descricao ||
-                t("dialog.noDescription")}
+            <Typography
+              color="text.secondary"
+              fontSize="0.94rem"
+              lineHeight={1.7}
+            >
+              {notificacaoSelecionada?.descricao || t("dialog.noDescription")}
             </Typography>
           </Stack>
         </DialogContent>

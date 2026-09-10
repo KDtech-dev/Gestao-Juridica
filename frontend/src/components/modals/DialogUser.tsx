@@ -31,6 +31,8 @@ import { useTranslations } from "next-intl";
 import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
 import { Controller } from "react-hook-form";
 import { formatCpf, formatTelefone } from "@/@core/format";
+import { categoriaNomeParaChave } from "@/constants/categorias";
+import { formatToastErrorMessage, toast } from "@/utils/toast";
 
 type Props = {
   open: boolean;
@@ -51,11 +53,13 @@ export default function DialogUser({
 }: Props) {
   const t = useTranslations("internal.users.dialog");
   const tValidation = useTranslations("validation");
+  const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const isEdit = mode === "edit";
   const isView = mode === "view";
   const isReadOnly = isView;
 
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
+  const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [visiblePasswords, setVisiblePasswords] = useState({
     password: false,
     confirmation: false,
@@ -77,13 +81,23 @@ export default function DialogUser({
   useEffect(() => {
     const loadCategorias = async () => {
       try {
-        const data = await getCategorias();
-        setCategorias(data);
-      } catch {}
+        const response = await getCategorias();
+        setCategorias(response.data);
+      } catch (err) {
+
+        toast.error(
+          formatToastErrorMessage(
+            err,
+            t("toast.loadCategoriesError"),
+          ),
+        );
+      } finally {
+        setLoadingCategorias(false);
+      }
     };
 
     loadCategorias();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (open) reset(buildDefaultValues(user, isEdit));
@@ -126,9 +140,6 @@ export default function DialogUser({
     setVisiblePasswords({ password: false, confirmation: false });
     onClose();
   };
-  console.log("categorias", categorias);
-  console.log("isArray", Array.isArray(categorias));
-  console.log("typeof", typeof categorias);
   return (
     <FormProvider {...methods}>
       <BaseModal
@@ -336,9 +347,11 @@ export default function DialogUser({
                       <Autocomplete
                         multiple
                         options={categorias}
-                        getOptionLabel={(option) =>
-                          typeof option === "string" ? option : option.nome
-                        }
+                        getOptionLabel={(option) => {
+                          if (typeof option === "string") return option;
+                          const chave = categoriaNomeParaChave[option.nome];
+                          return chave ? tPracticeAreas(chave) : option.nome;
+                        }}
                         isOptionEqualToValue={(option, value) =>
                           option.id ===
                           (typeof value === "string" ? value : value.id)
@@ -439,25 +452,25 @@ function buildDefaultValues(
     funcionario:
       role === "funcionario"
         ? {
-            celular: user?.funcionario?.celular ?? "",
-            data_nascimento: user?.funcionario?.data_nascimento ?? "",
-            resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
-          }
+          celular: user?.funcionario?.celular ?? "",
+          data_nascimento: user?.funcionario?.data_nascimento ?? "",
+          resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
+        }
         : undefined,
 
     advogado:
       role === "advogado"
         ? {
-            celular: user?.advogado?.celular ?? "",
-            oab_numero: user?.advogado?.oab_numero ?? "",
-            oab_uf: user?.advogado?.oab_uf ?? "",
-            categorias: Array.isArray(user?.advogado?.categorias)
-              ? user.advogado.categorias.map((c) =>
-                  typeof c === "object" ? c.id : c,
-                )
-              : [],
-            resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
-          }
+          celular: user?.advogado?.celular ?? "",
+          oab_numero: user?.advogado?.oab_numero ?? "",
+          oab_uf: user?.advogado?.oab_uf ?? "",
+          categorias: Array.isArray(user?.advogado?.categorias)
+            ? user.advogado.categorias.map((c) =>
+              typeof c === "object" ? c.id : c,
+            )
+            : [],
+          resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
+        }
         : undefined,
   };
 }

@@ -53,7 +53,9 @@ const requestJson = async <T>(
   return payload as T;
 };
 
-export const criarPublicacaoClient = (payload: PublicacaoPayload | FormData) => {
+export const criarPublicacaoClient = (
+  payload: PublicacaoPayload | FormData,
+) => {
   const isFormData = payload instanceof FormData;
 
   return requestJson<PublicacaoItem>("/api/publicacoes", {

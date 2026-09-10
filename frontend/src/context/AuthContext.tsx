@@ -18,6 +18,7 @@ export type AuthUser = {
   email: string;
   roles: string[];
   idioma?: "pt" | "en" | "es" | null;
+  foto_perfil_url?: string | null;
 };
 
 type AuthContextValue = {
@@ -28,7 +29,7 @@ type AuthContextValue = {
   setAuth: (userData: AuthUser, token: string, remember?: boolean) => void;
   logout: () => void;
   redirectByRole: () => void;
-  refreshUser: (partial: Partial<AuthUser>) => void; 
+  refreshUser: (partial: Partial<AuthUser>) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -41,7 +42,9 @@ function safeParseUser(raw: string | null): AuthUser | null {
     const roles = Array.isArray(parsed.roles)
       ? parsed.roles.map(String)
       : parsed.roles && typeof parsed.roles === "object"
-        ? Object.values(parsed.roles as unknown as Record<string, unknown>).map(String)
+        ? Object.values(parsed.roles as unknown as Record<string, unknown>).map(
+            String,
+          )
         : [];
     if (
       !parsed.id ||
@@ -59,6 +62,8 @@ function safeParseUser(raw: string | null): AuthUser | null {
       email: parsed.email,
       roles,
       idioma,
+      foto_perfil_url:
+        typeof parsed.foto_perfil_url === "string" ? parsed.foto_perfil_url : null,
     };
   } catch {
     return null;
@@ -75,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const token = authStorage.get();
     const storedUser = safeParseUser(
       localStorage.getItem(auth.userDataKeyName) ??
-        sessionStorage.getItem(auth.userDataKeyName),
+      sessionStorage.getItem(auth.userDataKeyName),
     );
     const nextUser = token && storedUser ? storedUser : null;
     queueMicrotask(() => {
@@ -95,7 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     (userData: AuthUser, token: string, remember = true) => {
       if (typeof window !== "undefined") {
         const targetStorage = remember ? localStorage : sessionStorage;
-        const otherStorage  = remember ? sessionStorage : localStorage;
+        const otherStorage = remember ? sessionStorage : localStorage;
         authStorage.set(token, remember);
         targetStorage.setItem(auth.userDataKeyName, JSON.stringify(userData));
         otherStorage.removeItem(auth.userDataKeyName);
@@ -153,7 +158,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       redirectByRole,
       refreshUser,
     }),
-    [user, loading, isAuthenticated, hasRole, setAuth, logout, redirectByRole, refreshUser],
+    [
+      user,
+      loading,
+      isAuthenticated,
+      hasRole,
+      setAuth,
+      logout,
+      redirectByRole,
+      refreshUser,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

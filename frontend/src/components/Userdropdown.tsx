@@ -32,6 +32,7 @@ const UserDropdown = () => {
   const userRole = user?.roles?.[0]
     ? t(`roles.${String(user.roles[0])}`)
     : t("fallbackUser");
+  const avatarUrl = user?.foto_perfil_url ?? null;
 
   const handleDropdownOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -39,16 +40,12 @@ const UserDropdown = () => {
 
   const getUserFirstName = () => {
     const name = user?.name;
-
     return name ? name.split(" ")[0] : "";
   };
 
   const handleDropdownClose = (url?: string) => {
     setAnchorEl(null);
-
-    if (url) {
-      router.push(url);
-    }
+    if (url) router.push(url);
   };
 
   const styles = {
@@ -60,11 +57,7 @@ const UserDropdown = () => {
     gap: 1.25,
     color: "text.primary",
     textDecoration: "none",
-    "& svg": {
-      flexShrink: 0,
-      fontSize: "1.2rem",
-      color: "text.primary",
-    },
+    "& svg": { flexShrink: 0, fontSize: "1.2rem", color: "text.primary" },
   };
 
   const handleLogout = () => {
@@ -79,14 +72,12 @@ const UserDropdown = () => {
         onClick={handleDropdownOpen}
         sx={{ ml: 2, cursor: "pointer" }}
         badgeContent={<BadgeContentSpan />}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "right",
-        }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       >
         <UserAvatar
           id="userAvatar"
           name={userName}
+          imageUrl={avatarUrl}
           sx={{ width: 40, height: 40, cursor: "pointer" }}
         />
       </Badge>
@@ -102,9 +93,7 @@ const UserDropdown = () => {
             borderRadius: 2,
             overflow: "hidden",
           },
-          "& .MuiMenu-list": {
-            py: 0.75,
-          },
+          "& .MuiMenu-list": { py: 0.75 },
         }}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
@@ -114,13 +103,11 @@ const UserDropdown = () => {
             <Badge
               overlap="circular"
               badgeContent={<BadgeContentSpan />}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "right",
-              }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             >
               <UserAvatar
                 name={userName}
+                imageUrl={avatarUrl}
                 sx={{ width: "2.0rem", height: "2.0rem" }}
               />
             </Badge>
@@ -166,9 +153,7 @@ const UserDropdown = () => {
         <MenuItem sx={{ p: 0 }} onClick={() => handleDropdownClose("/profile")}>
           <Box sx={styles}>
             <IconifyIcon icon="mdi:account-outline" width="18" height="18" />{" "}
-            <Typography
-              sx={{ fontSize: "0.875rem", fontWeight: 500, lineHeight: 1.3 }}
-            >
+            <Typography sx={{ fontSize: "0.875rem", fontWeight: 500, lineHeight: 1.3 }}>
               {t("profile")}
             </Typography>
           </Box>
@@ -185,9 +170,7 @@ const UserDropdown = () => {
           }}
         >
           <IconifyIcon icon="mdi:logout-variant" width="18" height="18" />{" "}
-          <Typography
-            sx={{ fontSize: "0.875rem", fontWeight: 500, lineHeight: 1.3 }}
-          >
+          <Typography sx={{ fontSize: "0.875rem", fontWeight: 500, lineHeight: 1.3 }}>
             {t("logout")}
           </Typography>
         </MenuItem>

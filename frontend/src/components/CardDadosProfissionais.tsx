@@ -93,7 +93,7 @@ export function CardDadosProfissionais({ isAdvogado }: Props) {
                     getOptionLabel={(option) => {
                       if (typeof option === "string") return option;
                       const chave = categoriaNomeParaChave[option.nome];
-                      return chave ? tPracticeAreas(chave) : option.nome; 
+                      return chave ? tPracticeAreas(chave) : option.nome;
                     }}
                     isOptionEqualToValue={(option, value) =>
                       option.id ===

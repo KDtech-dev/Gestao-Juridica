@@ -2,6 +2,7 @@
   "common": {
     "save": "Guardar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "delete": "Eliminar",
     "edit": "Editar"
   },
@@ -26,12 +27,20 @@
       "heroText": "Controla clientes, procesos y compromisos en un solo lugar, con una interfaz moderna y segura.",
       "rights": "© 2026 Central Jurídica. Todos los derechos reservados.",
       "error": "No fue posible iniciar sesión."
+    },
+    "forgotPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Ingresa tu correo electrónico para recibir el enlace de restablecimiento.",
+      "email": "Correo electrónico",
+      "send": "Enviar enlace",
+      "back": "Volver al login",
+      "success": "Si el correo existe, enviaremos un enlace para restablecer la contraseña.",
+      "error": "No fue posible enviar el correo. Inténtalo de nuevo."
     }
   },
   "dashboard": {
     "welcome": "Bienvenido al sistema"
   },
-
   "internal": {
     "publications": {
       "title": "Publicaciones",
@@ -485,6 +494,12 @@
           "confirmPasswordPlaceholder": "Confirme la contraseña"
         }
       },
+      "deleteDialog": {
+        "title": "¿Eliminar usuario?",
+        "description": "El usuario \"{name}\" será eliminado permanentemente. Esta acción no se puede deshacer.",
+        "confirm": "Eliminar usuario",
+        "cancel": "Cancelar"
+      },
       "toast": {
         "created": "¡Usuario creado con éxito!",
         "updated": "¡Usuario actualizado con éxito!",
@@ -494,7 +509,8 @@
         "load": "Error al cargar usuarios.",
         "create": "Error al crear usuario.",
         "update": "Error al actualizar usuario.",
-        "delete": "Error al eliminar usuario."
+        "delete": "Error al eliminar usuario.",
+        "lastAdmin": "Este usuario es el único administrador del sistema y no puede ser eliminado."
       }
     },
     "newUser": {
@@ -559,7 +575,9 @@
       },
       "toast": {
         "saveSuccess": "¡Perfil actualizado con éxito!",
-        "saveError": "Error al guardar el perfil. Inténtalo de nuevo."
+        "saveError": "Error al guardar el perfil. Inténtalo de nuevo.",
+        "avatarUploadSuccess": "¡Foto de perfil actualizada con éxito!",
+        "avatarUploadError": "Error al actualizar foto de perfil. Inténtalo de nuevo."
       },
       "sections": {
         "personalInfo": "Información personal",
@@ -599,47 +617,12 @@
         }
       },
       "practiceAreas": {
-        "civil": "Derecho Civil",
-        "criminal": "Derecho Penal",
+        "public": "Derecho Público",
+        "socialSecurity": "Derecho de la Seguridad Social",
         "labor": "Derecho Laboral",
-        "socialSecurity": "Derecho Previsional",
-        "tax": "Derecho Tributario",
-        "business": "Derecho Empresarial",
-        "consumer": "Derecho del Consumidor",
-        "family": "Derecho de Familia",
-        "succession": "Derecho Sucesorio (Herencia e Inventario)",
-        "realEstate": "Derecho Inmobiliario",
-        "administrative": "Derecho Administrativo",
-        "constitutional": "Derecho Constitucional",
-        "environmental": "Derecho Ambiental",
-        "digital": "Derecho Digital",
-        "electoral": "Derecho Electoral",
-        "international": "Derecho Internacional",
+        "civil": "Derecho Civil",
         "banking": "Derecho Bancario",
-        "health": "Derecho de la Salud",
-        "military": "Derecho Militar",
-        "sports": "Derecho Deportivo",
-        "agrarian": "Derecho Agrario",
-        "maritime": "Derecho Marítimo",
-        "aeronautical": "Derecho Aeronáutico",
-        "intellectualProperty": "Derecho de Propiedad Intelectual",
-        "copyright": "Derecho de Autor",
-        "childAndAdolescent": "Derecho del Niño y Adolescente",
-        "lgbt": "Derecho LGBT+",
-        "fashion": "Derecho de la Moda",
-        "energy": "Derecho de la Energía",
-        "mining": "Derecho Minero",
-        "customs": "Derecho Aduanero",
-        "financial": "Derecho Financiero",
-        "urban": "Derecho Urbanístico",
-        "cooperative": "Derecho Cooperativo",
-        "educational": "Derecho Educacional",
-        "mediation": "Mediación y Arbitraje",
-        "compliance": "Compliance y Gobierno Corporativo",
-        "dataProtection": "Protección de Datos (LGPD)",
-        "insurance": "Derecho de Seguros",
-        "condominium": "Derecho Condominal",
-        "penalExecution": "Ejecución Penal"
+        "legislativeConsulting": "Consultoría Legislativa"
       },
       "customization": {
         "title": "Personalización",
@@ -720,13 +703,11 @@
       }
     }
   },
-
   "clients": {
     "title": "Clientes",
     "newClient": "Nuevo cliente",
     "search": "Buscar cliente"
   },
-
   "sidebar": {
     "mainMenu": "Menú principal",
     "items": {
@@ -743,8 +724,62 @@
       "sair": "Salir"
     }
   },
-
   "public": {
+    "home": {
+      "hero": {
+        "title": "Derecho Tributario y Empresarial",
+        "subtitle": "Especialistas en soluciones jurídicas corporativas.",
+        "cta": "Consulta Gratuita"
+      },
+      "about": {
+        "title": "Sobre el Despacho",
+        "paragraph1": "Con una actuación guiada por la ética, la responsabilidad y el compromiso con los resultados, el despacho Manfrine Chaves de Almeida & Advogados reúne a un equipo multidisciplinario preparado para atender demandas en las áreas de Derecho Público, Laboral, Civil, Previsional y Bancario.",
+        "paragraph2": "Al frente del despacho está Manfrine Chaves de Almeida, abogado y contador, especialista en Derecho Público, Laboral y Civil. El equipo está formado por profesionales con actuaciones complementarias, incluyendo derecho previsional, consultoría legislativa y demandas judiciales estratégicas.",
+        "details": "Integra el equipo Carollaine Damasceno Barros, abogada y contadora, especialista en Derecho Público y Civil. Con una actuación destacada en asesoría jurídica legislativa y consultoría técnica, contribuye con análisis precisos y fundamentados, especialmente en áreas relacionadas con la gestión pública y el control de legalidad. En el área previsional, el despacho cuenta con Luiz Fernando Novais Neves, abogado con actuación enfocada en garantizar derechos y beneficios ante los órganos competentes. El Derecho Público también está representado por Anderson Fazendeiro, especialista en el área, con experiencia en demandas administrativas y judiciales que involucran entes públicos. También forma parte del equipo Saiara Tavares Almeida, abogada especialista en Derecho Público y Previsional, que actúa con dedicación en la defensa de derechos sociales y administrativos. En el área bancaria y pública, se destaca Andressa Fazendeiro, especialista en Derecho Público y Bancario, con actuación estratégica en demandas contractuales y financieras. En el área laboral y previsional, Abraão Lincoln Prates de Almeida actúa en la defensa de los derechos individuales y colectivos en las relaciones laborales y en la garantía de derechos y beneficios ante el INSS. El despacho se consolida como referencia regional por su actuación técnica, atención personalizada y compromiso con la justicia, ofreciendo soluciones jurídicas seguras, eficientes y alineadas con las necesidades de cada cliente.",
+        "readMore": "Leer más",
+        "readLess": "Leer menos",
+        "imageAlt": "Equipo del despacho en reunión"
+      },
+      "team": {
+        "title": "Nuestro Equipo",
+        "subtitle": "Perfiles multidisciplinarios para demandas jurídicas estratégicas.",
+        "button": "Conocer a todo el equipo"
+      },
+      "specialities": {
+        "title": "Nuestro equipo",
+        "subtitle": "Seleccione una especialidad para conocer a los responsables.",
+        "expertsIn": "Especialistas en ",
+        "errorNoLawyersForSpecialty": "No hay abogados disponibles para esta especialidad.",
+        "previous": "Anterior",
+        "next": "Siguiente"
+      }
+    },
+    "teamPage": {
+      "eyebrow": "Equipo jurídico",
+      "title": "Profesionales preparados para demandas estratégicas.",
+      "subtitle": "Conoce a los abogados del despacho por área de actuación y encuentra el perfil más alineado con tu necesidad jurídica.",
+      "stats": {
+        "professionals": "profesionales",
+        "specialties": "áreas de actuación"
+      },
+      "filters": {
+        "title": "Filtrar por especialidad",
+        "subtitle": "Explora el equipo a partir de las áreas de práctica disponibles.",
+        "all": "Todas"
+      },
+      "resultCount": "{count, plural, =0 {Ningún profesional} one {# profesional} other {# profesionales}}",
+      "lawyersTitle": "Abogados",
+      "showingAll": "Mostrando todas las especialidades",
+      "showingSpecialty": "Mostrando ",
+      "empty": {
+        "title": "Ningún abogado disponible",
+        "subtitle": "Los perfiles del equipo aparecerán aquí cuando estén registrados."
+      },
+      "emptyFilter": {
+        "title": "Ningún profesional encontrado",
+        "subtitle": "Intenta seleccionar otra especialidad para ver más perfiles."
+      }
+    },
     "header": {
       "home": "Inicio",
       "publications": "Publicaciones",
@@ -798,6 +833,31 @@
       "copyrightRights": "Todos los derechos reservados",
       "developedBy": "Desarrollado por"
     },
+    "privacyPolicy": {
+      "title": "Política de Privacidad",
+      "sections": [
+        {
+          "title": "Introducción",
+          "body": "Esta Política de Privacidad describe cómo tratamos los datos personales de los usuarios para proporcionar nuestros servicios y garantizar la transparencia sobre cómo se recopila, utiliza y protege la información."
+        },
+        {
+          "title": "Qué datos recopilamos",
+          "body": "Podemos recopilar datos como nombre, información de contacto, información relacionada con asuntos jurídicos y otros datos necesarios para la atención, elaboración de presupuestos y seguimiento de casos."
+        },
+        {
+          "title": "Cómo utilizamos los datos",
+          "body": "Utilizamos los datos para prestar servicios jurídicos, comunicarnos sobre el avance de los asuntos, responder a solicitudes y cumplir con las obligaciones legales."
+        },
+        {
+          "title": "Compartición de datos",
+          "body": "Podremos compartir datos con socios y autoridades únicamente cuando sea necesario para cumplir con la ley, prestar servicios contratados o proteger derechos, respetando siempre la legislación aplicable."
+        },
+        {
+          "title": "Seguridad y sus derechos",
+          "body": "Mantenemos medidas de seguridad para proteger sus datos. Puede solicitar el acceso, corrección, actualización, eliminación y otras medidas relacionadas con sus datos, de acuerdo con la legislación aplicable."
+        }
+      ]
+    },
     "publications": {
       "sectionTitle": "Publicaciones",
       "sectionSubtitle": "Noticias jurídicas, análisis práctico y contenidos del despacho",
@@ -828,7 +888,6 @@
       "view": "Ver"
     }
   },
-
   "agenda": {
     "title": "Agenda",
     "subtitle": "Gestiona compromisos, audiencias, plazos y recordatorios.",

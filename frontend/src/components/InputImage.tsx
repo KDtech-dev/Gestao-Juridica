@@ -157,7 +157,10 @@ const InputImage = ({
                 className="single-file-image"
                 src={typeof file == "string" ? file : URL.createObjectURL(file)}
                 onError={(event) => {
-                  if (typeof file !== "string" || !file.startsWith("/storage/")) {
+                  if (
+                    typeof file !== "string" ||
+                    !file.startsWith("/storage/")
+                  ) {
                     return;
                   }
 

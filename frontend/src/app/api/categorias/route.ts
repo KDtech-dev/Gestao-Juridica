@@ -1,5 +1,4 @@
 import { getPublicApiOrigin } from "@/configs/apiUrl";
-import type { CategoriaOption } from "@/api/categorias/types";
 import { getSafePayloadErrorMessage } from "@/utils/safeErrorMessage";
 import { NextResponse } from "next/server";
 
@@ -11,46 +10,44 @@ const getBackendApiBaseUrl = () => {
   return `${origin.replace(/\/$/, "")}/api`;
 };
 
-const normalizeCategorias = (payload: unknown): CategoriaOption[] => {
-  const data =
-    typeof payload === "object" && payload !== null && "data" in payload
-      ? (payload as { data: unknown }).data
-      : payload;
-
-  if (!Array.isArray(data)) return [];
-
-  return data
-    .map((item) => item as Partial<CategoriaOption>)
-    .filter((item) => item.id !== undefined && typeof item.nome === "string")
-    .map((item) => ({
-      id: item.id as number | string,
-      nome: item.nome as string,
-      descricao: item.descricao ?? null,
-    }));
-};
-
 export const GET = async () => {
-  const response = await fetch(`${getBackendApiBaseUrl()}/categorias`, {
-    cache: "no-store",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-  const payload = await response.json().catch(() => null);
+  try {
+    const response = await fetch(`${getBackendApiBaseUrl()}/categorias`, {
+      cache: "no-store",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
-  if (!response.ok) {
+    const payload = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: getSafePayloadErrorMessage(
+            payload,
+            "Erro ao buscar categorias.",
+          ),
+          data: [],
+        },
+        { status: response.status },
+      );
+    }
+
+    return NextResponse.json(payload, {
+      status: response.status,
+    });
+  } catch (error) {
+    console.error("Erro na API de categorias:", error);
+
     return NextResponse.json(
       {
-        message: getSafePayloadErrorMessage(
-          payload,
-          "Erro ao buscar categorias.",
-        ),
+        success: false,
+        message: "Erro ao buscar categorias.",
+        data: [],
       },
-      { status: response.status },
+      { status: 500 },
     );
   }
-
-  return NextResponse.json(normalizeCategorias(payload), {
-    status: response.status,
-  });
 };

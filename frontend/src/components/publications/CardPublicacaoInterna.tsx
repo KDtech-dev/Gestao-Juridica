@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  Box,
   Chip,
   IconButton,
   Paper,
@@ -71,7 +70,6 @@ export function CardPublicacaoInterna({
           theme.palette.mode === "dark"
             ? "0 18px 42px rgba(0,0,0,0.22)"
             : "0 1px 2px rgba(15,23,42,0.06)",
-        cursor: "pointer",
         transition:
           "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
         "&:hover": {
@@ -88,19 +86,6 @@ export function CardPublicacaoInterna({
         },
       }}
     >
-      <Box
-        component={Link}
-        href={editHref}
-        aria-label={`${t("actions.edit")}: ${publicacao.titulo ?? ""}`}
-        sx={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 3,
-          borderRadius: "14px",
-          outline: "none",
-        }}
-      />
-
       <Stack
         direction={{ xs: "column", md: "row" }}
         justifyContent="space-between"
@@ -169,6 +154,7 @@ export function CardPublicacaoInterna({
               href={editHref}
               aria-label={t("actions.edit")}
               size="small"
+              onClick={(event) => event.stopPropagation()}
               sx={{ border: "1px solid", borderColor: "divider" }}
             >
               <Icon icon="mdi:pencil-outline" width={19} />
@@ -183,7 +169,10 @@ export function CardPublicacaoInterna({
                   publicacao.status === "arquivado" ||
                   processingPostId === publicacao.id
                 }
-                onClick={() => onArchive(publicacao)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onArchive(publicacao);
+                }}
                 sx={{ border: "1px solid", borderColor: "divider" }}
               >
                 <Icon icon="mdi:archive-outline" width={19} />
@@ -196,7 +185,10 @@ export function CardPublicacaoInterna({
                 aria-label={t("actions.delete")}
                 size="small"
                 disabled={processingPostId === publicacao.id}
-                onClick={() => onDelete(publicacao)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDelete(publicacao);
+                }}
                 sx={{
                   border: "1px solid",
                   borderColor: "divider",

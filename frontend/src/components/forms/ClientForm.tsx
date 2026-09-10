@@ -3,7 +3,10 @@
 import { Box, TextField } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClienteSchema, CreateClientePayload } from "@/schemas/ClienteSchema";
+import {
+  createClienteSchema,
+  CreateClientePayload,
+} from "@/schemas/ClienteSchema";
 import { useEffect } from "react";
 import { ClienteType } from "@/@core/types";
 
@@ -14,7 +17,12 @@ type Props = {
   onSubmit: (data: CreateClientePayload) => void;
 };
 
-export function ClientForm({ id, initialValues, disabled = false, onSubmit }: Props) {
+export function ClientForm({
+  id,
+  initialValues,
+  disabled = false,
+  onSubmit,
+}: Props) {
   const {
     control,
     handleSubmit,
@@ -23,10 +31,10 @@ export function ClientForm({ id, initialValues, disabled = false, onSubmit }: Pr
   } = useForm<CreateClientePayload>({
     resolver: zodResolver(createClienteSchema),
     defaultValues: {
-      name:            initialValues?.name            ?? "",
-      cpf_cnpj:        initialValues?.cpf_cnpj        ?? "",
-      email:           initialValues?.email           ?? "",
-      telefone:        initialValues?.telefone        ?? "",
+      name: initialValues?.name ?? "",
+      cpf_cnpj: initialValues?.cpf_cnpj ?? "",
+      email: initialValues?.email ?? "",
+      telefone: initialValues?.telefone ?? "",
       data_nascimento: initialValues?.data_nascimento ?? "",
     },
   });
@@ -34,10 +42,10 @@ export function ClientForm({ id, initialValues, disabled = false, onSubmit }: Pr
   useEffect(() => {
     if (initialValues) {
       reset({
-        name:            initialValues.name            ?? "",
-        cpf_cnpj:        initialValues.cpf_cnpj        ?? "",
-        email:           initialValues.email           ?? "",
-        telefone:        initialValues.telefone        ?? "",
+        name: initialValues.name ?? "",
+        cpf_cnpj: initialValues.cpf_cnpj ?? "",
+        email: initialValues.email ?? "",
+        telefone: initialValues.telefone ?? "",
         data_nascimento: initialValues.data_nascimento ?? "",
       });
     }

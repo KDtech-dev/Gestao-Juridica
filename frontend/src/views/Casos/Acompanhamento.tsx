@@ -26,6 +26,7 @@ import { CasoType, StatusCaso } from "@/@core/types";
 import { deleteCaso, getCasos } from "@/api/apiCasos";
 import { formatNumeroProcesso } from "@/@core/format";
 import { categoriaNomeParaChave } from "@/constants/categorias";
+import ConfirmDialog from "@/components/users/ConfirmDialog";
 
 const STATUS_COLOR: Record<
   StatusCaso,
@@ -39,11 +40,14 @@ const STATUS_COLOR: Record<
 
 export default function CasosView() {
   const t = useTranslations("internal.cases");
+  const tCommon = useTranslations("common");
   const theme = useTheme();
   const router = useRouter();
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const [casos, setCasos] = useState<CasoType[]>([]);
+  const [deleteTarget, setDeleteTarget] = useState<CasoType | null>(null);
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -83,14 +87,19 @@ export default function CasosView() {
   const rowsExibidos = isSearching ? casosFiltrados : casos;
   const totalCount = isSearching ? casosFiltrados.length : total;
 
-  const handleDelete = async (caso: CasoType) => {
-    if (!confirm(t("confirmDelete", { title: caso.titulo }))) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+
+    setDeleting(true);
     try {
-      await deleteCaso(caso.id);
+      await deleteCaso(deleteTarget.id);
       toast.success(t("toast.deleted"));
       loadCasos(paginationModel.page + 1, paginationModel.pageSize);
+      setDeleteTarget(null);
     } catch {
       toast.error(t("errors.delete"));
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -198,7 +207,7 @@ export default function CasosView() {
             size="small"
             onClick={(e) => {
               e.stopPropagation();
-              handleDelete(row);
+              setDeleteTarget(row);
             }}
             sx={{ "&:hover": { color: "error.main" } }}
           >
@@ -388,6 +397,23 @@ export default function CasosView() {
             />
           </Paper>
         </Container>
+        <ConfirmDialog
+          open={Boolean(deleteTarget)}
+          title={tCommon("delete")}
+          description={
+            deleteTarget
+              ? t("confirmDelete", { title: deleteTarget.titulo })
+              : undefined
+          }
+          confirmText={tCommon("delete")}
+          cancelText={tCommon("cancel")}
+          loading={deleting}
+          onConfirm={handleDelete}
+          onClose={() => {
+            if (deleting) return;
+            setDeleteTarget(null);
+          }}
+        />
       </Box>
     </Box>
   );

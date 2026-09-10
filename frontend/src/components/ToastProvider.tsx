@@ -37,7 +37,15 @@ export default function ToastProvider() {
           onClose={handleClose}
           severity={currentToast.severity}
           variant="filled"
-          sx={{ width: "100%", maxWidth: 420 }}
+          sx={{
+            width: "100%",
+            maxWidth: 420,
+            ...(currentToast.severity === "success" && {
+              "& .MuiAlert-message": { color: "#fff" },
+              "& .MuiAlert-icon": { color: "#fff" },
+              "& .MuiAlert-action .MuiIconButton-root": { color: "#fff" },
+            }),
+          }}
         >
           {currentToast.message}
         </Alert>

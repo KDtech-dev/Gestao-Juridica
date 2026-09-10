@@ -1,26 +1,28 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   Container,
   Divider,
+  IconButton,
   Paper,
-  Skeleton,
   Stack,
+  TextField,
   Typography,
   useTheme,
 } from "@mui/material";
+import Link from "next/link";
 import { ClienteType, CasoType, StatusCaso } from "@/@core/types";
 import { formatCpfCnpj } from "@/@core/format";
 import { getClienteById, updateCliente } from "@/api/ApiClientes";
 import { getCasos } from "@/api/apiCasos";
 import { CreateClientePayload } from "@/schemas/ClienteSchema";
-import DialogCliente from "@/components/DialogCliente";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { Icon } from "@/components/AppIcon";
 import { SidebarDashboard } from "@/components/Sidebar";
@@ -46,14 +48,18 @@ function detailValue(value?: string | null) {
   return value && value.trim() ? value : "-";
 }
 
-export default function ClienteFormView({ clienteId }: Props) {
+export default function ClienteFormView({ mode, clienteId }: Props) {
   const [cliente, setCliente] = useState<ClienteType | null>(null);
   const [casos, setCasos] = useState<CasoType[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editOpen, setEditOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState<CreateClientePayload>(
+    {} as CreateClientePayload,
+  );
   const theme = useTheme();
   const t = useTranslations("internal.clients");
+  const router = useRouter();
+  const isEdit = mode === "edit";
 
   const loadCliente = useCallback(async () => {
     if (!clienteId) {
@@ -71,6 +77,14 @@ export default function ClienteFormView({ clienteId }: Props) {
       ]);
 
       setCliente(clienteResponse);
+      setForm({
+        name: clienteResponse.name ?? "",
+        cpf_cnpj: clienteResponse.cpf_cnpj ?? "",
+        email: clienteResponse.email ?? "",
+        telefone: clienteResponse.telefone ?? "",
+        data_nascimento: clienteResponse.data_nascimento ?? "",
+      });
+
       const casoDoCliente = casosResponse.data.filter((caso) =>
         caso.clientes?.some((c) => String(c.id) === String(clienteId)),
       );
@@ -86,20 +100,35 @@ export default function ClienteFormView({ clienteId }: Props) {
     loadCliente();
   }, [loadCliente]);
 
-  const handleEditSubmit = async (data: CreateClientePayload) => {
+  const handleEditSubmit = async () => {
     if (!cliente) return;
     setSubmitting(true);
     try {
-      const updated = await updateCliente(cliente.id, data);
+      const updated = await updateCliente(cliente.id, form);
       setCliente(updated);
-      setEditOpen(false);
       toast.success(t("toast.updated"));
+      router.push(`/clientes/${clienteId}`);
     } catch (err) {
       toast.error(getApiErrorMessage(err) || t("errors.update"));
     } finally {
       setSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
@@ -109,93 +138,67 @@ export default function ClienteFormView({ clienteId }: Props) {
         <HeaderDashboard showSearch={false} />
 
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
-          <Stack spacing={2.4}>
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              justifyContent="space-between"
-              alignItems={{ xs: "flex-start", sm: "center" }}
-              gap={1.5}
-            >
-              <Box>
-                <Button
-                  component={Link}
-                  href="/clientes"
-                  startIcon={<Icon icon="mdi:arrow-left" width={18} />}
-                  sx={{
-                    mb: 1,
-                    px: 0,
-                    color: "text.secondary",
-                    textTransform: "none",
-                    "&:hover": {
-                      bgcolor: "transparent",
-                      color: "primary.main",
-                    },
-                  }}
-                >
-                  {t("detail.back")}
-                </Button>
-                <Typography variant="h4" fontWeight={800} color="text.primary">
-                  {loading
-                    ? t("detail.loadingTitle")
-                    : cliente?.name || t("detail.fallbackTitle")}
-                </Typography>
-                <Typography color="text.secondary" fontSize="0.95rem">
-                  {t("detail.subtitle")}
-                </Typography>
-              </Box>
+          <Stack direction="row" alignItems="center" spacing={1.5} mb={3.5}>
+            <IconButton onClick={() => router.push("/clientes")}>
+              <Icon icon="mdi:arrow-left" width={22} />
+            </IconButton>
+            <Typography variant="h4" fontWeight={800} color="text.primary">
+              {isEdit
+                ? t("detail.editTitle", { name: cliente?.name ?? "" })
+                : cliente?.name || t("detail.fallbackTitle")}
+            </Typography>
+          </Stack>
 
-              
-            </Stack>
-
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <Paper
               elevation={0}
               sx={{
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: "16px",
-                overflow: "hidden",
+                borderRadius: "20px",
+                border: `1px solid ${theme.palette.divider}`,
+                p: 3,
               }}
             >
-              <Box sx={{ px: { xs: 2, sm: 3 }, py: 2.2 }}>
-                <Stack direction="row" alignItems="center" spacing={1.2}>
-                  <Box
-                    sx={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: "12px",
-                      display: "grid",
-                      placeItems: "center",
-                      bgcolor: `${theme.palette.primary.main}14`,
-                      color: "primary.main",
-                    }}
-                  >
-                    <Icon icon="mdi:account-outline" width={24} />
-                  </Box>
-                  <Box>
-                    <Typography fontWeight={800} color="text.primary">
-                      {t("detail.infoTitle")}
-                    </Typography>
-                    <Typography color="text.secondary" fontSize="0.86rem">
-                      {t("detail.infoSubtitle")}
-                    </Typography>
-                  </Box>
-                </Stack>
-              </Box>
-
-              <Divider />
+              <Typography fontWeight={700} mb={2}>
+                {t("detail.infoTitle")}
+              </Typography>
 
               <Box
                 sx={{
-                  p: { xs: 2, sm: 3 },
                   display: "grid",
-                  gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
                   gap: 2,
                 }}
               >
-                {loading ? (
-                  [...Array(6)].map((_, i) => (
-                    <Skeleton key={i} variant="rounded" height={72} />
-                  ))
+                {isEdit ? (
+                  <>
+                    <EditItem
+                      label={t("dialog.fields.name")}
+                      value={form.name}
+                      onChange={(v) => setForm((f) => ({ ...f, name: v }))}
+                    />
+                    <EditItem
+                      label={t("dialog.fields.document")}
+                      value={form.cpf_cnpj}
+                      onChange={(v) => setForm((f) => ({ ...f, cpf_cnpj: v }))}
+                    />
+                    <EditItem
+                      label={t("dialog.fields.email")}
+                      value={form.email}
+                      onChange={(v) => setForm((f) => ({ ...f, email: v }))}
+                    />
+                    <EditItem
+                      label={t("dialog.fields.phone")}
+                      value={form.telefone}
+                      onChange={(v) => setForm((f) => ({ ...f, telefone: v }))}
+                    />
+                    <EditItem
+                      label={t("dialog.fields.birthDate")}
+                      value={form.data_nascimento}
+                      onChange={(v) =>
+                        setForm((f) => ({ ...f, data_nascimento: v }))
+                      }
+                    />
+                  </>
                 ) : (
                   <>
                     <DetailItem
@@ -230,32 +233,20 @@ export default function ClienteFormView({ clienteId }: Props) {
             <Paper
               elevation={0}
               sx={{
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: "16px",
-                overflow: "hidden",
+                borderRadius: "20px",
+                border: `1px solid ${theme.palette.divider}`,
+                p: 3,
               }}
             >
               <Stack
                 direction={{ xs: "column", sm: "row" }}
                 justifyContent="space-between"
                 alignItems={{ xs: "flex-start", sm: "center" }}
-                gap={1}
-                sx={{
-                  px: { xs: 2, sm: 3 },
-                  py: 2.2,
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                }}
+                mb={2}
               >
-                <Box>
-                  <Typography fontWeight={800} color="text.primary">
-                    {t("detail.cases.title")}
-                  </Typography>
-                  <Typography color="text.secondary" fontSize="0.86rem">
-                    {t("detail.cases.subtitle")}
-                  </Typography>
-                </Box>
+                <Typography fontWeight={700}>
+                  {t("detail.cases.title")}
+                </Typography>
                 <Chip
                   label={t("detail.cases.count", { count: casos.length })}
                   variant="outlined"
@@ -264,32 +255,22 @@ export default function ClienteFormView({ clienteId }: Props) {
                 />
               </Stack>
 
-              <Stack divider={<Divider />} sx={{ minHeight: 92 }}>
-                {loading ? (
-                  [...Array(3)].map((_, i) => (
-                    <Box key={i} sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
-                      <Skeleton width="45%" />
-                      <Skeleton width="70%" />
-                    </Box>
-                  ))
-                ) : casos.length === 0 ? (
-                  <Box sx={{ px: { xs: 2, sm: 3 }, py: 3 }}>
-                    <Typography color="text.secondary">
-                      {t("detail.cases.empty")}
-                    </Typography>
-                  </Box>
+              <Stack divider={<Divider />}>
+                {casos.length === 0 ? (
+                  <Typography color="text.secondary" sx={{ py: 1 }}>
+                    {t("detail.cases.empty")}
+                  </Typography>
                 ) : (
                   casos.map((caso) => (
                     <Box
                       key={caso.id}
                       sx={{
-                        px: { xs: 2, sm: 3 },
                         py: 2,
                         display: "grid",
                         gridTemplateColumns: { xs: "1fr", md: "1fr auto" },
                         gap: 1.5,
                         alignItems: "center",
-                        "&:hover": { bgcolor: "action.hover" },
+                        "&:hover": { bgcolor: "action.hover", mx: -3, px: 3 },
                       }}
                     >
                       <Stack spacing={0.8}>
@@ -298,7 +279,7 @@ export default function ClienteFormView({ clienteId }: Props) {
                           alignItems={{ xs: "flex-start", sm: "center" }}
                           spacing={1}
                         >
-                          <Typography color="text.primary" fontWeight={800}>
+                          <Typography color="text.primary" fontWeight={700}>
                             {caso.titulo || t("detail.cases.untitled")}
                           </Typography>
                           <Chip
@@ -348,17 +329,27 @@ export default function ClienteFormView({ clienteId }: Props) {
                 )}
               </Stack>
             </Paper>
-          </Stack>
-        </Container>
 
-        <DialogCliente
-          open={editOpen}
-          onClose={() => setEditOpen(false)}
-          onSubmit={handleEditSubmit}
-          submitting={submitting}
-          mode="edit"
-          cliente={cliente}
-        />
+            {isEdit && (
+              <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
+                <Button
+                  variant="outlined"
+                  disabled={submitting}
+                  onClick={() => router.push(`/clientes/${clienteId}`)}
+                >
+                  {t("detail.cancel")}
+                </Button>
+                <Button
+                  variant="contained"
+                  disabled={submitting}
+                  onClick={handleEditSubmit}
+                >
+                  {submitting ? t("detail.saving") : t("detail.save")}
+                </Button>
+              </Stack>
+            )}
+          </Box>
+        </Container>
       </Box>
     </Box>
   );
@@ -394,5 +385,24 @@ function DetailItem({
         {value && value.trim() ? value : "-"}
       </Typography>
     </Box>
+  );
+}
+
+function EditItem({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value?: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <TextField
+      fullWidth
+      label={label}
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+    />
   );
 }

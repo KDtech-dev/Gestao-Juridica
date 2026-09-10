@@ -1,6 +1,8 @@
 <?php
+
 namespace App\Services;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Hash;
@@ -41,12 +43,7 @@ class AuthService implements IAuthService
 
         return [
             'token' => $token,
-            'user' => [
-                'id'    => $user->id,
-                'name'  => $user->name,
-                'email' => $user->email,
-                'roles' => $user->getRoleNames(),
-            ],
+            'user'  => new UserResource($user),
         ];
     }
 
@@ -62,7 +59,7 @@ class AuthService implements IAuthService
     }
 
     /**
-     * @return array{token:string,user:array{id:int,name:string,email:string}}
+     * @return array{token:string,user:UserResource}
      */
     public function refresh(string $token): array
     {
@@ -79,7 +76,7 @@ class AuthService implements IAuthService
 
         return [
             'token' => $newToken,
-            'user'  => $user->only(['id', 'name', 'email']),
+            'user'  => new UserResource($user),
         ];
     }
 }

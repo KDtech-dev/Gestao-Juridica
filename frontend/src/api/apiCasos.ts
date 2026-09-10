@@ -30,7 +30,7 @@ const getCasoById = async (id: string): Promise<CasoType> => {
 };
 const postCaso = async (data: CreateCasoPayload): Promise<CasoType> => {
   const response = await getAxios().post("/casos", data);
-  return response.data; 
+  return response.data;
 };
 
 const updateCaso = async (

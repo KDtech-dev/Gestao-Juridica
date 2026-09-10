@@ -2,6 +2,7 @@
   "common": {
     "save": "Salvar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "delete": "Excluir",
     "edit": "Editar"
   },
@@ -9,7 +10,6 @@
     "appName": "Central Jurídica",
     "tagline": "Gestão jurídica inteligente e moderna"
   },
-
   "auth": {
     "login": {
       "brand": "Central Jurídica",
@@ -27,13 +27,39 @@
       "heroText": "Controle clientes, processos e compromissos em um único lugar, com interface moderna e segura.",
       "rights": "© 2026 Central Jurídica. Todos os direitos reservados.",
       "error": "Erro ao realizar login."
+    },
+    "forgotPassword": {
+      "title": "Esqueci a senha",
+      "subtitle": "Digite seu e-mail para receber o link de redefinição.",
+      "email": "Email",
+      "send": "Enviar link",
+      "back": "Voltar para o login",
+      "success": "Se o e-mail existir, enviaremos um link para redefinir sua senha.",
+      "error": "Não foi possível enviar o e-mail. Tente novamente."
+    },
+    "resetPassword": {
+      "title": "Redefinir senha",
+      "subtitle": "Digite sua nova senha para recuperar o acesso à sua conta.",
+      "email": "E-mail",
+      "password": "Nova senha",
+      "passwordConfirmation": "Confirmar nova senha",
+      "submit": "Redefinir senha",
+      "loading": "Redefinindo...",
+      "back": "Voltar para o login",
+      "success": "Senha redefinida com sucesso!",
+      "error": "Não foi possível redefinir sua senha.",
+      "invalidToken": "O link de redefinição é inválido ou está incompleto.",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Ocultar senha",
+      "validation": {
+        "passwordMinLength": "A senha deve ter pelo menos 8 caracteres.",
+        "passwordMismatch": "As senhas não coincidem."
+      }
     }
   },
-
   "dashboard": {
     "welcome": "Bem-vindo ao sistema"
   },
-
   "internal": {
     "publications": {
       "title": "Publicações",
@@ -227,6 +253,11 @@
         "loadingTitle": "Dados do cliente",
         "fallbackTitle": "Cliente",
         "subtitle": "Informações cadastrais e casos vinculados.",
+        "editTitle": "Editando {name}",
+        "editSubtitle": "Altere as informações cadastrais do cliente.",
+        "cancel": "Cancelar",
+        "save": "Salvar alterações",
+        "saving": "Salvando...",
         "edit": "Editar cliente",
         "infoTitle": "Informações do cliente",
         "infoSubtitle": "Dados usados no cadastro e no vínculo dos casos.",
@@ -236,6 +267,7 @@
         "cases": {
           "title": "Casos",
           "subtitle": "Processos vinculados a este cliente.",
+          "subtitleEdit": "Casos vinculados — somente visualização.",
           "count": "{count, plural, =0 {Nenhum caso} one {# caso} other {# casos}}",
           "empty": "Nenhum caso encontrado para este cliente.",
           "untitled": "Caso sem título",
@@ -487,7 +519,12 @@
           "confirmPasswordPlaceholder": "Confirme a senha"
         }
       },
-
+      "deleteDialog": {
+        "title": "Excluir usuário?",
+        "description": "O usuário \"{name}\" será excluído permanentemente. Essa ação não pode ser desfeita.",
+        "confirm": "Excluir usuário",
+        "cancel": "Cancelar"
+      },
       "toast": {
         "created": "Usuário criado com sucesso!",
         "updated": "Usuário atualizado com sucesso!",
@@ -497,7 +534,8 @@
         "load": "Erro ao carregar usuários.",
         "create": "Erro ao criar usuário.",
         "update": "Erro ao atualizar usuário.",
-        "delete": "Erro ao remover usuário."
+        "delete": "Erro ao remover usuário.",
+        "lastAdmin": "Este usuário é o único administrador do sistema e não pode ser removido."
       }
     },
     "newUser": {
@@ -562,7 +600,9 @@
       },
       "toast": {
         "saveSuccess": "Perfil atualizado com sucesso!",
-        "saveError": "Erro ao salvar o perfil. Tente novamente."
+        "saveError": "Erro ao salvar o perfil. Tente novamente.",
+        "avatarUploadSuccess": "Foto de perfil atualizada com sucesso!",
+        "avatarUploadError": "Erro ao atualizar foto de perfil. Tente novamente."
       },
       "sections": {
         "personalInfo": "Informações Pessoais",
@@ -602,47 +642,12 @@
         }
       },
       "practiceAreas": {
-        "civil": "Direito Civil",
-        "criminal": "Direito Penal",
-        "labor": "Direito Trabalhista",
+        "public": "Direito Público",
         "socialSecurity": "Direito Previdenciário",
-        "tax": "Direito Tributário",
-        "business": "Direito Empresarial",
-        "consumer": "Direito do Consumidor",
-        "family": "Direito de Família",
-        "succession": "Direito Sucessório (Herança e Inventário)",
-        "realEstate": "Direito Imobiliário",
-        "administrative": "Direito Administrativo",
-        "constitutional": "Direito Constitucional",
-        "environmental": "Direito Ambiental",
-        "digital": "Direito Digital",
-        "electoral": "Direito Eleitoral",
-        "international": "Direito Internacional",
+        "labor": "Direito Trabalhista",
+        "civil": "Direito Civil",
         "banking": "Direito Bancário",
-        "health": "Direito Médico e da Saúde",
-        "military": "Direito Militar",
-        "sports": "Direito Desportivo",
-        "agrarian": "Direito Agrário",
-        "maritime": "Direito Marítimo",
-        "aeronautical": "Direito Aeronáutico",
-        "intellectualProperty": "Direito de Propriedade Intelectual",
-        "copyright": "Direito Autoral",
-        "childAndAdolescent": "Direito da Criança e do Adolescente",
-        "lgbt": "Direito LGBT+",
-        "fashion": "Direito da Moda (Fashion Law)",
-        "energy": "Direito de Energia",
-        "mining": "Direito Minerário",
-        "customs": "Direito Aduaneiro",
-        "financial": "Direito Financeiro",
-        "urban": "Direito Urbanístico",
-        "cooperative": "Direito Cooperativo",
-        "educational": "Direito Educacional",
-        "mediation": "Mediação e Arbitragem",
-        "compliance": "Compliance e Governança Corporativa",
-        "dataProtection": "Proteção de Dados (LGPD)",
-        "insurance": "Direito Securitário (Seguros)",
-        "condominium": "Direito Condominial",
-        "penalExecution": "Execução Penal"
+        "legislativeConsulting": "Consultoria Legislativa"
       },
       "customization": {
         "title": "Personalização",
@@ -723,13 +728,11 @@
       }
     }
   },
-
   "clients": {
     "title": "Clientes",
     "newClient": "Novo cliente",
     "search": "Pesquisar cliente"
   },
-
   "sidebar": {
     "mainMenu": "Menu Principal",
     "items": {
@@ -746,8 +749,62 @@
       "sair": "Sair"
     }
   },
-
   "public": {
+    "home": {
+      "hero": {
+        "title": "Direito Tributário e Empresarial",
+        "subtitle": "Especialistas em soluções jurídicas corporativas.",
+        "cta": "Consulta Gratuita"
+      },
+      "about": {
+        "title": "Sobre o Escritório",
+        "paragraph1": "O escritório Manfrine Chaves de Almeida & Advogados atua com excelência na prestação de serviços jurídicos, oferecendo soluções estratégicas, seguras e personalizadas para pessoas físicas, empresas e órgãos públicos. Nossa equipe reúne profissionais especializados em diferentes áreas do Direito, permitindo uma atuação multidisciplinar nas esferas Pública, Trabalhista, Cível, Previdenciária e Bancária. Essa integração de conhecimentos proporciona uma análise completa de cada caso, garantindo soluções jurídicas fundamentadas, eficientes e alinhadas às necessidades de cada cliente.",
+        "paragraph2": "Sob a liderança de Manfrine Chaves de Almeida, advogado e contador, o escritório construiu uma trajetória marcada pela ética, responsabilidade, transparência e compromisso com resultados. Cada demanda é conduzida com atenção individualizada, aliando conhecimento técnico, experiência prática e atendimento humanizado. Mais do que oferecer assessoria jurídica, buscamos estabelecer relações de confiança, proporcionando segurança e tranquilidade em cada etapa do processo, sempre com foco na defesa dos direitos e interesses de nossos clientes.",
+        "details": "Integra a equipe Carollaine Damasceno Barros, advogada e contadora, especialista em Direito Público e Cível. Com atuação destacada na assessoria jurídica legislativa e consultoria técnica, contribui com análises precisas e fundamentadas, especialmente nas áreas que envolvem gestão pública e controle de legalidade. Na área previdenciária, o escritório conta com Luiz Fernando Novais Neves, advogado com atuação focada na garantia de direitos e benefícios junto aos órgãos competentes. O Direito Público também é representado por Anderson Fazendeiro, especialista na área, com experiência em demandas administrativas e judiciais envolvendo entes públicos. Compõe ainda a equipe Saiara Tavares Almeida, advogada especialista em Direito Público e Previdenciário, atuando com dedicação na defesa de direitos sociais e administrativos. Na área bancária e pública, destaca-se Andressa Fazendeiro, especialista em Direito Público e Bancário, com atuação estratégica em demandas contratuais e financeiras. Na área trabalhista e previdenciária, Abraão Lincoln Prates de Almeida atua na defesa dos direitos individuais e coletivos nas relações de trabalho e na garantia de direitos e benefícios junto ao INSS. O escritório se consolida como referência regional pela atuação técnica, atendimento personalizado e compromisso com a justiça, oferecendo soluções jurídicas seguras, eficientes e alinhadas às necessidades de cada cliente.",
+        "readMore": "Ler mais",
+        "readLess": "Ler menos",
+        "imageAlt": "Equipe do escritório em reunião"
+      },
+      "team": {
+        "title": "Nossa Equipe",
+        "subtitle": "Perfis multidisciplinares para demandas jurídicas estratégicas.",
+        "button": "Conhecer toda a equipe"
+      },
+      "specialities": {
+        "title": "Nossa Equipe",
+        "subtitle": "Selecione uma especialidade para conhecer os responsáveis",
+        "expertsIn": "Especialistas em ",
+        "errorNoLawyersForSpecialty": "Nenhum advogado encontrado para esta especialidade.",
+        "previous": "Anterior",
+        "next": "Próximo"
+      }
+    },
+    "teamPage": {
+      "eyebrow": "Equipe jurídica",
+      "title": "Profissionais preparados para demandas estratégicas.",
+      "subtitle": "Conheça os advogados do escritório por área de atuação e encontre o perfil mais alinhado à sua necessidade jurídica.",
+      "stats": {
+        "professionals": "profissionais",
+        "specialities": "áreas de atuação"
+      },
+      "filters": {
+        "title": "Filtrar por especialidade",
+        "subtitle": "Explore a equipe a partir das áreas de prática disponíveis.",
+        "all": "Todas"
+      },
+      "resultCount": "{count, plural, =0 {Nenhum profissional} one {# profissional} other {# profissionais}}",
+      "lawyersTitle": "Advogados",
+      "showingAll": "Mostrando todas as especialidades",
+      "showingSpecialty": "Mostrando {specialty}",
+      "empty": {
+        "title": "Nenhum advogado disponível",
+        "subtitle": "Os perfis da equipe aparecerão aqui quando estiverem cadastrados."
+      },
+      "emptyFilter": {
+        "title": "Nenhum profissional encontrado",
+        "subtitle": "Tente selecionar outra especialidade para visualizar mais perfis."
+      }
+    },
     "header": {
       "home": "Início",
       "publications": "Publicações",
@@ -801,6 +858,31 @@
       "copyrightRights": "Todos os direitos reservados",
       "developedBy": "Desenvolvido por"
     },
+    "privacyPolicy": {
+      "title": "Política de Privacidade",
+      "sections": [
+        {
+          "title": "Introdução",
+          "body": "Esta Política de Privacidade descreve como tratamos os dados pessoais dos usuários para fornecer nossos serviços e garantir transparência sobre como as informações são coletadas, usadas e protegidas."
+        },
+        {
+          "title": "Quais dados coletamos",
+          "body": "Podemos coletar dados como nome, contatos, informações sobre demandas jurídicas, e outras informações necessárias para atendimento, orçamento e acompanhamento de casos."
+        },
+        {
+          "title": "Como utilizamos",
+          "body": "Utilizamos os dados para prestar serviços jurídicos, comunicar sobre o andamento de demandas, responder solicitações e cumprir obrigações legais."
+        },
+        {
+          "title": "Compartilhamento",
+          "body": "Poderemos compartilhar dados com parceiros e autoridades apenas quando necessário para cumprir a lei, executar serviços contratados ou proteger direitos, sempre respeitando a legislação aplicável."
+        },
+        {
+          "title": "Segurança e seus direitos",
+          "body": "Mantemos medidas de segurança para proteger os dados. Você pode solicitar acesso, correção, atualização, exclusão e outras providências relacionadas aos seus dados conforme a legislação."
+        }
+      ]
+    },
     "publications": {
       "sectionTitle": "Publicações",
       "sectionSubtitle": "Notícias jurídicas, análises práticas e conteúdos do escritório",
@@ -831,7 +913,6 @@
       "view": "Visualizar"
     }
   },
-
   "agenda": {
     "title": "Agenda",
     "subtitle": "Gerencie compromissos, audiências, prazos e lembretes.",
@@ -938,6 +1019,16 @@
     }
   },
   "validation": {
+    "resetPassword": {
+      "success": "Senha redefinida com sucesso.",
+      "invalidToken": "Este link de redefinição é inválido ou já expirou.",
+      "invalidUser": "Não encontramos uma conta com esse e-mail.",
+      "throttled": "Aguarde um momento antes de tentar novamente.",
+      "error": "Não foi possível redefinir sua senha. Tente novamente."
+    },
+    "token": {
+      "required": "O token é obrigatório."
+    },
     "name": {
       "required": "O nome é obrigatório.",
       "max": "O nome não pode exceder 255 caracteres."

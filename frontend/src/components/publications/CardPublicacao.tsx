@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import { useTranslations } from "next-intl";
-import { PublicacaoType } from "@/@core/types";
+import { useLocale, useTranslations } from "next-intl"; import { PublicacaoType } from "@/@core/types";
 import {
   estimateReadTime,
   formatDate,
+  formatDateByLocale,
   slugify,
   storageUrl,
   stripHtml,
@@ -18,15 +18,17 @@ type CardPublicacaoProps = {
 
 export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
   const t = useTranslations("public.publications");
-
+  const locale = useLocale();
   const titulo = publicacao.titulo?.trim() || "Publicação";
   const slug = `${slugify(titulo) || "publicacao"}-${publicacao.id}`;
   const resumo =
     publicacao.resumo?.trim() ||
     stripHtml(publicacao.conteudo ?? "").slice(0, 180);
   const categoria = publicacao.categoria?.nome?.trim() || "Publicação";
-  const data = formatDate(publicacao.publicado_em ?? publicacao.created_at);
-  const readTime = estimateReadTime(publicacao.conteudo);
+  const data = formatDateByLocale(
+    publicacao.publicado_em ?? publicacao.created_at,
+    locale,
+  ); const readTime = estimateReadTime(publicacao.conteudo);
   const autor =
     publicacao.autor?.trim() ||
     publicacao.user?.name?.trim() ||

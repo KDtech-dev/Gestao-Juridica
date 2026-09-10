@@ -1,66 +1,186 @@
 "use client";
 
-import { Box, Button, Container, Stack, Typography } from "@mui/material";
+import { Box, Chip, Container, Paper, Stack, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { LawyerProfileCard } from "@/components/team/LawyerProfileCard";
-import { teamLawyers, teamSpecialties } from "@/data/team";
+import { Icon } from "@/components/AppIcon";
+import { AdvogadoPublicoType } from "@/@core/types";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
-export default function TeamView() {
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string>("Todas");
+type TeamViewProps = {
+  advogados: AdvogadoPublicoType[];
+};
+
+const allSpecialtiesValue = "__all__";
+
+export default function TeamView({ advogados }: TeamViewProps) {
+  const t = useTranslations("public.teamPage");
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<string>(allSpecialtiesValue);
+
+  const specialties = useMemo(() => {
+    const uniqueSpecialties = new Set<string>();
+
+    advogados.forEach((lawyer) => {
+      lawyer.advogado?.categorias.forEach((category) => {
+        uniqueSpecialties.add(category.nome);
+      });
+    });
+
+    return Array.from(uniqueSpecialties).sort((a, b) => a.localeCompare(b));
+  }, [advogados]);
 
   const filteredLawyers = useMemo(() => {
-    if (selectedSpecialty === "Todas") return teamLawyers;
+    if (selectedSpecialty === allSpecialtiesValue) return advogados;
 
-    return teamLawyers.filter((lawyer) =>
-      lawyer.specialties.includes(selectedSpecialty),
+    return advogados.filter((lawyer) =>
+      lawyer.advogado?.categorias.some(
+        (category) => category.nome === selectedSpecialty,
+      ),
     );
-  }, [selectedSpecialty]);
+  }, [advogados, selectedSpecialty]);
+
+  const categoryCount = specialties.length;
+  const hasLawyers = advogados.length > 0;
 
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>
       <Header />
 
-      <Box bgcolor="background.paper" py={{ xs: 6, md: 8 }}>
+      <Box
+        component="section"
+        sx={{
+          position: "relative",
+          overflow: "hidden",
+          py: { xs: 7, md: 10 },
+          borderBottom: "1px solid",
+          borderColor: "divider",
+          background: (theme) =>
+            theme.palette.mode === "dark"
+              ? `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
+                  theme.palette.primary.main,
+                  0.2,
+                )} 100%)`
+              : `linear-gradient(135deg, ${theme.palette.background.paper} 0%, ${alpha(
+                  theme.palette.primary.main,
+                  0.08,
+                )} 100%)`,
+        }}
+      >
         <Container maxWidth="lg">
-          <Typography variant="h3" fontWeight={900} mb={1}>
-            Equipe
-          </Typography>
-          <Typography color="text.secondary" fontSize="1.05rem" maxWidth={760}>
-            Conheça os profissionais do escritório por especialidade e encontre
-            a atuação mais alinhada à sua demanda jurídica.
-          </Typography>
+          <Stack spacing={4}>
+            <Box maxWidth={820}>
+              <Chip
+                icon={<Icon icon="mdi:account-group-outline" width={18} />}
+                label={t("eyebrow")}
+                sx={{
+                  mb: 2,
+                  borderRadius: 1.5,
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.1),
+                  color: "primary.main",
+                  fontWeight: 700,
+                  "& .MuiChip-icon": {
+                    color: "primary.main",
+                  },
+                }}
+              />
+              <Typography
+                variant="h2"
+                fontWeight={900}
+                lineHeight={1.08}
+                sx={{ fontSize: { xs: "2.35rem", md: "3.6rem" } }}
+              >
+                {t("title")}
+              </Typography>
+              <Typography
+                color="text.secondary"
+                fontSize={{ xs: "1rem", md: "1.12rem" }}
+                lineHeight={1.75}
+                maxWidth={760}
+                mt={2}
+              >
+                {t("subtitle")}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "repeat(2, minmax(0, 1fr))",
+                },
+                gap: 2,
+                maxWidth: 620,
+              }}
+            ></Box>
+          </Stack>
         </Container>
       </Box>
 
-      <Box py={{ xs: 5, md: 7 }}>
+      <Box component="section" py={{ xs: 5, md: 7 }}>
         <Container maxWidth="lg">
-          <Stack spacing={2.5} mb={4}>
-            <Typography variant="h5" fontWeight={800}>
-              Especialidades
-            </Typography>
-            <Stack direction="row" flexWrap="wrap" gap={1.2}>
-              {["Todas", ...teamSpecialties].map((specialty) => {
+          <Paper
+            variant="outlined"
+            sx={{
+              p: { xs: 2.5, md: 3 },
+              mb: 4,
+              borderRadius: 2,
+              bgcolor: "background.paper",
+            }}
+          >
+            <Stack
+              direction={{ xs: "column", md: "row" }}
+              justifyContent="space-between"
+              alignItems={{ xs: "flex-start", md: "center" }}
+              spacing={2}
+              mb={2.5}
+            >
+              <Box>
+                <Typography variant="h5" fontWeight={850}>
+                  {t("filters.title")}
+                </Typography>
+                <Typography color="text.secondary" mt={0.5}>
+                  {t("filters.subtitle")}
+                </Typography>
+              </Box>
+              <Typography color="text.secondary" fontWeight={700}>
+                {t("resultCount", { count: filteredLawyers.length })}
+              </Typography>
+            </Stack>
+
+            <Stack direction="row" flexWrap="wrap" gap={1}>
+              {[allSpecialtiesValue, ...specialties].map((specialty) => {
                 const active = selectedSpecialty === specialty;
+                const label =
+                  specialty === allSpecialtiesValue
+                    ? t("filters.all")
+                    : specialty;
 
                 return (
-                  <Button
+                  <Chip
                     key={specialty}
-                    variant={active ? "contained" : "outlined"}
                     onClick={() => setSelectedSpecialty(specialty)}
+                    label={label}
+                    variant={active ? "filled" : "outlined"}
+                    color={active ? "primary" : "default"}
                     sx={{
-                      textTransform: "none",
-                      borderRadius: "999px",
-                      px: 2,
+                      height: 36,
+                      borderRadius: 2,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      "& .MuiChip-label": {
+                        px: 1.4,
+                      },
                     }}
-                  >
-                    {specialty}
-                  </Button>
+                  />
                 );
               })}
             </Stack>
-          </Stack>
+          </Paper>
 
           <Stack
             direction={{ xs: "column", md: "row" }}
@@ -69,28 +189,50 @@ export default function TeamView() {
             spacing={1}
             mb={3}
           >
-            <Typography variant="h5" fontWeight={800}>
-              Advogados
+            <Typography variant="h5" fontWeight={850}>
+              {t("lawyersTitle")}
             </Typography>
-            <Typography color="text.secondary">
-              {filteredLawyers.length} profissionais
+            <Typography color="text.secondary" fontWeight={600}>
+              {selectedSpecialty === allSpecialtiesValue
+                ? t("showingAll")
+                : t("showingSpecialty", { specialty: selectedSpecialty })}
             </Typography>
           </Stack>
 
-          <Box
-            sx={{
-              display: "grid",
-              gridTemplateColumns: {
-                xs: "1fr",
-                md: "repeat(2, minmax(0, 1fr))",
-              },
-              gap: 3,
-            }}
-          >
-            {filteredLawyers.map((lawyer) => (
-              <LawyerProfileCard key={lawyer.id} lawyer={lawyer} />
-            ))}
-          </Box>
+          {hasLawyers && filteredLawyers.length > 0 ? (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: {
+                  xs: "1fr",
+                  md: "repeat(2, minmax(0, 1fr))",
+                },
+                gap: 3,
+              }}
+            >
+              {filteredLawyers.map((lawyer) => (
+                <LawyerProfileCard key={lawyer.id} lawyer={lawyer} />
+              ))}
+            </Box>
+          ) : (
+            <Paper
+              variant="outlined"
+              sx={{
+                p: { xs: 4, md: 6 },
+                borderRadius: 2,
+                textAlign: "center",
+                bgcolor: "background.paper",
+              }}
+            >
+              <Icon icon="mdi:account-search-outline" width={42} />
+              <Typography variant="h6" fontWeight={850} mt={2}>
+                {hasLawyers ? t("emptyFilter.title") : t("empty.title")}
+              </Typography>
+              <Typography color="text.secondary" mt={1}>
+                {hasLawyers ? t("emptyFilter.subtitle") : t("empty.subtitle")}
+              </Typography>
+            </Paper>
+          )}
         </Container>
       </Box>
 

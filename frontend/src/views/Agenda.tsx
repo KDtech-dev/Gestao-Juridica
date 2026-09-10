@@ -372,7 +372,10 @@ export default function AgendaView() {
         ),
       );
 
-      if (selectedEvent && String(selectedEvent.id) === String(deleteTarget.id)) {
+      if (
+        selectedEvent &&
+        String(selectedEvent.id) === String(deleteTarget.id)
+      ) {
         setSelectedEvent(null);
         setOpenEdit(false);
       }
@@ -653,13 +656,14 @@ export default function AgendaView() {
                       </Box>
                     )}
 
-                    {!loadingUpcomingCompromissos && upcomingCompromissosError && (
-                      <Box sx={{ p: 2 }}>
-                        <Typography color="error">
-                          {upcomingCompromissosError}
-                        </Typography>
-                      </Box>
-                    )}
+                    {!loadingUpcomingCompromissos &&
+                      upcomingCompromissosError && (
+                        <Box sx={{ p: 2 }}>
+                          <Typography color="error">
+                            {upcomingCompromissosError}
+                          </Typography>
+                        </Box>
+                      )}
 
                     {!loadingUpcomingCompromissos &&
                       !upcomingCompromissosError &&
@@ -801,7 +805,9 @@ export default function AgendaView() {
                                   <Tooltip title={t("agenda.actions.view")}>
                                     <IconButton
                                       size="small"
-                                      aria-label={t("agenda.actions.viewAppointment")}
+                                      aria-label={t(
+                                        "agenda.actions.viewAppointment",
+                                      )}
                                       onClick={() => openViewModal(event)}
                                       sx={{
                                         border: "1px solid",
@@ -814,7 +820,9 @@ export default function AgendaView() {
                                   <Tooltip title={t("agenda.actions.edit")}>
                                     <IconButton
                                       size="small"
-                                      aria-label={t("agenda.actions.editAppointment")}
+                                      aria-label={t(
+                                        "agenda.actions.editAppointment",
+                                      )}
                                       onClick={() => openEditModal(event)}
                                       sx={{
                                         border: "1px solid",
@@ -830,7 +838,9 @@ export default function AgendaView() {
                                   <Tooltip title={t("agenda.actions.delete")}>
                                     <IconButton
                                       size="small"
-                                      aria-label={t("agenda.actions.deleteAppointment")}
+                                      aria-label={t(
+                                        "agenda.actions.deleteAppointment",
+                                      )}
                                       color="error"
                                       onClick={() => openDeleteDialog(event)}
                                       sx={{
@@ -917,9 +927,15 @@ export default function AgendaView() {
                             direction="row"
                             alignItems="center"
                             gap={1}
-                            justifyContent={{ xs: "space-between", sm: "flex-start" }}
+                            justifyContent={{
+                              xs: "space-between",
+                              sm: "flex-start",
+                            }}
                           >
-                            <Typography color="text.secondary" fontSize="0.82rem">
+                            <Typography
+                              color="text.secondary"
+                              fontSize="0.82rem"
+                            >
                               {t("agenda.timeline.perPage")}
                             </Typography>
                             <FormControl size="small" sx={{ minWidth: 86 }}>
@@ -1090,7 +1106,9 @@ export default function AgendaView() {
                                 <Tooltip title={t("agenda.actions.delete")}>
                                   <IconButton
                                     size="small"
-                                    aria-label={t("agenda.actions.deleteAppointment")}
+                                    aria-label={t(
+                                      "agenda.actions.deleteAppointment",
+                                    )}
                                     color="error"
                                     onClick={() => openDeleteDialog(event)}
                                     sx={{
@@ -1113,7 +1131,10 @@ export default function AgendaView() {
                               gap={1}
                               mt={0.5}
                             >
-                              <Typography color="text.secondary" fontSize="0.8rem">
+                              <Typography
+                                color="text.secondary"
+                                fontSize="0.8rem"
+                              >
                                 {tipoLabel(event.tipo, t)}
                               </Typography>
                               <Chip
@@ -1204,8 +1225,7 @@ export default function AgendaView() {
                 <Icon icon="mdi:clock-outline" width={18} />
                 <Typography fontSize="0.9rem">
                   {compromissoDate(viewEvent).toLocaleDateString(language)}{" "}
-                  {t("agenda.viewModal.at")}{" "}
-                  {formatTime(viewEvent)}
+                  {t("agenda.viewModal.at")} {formatTime(viewEvent)}
                 </Typography>
               </Stack>
               <Stack direction="row" gap={1} alignItems="center">

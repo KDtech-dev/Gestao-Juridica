@@ -53,7 +53,17 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    /*
+    |--------------------------------------------------------------------------
+    | Frontend Application URL
+    |--------------------------------------------------------------------------
+    |
+    | URL do seu app Next.js, usada para montar o link de reset de senha
+    | que é enviado por email (em vez da rota Blade padrão do Laravel).
+    |
+    */
 
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:3000'),
     /*
     |--------------------------------------------------------------------------
     | Application Timezone

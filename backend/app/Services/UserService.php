@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\LastAdminException;
 use App\Models\User;
 use App\Models\Funcionario;
 use App\Models\Advogado;
@@ -10,9 +11,15 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Format;
+use Intervention\Image\Interfaces\ImageManagerInterface;
 
 class UserService
 {
+
+    public function __construct(
+        private readonly ImageManagerInterface $imageManager,
+    ) {}
     public function criar(array $dados): User
     {
         return DB::transaction(function () use ($dados) {
@@ -29,6 +36,11 @@ class UserService
             ]);
 
             $this->criarPerfil($user, $dados['role'], $dados, $enderecoId);
+
+            if (!empty($dados['foto_perfil']) && $dados['foto_perfil'] instanceof UploadedFile) {
+                $this->atualizarFotoPerfil($user, $dados['foto_perfil']);
+            }
+
 
             $user->assignRole($dados['role']);
 
@@ -86,6 +98,9 @@ class UserService
             if (!empty($dadosUser)) {
                 $user->update($dadosUser);
             }
+            if (!empty($dados['foto_perfil']) && $dados['foto_perfil'] instanceof UploadedFile) {
+                $this->atualizarFotoPerfil($user, $dados['foto_perfil']);
+            }
 
             if (array_key_exists('endereco', $dados)) {
                 $this->sincronizarEndereco($user, $dados['endereco']);
@@ -110,23 +125,38 @@ class UserService
             default       => null,
         };
     }
-    public function atualizarFotoPerfil(User $user, UploadedFile $foto): string
+    public function atualizarFotoPerfil(User $user, UploadedFile $foto): User
     {
-        $perfil = $user->advogado ?? $user->funcionario;
-
-        if (!$perfil) {
-            throw new \Exception('Usuário sem perfil vinculado.');
+        if ($user->foto_perfil) {
+            Storage::disk('public')->delete($user->foto_perfil);
         }
 
-        if ($perfil->foto_perfil) {
-            Storage::disk('public')->delete($perfil->foto_perfil);
-        }
+        $hash = hash_file('sha1', $foto->getRealPath());
+        $diretorio = "usuarios/{$user->id}/profile";
+        $caminhoRelativo = "{$diretorio}/{$hash}.jpg";
 
-        $path = $foto->store('fotos-perfil', 'public');
-        $perfil->update(['foto_perfil' => $path]);
+        $imagem = $this->imageManager
+            ->decode($foto)
+            ->scale(width: 500, height: 500);
 
-        return Storage::url($path);
+        $encoded = $imagem->encodeUsingFormat(Format::JPEG, quality: 85);
+
+        Storage::disk('public')->put($caminhoRelativo, (string) $encoded);
+        $user->update(['foto_perfil' => $caminhoRelativo]);
+
+        return $user->fresh();
     }
+
+    public function removerFotoPerfil(User $user): User 
+    {
+        if ($user->foto_perfil) {
+            Storage::disk('public')->delete($user->foto_perfil);
+            $user->update(['foto_perfil' => null]);
+        }
+
+        return $user->fresh();
+    }
+
 
     private function atualizarFuncionario(User $user, array $dados): void
     {
@@ -225,5 +255,27 @@ class UserService
             'advogado'    => $user->load('advogado.endereco', 'advogado.categorias', 'roles'),
             default       => $user->load('roles'),
         };
+    }
+
+
+    public function deletar(User $user): void
+    {
+        if ($user->hasRole('admin')) {
+            $totalAdmins = User::role('admin')->count();
+
+            if ($totalAdmins <= 1) {
+                throw new LastAdminException();
+            }
+        }
+
+        DB::transaction(function () use ($user) {
+            $perfil = $user->funcionario ?? $user->advogado;
+
+            if ($perfil?->endereco_id) {
+                Endereco::destroy($perfil->endereco_id);
+            }
+
+            $user->delete();
+        });
     }
 }
