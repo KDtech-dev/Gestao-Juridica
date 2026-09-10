@@ -15,6 +15,7 @@ class PublicacaoResource extends JsonResource
             'resumo'         => $this->resumo,
             'conteudo'       => $this->conteudo,
             'imagem_caminho' => $this->imagem_caminho,
+            'imagem_url'      => $this->imagem_url,
             'autor'          => $this->autor,
             'status'         => $this->status,
             'publicado_em'   => $this->publicado_em,

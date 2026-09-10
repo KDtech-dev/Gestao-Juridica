@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Anexo extends Model
@@ -51,13 +52,9 @@ class Anexo extends Model
     protected function url(): Attribute
     {
         return Attribute::make(
-            get: fn (?string $value) => $this->exists
-                ? route(
-                    'posts.anexos.show',
-                    ['anexo' => $this->uuid],
-                    false
-                )
-                : $value
+            get: fn() => $this->arquivo
+                ? Storage::disk('public')->url($this->arquivo)
+                : null,
         );
     }
 }

@@ -170,8 +170,6 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
       if (values.publicado_em) body.append("publicado_em", values.publicado_em);
       if (values.imagem instanceof File) {
         body.append("imagem", values.imagem);
-      } else if (values.imagem_caminho) {
-        body.append("imagem_caminho", values.imagem_caminho);
       }
       (values.anexos ?? []).forEach((file) => {
         if (file instanceof File) body.append("anexos[]", file);
