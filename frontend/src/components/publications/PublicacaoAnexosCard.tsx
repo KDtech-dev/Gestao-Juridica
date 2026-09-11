@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Box,
   Paper,
@@ -10,7 +11,11 @@ import {
 import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
-import { getAnexoDownloadUrl, getAnexoVisualizarUrl } from "@/api/apiAnexos";
+import { slugifyPublicacao } from "@/@core/format";
+import {
+  getAnexoDownloadUrl,
+  getAnexoVisualizarUrl,
+} from "@/api/apiAnexos";
 
 type PublicacaoAnexosCardProps = {
   publicacao: PublicacaoType;
@@ -20,23 +25,40 @@ export function PublicacaoAnexosCard({
   publicacao,
 }: PublicacaoAnexosCardProps) {
   const t = useTranslations("public.publicationDetail");
+  const slug = slugifyPublicacao(
+    publicacao.titulo ?? "publicacao",
+    publicacao.id
+  );
 
   return (
     <Paper elevation={3} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 2 }}>
       <Stack direction="row" alignItems="center" spacing={1} mb={2}>
         <Icon icon="mdi:paperclip" width={22} />
+
         <Typography variant="h6" fontWeight={800}>
           {t("attachments")}
         </Typography>
       </Stack>
 
       {publicacao.anexos.length === 0 ? (
-        <Typography color="text.secondary">{t("noAttachments")}</Typography>
+        <Typography color="text.secondary">
+          {t("noAttachments")}
+        </Typography>
       ) : (
         <Stack spacing={1}>
           {publicacao.anexos.map((anexo) => {
-            const visualizarUrl = getAnexoVisualizarUrl(publicacao.id, anexo.id);
-            const downloadUrl = getAnexoDownloadUrl(publicacao.id, anexo.id);
+            const viewerUrl =
+              `/publicacoes/${slug}/anexos/${anexo.id}/visualizar`;
+
+            const arquivoUrl = getAnexoVisualizarUrl(
+              publicacao.id,
+              anexo.id
+            );
+
+            const downloadUrl = getAnexoDownloadUrl(
+              publicacao.id,
+              anexo.id
+            );
 
             return (
               <Box
@@ -63,10 +85,14 @@ export function PublicacaoAnexosCard({
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     cursor: "pointer",
-                    ":hover": { color: "primary.main" },
+                    ":hover": {
+                      color: "primary.main",
+                    },
                   }}
                   title={anexo.nome_arquivo ?? ""}
-                  onClick={() => window.open(visualizarUrl, "_blank")}
+                  onClick={() => {
+                    window.open(viewerUrl, "_blank");
+                  }}
                 >
                   {anexo.nome_arquivo || "Anexo"}
                 </Typography>
@@ -74,12 +100,15 @@ export function PublicacaoAnexosCard({
                 <Stack direction="row" spacing={0.5}>
                   <Tooltip title={t("view")}>
                     <IconButton
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(visualizarUrl, "_blank");
+                      onClick={() => {
+                        window.open(viewerUrl, "_blank");
                       }}
                     >
-                      <Icon icon="mdi:eye-outline" width="1em" height="1em" />
+                      <Icon
+                        icon="mdi:eye-outline"
+                        width="1em"
+                        height="1em"
+                      />
                     </IconButton>
                   </Tooltip>
 
@@ -90,7 +119,11 @@ export function PublicacaoAnexosCard({
                         window.location.href = downloadUrl;
                       }}
                     >
-                      <Icon icon="mdi:download-outline" width="1em" height="1em" />
+                      <Icon
+                        icon="mdi:download-outline"
+                        width="1em"
+                        height="1em"
+                      />
                     </IconButton>
                   </Tooltip>
                 </Stack>
