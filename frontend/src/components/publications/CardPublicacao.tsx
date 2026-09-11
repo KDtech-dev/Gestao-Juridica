@@ -3,15 +3,15 @@
 import Link from "next/link";
 import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import { useLocale, useTranslations } from "next-intl"; import { PublicacaoType } from "@/@core/types";
+import { useLocale, useTranslations } from "next-intl";
+import { PublicacaoType } from "@/@core/types";
 import {
   estimateReadTime,
-  formatDate,
   formatDateByLocale,
   slugify,
-  storageUrl,
   stripHtml,
 } from "@/@core/format";
+
 type CardPublicacaoProps = {
   publicacao: PublicacaoType;
 };
@@ -28,14 +28,13 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
   const data = formatDateByLocale(
     publicacao.publicado_em ?? publicacao.created_at,
     locale,
-  ); const readTime = estimateReadTime(publicacao.conteudo);
+  );
+  const readTime = estimateReadTime(publicacao.conteudo);
   const autor =
     publicacao.autor?.trim() ||
     publicacao.user?.name?.trim() ||
     "Autor não informado";
-  const bannerImage =
-    storageUrl(publicacao.imagem_caminho) ??
-    `/storage/publicacoes/default-publication.png`;
+  const bannerImage = publicacao.imagem_url || undefined;
 
   return (
     <Paper

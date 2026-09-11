@@ -14,7 +14,7 @@ import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
-import { formatDateByLocale, slugifyPublicacao, storageUrl } from "@/@core/format";
+import { formatDateByLocale, slugifyPublicacao } from "@/@core/format";
 
 type PublicacoesHeroSliderProps = {
   publicacoes: PublicacaoType[];
@@ -39,10 +39,8 @@ export function PublicacoesHeroSlider({
   const activeSlug = slugifyPublicacao(
     activeSlide.titulo ?? "publicacao",
     activeSlide.id,
-  );
-  const activeBanner =
-    storageUrl(activeSlide.imagem_caminho) ??
-    `/storage/publicacoes/default-publication.png`;
+  ); const activeBanner =
+    activeSlide.imagem_url ?? `/storage/publicacoes/default-publication.png`;
   useEffect(() => {
     if (slides.length <= 1) return;
 

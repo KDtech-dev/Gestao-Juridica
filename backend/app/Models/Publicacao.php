@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Enums\StatusPublicacao;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Model;
 
 class Publicacao extends Model
@@ -46,5 +48,14 @@ class Publicacao extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    protected function imagemUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->imagem_caminho
+                ? Storage::disk('public')->url($this->imagem_caminho)
+                : asset('images/publicacao-default.jpg'),
+        );
     }
 }

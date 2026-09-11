@@ -16,7 +16,7 @@ export function PublicacaoDetailBanner({
 }: PublicacaoDetailBannerProps) {
   const t = useTranslations("public.publicationDetail");
 
-  const imagemUrl = storageUrl(publicacao.imagem_caminho);
+  const imagemUrl = publicacao.imagem_url;
   return (
     <Box
       component="section"
@@ -54,11 +54,8 @@ export function PublicacaoDetailBanner({
         </Button>
 
         <Box maxWidth={820}>
-          <Typography
-            variant="overline"
-            sx={{ opacity: 0.78, letterSpacing: 0, fontWeight: 700 }}
-          >
-            <Typography>{publicacao.categoria?.nome}</Typography>
+          <Typography variant="overline" sx={{ opacity: 0.78, letterSpacing: 0, fontWeight: 700 }}>
+            {publicacao.categoria?.nome}
           </Typography>
           <Typography
             variant="h3"

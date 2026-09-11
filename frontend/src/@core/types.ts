@@ -75,6 +75,7 @@ export type PublicacaoType = {
   resumo: string | null;
   conteudo: string | null;
   imagem_caminho: string | null;
+  imagem_url: string | null;
   autor: string | null;
   status: StatusPublicacao | null;
   publicado_em: string | null;

@@ -1,15 +1,10 @@
 import { getAxios } from "@/configs/axios";
 import { extractIdFromSlug } from "@/@core/format";
-
 import type {
   ArrayResponseType,
   ResponseType,
   PublicacaoType,
 } from "@/@core/types";
-
-/**
- * Área pública
- */
 
 const getPublicacoesPublicas = async (): Promise<
   ArrayResponseType<PublicacaoType>
@@ -29,10 +24,6 @@ const getPublicacaoPublicaBySlug = async (
 
   return data;
 };
-
-/**
- * Área administrativa
- */
 
 const getPublicacoes = async (): Promise<ArrayResponseType<PublicacaoType>> => {
   const { data } = await getAxios().get("/publicacoes");

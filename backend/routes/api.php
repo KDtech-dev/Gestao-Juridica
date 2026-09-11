@@ -30,10 +30,13 @@ Route::prefix('auth')->group(function () {
 Route::get('categorias', [CategoriaController::class, 'index']);
 Route::get('/advogados', [AdvogadoPublicoController::class, 'index']);
 
+
+
 Route::prefix('posts')->group(function () {
-    Route::get('/',                        [PostController::class, 'index']);
-    Route::get('/{post}',                  [PostController::class, 'show']);
-    Route::get('/{post}/anexos/{anexo}',   [PostController::class, 'anexo'])->name('api.posts.anexos.show');
+    Route::get('/',                          [PostController::class, 'index']);
+    Route::get('/{post}',                    [PostController::class, 'show']);
+    Route::get('/{post}/anexos/{anexo}',              [PostController::class, 'anexo'])->name('api.posts.anexos.show'); // visualizar
+    Route::get('/{post}/anexos/{anexo}/download',     [PostController::class, 'anexoDownload'])->name('api.posts.anexos.download');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

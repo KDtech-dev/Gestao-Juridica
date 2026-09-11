@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -14,13 +15,16 @@ class PublicacaoPublicaResource extends JsonResource
             'resumo'         => $this->resumo,
             'conteudo'       => $this->conteudo,
             'imagem_caminho' => $this->imagem_caminho,
+            'imagem_url'      => $this->imagem_url,
             'autor'          => $this->autor,
             'publicado_em'   => $this->publicado_em,
             'created_at'     => $this->created_at,
             'categoria'      => new CategoriaResource($this->whenLoaded('categoria')),
-            'anexos'         => $this->whenLoaded('anexos', fn() =>
+            'anexos'         => $this->whenLoaded(
+                'anexos',
+                fn() =>
                 $this->anexos->map(fn($anexo) => [
-                    'id'           => $anexo->id,
+                    'id'           => $anexo->uuid,
                     'nome_arquivo' => $anexo->nome_arquivo,
                     'arquivo'      => $anexo->arquivo,
                 ])

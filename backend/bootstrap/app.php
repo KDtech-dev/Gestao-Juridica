@@ -13,6 +13,7 @@ use App\Http\Middleware\CorsHeaders;
 use App\Http\Middleware\TrustProxies;
 use App\Exceptions\DomainException;
 use App\Services\ResponseService;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -45,6 +46,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 Response::HTTP_UNPROCESSABLE_ENTITY,
                 $e->getMessage(),
                 $e->errors()
+            );
+        });
+
+        $exceptions->renderable(function (HttpExceptionInterface $e, Request $request) {
+            if (!$request->is('api/*')) return;
+            return ResponseService::exception(
+                $e,
+                $e->getStatusCode(),
+                $e->getMessage() ?: 'Recurso não encontrado.'
             );
         });
 
