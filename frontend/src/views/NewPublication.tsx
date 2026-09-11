@@ -39,7 +39,11 @@ import {
   STATUS_OPTIONS,
 } from "@/schemas/PublicationSchema";
 import { categoriaNomeParaChave } from "@/constants/categorias";
-import { extractIdFromSlug, storageUrl } from "@/@core/format";
+import {
+  extractIdFromSlug,
+  slugifyPublicacao,
+  storageUrl,
+} from "@/@core/format";
 import { FormProvider, useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -58,14 +62,11 @@ type Props = {
 export default function PublicacaoFormView({ mode, editId }: Props) {
   const { user } = useAuth();
   const router = useRouter();
-
   const theme = useTheme();
   const t = useTranslations("internal.publicationForm");
   const tv = useTranslations("validation");
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
-
   const isCreate = mode === "create";
-
   const [loading, setLoading] = useState(!isCreate);
   const [saving, setSaving] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
@@ -135,11 +136,16 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
         });
 
         setEditItem(publicacao);
+        const slug = slugifyPublicacao(
+          publicacao.titulo ?? "publicacao",
+          publicacao.id,
+        );
+
         setAnexosExistentes(
           (publicacao.anexos ?? []).map((a) => ({
             id: String(a.id),
             nome: a.nome_arquivo ?? "",
-            viewUrl: storageUrl(a.arquivo) ?? "", // 👈 também aqui
+            viewUrl: `/publicacoes/${slug}/anexos/${a.id}/visualizar`,
           })),
         );
       } catch {

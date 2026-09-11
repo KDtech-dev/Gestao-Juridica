@@ -79,7 +79,7 @@ export function AnexoViewer({
   }, []);
 
   const voltar = () => {
-    window.history.back();
+    window.close();
   };
 
   return (
@@ -93,7 +93,6 @@ export function AnexoViewer({
         flexDirection: "column",
       }}
     >
-      {/* Barra superior */}
       <AppBar
         position="static"
         elevation={0}
@@ -108,7 +107,6 @@ export function AnexoViewer({
             px: { xs: 1, md: 2 },
           }}
         >
-          {/* Voltar */}
           <Tooltip title="Voltar">
             <IconButton
               onClick={voltar}
@@ -124,7 +122,6 @@ export function AnexoViewer({
             </IconButton>
           </Tooltip>
 
-          {/* Nome do arquivo */}
           <Typography
             sx={{
               flex: 1,
@@ -143,13 +140,11 @@ export function AnexoViewer({
             {nomeArquivo}
           </Typography>
 
-          {/* Ações */}
           <Stack
             direction="row"
             alignItems="center"
             spacing={0.3}
           >
-            {/* Zoom */}
             {isImage && (
               <>
                 <Tooltip title="Diminuir zoom">
@@ -191,7 +186,6 @@ export function AnexoViewer({
               </>
             )}
 
-            {/* Download */}
             <Tooltip title="Baixar">
               <IconButton
                 component="a"
@@ -205,7 +199,6 @@ export function AnexoViewer({
               </IconButton>
             </Tooltip>
 
-            {/* Abrir arquivo original */}
             <Tooltip title="Abrir em nova aba">
               <IconButton
                 component="a"
@@ -224,7 +217,6 @@ export function AnexoViewer({
         </Toolbar>
       </AppBar>
 
-      {/* Área do arquivo */}
       <Box
         sx={{
           flex: 1,
@@ -240,7 +232,6 @@ export function AnexoViewer({
             : 0,
         }}
       >
-        {/* PDF */}
         {isPdf && (
           <Box
             component="iframe"
@@ -255,7 +246,6 @@ export function AnexoViewer({
           />
         )}
 
-        {/* Imagem */}
         {isImage && (
           <Box
             sx={{
@@ -284,7 +274,6 @@ export function AnexoViewer({
           </Box>
         )}
 
-        {/* Arquivo não suportado */}
         {!isPdf && !isImage && (
           <Stack
             alignItems="center"
