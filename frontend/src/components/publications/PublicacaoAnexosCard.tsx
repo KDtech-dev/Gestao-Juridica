@@ -1,7 +1,6 @@
 "use client";
 import {
   Box,
-  Divider,
   Paper,
   Stack,
   Tooltip,
@@ -11,6 +10,7 @@ import {
 import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
+import { getAnexoDownloadUrl, getAnexoVisualizarUrl } from "@/api/apiAnexos";
 
 type PublicacaoAnexosCardProps = {
   publicacao: PublicacaoType;
@@ -35,11 +35,9 @@ export function PublicacaoAnexosCard({
       ) : (
         <Stack spacing={1}>
           {publicacao.anexos.map((anexo) => {
-            const url =
-              anexo.url ??
-              (anexo.arquivo
-                ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${anexo.arquivo}`
-                : undefined);
+            const visualizarUrl = getAnexoVisualizarUrl(publicacao.id, anexo.id);
+            const downloadUrl = getAnexoDownloadUrl(publicacao.id, anexo.id);
+
             return (
               <Box
                 key={anexo.id}
@@ -64,27 +62,38 @@ export function PublicacaoAnexosCard({
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
-                    cursor: url ? "pointer" : "default",
-                    ":hover": url ? { color: "primary.main" } : undefined,
+                    cursor: "pointer",
+                    ":hover": { color: "primary.main" },
                   }}
                   title={anexo.nome_arquivo ?? ""}
-                  onClick={() => url && window.open(url, "_blank")}
+                  onClick={() => window.open(visualizarUrl, "_blank")}
                 >
                   {anexo.nome_arquivo || "Anexo"}
                 </Typography>
 
-                {url && (
+                <Stack direction="row" spacing={0.5}>
                   <Tooltip title={t("view")}>
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.open(url, "_blank");
+                        window.open(visualizarUrl, "_blank");
                       }}
                     >
                       <Icon icon="mdi:eye-outline" width="1em" height="1em" />
                     </IconButton>
                   </Tooltip>
-                )}
+
+                  <Tooltip title={t("download")}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = downloadUrl;
+                      }}
+                    >
+                      <Icon icon="mdi:download-outline" width="1em" height="1em" />
+                    </IconButton>
+                  </Tooltip>
+                </Stack>
               </Box>
             );
           })}

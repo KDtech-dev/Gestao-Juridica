@@ -24,7 +24,7 @@ class PublicacaoPublicaResource extends JsonResource
                 'anexos',
                 fn() =>
                 $this->anexos->map(fn($anexo) => [
-                    'id'           => $anexo->id,
+                    'id'           => $anexo->uuid,
                     'nome_arquivo' => $anexo->nome_arquivo,
                     'arquivo'      => $anexo->arquivo,
                 ])

@@ -31,13 +31,15 @@ class PostController extends Controller
         ]);
     }
 
-    public function anexo(Anexo $anexo)
+    public function anexo(string $post, string $anexo)
     {
+        $anexo = Anexo::where('uuid', $anexo)->firstOrFail();
         $anexo->loadMissing('publicacao');
 
         abort_unless(
             $anexo->arquivo
                 && $anexo->publicacao
+                && $anexo->publicacao->id === $post
                 && $anexo->publicacao->status === StatusPublicacao::PUBLICADO
                 && Storage::disk('public')->exists($anexo->arquivo),
             404
@@ -47,7 +49,32 @@ class PostController extends Controller
             $anexo->arquivo,
             $anexo->nome_arquivo,
             [
-                'Content-Disposition' => 'inline; filename="' . addslashes($anexo->nome_arquivo) . '"',
+                'Content-Disposition' =>
+                'inline; filename="' . addslashes($anexo->nome_arquivo) . '"'
+            ]
+        );
+    }
+
+    public function anexoDownload(string $post, string $anexo)
+    {
+        $anexo = Anexo::where('uuid', $anexo)->firstOrFail();
+        $anexo->loadMissing('publicacao');
+
+        abort_unless(
+            $anexo->arquivo
+                && $anexo->publicacao
+                && $anexo->publicacao->id === $post
+                && $anexo->publicacao->status === StatusPublicacao::PUBLICADO
+                && Storage::disk('public')->exists($anexo->arquivo),
+            404
+        );
+
+        return Storage::disk('public')->response(
+            $anexo->arquivo,
+            $anexo->nome_arquivo,
+            [
+                'Content-Disposition' =>
+                'attachment; filename="' . addslashes($anexo->nome_arquivo) . '"'
             ]
         );
     }

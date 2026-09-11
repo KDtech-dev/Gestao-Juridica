@@ -7,17 +7,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AnexoResource extends JsonResource
 {
-    public function toArray(Request $request): array
+    public function toArray($request): array
     {
         return [
-            'id'           => $this->id,
+            'id' => $this->uuid,
             'nome_arquivo' => $this->nome_arquivo,
-            'descricao'    => $this->descricao,
-            'arquivo'      => $this->arquivo,
-            'url'          => $this->arquivo
-                ? asset("storage/{$this->arquivo}")
-                : null,
-
         ];
     }
 }
