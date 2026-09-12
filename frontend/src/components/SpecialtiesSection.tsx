@@ -6,16 +6,15 @@ import {
   Typography,
   Stack,
   Box,
-  Avatar,
   CircularProgress,
 } from "@mui/material";
-import { teamLawyers } from "@/data/team";
 import { useTranslations } from "next-intl";
-import { CategoriaType } from "@/@core/types";
+import { AdvogadoPublicoType, CategoriaType } from "@/@core/types";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { getCategorias } from "@/api/ApiCategorias";
 import SpecialtyLawyersCarousel from "./SpecialtyLawyersCarousel";
+import { getAdvogadosPublicos } from "@/api/ApiAdvogados";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
@@ -25,47 +24,70 @@ export default function SpecialtiesSection({ translations }: Props) {
   const t = translations;
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
 
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
-    null,
-  );
+  const [advogados, setAdvogados] = useState<AdvogadoPublicoType[]>([]);
+  const [loadingAdvogados, setLoadingAdvogados] = useState(false);
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<CategoriaType | null>(null);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
- useEffect(() => {
-  const loadCategorias = async () => {
-    try {
-      const response = await getCategorias();
-      setCategorias(response.data);
-    } catch (err) {
-
-      toast.error(
-        formatToastErrorMessage(
-          err,
-          t("toast.loadCategoriesError"),
-        ),
-      );
-    } finally {
-      setLoadingCategorias(false);
+  useEffect(() => {
+    if (!selectedSpecialty) {
+      setAdvogados([]);
+      return;
     }
-  };
 
-  loadCategorias();
-}, [t]);
+    const loadAdvogados = async () => {
+      setLoadingAdvogados(true);
+      try {
+        const response = await getAdvogadosPublicos(selectedSpecialty.id);
+        setAdvogados(response.data);
+      } catch (err) {
+        toast.error(formatToastErrorMessage(err, t("toast.loadLawyersError")));
+      } finally {
+        setLoadingAdvogados(false);
+      }
+    };
+
+    loadAdvogados();
+  }, [selectedSpecialty, t]);
+
+  useEffect(() => {
+    const loadCategorias = async () => {
+      try {
+        const response = await getCategorias();
+        setCategorias(response.data);
+      } catch (err) {
+        toast.error(
+          formatToastErrorMessage(err, t("toast.loadCategoriesError")),
+        );
+      } finally {
+        setLoadingCategorias(false);
+      }
+    };
+
+    loadCategorias();
+  }, [t]);
 
   const traduzirNome = (nome: string) => {
     const chave = categoriaNomeParaChave[nome];
     return chave ? tPracticeAreas(chave) : nome;
   };
 
-  const lawyersForSpecialty = selectedSpecialty
-    ? teamLawyers.filter((lawyer) =>
-        lawyer.specialties.includes(selectedSpecialty),
-      )
-    : [];
-
-  const handleToggle = (nome: string) => {
-    setSelectedSpecialty((prev) => (prev === nome ? null : nome));
+  const handleToggle = (categoria: CategoriaType) => {
+    setSelectedSpecialty((prev) =>
+      prev?.id === categoria.id ? null : categoria,
+    );
   };
+
+  const lawyersForSpecialty = advogados.map((advogado) => ({
+    id: advogado.uuid,
+    name: advogado.name,
+    image: advogado.foto_perfil_url ?? undefined,
+    role: t("specialities.roleAdvogado"),
+    oab: `OAB/${advogado.oab_uf} ${advogado.oab_numero}`,
+    description: advogado.resumo_pessoal ?? "",
+  }));
 
   return (
     <Container>
@@ -83,11 +105,11 @@ export default function SpecialtiesSection({ translations }: Props) {
       ) : (
         <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
           {categorias.map((categoria) => {
-            const isSelected = selectedSpecialty === categoria.nome;
+            const isSelected = selectedSpecialty?.id === categoria.id;
             return (
               <Box
                 key={categoria.id}
-                onClick={() => handleToggle(categoria.nome)}
+                onClick={() => handleToggle(categoria)}
                 sx={{
                   width: { xs: "45%", md: "30%" },
                   p: 3,
@@ -118,11 +140,17 @@ export default function SpecialtiesSection({ translations }: Props) {
       )}
 
       {selectedSpecialty && (
-        <SpecialtyLawyersCarousel
-          translations={t}
-          title={`${t("specialities.expertsIn")}${traduzirNome(selectedSpecialty)}`}
-          lawyers={lawyersForSpecialty}
-        />
+        loadingAdvogados ? (
+          <Stack alignItems="center" py={4}>
+            <CircularProgress size={28} />
+          </Stack>
+        ) : (
+          <SpecialtyLawyersCarousel
+            translations={t}
+            title={`${t("specialities.expertsIn")}${traduzirNome(selectedSpecialty.nome)}`}
+            lawyers={lawyersForSpecialty}
+          />
+        )
       )}
     </Container>
   );

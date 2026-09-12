@@ -2,20 +2,16 @@
 import { useState } from "react";
 import {
   Box,
-  Button,
   Container,
   Grid,
   Paper,
-  Stack,
   Typography,
 } from "@mui/material";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
-import { LawyerCarousel } from "@/components/team/LawyerCarousel";
-import { teamSpecialties } from "@/data/team";
-import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
+import {  AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
 import { useTranslations } from "next-intl";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 
@@ -26,7 +22,6 @@ type HomeViewProps = {
 
 export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
   const t = useTranslations("public.home");
-  const [isAboutExpanded, setIsAboutExpanded] = useState(false);
 
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>

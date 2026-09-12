@@ -4,12 +4,12 @@ import { useRef } from "react";
 import { Box, IconButton, Stack, Typography, Avatar } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
-import { TeamLawyer } from "@/data/team";
+import { LawyerCardType } from "@/@core/types";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
   title: string;
-  lawyers: TeamLawyer[];
+  lawyers: LawyerCardType[];
 };
 
 export default function SpecialtyLawyersCarousel({
@@ -91,10 +91,10 @@ export default function SpecialtyLawyersCarousel({
                     scrollSnapAlign: showArrows ? "start" : "unset",
                     flex: showArrows
                       ? {
-                          xs: "0 0 85%",
-                          sm: "0 0 45%",
-                          md: "0 0 30%",
-                        }
+                        xs: "0 0 85%",
+                        sm: "0 0 45%",
+                        md: "0 0 30%",
+                      }
                       : "0 0 auto",
                     width: showArrows ? undefined : { xs: "85%", sm: 320 },
                     p: 3,

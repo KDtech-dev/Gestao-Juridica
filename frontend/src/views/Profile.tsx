@@ -53,6 +53,10 @@ export default function ProfileView() {
   const isAdmin = hasRole("admin");
   const isAdvogadoRef = useRef(isAdvogado);
   const isFuncionarioRef = useRef(isFuncionario);
+  const temDadosAdvogado = Boolean(profileUser?.advogado);
+  const temDadosFuncionario = Boolean(profileUser?.funcionario);
+  const exibirAdvogado = isAdvogado || temDadosAdvogado;
+  const exibirFuncionario = isFuncionario || temDadosFuncionario;
   const themeModeRef = useRef(themeMode);
   const languageRef = useRef(language);
   useEffect(() => {
@@ -121,7 +125,7 @@ export default function ProfileView() {
           name: fetchedUser.name ?? "",
           email: fetchedUser.email ?? "",
           cpf: fetchedUser.cpf ?? "",
-          advogado: isAdvogadoRef.current
+          advogado: (isAdvogadoRef.current || fetchedUser.advogado)
             ? {
               celular: fetchedUser.advogado?.celular ?? "",
               oab_numero: fetchedUser.advogado?.oab_numero ?? "",
@@ -134,7 +138,7 @@ export default function ProfileView() {
               resumo_pessoal: fetchedUser.advogado?.resumo_pessoal ?? "",
             }
             : undefined,
-          funcionario: isFuncionarioRef.current
+          funcionario: (isFuncionarioRef.current || fetchedUser.funcionario)
             ? {
               celular: fetchedUser.funcionario?.celular ?? "",
               data_nascimento: fetchedUser.funcionario?.data_nascimento ?? "",
@@ -376,16 +380,16 @@ export default function ProfileView() {
                   >
                     <Box>
                       <CardDadosPessoais
-                        isAdvogado={isAdvogado}
-                        isFuncionario={isFuncionario}
+                        isAdvogado={exibirAdvogado}
+                        isFuncionario={exibirFuncionario}
                       />
                       <CardDadosProfissionais
-                        isAdvogado={isAdvogado}
+                        isAdvogado={exibirAdvogado}
                         profileUser={profileUser}
                       />
                       <CardEndereco
-                        isAdvogado={isAdvogado}
-                        isFuncionario={isFuncionario}
+                        isAdvogado={exibirAdvogado}
+                        isFuncionario={exibirFuncionario}
                       />
                     </Box>
                     <Box

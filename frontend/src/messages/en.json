@@ -737,7 +737,8 @@
         "expertsIn": "Experts in ",
         "errorNoLawyersForSpecialty": "No lawyers found for this specialty.",
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "roleAdvogado": "Lawyer"
       }
     },
     "teamPage": {

@@ -1,10 +1,15 @@
-import { ArrayResponseType, AdvogadoPublicoType } from "@/@core/types";
+import { AdvogadoPublicoType, ArrayResponseType } from "@/@core/types";
 import { getAxios } from "@/configs/axios";
 
-const getAdvogadosPublicos = async (): Promise<
-  ArrayResponseType<AdvogadoPublicoType>
-> => {
-  const response = await getAxios().get("/advogados");
+
+
+const getAdvogadosPublicos = async (
+  categoriaId?: string | number,
+): Promise<ArrayResponseType<AdvogadoPublicoType>> => {
+  const response = await getAxios().get<ArrayResponseType<AdvogadoPublicoType>>("/advogados", {
+    params: categoriaId ? { categoria: categoriaId } : undefined,
+  });
+
   return response.data;
 };
 

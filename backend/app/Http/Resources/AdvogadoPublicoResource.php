@@ -9,19 +9,13 @@ class AdvogadoPublicoResource extends JsonResource
     public function toArray($request): array
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
-            'cor_perfil' => $this->cor_perfil,
-            'advogado'   => $this->advogado ? [
-                'resumo_pessoal'  => $this->advogado->resumo_pessoal,
-                'foto_perfil_url' => $this->advogado->foto_perfil_url,
-                'oab_numero'      => $this->advogado->oab_numero,
-                'oab_uf'          => $this->advogado->oab_uf,
-                'categorias'      => $this->advogado->categorias->map(fn($c) => [
-                    'id'   => $c->id,
-                    'nome' => $c->nome,
-                ]),
-            ] : null,
+            'uuid'            => $this->user->id,
+            'name'            => $this->user->name,
+            'foto_perfil_url' => $this->user->foto_perfil_url,
+            'oab_numero'      => $this->oab_numero,
+            'oab_uf'          => $this->oab_uf,
+            'resumo_pessoal'  => $this->resumo_pessoal,
+            'categorias'      => $this->categorias->pluck('nome'),
         ];
     }
 }
