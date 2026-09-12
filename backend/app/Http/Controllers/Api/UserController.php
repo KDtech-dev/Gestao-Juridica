@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\InvalidCurrentPasswordException;
 use App\Exceptions\LastAdminException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ResetUserPasswordRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Requests\UpdateFotoPerfilRequest;
+use App\Http\Requests\UpdateOwnPasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -75,6 +79,45 @@ class UserController extends Controller
         } catch (LastAdminException) {
             return response()->json([
                 'error_code' => 'last_admin',
+            ], 422);
+        }
+    }
+
+    public function updateOwnPassword(UpdateOwnPasswordRequest $request): JsonResponse
+    {
+        try {
+            $this->userService->atualizarSenhaPropria(
+                Auth::user(),
+                $request->validated('current_password'),
+                $request->validated('new_password'),
+            );
+
+            return response()->json([
+                'message' => 'Senha atualizada com sucesso.',
+            ]);
+        } catch (InvalidCurrentPasswordException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    public function resetPassword(ResetUserPasswordRequest $request, User $user): JsonResponse
+    {
+        try {
+            $this->userService->resetarSenhaComoAdmin(
+                Auth::user(),
+                $user,
+                $request->validated('admin_password'),
+                $request->validated('new_password'),
+            );
+
+            return response()->json([
+                'message' => 'Senha do usuário atualizada com sucesso.',
+            ]);
+        } catch (InvalidCurrentPasswordException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
             ], 422);
         }
     }

@@ -408,52 +408,7 @@
         "title": {
           "create": "New user",
           "edit": "Edit user",
-          "view": "View user",
-          "fields": {
-            "role": "Role",
-            "name": "Name",
-            "email": "Email",
-            "cpf": "CPF",
-            "mobile": "Mobile",
-            "birthDate": "Birth date",
-            "personalSummary": "Personal summary",
-            "oabNumber": "OAB number",
-            "oabUf": "State",
-            "specialties": "Specialties",
-            "specialtiesPlaceholder": "Select one or more specialties",
-            "addSpecialty": "Add specialty...",
-            "password": "Password",
-            "confirmPassword": "Confirm password",
-            "ufs": {
-              "AC": "Acre",
-              "AL": "Alagoas",
-              "AP": "Amapá",
-              "AM": "Amazonas",
-              "BA": "Bahia",
-              "CE": "Ceará",
-              "DF": "Federal District",
-              "ES": "Espírito Santo",
-              "GO": "Goiás",
-              "MA": "Maranhão",
-              "MT": "Mato Grosso",
-              "MS": "Mato Grosso do Sul",
-              "MG": "Minas Gerais",
-              "PA": "Pará",
-              "PB": "Paraíba",
-              "PR": "Paraná",
-              "PE": "Pernambuco",
-              "PI": "Piauí",
-              "RJ": "Rio de Janeiro",
-              "RN": "Rio Grande do Norte",
-              "RS": "Rio Grande do Sul",
-              "RO": "Rondônia",
-              "RR": "Roraima",
-              "SC": "Santa Catarina",
-              "SP": "São Paulo",
-              "SE": "Sergipe",
-              "TO": "Tocantins"
-            }
-          }
+          "view": "View user"
         },
         "actions": {
           "create": "Create",
@@ -491,7 +446,35 @@
           "password": "Password",
           "passwordPlaceholder": "Enter password",
           "confirmPassword": "Confirm password",
-          "confirmPasswordPlaceholder": "Confirm password"
+          "confirmPasswordPlaceholder": "Confirm password",
+          "photoHelper": "Click to add a photo",
+          "photoUploading": "Uploading photo..."
+        }
+      },
+      "resetPasswordModal": {
+        "title": "Reset password for {name}",
+        "description": "Confirm your administrator password to set a new password for {name}.",
+        "fields": {
+          "adminPassword": "Your password (admin)",
+          "newPassword": "User's new password",
+          "confirmPassword": "Confirm new password"
+        },
+        "actions": {
+          "save": "Reset password",
+          "updating": "Saving..."
+        },
+        "validation": {
+          "adminRequired": "Confirm your password to continue.",
+          "newMin": "The new password must be at least 8 characters long.",
+          "confirmRequired": "Confirm the new password.",
+          "passwordsMatch": "The passwords must match."
+        },
+        "toast": {
+          "reviewFields": "Review the highlighted fields.",
+          "success": "The user's password was updated successfully."
+        },
+        "errors": {
+          "update": "Unable to update the user's password."
         }
       },
       "deleteDialog": {
@@ -503,7 +486,8 @@
       "toast": {
         "created": "User created successfully!",
         "updated": "User updated successfully!",
-        "deleted": "User removed successfully!"
+        "deleted": "User removed successfully!",
+        "avatarUploadError": "Error loading profile picture."
       },
       "errors": {
         "load": "Error loading users.",

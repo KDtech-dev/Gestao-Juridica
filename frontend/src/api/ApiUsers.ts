@@ -55,6 +55,14 @@ const deleteFotoPerfil = async (id: string): Promise<ResponseType<UserType>> => 
   return response.data;
 };
 
+const resetUserPassword = async (
+  id: string,
+  data: { admin_password: string; new_password: string; new_password_confirmation: string },
+): Promise<{ message: string }> => {
+  const response = await getAxios().put(`/users/${id}/reset-password`, data);
+  return response.data;
+};
+
 export {
   getUsers,
   getUserById,
@@ -63,4 +71,5 @@ export {
   deleteUser,
   postFotoPerfil,
   deleteFotoPerfil,
+  resetUserPassword
 };

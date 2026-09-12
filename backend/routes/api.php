@@ -41,6 +41,10 @@ Route::prefix('posts')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    Route::put('/profile/password', [UserController::class, 'updateOwnPassword']);
+    Route::put('/users/{user}/reset-password', [UserController::class, 'resetPassword'])
+        ->middleware('role:admin'); 
+
     Route::prefix('profile')->group(function () {
         Route::get('/',         [ProfileController::class, 'show']);
         Route::put('/',         [ProfileController::class, 'update']);

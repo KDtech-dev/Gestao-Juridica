@@ -433,52 +433,7 @@
         "title": {
           "create": "Novo usuário",
           "edit": "Editar usuário",
-          "view": "Visualizar usuário",
-          "fields": {
-            "role": "Perfil",
-            "name": "Nome",
-            "email": "E-mail",
-            "cpf": "CPF",
-            "mobile": "Celular",
-            "birthDate": "Data de nascimento",
-            "personalSummary": "Resumo pessoal",
-            "oabNumber": "OAB Número",
-            "oabUf": "UF",
-            "specialties": "Especialidades",
-            "specialtiesPlaceholder": "Selecione uma ou mais especialidades",
-            "addSpecialty": "Adicionar especialidade...",
-            "password": "Senha",
-            "confirmPassword": "Confirmar senha"
-          },
-          "ufs": {
-            "AC": "Acre",
-            "AL": "Alagoas",
-            "AP": "Amapá",
-            "AM": "Amazonas",
-            "BA": "Bahia",
-            "CE": "Ceará",
-            "DF": "Distrito Federal",
-            "ES": "Espírito Santo",
-            "GO": "Goiás",
-            "MA": "Maranhão",
-            "MT": "Mato Grosso",
-            "MS": "Mato Grosso do Sul",
-            "MG": "Minas Gerais",
-            "PA": "Pará",
-            "PB": "Paraíba",
-            "PR": "Paraná",
-            "PE": "Pernambuco",
-            "PI": "Piauí",
-            "RJ": "Rio de Janeiro",
-            "RN": "Rio Grande do Norte",
-            "RS": "Rio Grande do Sul",
-            "RO": "Rondônia",
-            "RR": "Roraima",
-            "SC": "Santa Catarina",
-            "SP": "São Paulo",
-            "SE": "Sergipe",
-            "TO": "Tocantins"
-          }
+          "view": "Visualizar usuário"
         },
         "actions": {
           "create": "Criar",
@@ -495,6 +450,8 @@
         "fields": {
           "role": "Perfil",
           "name": "Nome",
+          "photoHelper": "Clique para adicionar uma foto",
+          "photoUploading": "Enviando foto...",
           "namePlaceholder": "Digite o nome completo",
           "email": "E-mail",
           "emailPlaceholder": "Digite o e-mail",
@@ -519,6 +476,32 @@
           "confirmPasswordPlaceholder": "Confirme a senha"
         }
       },
+      "resetPasswordModal": {
+        "title": "Redefinir senha de {name}",
+        "description": "Confirme sua senha de administrador para definir uma nova senha para {name}.",
+        "fields": {
+          "adminPassword": "Sua senha (admin)",
+          "newPassword": "Nova senha do usuário",
+          "confirmPassword": "Confirmar nova senha"
+        },
+        "actions": {
+          "save": "Redefinir senha",
+          "updating": "Salvando..."
+        },
+        "validation": {
+          "adminRequired": "Confirme sua senha para continuar.",
+          "newMin": "A nova senha deve ter pelo menos 8 caracteres.",
+          "confirmRequired": "Confirme a nova senha.",
+          "passwordsMatch": "As senhas precisam ser iguais."
+        },
+        "toast": {
+          "reviewFields": "Revise os campos destacados.",
+          "success": "Senha do usuário atualizada com sucesso."
+        },
+        "errors": {
+          "update": "Não foi possível atualizar a senha do usuário."
+        }
+      },
       "deleteDialog": {
         "title": "Excluir usuário?",
         "description": "O usuário \"{name}\" será excluído permanentemente. Essa ação não pode ser desfeita.",
@@ -528,7 +511,8 @@
       "toast": {
         "created": "Usuário criado com sucesso!",
         "updated": "Usuário atualizado com sucesso!",
-        "deleted": "Usuário removido com sucesso!"
+        "deleted": "Usuário removido com sucesso!",
+        "avatarUploadError": "Erro ao adicionar foto de perfil. Tente novamente."
       },
       "errors": {
         "load": "Erro ao carregar usuários.",

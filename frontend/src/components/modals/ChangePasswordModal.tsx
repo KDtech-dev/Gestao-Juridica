@@ -3,10 +3,9 @@
 import { useMemo, useState } from "react";
 import { Stack, TextField, Typography } from "@mui/material";
 import { BaseModal } from "@/components/modals/BaseModal";
-import auth from "@/configs/auth";
-import { getPublicApiOrigin } from "@/configs/apiUrl";
+import { getAxios } from "@/configs/axios";
 import { z } from "zod";
-import { toast } from "@/utils/toast";
+import { toast, formatToastErrorMessage } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
 
@@ -26,12 +25,8 @@ export function ChangePasswordModal({ open, onClose }: Props) {
     confirm: false,
   });
   const [saving, setSaving] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<
-    Partial<
-      Record<"currentPassword" | "newPassword" | "confirmPassword", string>
-    >
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>
   >({});
-
   const passwordsMismatch = useMemo(
     () => confirmPassword.length > 0 && confirmPassword !== newPassword,
     [confirmPassword, newPassword],
@@ -56,19 +51,6 @@ export function ChangePasswordModal({ open, onClose }: Props) {
         }),
     [t],
   );
-
-  const extractErrorMessage = (errors: unknown): string | undefined => {
-    if (!errors || typeof errors !== "object") return undefined;
-    const values = Object.values(errors as Record<string, unknown>);
-    for (const value of values) {
-      if (typeof value === "string") return value;
-      if (Array.isArray(value)) {
-        const nested = value.find((item) => typeof item === "string");
-        if (nested) return nested as string;
-      }
-    }
-    return undefined;
-  };
 
   const resetForm = () => {
     setCurrentPassword("");
@@ -119,38 +101,16 @@ export function ChangePasswordModal({ open, onClose }: Props) {
     setFieldErrors({});
 
     try {
-      const base = getPublicApiOrigin();
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem(auth.storageTokenKeyName)
-          : null;
-      const response = await fetch(`${base}/api/profile/password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({
-          current_password: currentPassword,
-          new_password: newPassword,
-          confirm_password: confirmPassword,
-        }),
+      const response = await getAxios().put("/profile/password", {
+        current_password: currentPassword,
+        new_password: newPassword,
+        new_password_confirmation: confirmPassword,
       });
-      const data = await response.json();
-      if (response.ok) {
-        toast.success(data?.message ?? t("toast.success"));
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } else {
-        const fallbackMessage = t("errors.update");
-        const serverMessage =
-          data?.message || extractErrorMessage(data?.errors) || fallbackMessage;
-        toast.error(serverMessage);
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(t("errors.connection"));
+
+      toast.success(response.data?.message ?? t("toast.success"));
+      handleClose();
+    } catch (err) {
+      toast.error(formatToastErrorMessage(err, t("errors.update")));
     } finally {
       setSaving(false);
     }

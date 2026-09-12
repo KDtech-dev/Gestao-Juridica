@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class UpdateProfilePasswordRequest extends FormRequest
 {
@@ -15,15 +16,22 @@ class UpdateProfilePasswordRequest extends FormRequest
     {
         return [
             'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', 'min:6'],
-            'confirm_password' => ['required', 'same:new_password'],
+
+            'new_password' => [
+                'required',
+                'string',
+                Password::min(8),
+                'confirmed',
+            ],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'confirm_password.same' => 'As senhas precisam ser iguais.',
+            'current_password.required' => 'Informe a senha atual.',
+            'new_password.required' => 'Informe a nova senha.',
+            'new_password.confirmed' => 'As senhas não coincidem.',
         ];
     }
 }

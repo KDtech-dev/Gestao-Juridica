@@ -2,6 +2,7 @@
 
 import {
   alpha,
+  Avatar,
   Box,
   Button,
   Chip,
@@ -27,6 +28,7 @@ import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
 import DialogUser from "@/components/modals/DialogUser";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
+import AdminResetPasswordModal from "@/components/modals/AdminResetPasswordModal";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -48,7 +50,7 @@ export default function UsersView() {
   const t = useTranslations("internal.users");
   const tCommon = useTranslations("common");
   const theme = useTheme();
-
+  const [resetPasswordTarget, setResetPasswordTarget] = useState<UserType | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<DialogMode>("create");
   const [users, setUsers] = useState<UserType[]>([]);
@@ -97,18 +99,30 @@ export default function UsersView() {
 
   const totalCount = isSearching ? usersFiltrados.length : total;
 
-  const handleSubmit = async (data: CreateUserPayload | UpdateUserPayload) => {
+  const handleSubmit = async (
+    data: CreateUserPayload | UpdateUserPayload,
+  ): Promise<UserType | void> => {
     setSubmitting(true);
     try {
+      let usuario: UserType;
+
       if (dialogMode === "create") {
-        await postUser(data as CreateUserPayload);
+        const { data: criado } = await postUser(data as CreateUserPayload);
+        usuario = criado;
         toast.success(t("toast.created"));
       } else {
-        await updateUser(userSelecionado!.id, data as UpdateUserPayload);
+        const { data: atualizado } = await updateUser(
+          userSelecionado!.id,
+          data as UpdateUserPayload,
+        );
+        usuario = atualizado;
         toast.success(t("toast.updated"));
       }
+
       handleDialogClose();
       loadUsers();
+
+      return usuario;
     } catch {
       toast.error(
         dialogMode === "create" ? t("errors.create") : t("errors.update"),
@@ -164,6 +178,32 @@ export default function UsersView() {
     setUserSelecionado(null);
   };
   const columns: GridColDef<UserType>[] = [
+    {
+      field: "avatar",
+      headerName: "",
+      width: 64,
+      minWidth: 64,
+      sortable: false,
+      filterable: false,
+      disableColumnMenu: true,
+      renderCell: ({ row }) => (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <Avatar
+            src={row.foto_perfil_url ?? undefined}
+            sx={{ width: 36, height: 36 }}
+          >
+            {!row.foto_perfil_url && row.name?.[0]?.toUpperCase()}
+          </Avatar>
+        </Box>
+      ),
+    },
     {
       field: "name",
       headerName: t("table.name"),
@@ -265,7 +305,15 @@ export default function UsersView() {
           >
             <Icon icon="mdi:pencil-outline" width={20} />
           </IconButton>
-
+          <IconButton
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              setResetPasswordTarget(row);
+            }}
+          >
+            <Icon icon="mdi:key-outline" width={20} />
+          </IconButton>
           <IconButton
             size="small"
             onClick={(e) => {
@@ -505,6 +553,11 @@ export default function UsersView() {
         submitting={submitting}
         mode={dialogMode}
         user={userSelecionado}
+      />
+      <AdminResetPasswordModal
+        open={Boolean(resetPasswordTarget)}
+        targetUser={resetPasswordTarget}
+        onClose={() => setResetPasswordTarget(null)}
       />
       <ConfirmDialog
         open={Boolean(deleteTarget)}

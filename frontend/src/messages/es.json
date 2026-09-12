@@ -408,52 +408,7 @@
         "title": {
           "create": "Nuevo usuario",
           "edit": "Editar usuario",
-          "view": "Visualizar usuario",
-          "fields": {
-            "role": "Perfil",
-            "name": "Nombre",
-            "email": "Correo electrónico",
-            "cpf": "CPF",
-            "mobile": "Celular",
-            "birthDate": "Fecha de nacimiento",
-            "personalSummary": "Resumen personal",
-            "oabNumber": "Número OAB",
-            "oabUf": "UF",
-            "specialties": "Especialidades",
-            "specialtiesPlaceholder": "Seleccione una o más especialidades",
-            "addSpecialty": "Agregar especialidad...",
-            "password": "Contraseña",
-            "confirmPassword": "Confirmar contraseña",
-            "ufs": {
-              "AC": "Acre",
-              "AL": "Alagoas",
-              "AP": "Amapá",
-              "AM": "Amazonas",
-              "BA": "Bahia",
-              "CE": "Ceará",
-              "DF": "Distrito Federal",
-              "ES": "Espírito Santo",
-              "GO": "Goiás",
-              "MA": "Maranhão",
-              "MT": "Mato Grosso",
-              "MS": "Mato Grosso do Sul",
-              "MG": "Minas Gerais",
-              "PA": "Pará",
-              "PB": "Paraíba",
-              "PR": "Paraná",
-              "PE": "Pernambuco",
-              "PI": "Piauí",
-              "RJ": "Rio de Janeiro",
-              "RN": "Rio Grande do Norte",
-              "RS": "Rio Grande do Sul",
-              "RO": "Rondônia",
-              "RR": "Roraima",
-              "SC": "Santa Catarina",
-              "SP": "São Paulo",
-              "SE": "Sergipe",
-              "TO": "Tocantins"
-            }
-          }
+          "view": "Visualizar usuario"
         },
         "actions": {
           "create": "Crear",
@@ -491,7 +446,35 @@
           "password": "Contraseña",
           "passwordPlaceholder": "Ingrese la contraseña",
           "confirmPassword": "Confirmar contraseña",
-          "confirmPasswordPlaceholder": "Confirme la contraseña"
+          "confirmPasswordPlaceholder": "Confirme la contraseña",
+          "photoHelper": "Haz clic para añadir una foto",
+          "photoUploading": "Subiendo foto..."
+        }
+      },
+      "resetPasswordModal": {
+        "title": "Restablecer contraseña de {name}",
+        "description": "Confirma tu contraseña de administrador para establecer una nueva contraseña para {name}.",
+        "fields": {
+          "adminPassword": "Tu contraseña (admin)",
+          "newPassword": "Nueva contraseña del usuario",
+          "confirmPassword": "Confirmar nueva contraseña"
+        },
+        "actions": {
+          "save": "Restablecer contraseña",
+          "updating": "Guardando..."
+        },
+        "validation": {
+          "adminRequired": "Confirma tu contraseña para continuar.",
+          "newMin": "La nueva contraseña debe tener al menos 8 caracteres.",
+          "confirmRequired": "Confirma la nueva contraseña.",
+          "passwordsMatch": "Las contraseñas deben coincidir."
+        },
+        "toast": {
+          "reviewFields": "Revisa los campos resaltados.",
+          "success": "La contraseña del usuario se actualizó correctamente."
+        },
+        "errors": {
+          "update": "No se pudo actualizar la contraseña del usuario."
         }
       },
       "deleteDialog": {
@@ -503,7 +486,8 @@
       "toast": {
         "created": "¡Usuario creado con éxito!",
         "updated": "¡Usuario actualizado con éxito!",
-        "deleted": "¡Usuario eliminado con éxito!"
+        "deleted": "¡Usuario eliminado con éxito!",
+        "avatarUploadError": "Error al cargar foto de perfil. Inténtalo de nuevo."
       },
       "errors": {
         "load": "Error al cargar usuarios.",

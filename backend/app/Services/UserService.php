@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\InvalidCurrentPasswordException;
 use App\Exceptions\LastAdminException;
 use App\Models\User;
 use App\Models\Funcionario;
@@ -147,7 +148,7 @@ class UserService
         return $user->fresh();
     }
 
-    public function removerFotoPerfil(User $user): User 
+    public function removerFotoPerfil(User $user): User
     {
         if ($user->foto_perfil) {
             Storage::disk('public')->delete($user->foto_perfil);
@@ -277,5 +278,27 @@ class UserService
 
             $user->delete();
         });
+    }
+
+    public function atualizarSenhaPropria(User $user, string $senhaAtual, string $novaSenha): void
+    {
+        if (! Hash::check($senhaAtual, $user->password)) {
+            throw new InvalidCurrentPasswordException();
+        }
+
+        $user->update([
+            'password' => Hash::make($novaSenha),
+        ]);
+    }
+
+    public function resetarSenhaComoAdmin(User $admin, User $alvo, string $senhaAdmin, string $novaSenha): void
+    {
+        if (! Hash::check($senhaAdmin, $admin->password)) {
+            throw new InvalidCurrentPasswordException('Senha do administrador incorreta.');
+        }
+
+        $alvo->update([
+            'password' => Hash::make($novaSenha),
+        ]);
     }
 }

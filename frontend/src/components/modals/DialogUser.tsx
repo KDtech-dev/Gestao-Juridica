@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  alpha,
   Autocomplete,
+  CircularProgress,
   FormControl,
   FormHelperText,
   InputLabel,
@@ -12,6 +14,8 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
+  useTheme,
 } from "@mui/material";
 import { BaseModal } from "@/components/modals/BaseModal";
 import {
@@ -23,6 +27,9 @@ import type {
   CreateUserPayload,
   UpdateUserPayload,
 } from "@/schemas/UserSchema";
+import { Avatar, Box } from "@mui/material";
+import { Icon } from "@/components/AppIcon";
+import { postFotoPerfil } from "@/api/ApiUsers";
 import InputBasico from "@/components/InputBasico";
 import type { UserType, RoleType, CategoriaType } from "@/@core/types";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -37,7 +44,7 @@ import { formatToastErrorMessage, toast } from "@/utils/toast";
 type Props = {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: CreateUserPayload | UpdateUserPayload) => Promise<void>;
+  onSubmit: (data: CreateUserPayload | UpdateUserPayload) => Promise<UserType | void>;
   submitting: boolean;
   mode: "create" | "edit" | "view";
   user?: UserType | null;
@@ -52,12 +59,17 @@ export default function DialogUser({
   user,
 }: Props) {
   const t = useTranslations("internal.users.dialog");
+  const theme = useTheme();
   const tValidation = useTranslations("validation");
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const isEdit = mode === "edit";
   const isView = mode === "view";
   const isReadOnly = isView;
-
+  const [avatar, setAvatar] = useState<string | null>(user?.foto_perfil_url ?? null);
+  const [avatarHovered, setAvatarHovered] = useState(false);
+  const [avatarUploading, setAvatarUploading] = useState(false);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [visiblePasswords, setVisiblePasswords] = useState({
@@ -100,12 +112,64 @@ export default function DialogUser({
   }, [t]);
 
   useEffect(() => {
-    if (open) reset(buildDefaultValues(user, isEdit));
+    if (open) {
+      reset(buildDefaultValues(user, isEdit));
+      setAvatar(user?.foto_perfil_url ?? null);
+      setPendingAvatarFile(null);
+    }
   }, [open, user, isEdit, reset]);
 
   const togglePasswordVisibility = (field: keyof typeof visiblePasswords) => {
     setVisiblePasswords((prev) => ({ ...prev, [field]: !prev[field] }));
   };
+
+  const handleAvatarChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    const avatarAnterior = avatar;
+    setAvatar(previewUrl);
+
+    if (isEdit && user?.id) {
+      setAvatarUploading(true);
+      try {
+        const { data: usuarioAtualizado } = await postFotoPerfil(
+          String(user.id),
+          file,
+        );
+        setAvatar(usuarioAtualizado.foto_perfil_url ?? null);
+      } catch (err) {
+        setAvatar(avatarAnterior);
+        toast.error(formatToastErrorMessage(err, t("toast.avatarUploadError")));
+      } finally {
+        setAvatarUploading(false);
+        URL.revokeObjectURL(previewUrl);
+      }
+    } else {
+      setPendingAvatarFile(file);
+    }
+
+    if (avatarInputRef.current) avatarInputRef.current.value = "";
+  };
+
+  const handleFormSubmit = handleSubmit(async (data) => {
+    const result = await onSubmit(data);
+
+    if (!isEdit && pendingAvatarFile && result?.id) {
+      try {
+        await postFotoPerfil(String(result.id), pendingAvatarFile);
+      } catch (err) {
+        toast.error(formatToastErrorMessage(err, t("toast.avatarUploadError")));
+      } finally {
+        setPendingAvatarFile(null);
+      }
+    }
+
+    onClose();
+  });
 
   useEffect(() => {
     if (role !== "advogado") {
@@ -155,10 +219,122 @@ export default function DialogUser({
         }
         cancelText={isView ? t("actions.close") : t("actions.cancel")}
         confirmDisabled={submitting}
-        onSubmit={isView ? handleClose : handleSubmit(onSubmit)}
+        onSubmit={isView ? handleClose : handleFormSubmit}
         maxWidth="md"
       >
         <Stack spacing={2.5}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+              py: 3,
+              mx: -3,
+              mt: -3,
+              mb: 1,
+              bgcolor: alpha(theme.palette.primary.main, 0.04),
+              borderBottom: `1px solid ${theme.palette.divider}`,
+            }}
+          >
+            <Box
+              component={isReadOnly ? "div" : "label"}
+              onMouseEnter={() => !isReadOnly && setAvatarHovered(true)}
+              onMouseLeave={() => setAvatarHovered(false)}
+              sx={{
+                position: "relative",
+                cursor: isReadOnly ? "default" : "pointer",
+                display: "inline-block",
+                borderRadius: "50%",
+              }}
+            >
+              <Avatar
+                src={avatar ?? undefined}
+                sx={{
+                  width: 96,
+                  height: 96,
+                  border: "3px solid",
+                  borderColor: "background.paper",
+                  boxShadow: theme.shadows[2],
+                  filter: avatarHovered && !isReadOnly ? "brightness(0.75)" : "none",
+                  transition: "filter 0.2s",
+                }}
+              />
+
+              {avatarUploading && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor: "rgba(0,0,0,0.35)",
+                  }}
+                >
+                  <CircularProgress size={28} sx={{ color: "#fff" }} />
+                </Box>
+              )}
+
+              {!isReadOnly && !avatarUploading && (
+                <>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      opacity: avatarHovered ? 1 : 0,
+                      transition: "opacity 0.2s",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <Icon icon="mdi:camera" width={24} color="#fff" />
+                  </Box>
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: 2,
+                      right: 2,
+                      width: 26,
+                      height: 26,
+                      borderRadius: "50%",
+                      bgcolor: "primary.main",
+                      border: "2px solid",
+                      borderColor: "background.paper",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: theme.shadows[1],
+                      transition: "transform 0.2s",
+                      transform: avatarHovered ? "scale(1.12)" : "scale(1)",
+                    }}
+                  >
+                    <Icon icon="mdi:plus" width={15} color="#fff" />
+                  </Box>
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleAvatarChange}
+                    disabled={avatarUploading || submitting}
+                  />
+                </>
+              )}
+            </Box>
+
+            {!isReadOnly && (
+              <Typography variant="caption" color="text.secondary">
+                {avatarUploading
+                  ? t("fields.photoUploading")
+                  : t("fields.photoHelper")}
+              </Typography>
+            )}
+          </Box>
           <FormControl fullWidth disabled={isReadOnly}>
             <InputLabel shrink>{t("fields.role")}</InputLabel>
             <Select
