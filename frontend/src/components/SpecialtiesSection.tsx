@@ -9,9 +9,8 @@ import {
   Avatar,
   CircularProgress,
 } from "@mui/material";
-import { teamLawyers } from "@/data/team";
+import {AdvogadoPublicoType, CategoriaType } from "@/@core/types";
 import { useTranslations } from "next-intl";
-import { CategoriaType } from "@/@core/types";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -19,9 +18,10 @@ import SpecialtyLawyersCarousel from "./SpecialtyLawyersCarousel";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
+  advogados: AdvogadoPublicoType[];
 };
 
-export default function SpecialtiesSection({ translations }: Props) {
+export default function SpecialtiesSection({ translations, advogados, }: Props) {
   const t = translations;
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
 
@@ -58,10 +58,12 @@ export default function SpecialtiesSection({ translations }: Props) {
   };
 
   const lawyersForSpecialty = selectedSpecialty
-    ? teamLawyers.filter((lawyer) =>
-        lawyer.specialties.includes(selectedSpecialty),
-      )
-    : [];
+    ? advogados.filter((lawyer) =>
+      lawyer.advogado?.categorias.some(
+        (categoria) => categoria.nome === selectedSpecialty,
+      ),
+    )
+  : [];
 
   const handleToggle = (nome: string) => {
     setSelectedSpecialty((prev) => (prev === nome ? null : nome));

@@ -4,12 +4,12 @@ import { useRef } from "react";
 import { Box, IconButton, Stack, Typography, Avatar } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
-import { TeamLawyer } from "@/data/team";
+import { AdvogadoPublicoType } from "@/@core/types";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
   title: string;
-  lawyers: TeamLawyer[];
+  lawyers: AdvogadoPublicoType[];
 };
 
 export default function SpecialtyLawyersCarousel({
@@ -107,27 +107,36 @@ export default function SpecialtyLawyersCarousel({
                   }}
                 >
                   <Stack alignItems="center" spacing={1.5}>
-                    <Avatar
-                      src={lawyer.image}
-                      alt={lawyer.name}
-                      sx={{ width: 90, height: 90 }}
-                    />
+                  <Avatar
+  src={lawyer.advogado?.foto_perfil_url ?? undefined}
+  alt={lawyer.name}
+  sx={{
+    width: 90,
+    height: 90,
+    bgcolor: lawyer.cor_perfil ?? undefined,
+  }}
+/>
                     <Typography fontWeight={700} fontSize="1.05rem">
                       {lawyer.name}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      {lawyer.role}
+                      Advogado
                     </Typography>
-                    <Typography variant="body2" color="primary">
-                      {lawyer.oab}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ maxWidth: 260 }}
-                    >
-                      {lawyer.description}
-                    </Typography>
+                    
+{lawyer.advogado?.oab_numero && (
+  <Typography variant="body2" color="primary">
+    OAB/{lawyer.advogado.oab_uf} {lawyer.advogado.oab_numero}
+  </Typography>
+)}
+{lawyer.advogado?.resumo_pessoal && (
+  <Typography
+    variant="body2"
+    color="text.secondary"
+    sx={{ maxWidth: 260 }}
+  >
+    {lawyer.advogado.resumo_pessoal}
+  </Typography>
+)}
                   </Stack>
                 </Box>
               ))}
