@@ -191,7 +191,7 @@ export function DialogCaso({
                 multiple: true,
                 renderValue: (selected) => (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {(selected as string[]).map((id) => {
+                    {(selected as number[]).map((id) => {
                       const categoria = categorias.find((c) => c.id === id);
                       return (
                         <Chip

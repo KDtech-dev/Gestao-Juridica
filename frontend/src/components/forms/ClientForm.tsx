@@ -9,6 +9,7 @@ import {
 } from "@/schemas/ClienteSchema";
 import { useEffect } from "react";
 import { ClienteType } from "@/@core/types";
+import { useTranslations } from "next-intl";
 
 type Props = {
   id: string;
@@ -23,13 +24,15 @@ export function ClientForm({
   disabled = false,
   onSubmit,
 }: Props) {
+  const t = useTranslations("validation");
+
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<CreateClientePayload>({
-    resolver: zodResolver(createClienteSchema),
+    resolver: zodResolver(createClienteSchema(t)),
     defaultValues: {
       name: initialValues?.name ?? "",
       cpf_cnpj: initialValues?.cpf_cnpj ?? "",

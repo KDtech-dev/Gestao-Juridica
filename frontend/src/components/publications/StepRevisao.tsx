@@ -96,7 +96,7 @@ function ReviewAttachments({
                 {file.nome}
               </Typography>
               <Typography fontSize="0.78rem" color="text.secondary">
-                {file.url}
+                {file.viewUrl}
               </Typography>
             </Box>
           ))}
