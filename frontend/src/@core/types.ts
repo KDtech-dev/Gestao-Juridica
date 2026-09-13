@@ -47,7 +47,7 @@ export type PaginatedResponseType<T> = {
 };
 export type PublicacaoFormData = {
   titulo: string;
-  categoria: CategoriaType;
+  categoria: string;
   categoriaId: string;
   bannerImage: File | string;
   autor: string;
@@ -55,7 +55,7 @@ export type PublicacaoFormData = {
   conteudo: string;
   status: StatusPublicacao;
   anexos: File[];
-  anexosExistentes: PublicacaoAnexo[];
+  anexosExistentes: ExistingFile[];
   anexosRemovidos: string[];
 };
 

@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import {
   Box,
   Container,
@@ -11,7 +10,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
-import {  AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
+import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
+
 import { useTranslations } from "next-intl";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 
@@ -41,7 +41,7 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
         py={8}
         bgcolor="background.default"
       >
-        <SpecialtiesSection translations={t} />
+        <SpecialtiesSection translations={t} advogados={advogados} />
       </Box>
       <Box
         id="institucional"

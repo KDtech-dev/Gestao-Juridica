@@ -25,7 +25,9 @@ export default function SpecialtyLawyersCarousel({
   const scrollBy = (direction: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
+
     const amount = el.clientWidth * 0.8;
+
     el.scrollBy({
       left: direction === "left" ? -amount : amount,
       behavior: "smooth",
@@ -91,10 +93,10 @@ export default function SpecialtyLawyersCarousel({
                     scrollSnapAlign: showArrows ? "start" : "unset",
                     flex: showArrows
                       ? {
-                        xs: "0 0 85%",
-                        sm: "0 0 45%",
-                        md: "0 0 30%",
-                      }
+                          xs: "0 0 85%",
+                          sm: "0 0 45%",
+                          md: "0 0 30%",
+                        }
                       : "0 0 auto",
                     width: showArrows ? undefined : { xs: "85%", sm: 320 },
                     p: 3,
@@ -110,24 +112,35 @@ export default function SpecialtyLawyersCarousel({
                     <Avatar
                       src={lawyer.image}
                       alt={lawyer.name}
-                      sx={{ width: 90, height: 90 }}
+                      sx={{
+                        width: 90,
+                        height: 90,
+                      }}
                     />
+
                     <Typography fontWeight={700} fontSize="1.05rem">
                       {lawyer.name}
                     </Typography>
+
                     <Typography variant="body2" color="text.secondary">
                       {lawyer.role}
                     </Typography>
-                    <Typography variant="body2" color="primary">
-                      {lawyer.oab}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ maxWidth: 260 }}
-                    >
-                      {lawyer.description}
-                    </Typography>
+
+                    {lawyer.oab && (
+                      <Typography variant="body2" color="primary">
+                        {lawyer.oab}
+                      </Typography>
+                    )}
+
+                    {lawyer.description && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ maxWidth: 260 }}
+                      >
+                        {lawyer.description}
+                      </Typography>
+                    )}
                   </Stack>
                 </Box>
               ))}

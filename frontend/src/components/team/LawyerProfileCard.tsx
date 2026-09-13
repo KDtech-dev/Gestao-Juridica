@@ -8,10 +8,10 @@ type Props = {
 };
 
 export function LawyerProfileCard({ lawyer }: Props) {
-  const oab = lawyer.advogado
-    ? `OAB/${lawyer.advogado.oab_uf} ${lawyer.advogado.oab_numero}`
+  const oab = lawyer.oab_numero
+    ? `OAB/${lawyer.oab_uf} ${lawyer.oab_numero}`
     : null;
-  const categories = lawyer.advogado?.categorias ?? [];
+  const categories = lawyer.categorias ?? [];
   const initials = lawyer.name
     .split(" ")
     .filter(Boolean)
@@ -23,7 +23,7 @@ export function LawyerProfileCard({ lawyer }: Props) {
   return (
     <Paper
       sx={{
-        "--lawyer-accent": lawyer.cor_perfil ?? "currentColor",
+        "--lawyer-accent": (theme) => theme.palette.primary.main,
         height: "100%",
         position: "relative",
         overflow: "hidden",
@@ -76,7 +76,7 @@ export function LawyerProfileCard({ lawyer }: Props) {
             }}
           >
             <Avatar
-              src={lawyer.advogado?.foto_perfil_url ?? undefined}
+              src={lawyer.foto_perfil_url ?? undefined}
               alt={lawyer.name}
               sx={{
                 width: 84,
@@ -128,14 +128,14 @@ export function LawyerProfileCard({ lawyer }: Props) {
             overflow: "hidden",
           }}
         >
-          {lawyer.advogado?.resumo_pessoal ?? ""}
+          {lawyer.resumo_pessoal ?? ""}
         </Typography>
 
         <Stack direction="row" flexWrap="wrap" gap={1} mt="auto">
           {categories.map((cat) => (
             <Chip
-              key={cat.id}
-              label={cat.nome}
+              key={cat}
+              label={cat}
               size="small"
               variant="outlined"
               sx={{

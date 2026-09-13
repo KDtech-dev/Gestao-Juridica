@@ -1,4 +1,4 @@
-import AcompanhamentoView from "@/views/Casos/Acompanhamento";
+import AcompanhamentoView from "@/views/Casos/AcompanhamentoDetalhes";
 import { cases, findCase } from "@/data/cases";
 
 export function generateStaticParams() {
@@ -19,6 +19,7 @@ export default async function TrackingDetailPage({
   if (!item) {
     return (
       <AcompanhamentoView
+        clientSlug={client}
         clientName="Cliente"
         caseTitle="Caso não encontrado"
         processNumber="-"
@@ -31,6 +32,7 @@ export default async function TrackingDetailPage({
 
   return (
     <AcompanhamentoView
+      clientSlug={item.clientSlug}
       clientName={item.clientName}
       caseTitle={item.caseTitle}
       processNumber={item.processNumber}

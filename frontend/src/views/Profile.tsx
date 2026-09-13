@@ -16,7 +16,10 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { useAuth } from "@/hooks/useAuth";
 import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
+import {
+  createProfileFormSchema,
+  ProfileFormSchemaType,
+} from "@/schemas/ProfileSchema";
 import CardSeguranca from "@/components/users/CardSeguranca";
 import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { useThemeMode } from "@/theme/ThemeRegistry";
@@ -31,8 +34,6 @@ import { toast, formatToastErrorMessage } from "@/utils/toast";
 import { CardEndereco } from "@/components/CardEndereco";
 import PickColor from "@/components/PickColor";
 import { Icon } from "@/components/AppIcon";
-import { updateUserBaseSchema } from "@/schemas/UserSchema";
-import z from "zod";
 
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
@@ -66,10 +67,7 @@ export default function ProfileView() {
     languageRef.current = language;
   });
 
-  const profileFormSchema = updateUserBaseSchema(tValidation).extend({
-    tema: z.enum(["system", "light", "dark"]),
-    idioma: z.enum(["pt", "en", "es"]),
-  });
+  const profileFormSchema = createProfileFormSchema(tValidation);
 
   const roleNormalized: RoleType | undefined = isAdvogado
     ? "advogado"

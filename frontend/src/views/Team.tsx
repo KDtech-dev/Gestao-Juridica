@@ -25,8 +25,8 @@ export default function TeamView({ advogados }: TeamViewProps) {
     const uniqueSpecialties = new Set<string>();
 
     advogados.forEach((lawyer) => {
-      lawyer.advogado?.categorias.forEach((category) => {
-        uniqueSpecialties.add(category.nome);
+      lawyer.categorias.forEach((category) => {
+        uniqueSpecialties.add(category);
       });
     });
 
@@ -37,8 +37,8 @@ export default function TeamView({ advogados }: TeamViewProps) {
     if (selectedSpecialty === allSpecialtiesValue) return advogados;
 
     return advogados.filter((lawyer) =>
-      lawyer.advogado?.categorias.some(
-        (category) => category.nome === selectedSpecialty,
+      lawyer.categorias.some(
+        (category) => category === selectedSpecialty,
       ),
     );
   }, [advogados, selectedSpecialty]);
@@ -211,7 +211,7 @@ export default function TeamView({ advogados }: TeamViewProps) {
               }}
             >
               {filteredLawyers.map((lawyer) => (
-                <LawyerProfileCard key={lawyer.id} lawyer={lawyer} />
+                <LawyerProfileCard key={lawyer.uuid} lawyer={lawyer} />
               ))}
             </Box>
           ) : (

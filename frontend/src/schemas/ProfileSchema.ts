@@ -1,14 +1,15 @@
 import { z } from "zod";
-import { updateUserSchema } from "@/schemas/UserSchema";
+import type { useTranslations } from "next-intl";
+import { updateUserBaseSchema } from "@/schemas/UserSchema";
 
-export const profileFormSchema = updateUserSchema.extend({
-  tema: z.enum(["light", "dark", "system"]),
-  idioma: z.enum(["pt", "en", "es"]),
-  cor_perfil: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/)
-    .optional()
-    .nullable(),
-});
+type TFunction = ReturnType<typeof useTranslations>;
 
-export type ProfileFormSchemaType = z.infer<typeof profileFormSchema>;
+export const createProfileFormSchema = (t: TFunction) =>
+  updateUserBaseSchema(t).extend({
+    tema: z.enum(["system", "light", "dark"]),
+    idioma: z.enum(["pt", "en", "es"]),
+  });
+
+export type ProfileFormSchemaType = z.infer<
+  ReturnType<typeof createProfileFormSchema>
+>;

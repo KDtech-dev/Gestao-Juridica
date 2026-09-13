@@ -10,19 +10,19 @@ const messages = {
   es,
 };
 
-type TranslationObject = {
-  [key: string]: string | TranslationObject;
-};
+function isTranslationObject(
+  value: unknown,
+): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
 
 export function getTranslation(language: Language, path: string): string {
   const keys = path.split(".");
 
-  let current: string | TranslationObject = messages[
-    language
-  ] as TranslationObject;
+  let current: unknown = messages[language];
 
   for (const key of keys) {
-    if (typeof current === "object" && current !== null && key in current) {
+    if (isTranslationObject(current) && key in current) {
       current = current[key];
     } else {
       return path;

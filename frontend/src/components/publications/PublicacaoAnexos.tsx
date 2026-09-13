@@ -39,20 +39,22 @@ export function PublicacaoAnexos({ publicacao }: Props) {
                 gap={1}
               >
                 <Typography color="text.primary">{anexo.nome}</Typography>
-                <Button
-                  component="a"
-                  href={anexo.url}
-                  download
-                  variant="outlined"
+                {anexo.viewUrl && (
+                  <Button
+                    component="a"
+                    href={anexo.viewUrl}
+                    download
+                    variant="outlined"
                   size="small"
                   startIcon={<Icon icon="mdi:download" />}
                   sx={{
                     textTransform: "none",
                     borderColor: "divider",
-                  }}
-                >
-                  Download
-                </Button>
+                    }}
+                  >
+                    Download
+                  </Button>
+                )}
               </Stack>
               {index < publicacao.anexos.length - 1 && (
                 <Divider sx={{ mt: 1 }} />

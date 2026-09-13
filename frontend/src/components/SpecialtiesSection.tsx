@@ -9,7 +9,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
-import { AdvogadoPublicoType, CategoriaType } from "@/@core/types";
+import {
+  AdvogadoPublicoType,
+  CategoriaType,
+  LawyerCardType,
+} from "@/@core/types";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -18,13 +22,16 @@ import { getAdvogadosPublicos } from "@/api/ApiAdvogados";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
+  advogados?: AdvogadoPublicoType[];
 };
 
 export default function SpecialtiesSection({ translations }: Props) {
   const t = translations;
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
 
-  const [advogados, setAdvogados] = useState<AdvogadoPublicoType[]>([]);
+  const [advogadosCategoria, setAdvogadosCategoria] = useState<
+    AdvogadoPublicoType[]
+  >([]);
   const [loadingAdvogados, setLoadingAdvogados] = useState(false);
   const [selectedSpecialty, setSelectedSpecialty] =
     useState<CategoriaType | null>(null);
@@ -33,17 +40,20 @@ export default function SpecialtiesSection({ translations }: Props) {
 
   useEffect(() => {
     if (!selectedSpecialty) {
-      setAdvogados([]);
+      setAdvogadosCategoria([]);
       return;
     }
 
     const loadAdvogados = async () => {
       setLoadingAdvogados(true);
+
       try {
         const response = await getAdvogadosPublicos(selectedSpecialty.id);
-        setAdvogados(response.data);
+        setAdvogadosCategoria(response.data);
       } catch (err) {
-        toast.error(formatToastErrorMessage(err, t("toast.loadLawyersError")));
+        toast.error(
+          formatToastErrorMessage(err, t("toast.loadLawyersError")),
+        );
       } finally {
         setLoadingAdvogados(false);
       }
@@ -80,20 +90,23 @@ export default function SpecialtiesSection({ translations }: Props) {
     );
   };
 
-  const lawyersForSpecialty = advogados.map((advogado) => ({
-    id: advogado.uuid,
-    name: advogado.name,
-    image: advogado.foto_perfil_url ?? undefined,
-    role: t("specialities.roleAdvogado"),
-    oab: `OAB/${advogado.oab_uf} ${advogado.oab_numero}`,
-    description: advogado.resumo_pessoal ?? "",
-  }));
+  const lawyersForSpecialty: LawyerCardType[] = advogadosCategoria.map(
+    (advogado) => ({
+      id: advogado.uuid,
+      name: advogado.name,
+      image: advogado.foto_perfil_url ?? undefined,
+      role: t("specialities.roleAdvogado"),
+      oab: `OAB/${advogado.oab_uf} ${advogado.oab_numero}`,
+      description: advogado.resumo_pessoal ?? "",
+    }),
+  );
 
   return (
     <Container>
       <Typography variant="h4" textAlign="center" mb={4}>
         {t("specialities.title")}
       </Typography>
+
       <Typography variant="h6" textAlign="center" mb={6}>
         {t("specialities.subtitle")}
       </Typography>
@@ -106,6 +119,7 @@ export default function SpecialtiesSection({ translations }: Props) {
         <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
           {categorias.map((categoria) => {
             const isSelected = selectedSpecialty?.id === categoria.id;
+
             return (
               <Box
                 key={categoria.id}
@@ -139,19 +153,20 @@ export default function SpecialtiesSection({ translations }: Props) {
         </Stack>
       )}
 
-      {selectedSpecialty && (
-        loadingAdvogados ? (
+      {selectedSpecialty &&
+        (loadingAdvogados ? (
           <Stack alignItems="center" py={4}>
             <CircularProgress size={28} />
           </Stack>
         ) : (
           <SpecialtyLawyersCarousel
             translations={t}
-            title={`${t("specialities.expertsIn")}${traduzirNome(selectedSpecialty.nome)}`}
+            title={`${t("specialities.expertsIn")}${traduzirNome(
+              selectedSpecialty.nome,
+            )}`}
             lawyers={lawyersForSpecialty}
           />
-        )
-      )}
+        ))}
     </Container>
   );
 }
