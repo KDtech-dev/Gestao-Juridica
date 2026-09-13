@@ -4,12 +4,12 @@ import { useRef } from "react";
 import { Box, IconButton, Stack, Typography, Avatar } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
-import { AdvogadoPublicoType } from "@/@core/types";
+import { LawyerCardType } from "@/@core/types";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
   title: string;
-  lawyers: AdvogadoPublicoType[];
+  lawyers: LawyerCardType[];
 };
 
 export default function SpecialtyLawyersCarousel({
@@ -25,7 +25,9 @@ export default function SpecialtyLawyersCarousel({
   const scrollBy = (direction: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
+
     const amount = el.clientWidth * 0.8;
+
     el.scrollBy({
       left: direction === "left" ? -amount : amount,
       behavior: "smooth",
@@ -107,36 +109,38 @@ export default function SpecialtyLawyersCarousel({
                   }}
                 >
                   <Stack alignItems="center" spacing={1.5}>
-                  <Avatar
-  src={lawyer.advogado?.foto_perfil_url ?? undefined}
-  alt={lawyer.name}
-  sx={{
-    width: 90,
-    height: 90,
-    bgcolor: lawyer.cor_perfil ?? undefined,
-  }}
-/>
+                    <Avatar
+                      src={lawyer.image}
+                      alt={lawyer.name}
+                      sx={{
+                        width: 90,
+                        height: 90,
+                      }}
+                    />
+
                     <Typography fontWeight={700} fontSize="1.05rem">
                       {lawyer.name}
                     </Typography>
+
                     <Typography variant="body2" color="text.secondary">
-                      Advogado
+                      {lawyer.role}
                     </Typography>
-                    
-{lawyer.advogado?.oab_numero && (
-  <Typography variant="body2" color="primary">
-    OAB/{lawyer.advogado.oab_uf} {lawyer.advogado.oab_numero}
-  </Typography>
-)}
-{lawyer.advogado?.resumo_pessoal && (
-  <Typography
-    variant="body2"
-    color="text.secondary"
-    sx={{ maxWidth: 260 }}
-  >
-    {lawyer.advogado.resumo_pessoal}
-  </Typography>
-)}
+
+                    {lawyer.oab && (
+                      <Typography variant="body2" color="primary">
+                        {lawyer.oab}
+                      </Typography>
+                    )}
+
+                    {lawyer.description && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ maxWidth: 260 }}
+                      >
+                        {lawyer.description}
+                      </Typography>
+                    )}
                   </Stack>
                 </Box>
               ))}

@@ -121,16 +121,22 @@ export type FuncionarioType = {
 };
 
 export type AdvogadoPublicoType = {
+  uuid: string;
+  name: string;
+  foto_perfil_url: string | null;
+  oab_numero: string;
+  oab_uf: string;
+  resumo_pessoal: string | null;
+  categorias: string[];
+};
+
+export type LawyerCardType = {
   id: string;
   name: string;
-  cor_perfil: string | null;
-  advogado: {
-    resumo_pessoal: string | null;
-    foto_perfil_url: string | null;
-    oab_numero: string;
-    oab_uf: string;
-    categorias: { id: number; nome: string }[];
-  } | null;
+  image?: string;
+  role: string;
+  oab: string;
+  description: string;
 };
 
 export type AdvogadoType = {

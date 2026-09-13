@@ -256,7 +256,7 @@ export default function UsersView() {
       field: "role",
       headerName: t("table.role"),
       flex: 0.5,
-      minWidth: 140,
+      minWidth: 120,
       sortable: false,
       renderCell: ({ row }) => {
         const role = getUserRole(row);
@@ -279,7 +279,7 @@ export default function UsersView() {
     {
       field: "actions",
       headerName: t("table.actions"),
-      width: 140,
+      width: 160,
       sortable: false,
       filterable: false,
       headerAlign: "center",

@@ -11,6 +11,7 @@ import { Footer } from "@/components/Footer";
 import { HomeCard } from "@/components/HomeCard";
 import { GridDePublicacoes } from "@/components/publications/GridDePublicacoes";
 import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
+
 import { useTranslations } from "next-intl";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 
@@ -21,7 +22,6 @@ type HomeViewProps = {
 
 export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
   const t = useTranslations("public.home");
-
 
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>

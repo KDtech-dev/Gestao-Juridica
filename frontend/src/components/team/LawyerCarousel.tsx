@@ -88,7 +88,7 @@ export function LawyerCarousel({ lawyers }: Props) {
         }}
       >
         {visibleLawyers.map((lawyer) => (
-          <LawyerProfileCard key={lawyer.id} lawyer={lawyer} />
+          <LawyerProfileCard key={lawyer.uuid} lawyer={lawyer} />
         ))}
       </Box>
 

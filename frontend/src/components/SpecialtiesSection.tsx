@@ -6,74 +6,107 @@ import {
   Typography,
   Stack,
   Box,
-  Avatar,
   CircularProgress,
 } from "@mui/material";
-import {AdvogadoPublicoType, CategoriaType } from "@/@core/types";
 import { useTranslations } from "next-intl";
+import {
+  AdvogadoPublicoType,
+  CategoriaType,
+  LawyerCardType,
+} from "@/@core/types";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { getCategorias } from "@/api/ApiCategorias";
 import SpecialtyLawyersCarousel from "./SpecialtyLawyersCarousel";
+import { getAdvogadosPublicos } from "@/api/ApiAdvogados";
 
 type Props = {
   translations: ReturnType<typeof useTranslations>;
-  advogados: AdvogadoPublicoType[];
+  advogados?: AdvogadoPublicoType[];
 };
 
-export default function SpecialtiesSection({ translations, advogados, }: Props) {
+export default function SpecialtiesSection({ translations }: Props) {
   const t = translations;
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
 
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(
-    null,
-  );
+  const [advogadosCategoria, setAdvogadosCategoria] = useState<
+    AdvogadoPublicoType[]
+  >([]);
+  const [loadingAdvogados, setLoadingAdvogados] = useState(false);
+  const [selectedSpecialty, setSelectedSpecialty] =
+    useState<CategoriaType | null>(null);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 
- useEffect(() => {
-  const loadCategorias = async () => {
-    try {
-      const response = await getCategorias();
-      setCategorias(response.data);
-    } catch (err) {
-
-      toast.error(
-        formatToastErrorMessage(
-          err,
-          t("toast.loadCategoriesError"),
-        ),
-      );
-    } finally {
-      setLoadingCategorias(false);
+  useEffect(() => {
+    if (!selectedSpecialty) {
+      setAdvogadosCategoria([]);
+      return;
     }
-  };
 
-  loadCategorias();
-}, [t]);
+    const loadAdvogados = async () => {
+      setLoadingAdvogados(true);
+
+      try {
+        const response = await getAdvogadosPublicos(selectedSpecialty.id);
+        setAdvogadosCategoria(response.data);
+      } catch (err) {
+        toast.error(
+          formatToastErrorMessage(err, t("toast.loadLawyersError")),
+        );
+      } finally {
+        setLoadingAdvogados(false);
+      }
+    };
+
+    loadAdvogados();
+  }, [selectedSpecialty, t]);
+
+  useEffect(() => {
+    const loadCategorias = async () => {
+      try {
+        const response = await getCategorias();
+        setCategorias(response.data);
+      } catch (err) {
+        toast.error(
+          formatToastErrorMessage(err, t("toast.loadCategoriesError")),
+        );
+      } finally {
+        setLoadingCategorias(false);
+      }
+    };
+
+    loadCategorias();
+  }, [t]);
 
   const traduzirNome = (nome: string) => {
     const chave = categoriaNomeParaChave[nome];
     return chave ? tPracticeAreas(chave) : nome;
   };
 
-  const lawyersForSpecialty = selectedSpecialty
-    ? advogados.filter((lawyer) =>
-      lawyer.advogado?.categorias.some(
-        (categoria) => categoria.nome === selectedSpecialty,
-      ),
-    )
-  : [];
-
-  const handleToggle = (nome: string) => {
-    setSelectedSpecialty((prev) => (prev === nome ? null : nome));
+  const handleToggle = (categoria: CategoriaType) => {
+    setSelectedSpecialty((prev) =>
+      prev?.id === categoria.id ? null : categoria,
+    );
   };
+
+  const lawyersForSpecialty: LawyerCardType[] = advogadosCategoria.map(
+    (advogado) => ({
+      id: advogado.uuid,
+      name: advogado.name,
+      image: advogado.foto_perfil_url ?? undefined,
+      role: t("specialities.roleAdvogado"),
+      oab: `OAB/${advogado.oab_uf} ${advogado.oab_numero}`,
+      description: advogado.resumo_pessoal ?? "",
+    }),
+  );
 
   return (
     <Container>
       <Typography variant="h4" textAlign="center" mb={4}>
         {t("specialities.title")}
       </Typography>
+
       <Typography variant="h6" textAlign="center" mb={6}>
         {t("specialities.subtitle")}
       </Typography>
@@ -85,11 +118,12 @@ export default function SpecialtiesSection({ translations, advogados, }: Props) 
       ) : (
         <Stack direction="row" flexWrap="wrap" gap={2} justifyContent="center">
           {categorias.map((categoria) => {
-            const isSelected = selectedSpecialty === categoria.nome;
+            const isSelected = selectedSpecialty?.id === categoria.id;
+
             return (
               <Box
                 key={categoria.id}
-                onClick={() => handleToggle(categoria.nome)}
+                onClick={() => handleToggle(categoria)}
                 sx={{
                   width: { xs: "45%", md: "30%" },
                   p: 3,
@@ -119,13 +153,20 @@ export default function SpecialtiesSection({ translations, advogados, }: Props) 
         </Stack>
       )}
 
-      {selectedSpecialty && (
-        <SpecialtyLawyersCarousel
-          translations={t}
-          title={`${t("specialities.expertsIn")}${traduzirNome(selectedSpecialty)}`}
-          lawyers={lawyersForSpecialty}
-        />
-      )}
+      {selectedSpecialty &&
+        (loadingAdvogados ? (
+          <Stack alignItems="center" py={4}>
+            <CircularProgress size={28} />
+          </Stack>
+        ) : (
+          <SpecialtyLawyersCarousel
+            translations={t}
+            title={`${t("specialities.expertsIn")}${traduzirNome(
+              selectedSpecialty.nome,
+            )}`}
+            lawyers={lawyersForSpecialty}
+          />
+        ))}
     </Container>
   );
 }

@@ -156,7 +156,13 @@ export default function DialogUser({
   };
 
   const handleFormSubmit = handleSubmit(async (data) => {
-    const result = await onSubmit(data);
+    const payload = {
+      ...data,
+      advogado: data.role === "advogado" ? data.advogado : undefined,
+      funcionario: data.role === "funcionario" ? data.funcionario : undefined,
+    };
+
+    const result = await onSubmit(payload);
 
     if (!isEdit && pendingAvatarFile && result?.id) {
       try {
@@ -170,27 +176,6 @@ export default function DialogUser({
 
     onClose();
   });
-
-  useEffect(() => {
-    if (role !== "advogado") {
-      setValue("advogado", {
-        celular: "",
-        data_nascimento: "",
-        resumo_pessoal: "",
-        oab_numero: "",
-        oab_uf: "",
-        categorias: [],
-      });
-    }
-
-    if (role !== "funcionario") {
-      setValue("funcionario", {
-        celular: "",
-        data_nascimento: "",
-        resumo_pessoal: "",
-      });
-    }
-  }, [role, setValue]);
 
   const title =
     mode === "create"
@@ -439,13 +424,7 @@ export default function DialogUser({
                   />
                 )}
               />
-              <InputBasico
-                field="advogado.data_nascimento"
-                label={t("fields.birthDate")}
-                placeholder={t("fields.birthDatePlaceholder")}
-                type="date"
-                disabled={isReadOnly}
-              />
+              
               <Stack
                 direction="row"
                 spacing={1.5}
@@ -625,28 +604,22 @@ function buildDefaultValues(
     cpf: user?.cpf ?? "",
     ...(isEdit ? {} : { password: "", password_confirmation: "" }),
 
-    funcionario:
-      role === "funcionario"
-        ? {
-          celular: user?.funcionario?.celular ?? "",
-          data_nascimento: user?.funcionario?.data_nascimento ?? "",
-          resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
-        }
-        : undefined,
+    funcionario: {
+      celular: user?.funcionario?.celular ?? "",
+      data_nascimento: user?.funcionario?.data_nascimento ?? "",
+      resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
+    },
 
-    advogado:
-      role === "advogado"
-        ? {
-          celular: user?.advogado?.celular ?? "",
-          oab_numero: user?.advogado?.oab_numero ?? "",
-          oab_uf: user?.advogado?.oab_uf ?? "",
-          categorias: Array.isArray(user?.advogado?.categorias)
-            ? user.advogado.categorias.map((c) =>
-              typeof c === "object" ? c.id : c,
-            )
-            : [],
-          resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
-        }
-        : undefined,
+    advogado: {
+      celular: user?.advogado?.celular ?? "",
+      oab_numero: user?.advogado?.oab_numero ?? "",
+      oab_uf: user?.advogado?.oab_uf ?? "",
+      categorias: Array.isArray(user?.advogado?.categorias)
+        ? user.advogado.categorias.map((c) =>
+          typeof c === "object" ? c.id : c,
+        )
+        : [],
+      resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
+    },
   };
 }

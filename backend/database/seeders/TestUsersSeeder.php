@@ -72,7 +72,7 @@ class TestUsersSeeder extends Seeder
             ]
         );
 
-        // Advogados genéricos
+        // Advogados genéricos — um para cada uma das 6 categorias existentes
         $advogadosData = [
             [
                 'user' => [
@@ -86,9 +86,9 @@ class TestUsersSeeder extends Seeder
                     'oab_uf'         => 'SP',
                     'celular'        => '11999990001',
                     'sexo'           => 'feminino',
-                    'resumo_pessoal' => 'Especialista em direito de família e sucessões, com mais de 10 anos de atuação.',
+                    'resumo_pessoal' => 'Especialista em direito público, atuando em questões envolvendo o poder público e o interesse coletivo.',
                 ],
-                'categorias' => ['Direito de Família', 'Direito Sucessório'],
+                'categorias' => ['Direito Público'],
             ],
             [
                 'user' => [
@@ -102,9 +102,9 @@ class TestUsersSeeder extends Seeder
                     'oab_uf'         => 'RJ',
                     'celular'        => '21999990002',
                     'sexo'           => 'masculino',
-                    'resumo_pessoal' => 'Advogado criminalista com foco em tribunal do júri e habeas corpus.',
+                    'resumo_pessoal' => 'Advogado previdenciário com experiência em aposentadorias e benefícios do INSS.',
                 ],
-                'categorias' => ['Direito Penal'],
+                'categorias' => ['Direito Previdenciário'],
             ],
             [
                 'user' => [
@@ -118,9 +118,9 @@ class TestUsersSeeder extends Seeder
                     'oab_uf'         => 'MG',
                     'celular'        => '31999990003',
                     'sexo'           => 'feminino',
-                    'resumo_pessoal' => 'Atuação em direito empresarial, contratos e recuperação judicial.',
+                    'resumo_pessoal' => 'Atuação em direito trabalhista, defendendo empregados e empregadores em relações de trabalho.',
                 ],
-                'categorias' => ['Direito Empresarial', 'Direito Contratual'],
+                'categorias' => ['Direito Trabalhista'],
             ],
             [
                 'user' => [
@@ -134,9 +134,9 @@ class TestUsersSeeder extends Seeder
                     'oab_uf'         => 'RS',
                     'celular'        => '51999990004',
                     'sexo'           => 'masculino',
-                    'resumo_pessoal' => 'Especialista em direito tributário e planejamento fiscal para empresas.',
+                    'resumo_pessoal' => 'Especialista em direito civil, contratos, indenizações e obrigações.',
                 ],
-                'categorias' => ['Direito Tributário'],
+                'categorias' => ['Direito Civil'],
             ],
             [
                 'user' => [
@@ -150,9 +150,25 @@ class TestUsersSeeder extends Seeder
                     'oab_uf'         => 'BA',
                     'celular'        => '71999990005',
                     'sexo'           => 'feminino',
-                    'resumo_pessoal' => 'Advogada previdenciária com experiência em aposentadorias e benefícios do INSS.',
+                    'resumo_pessoal' => 'Advogada especialista em direito bancário, contratos e relações financeiras.',
                 ],
-                'categorias' => ['Direito Previdenciário'],
+                'categorias' => ['Direito Bancário'],
+            ],
+            [
+                'user' => [
+                    'name'     => 'Bruno Almeida Ribeiro',
+                    'email'    => 'bruno.ribeiro@example.com',
+                    'cpf'      => '66677788899',
+                    'password' => Hash::make('123456'),
+                ],
+                'perfil' => [
+                    'oab_numero'     => '789012',
+                    'oab_uf'         => 'DF',
+                    'celular'        => '61999990006',
+                    'sexo'           => 'masculino',
+                    'resumo_pessoal' => 'Atua em consultoria legislativa, elaboração e acompanhamento de projetos de lei.',
+                ],
+                'categorias' => ['Consultoria Legislativa'],
             ],
         ];
 

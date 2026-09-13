@@ -735,7 +735,8 @@
         "expertsIn": "Especialistas en ",
         "errorNoLawyersForSpecialty": "No hay abogados disponibles para esta especialidad.",
         "previous": "Anterior",
-        "next": "Siguiente"
+        "next": "Siguiente",
+        "roleAdvogado": "Abogado"
       }
     },
     "teamPage": {

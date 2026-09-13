@@ -3,7 +3,10 @@
 namespace App\Services;
 
 use App\Exceptions\InvalidCurrentPasswordException;
+use Illuminate\Support\Facades\Auth;
 use App\Exceptions\LastAdminException;
+use App\Exceptions\SelfDeletionException;
+use App\Exceptions\SelfRoleChangeException;
 use App\Models\User;
 use App\Models\Funcionario;
 use App\Models\Advogado;
@@ -45,7 +48,7 @@ class UserService
 
             $user->assignRole($dados['role']);
 
-            return $this->carregarRelacoes($user, $dados['role']);
+            return $this->carregarRelacoes($user);
         });
     }
 
@@ -85,6 +88,14 @@ class UserService
     public function atualizar(User $user, array $dados): User
     {
         return DB::transaction(function () use ($user, $dados) {
+            if (
+                $user->id === Auth::id()
+                && isset($dados['role'])
+                && !$user->hasRole($dados['role'])
+            ) {
+                throw new SelfRoleChangeException();
+            }
+
             $dadosUser = array_filter([
                 'name'  => $dados['name'] ?? null,
                 'email' => $dados['email'] ?? null,
@@ -114,7 +125,7 @@ class UserService
                 $user->syncRoles([$dados['role']]);
             }
 
-            return $this->carregarRelacoes($user->fresh(), $roleAlvo);
+            return $this->carregarRelacoes($user->fresh());
         });
     }
 
@@ -238,6 +249,7 @@ class UserService
         return User::with([
             'funcionario.endereco',
             'advogado.endereco',
+            'advogado.categorias',
             'roles',
         ])->paginate($porPagina);
     }
@@ -246,21 +258,26 @@ class UserService
     {
         $role = $user->getRoleNames()->first();
 
-        return $this->carregarRelacoes($user, $role);
+        return $this->carregarRelacoes($user);
     }
 
-    private function carregarRelacoes(User $user, ?string $role): User
+    private function carregarRelacoes(User $user): User
     {
-        return match ($role) {
-            'funcionario' => $user->load('funcionario.endereco', 'roles'),
-            'advogado'    => $user->load('advogado.endereco', 'advogado.categorias', 'roles'),
-            default       => $user->load('roles'),
-        };
+        return $user->load([
+            'roles',
+            'funcionario.endereco',
+            'advogado.endereco',
+            'advogado.categorias',
+        ]);
     }
 
 
     public function deletar(User $user): void
     {
+        if ($user->id === Auth::id()) {
+            throw new SelfDeletionException();
+        }
+
         if ($user->hasRole('admin')) {
             $totalAdmins = User::role('admin')->count();
 
