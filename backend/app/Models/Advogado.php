@@ -10,24 +10,30 @@ use Illuminate\Support\Facades\Storage;
 class Advogado extends Model
 {
     use HasUuids;
-
-    protected $fillable = [
-        'user_id',
-        'sexo',
-        'celular',
-        'resumo_pessoal',
-        'foto_perfil',
-        'oab_numero',
-        'oab_uf',
-        'endereco_id',
-    ];
+protected $fillable = [
+    'user_id',
+    'data_nascimento',
+    'sexo',
+    'celular',
+    'resumo_pessoal',
+    'foto_perfil',
+    'oab_numero',
+    'oab_uf',
+    'endereco_id',
+];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function endereco()
+  protected function casts(): array
+{
+    return [
+        'data_nascimento' => 'date',
+    ];
+}
+  public function endereco()
     {
         return $this->belongsTo(Endereco::class);
     }
@@ -36,7 +42,7 @@ class Advogado extends Model
     {
         return $this->belongsToMany(Categoria::class, 'advogado_categoria');
     }
-    protected function fotoPerfisUrl(): Attribute
+    protected function fotoPerfilUrl(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->foto_perfil
