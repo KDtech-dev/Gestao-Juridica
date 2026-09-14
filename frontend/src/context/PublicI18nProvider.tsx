@@ -26,7 +26,11 @@ export function PublicI18nProvider({ children }: { children: ReactNode }) {
       : language;
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages[locale]}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages[locale]}
+      timeZone="America/Sao_Paulo"
+    >
       {children}
     </NextIntlClientProvider>
   );

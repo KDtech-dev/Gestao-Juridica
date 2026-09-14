@@ -81,7 +81,7 @@ const InputImage = ({
   }, [file]);
 
   const inputProps = getInputProps({ id });
-  const backendOrigin = getPublicApiOrigin() || "http://127.0.0.1:8000";
+  const backendOrigin = getPublicApiOrigin();
 
   return (
     <Box {...props} sx={file ? { height: "auto", ...props.sx } : props.sx}>
