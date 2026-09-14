@@ -320,6 +320,7 @@ export default function ClientesView() {
               disableRowSelectionOnClick
               sx={{
                 border: "none",
+                "--DataGrid-overlayHeight": "220px",
                 "& .MuiDataGrid-columnHeaders": {
                   bgcolor: `${theme.palette.primary.main}08`,
                   fontWeight: 800,
@@ -341,7 +342,7 @@ export default function ClientesView() {
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: 200,
+                      height: "100%",
                       gap: 1,
                     }}
                   >
