@@ -20,7 +20,6 @@ class PublicacaoService
     public function getPublicacoes()
     {
         return Publicacao::query()
-            ->where('user_id', Auth::id())
             ->with(['categoria', 'anexos'])
             ->latest()
             ->get();
@@ -29,7 +28,6 @@ class PublicacaoService
     public function getPublicacaoById(string $id)
     {
         return Publicacao::query()
-            ->where('user_id', Auth::id())
             ->where('id', $id)
             ->with(['categoria', 'anexos'])
             ->firstOrFail();
@@ -90,7 +88,6 @@ class PublicacaoService
         unset($data['anexos'], $data['imagem'], $data['anexos_remover'], $data['imagem_caminho']);
 
         $publicacao = Publicacao::query()
-            ->where('user_id', Auth::id())
             ->findOrFail($id);
 
         $this->handlePublishedAt($data, $publicacao);
@@ -116,7 +113,6 @@ class PublicacaoService
     public function deletePublicacao(string $id)
     {
         $publicacao = Publicacao::query()
-            ->where('user_id', Auth::id())
             ->where('id', $id)
             ->firstOrFail();
 
@@ -129,7 +125,6 @@ class PublicacaoService
         Publicacao $publicacao,
         UploadedFile $imagem
     ): Publicacao {
-        $this->ensureOwned($publicacao);
         $this->deleteImagemAtual($publicacao);
 
         $path = $this->processImagem($imagem, $publicacao->id);
@@ -147,8 +142,6 @@ class PublicacaoService
         Publicacao $publicacao,
         UploadedFile $arquivo
     ): Anexo {
-        $this->ensureOwned($publicacao);
-
         $path = $arquivo->storePublicly(
             "publicacoes/{$publicacao->id}/anexos",
             'public'
@@ -165,7 +158,6 @@ class PublicacaoService
         Publicacao $publicacao,
         Anexo $anexo
     ): void {
-        $this->ensureOwned($publicacao);
         abort_unless((string) $anexo->publicacao_id === (string) $publicacao->id, 404);
 
         if ($anexo->arquivo) {
@@ -173,11 +165,6 @@ class PublicacaoService
         }
 
         $anexo->delete();
-    }
-
-    private function ensureOwned(Publicacao $publicacao): void
-    {
-        abort_unless($publicacao->user_id === Auth::id(), 404);
     }
 
     private function publicQuery()

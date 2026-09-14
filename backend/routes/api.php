@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/password', [ProfileController::class, 'updatePassword']);
     });
 
-    Route::prefix('clientes')->middleware('role:admin')->group(function () {
+    Route::prefix('clientes')->group(function () {
         Route::get('/',               [ClienteController::class, 'index']);
         Route::post('/',              [ClienteController::class, 'store']);
         Route::get('/{cliente}',      [ClienteController::class, 'show']);
@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{user}/foto', [UserController::class, 'removerFoto']);
     });
 
-    Route::prefix('casos')->middleware('role:admin')->group(function () {
+    Route::prefix('casos')->group(function () {
         Route::get('/',            [CasoController::class, 'index']);
         Route::post('/',           [CasoController::class, 'store']);
         Route::get('/{caso}',      [CasoController::class, 'show']);

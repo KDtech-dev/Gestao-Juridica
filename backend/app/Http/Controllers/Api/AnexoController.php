@@ -21,8 +21,6 @@ class AnexoController extends Controller
 
     private function responder(Anexo $anexo, string $disposition): StreamedResponse
     {
-        abort_unless(auth()->user()?->hasRole('admin'), 403);
-
         $disk = str_starts_with((string) $anexo->arquivo, 'casos/')
             ? 'local'
             : 'public';
