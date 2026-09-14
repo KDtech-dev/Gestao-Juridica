@@ -75,7 +75,9 @@ export default function ClientesView() {
     ),
   );
 
-  const totalCount = search.trim() ? clientesFiltrados.length : total;
+  const isSearching = search.trim().length > 0;
+  const rowsExibidos = isSearching ? clientesFiltrados : clientes;
+  const totalCount = isSearching ? clientesFiltrados.length : total;
 
   const handleSubmit = async (data: CreateClientePayload) => {
     setSubmitting(true);
@@ -307,9 +309,9 @@ export default function ClientesView() {
             </Stack>
 
             <DataGrid
-              rows={search.trim() ? clientesFiltrados : clientes}
-              rowCount={search.trim() ? clientesFiltrados.length : total}
-              paginationMode="server"
+              rows={rowsExibidos}
+              rowCount={totalCount}
+              paginationMode={isSearching ? "client" : "server"}
               columns={columns}
               loading={loading}
               getRowId={(row) => row.id}
@@ -317,7 +319,13 @@ export default function ClientesView() {
               getRowHeight={() => "auto"}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
+              pageSizeOptions={[10, 25, 50]}
               disableRowSelectionOnClick
+              slotProps={{
+                pagination: {
+                  labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                },
+              }}
               sx={{
                 border: "none",
                 "--DataGrid-overlayHeight": "220px",
@@ -354,7 +362,7 @@ export default function ClientesView() {
                     <Typography color="text.secondary" variant="h6">
                       {t("empty.title")}
                     </Typography>
-                    {!search.trim() && (
+                    {!isSearching && (
                       <Button
                         variant="outlined"
                         onClick={() => setDialogOpen(true)}

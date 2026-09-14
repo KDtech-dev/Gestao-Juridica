@@ -4,7 +4,10 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "delete": "Eliminar",
-    "edit": "Editar"
+    "edit": "Editar",
+    "dataGrid": {
+      "rowsPerPage": "Filas por página:"
+    }
   },
   "branding": {
     "appName": "Central Jurídica",
