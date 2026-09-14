@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Autocomplete,
   Badge,
   Box,
   IconButton,
@@ -22,7 +21,6 @@ import {
 } from "react";
 import { useNotifications } from "@/context/NotificationsContext";
 import { useTheme } from "@mui/material/styles";
-import { cases, listTrackedClients } from "@/data/cases";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -67,19 +65,6 @@ export function HeaderDashboard({
       })),
     [menuNotifications],
   );
-  const searchOptions = useMemo(() => {
-    const clientOptions = listTrackedClients().map((client) => ({
-      label: client.name,
-      subtitle: "Cliente",
-      href: `/acompanhamento/${client.slug}`,
-    }));
-    const caseOptions = cases.map((item) => ({
-      label: item.caseTitle,
-      subtitle: `Caso • ${item.clientName}`,
-      href: `/acompanhamento/${item.clientSlug}/${item.caseSlug}`,
-    }));
-    return [...clientOptions, ...caseOptions];
-  }, []);
 
   if (loading) {
     return (
@@ -123,27 +108,12 @@ export function HeaderDashboard({
   const handleOpenSidebar = () => {
     window.dispatchEvent(new CustomEvent("dashboard-sidebar:open"));
   };
-  const handleSearchInputChange = (_: unknown, value: string) =>
-    setSearchValue(value);
-  const handleSearchOptionChange = (
-    _: unknown,
-    option: { href: string } | string | null,
-  ) => {
-    if (!option || typeof option === "string") return;
-    router.push(option.href);
-  };
+  const handleSearchInputChange = (value: string) => setSearchValue(value);
   const handleSearchKeyDown: KeyboardEventHandler = (event) => {
     if (event.key !== "Enter") return;
-    const firstMatch = searchOptions.find((option) =>
-      `${option.label} ${option.subtitle}`
-        .toLowerCase()
-        .includes(searchValue.toLowerCase()),
-    );
-    if (firstMatch) {
-      router.push(firstMatch.href);
-      return;
-    }
-    router.push("/clientes");
+    const query = searchValue.trim();
+    const target = query ? `/casos?search=${encodeURIComponent(query)}` : "/casos";
+    router.push(target);
   };
 
   return (
@@ -207,78 +177,37 @@ export function HeaderDashboard({
       </Box>
 
       {showSearch && (
-        <Autocomplete
-          freeSolo
+        <TextField
           fullWidth
+          value={searchValue}
+          onChange={(event) => handleSearchInputChange(event.target.value)}
+          onKeyDown={handleSearchKeyDown}
+          placeholder="Buscar casos ou clientes..."
           sx={{
             order: { xs: 3, md: 0 },
             flexBasis: { xs: "100%", md: "auto" },
             maxWidth: { xs: "100%", md: 460 },
             minWidth: { xs: 0, md: 320 },
+            "& .MuiOutlinedInput-root": {
+              height: 46,
+              borderRadius: "10px",
+              bgcolor: "background.default",
+            },
+            "& .MuiOutlinedInput-notchedOutline": {
+              borderColor: "divider",
+            },
+            "& input": {
+              py: 1.2,
+              fontSize: "0.95rem",
+            },
           }}
-          options={searchOptions}
-          getOptionLabel={(option) =>
-            typeof option === "string" ? option : option.label
-          }
-          filterOptions={(options, state) =>
-            options.filter((option) =>
-              `${option.label} ${option.subtitle}`
-                .toLowerCase()
-                .includes(state.inputValue.toLowerCase()),
-            )
-          }
-          onInputChange={handleSearchInputChange}
-          onChange={handleSearchOptionChange}
-          renderOption={(props, option) => {
-            const { key, ...rest } = props;
-
-            return (
-              <Box component="li" key={key} {...rest} sx={{ py: 1 }}>
-                <Box>
-                  <Typography
-                    fontSize="0.9rem"
-                    fontWeight={600}
-                    color="text.primary"
-                  >
-                    {option.label}
-                  </Typography>
-                  <Typography fontSize="0.78rem" color="text.secondary">
-                    {option.subtitle}
-                  </Typography>
-                </Box>
-              </Box>
-            );
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Icon icon="mdi:magnify" width={20} color="currentColor" />
+              </InputAdornment>
+            ),
           }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              placeholder={"Buscar clientes, processos ou tarefas..."}
-              onKeyDown={handleSearchKeyDown}
-              sx={{
-                maxWidth: { xs: "100%", md: 460 },
-                "& .MuiOutlinedInput-root": {
-                  height: 46,
-                  borderRadius: "10px",
-                  bgcolor: "background.default",
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "divider",
-                },
-                "& input": {
-                  py: 1.2,
-                  fontSize: "0.95rem",
-                },
-              }}
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Icon icon="mdi:magnify" width={20} color="currentColor" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          )}
         />
       )}
 
