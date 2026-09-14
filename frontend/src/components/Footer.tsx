@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 import { Icon } from "@/components/AppIcon";
 import { useState } from "react";
-import { teamSpecialties } from "@/data/team";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { useTranslations } from "next-intl";
@@ -116,7 +115,7 @@ export function Footer() {
         sx={{ px: { xs: 2, md: 3 }, py: { xs: 7, md: 10 } }}
       >
         <Grid container spacing={{ xs: 4, md: 6 }} alignItems="flex-start">
-          <Grid size={{ xs: 12, md: 3.5 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Stack spacing={2.2}>
               <Stack direction="row" spacing={1.25} alignItems="center">
                 <Box
@@ -185,35 +184,6 @@ export function Footer() {
                   >
                     <Icon icon={s.icon} width={20} />
                   </Button>
-                ))}
-              </Stack>
-            </Stack>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, md: 2.5 }}>
-            <Stack spacing={1.4}>
-              <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
-                {t("specialties.title")}
-              </Typography>
-
-              <Stack
-                component="ul"
-                spacing={0.9}
-                sx={{ listStyle: "none", p: 0, m: 0 }}
-              >
-                {teamSpecialties.map((specialty) => (
-                  <Box key={specialty} component="li">
-                    <Typography
-                      color="rgba(255,255,255,0.66)"
-                      sx={{
-                        fontWeight: 650,
-                        fontSize: "0.95rem",
-                        lineHeight: 1.55,
-                      }}
-                    >
-                      {specialty}
-                    </Typography>
-                  </Box>
                 ))}
               </Stack>
             </Stack>
@@ -293,7 +263,7 @@ export function Footer() {
             </Stack>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 2.999 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 5 }}>
             <Stack spacing={1.4}>
               <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
                 {t("contact.title")}
