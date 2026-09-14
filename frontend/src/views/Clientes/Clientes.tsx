@@ -322,8 +322,10 @@ export default function ClientesView() {
               pageSizeOptions={[10, 25, 50]}
               disableRowSelectionOnClick
               slotProps={{
-                pagination: {
-                  labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                basePagination: {
+                  material: {
+                    labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                  },
                 },
               }}
               sx={{

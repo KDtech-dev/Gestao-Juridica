@@ -344,8 +344,10 @@ export default function CasosView() {
               paginationMode={isSearching ? "client" : "server"}
               disableRowSelectionOnClick
               slotProps={{
-                pagination: {
-                  labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                basePagination: {
+                  material: {
+                    labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                  },
                 },
               }}
               sx={{
