@@ -899,6 +899,22 @@
       "publicationDocument": "Documento da publicação",
       "download": "Download",
       "view": "Visualizar"
+    },
+    "lawyer": {
+      "about": "Sobre o profissional",
+      "practiceAreas": "Áreas de atuação",
+      "professionalInfo": "Informações profissionais",
+      "contact": "Entre em contato",
+      "ctaTitle": "Precisa de orientação jurídica?",
+      "others": "Outros profissionais",
+      "viewProfile": "Ver perfil",
+      "openProfile": "Abrir perfil de {name}",
+      "notFoundTitle": "Profissional não encontrado",
+      "notFoundDescription": "O perfil solicitado não está disponível.",
+      "errorTitle": "Não foi possível carregar o perfil",
+      "errorDescription": "Tente novamente em alguns instantes.",
+      "retry": "Tentar novamente",
+      "home": "Voltar ao início"
     }
   },
   "agenda": {

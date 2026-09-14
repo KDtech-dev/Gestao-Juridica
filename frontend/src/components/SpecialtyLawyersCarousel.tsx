@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef } from "react";
 import { Box, IconButton, Stack, Typography, Avatar } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
@@ -18,6 +19,7 @@ export default function SpecialtyLawyersCarousel({
   lawyers,
 }: Props) {
   const t = translations;
+  const tProfile = useTranslations("public.lawyer");
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const showArrows = lawyers.length > 3;
@@ -76,12 +78,16 @@ export default function SpecialtyLawyersCarousel({
               sx={{
                 display: "flex",
                 gap: 3,
-                overflowX: showArrows ? "auto" : "visible",
+                overflowX: "auto",
+                maxWidth: "100%",
                 scrollSnapType: showArrows ? "x mandatory" : "none",
                 px: 1,
                 py: 1,
                 flex: showArrows ? 1 : "0 1 auto",
-                justifyContent: showArrows ? "flex-start" : "center",
+                justifyContent: {
+                  xs: "flex-start",
+                  md: showArrows ? "flex-start" : "center",
+                },
                 "&::-webkit-scrollbar": { display: "none" },
                 scrollbarWidth: "none",
               }}
@@ -89,6 +95,9 @@ export default function SpecialtyLawyersCarousel({
               {lawyers.map((lawyer) => (
                 <Box
                   key={lawyer.id}
+                  component={Link}
+                  href={lawyer.href}
+                  aria-label={tProfile("openProfile", { name: lawyer.name })}
                   sx={{
                     scrollSnapAlign: showArrows ? "start" : "unset",
                     flex: showArrows
@@ -105,7 +114,16 @@ export default function SpecialtyLawyersCarousel({
                     border: "1px solid",
                     borderColor: "divider",
                     textAlign: "center",
-                    transition: "all 0.2s ease-in-out",
+                    textDecoration: "none",
+                    color: "inherit",
+                    cursor: "pointer",
+                    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                    "&:hover": { transform: "translateY(-4px)", boxShadow: 6 },
+                    "&:focus-visible": {
+                      outline: "2px solid",
+                      outlineColor: "primary.main",
+                      outlineOffset: 4,
+                    },
                   }}
                 >
                   <Stack alignItems="center" spacing={1.5}>

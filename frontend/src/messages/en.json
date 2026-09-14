@@ -876,6 +876,22 @@
       "publicationDocument": "Publication document",
       "download": "Download",
       "view": "View"
+    },
+    "lawyer": {
+      "about": "About the professional",
+      "practiceAreas": "Practice areas",
+      "professionalInfo": "Professional information",
+      "contact": "Get in touch",
+      "ctaTitle": "Need legal guidance?",
+      "others": "Other professionals",
+      "viewProfile": "View profile",
+      "openProfile": "Open {name}’s profile",
+      "notFoundTitle": "Professional not found",
+      "notFoundDescription": "The requested profile is unavailable.",
+      "errorTitle": "Unable to load the profile",
+      "errorDescription": "Please try again in a few moments.",
+      "retry": "Try again",
+      "home": "Back to home"
     }
   },
   "agenda": {

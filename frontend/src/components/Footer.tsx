@@ -16,6 +16,11 @@ import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { useTranslations } from "next-intl";
 
+import {
+  institutionalPhone,
+  institutionalWhatsappHref,
+} from "@/configs/publicContact";
+
 export const logoSrc = "/central-juridico-logo-icon.png";
 
 export function Footer() {
@@ -23,11 +28,11 @@ export function Footer() {
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openTerms, setOpenTerms] = useState(false);
 
-  const telefone = "5533999377986";
+  const telefone = institutionalPhone;
   const email = "contato@centraljuridica.com.br";
 
   const mensagem = t("whatsappMessage");
-  const whatsappHref = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+  const whatsappHref = institutionalWhatsappHref(mensagem);
 
   return (
     <Box

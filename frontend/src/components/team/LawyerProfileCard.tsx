@@ -3,14 +3,21 @@ import { Avatar, Box, Chip, Paper, Stack, Typography } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { AdvogadoPublicoType } from "@/@core/types";
 
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { advogadoHref, advogadoOab } from "@/utils/advogadoPublico";
+
 type Props = {
   lawyer: AdvogadoPublicoType;
+  showProfileAction?: boolean;
 };
 
-export function LawyerProfileCard({ lawyer }: Props) {
-  const oab = lawyer.oab_numero
-    ? `OAB/${lawyer.oab_uf} ${lawyer.oab_numero}`
-    : null;
+export function LawyerProfileCard({
+  lawyer,
+  showProfileAction = false,
+}: Props) {
+  const t = useTranslations("public.lawyer");
+  const oab = advogadoOab(lawyer);
   const categories = lawyer.categorias ?? [];
   const initials = lawyer.name
     .split(" ")
@@ -22,7 +29,19 @@ export function LawyerProfileCard({ lawyer }: Props) {
 
   return (
     <Paper
+      component={Link}
+      href={advogadoHref(lawyer)}
+      aria-label={t("openProfile", { name: lawyer.name })}
       sx={{
+        display: "block",
+        textDecoration: "none",
+        color: "inherit",
+        cursor: "pointer",
+        "&:focus-visible": {
+          outline: "2px solid",
+          outlineColor: "primary.main",
+          outlineOffset: 4,
+        },
         "--lawyer-accent": (theme) => theme.palette.primary.main,
         height: "100%",
         position: "relative",
@@ -105,7 +124,7 @@ export function LawyerProfileCard({ lawyer }: Props) {
             </Typography>
             {oab && (
               <Typography
-                color="primary"
+                color="text.primary"
                 fontSize="0.78rem"
                 fontWeight={700}
                 mt={0.7}
@@ -152,6 +171,11 @@ export function LawyerProfileCard({ lawyer }: Props) {
             />
           ))}
         </Stack>
+        {showProfileAction && (
+          <Typography color="text.primary" fontWeight={700}>
+            {t("viewProfile")} →
+          </Typography>
+        )}
       </Stack>
     </Paper>
   );

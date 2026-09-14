@@ -25,6 +25,7 @@ export function AuthGate({ children }: Props) {
       pathname === "/login" ||
       pathname === "/forgot-password" ||
       pathname === "/posts" ||
+      /^\/advogados\/[^/]+\/?$/.test(pathname) ||
       isPublicacaoDetail
     );
   }, [pathname]);
