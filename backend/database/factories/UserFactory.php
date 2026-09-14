@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\RoleEnum;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -36,6 +37,13 @@ class UserFactory extends Factory
                 RoleEnum::ADVOGADO->value,
                 RoleEnum::FUNCIONARIO->value,
             ];
+
+            foreach ($roles as $role) {
+                Role::firstOrCreate([
+                    'name' => $role,
+                    'guard_name' => 'api',
+                ]);
+            }
 
             $user->assignRole(fake()->randomElement($roles));
         });

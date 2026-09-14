@@ -129,6 +129,7 @@ class PublicacaoService
         Publicacao $publicacao,
         UploadedFile $imagem
     ): Publicacao {
+        $this->ensureOwned($publicacao);
         $this->deleteImagemAtual($publicacao);
 
         $path = $this->processImagem($imagem, $publicacao->id);
@@ -146,6 +147,8 @@ class PublicacaoService
         Publicacao $publicacao,
         UploadedFile $arquivo
     ): Anexo {
+        $this->ensureOwned($publicacao);
+
         $path = $arquivo->storePublicly(
             "publicacoes/{$publicacao->id}/anexos",
             'public'
@@ -162,11 +165,19 @@ class PublicacaoService
         Publicacao $publicacao,
         Anexo $anexo
     ): void {
+        $this->ensureOwned($publicacao);
+        abort_unless((string) $anexo->publicacao_id === (string) $publicacao->id, 404);
+
         if ($anexo->arquivo) {
             Storage::disk('public')->delete($anexo->arquivo);
         }
 
         $anexo->delete();
+    }
+
+    private function ensureOwned(Publicacao $publicacao): void
+    {
+        abort_unless($publicacao->user_id === Auth::id(), 404);
     }
 
     private function publicQuery()
@@ -241,7 +252,7 @@ class PublicacaoService
         }
 
         $publicacao->anexos()
-            ->whereIn('id', $anexoIds)
+            ->whereIn('uuid', $anexoIds)
             ->get()
             ->each(function ($anexo): void {
                 if ($anexo->arquivo) {

@@ -51,13 +51,13 @@ class PublicacaoUploadTest extends TestCase
 
         $response
             ->assertCreated()
-            ->assertJsonPath('anexos.0.nome_arquivo', 'contrato.pdf');
+            ->assertJsonPath('data.anexos.0.nome_arquivo', 'contrato.pdf');
 
         $anexo = Anexo::query()->firstOrFail();
 
         $this->assertNotNull($anexo->uuid);
         $this->assertDatabaseHas('anexos', [
-            'publicacao_id' => $response->json('id'),
+            'publicacao_id' => $response->json('data.id'),
             'nome_arquivo' => 'contrato.pdf',
         ]);
         Storage::disk('public')->assertExists($anexo->arquivo);
@@ -90,7 +90,7 @@ class PublicacaoUploadTest extends TestCase
                 '_method' => 'PUT',
                 'titulo' => 'Publicacao atualizada',
                 'status' => 'publicado',
-                'anexos_remover' => [$oldAnexo->id],
+                'anexos_remover' => [$oldAnexo->uuid],
                 'anexos' => [
                     UploadedFile::fake()->create(
                         'novo.docx',
@@ -102,8 +102,8 @@ class PublicacaoUploadTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertJsonPath('titulo', 'Publicacao atualizada')
-            ->assertJsonPath('anexos.0.nome_arquivo', 'novo.docx');
+            ->assertJsonPath('data.titulo', 'Publicacao atualizada')
+            ->assertJsonPath('data.anexos.0.nome_arquivo', 'novo.docx');
 
         $this->assertSoftDeleted('anexos', ['id' => $oldAnexo->id]);
         Storage::disk('public')->assertMissing($oldPath);

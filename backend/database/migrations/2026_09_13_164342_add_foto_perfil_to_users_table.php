@@ -8,17 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('foto_perfil')
-                ->nullable()
-                ->after('cor_perfil');
-        });
+        if (!Schema::hasColumn('users', 'foto_perfil')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->string('foto_perfil')
+                    ->nullable()
+                    ->after('cor_perfil');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('foto_perfil');
-        });
+        if (Schema::hasColumn('users', 'foto_perfil')) {
+            Schema::table('users', function (Blueprint $table) {
+                $table->dropColumn('foto_perfil');
+            });
+        }
     }
 };

@@ -24,7 +24,7 @@ class PublicacaoAnexoDownloadTest extends TestCase
         parent::setUp();
     }
 
-    public function test_public_attachment_can_be_viewed_inline_without_api_prefix(): void
+    public function test_public_attachment_can_be_viewed_inline(): void
     {
         Storage::fake('public');
 
@@ -50,11 +50,11 @@ class PublicacaoAnexoDownloadTest extends TestCase
         ]);
 
         $this->assertSame(
-            "/posts/anexos/{$anexo->uuid}",
+            "/storage/{$path}",
             $anexo->url
         );
 
-        $this->get($anexo->url)
+        $this->get("/api/posts/{$publicacao->id}/anexos/{$anexo->uuid}")
             ->assertOk()
             ->assertHeader('content-disposition', 'inline; filename="documento.pdf"');
     }

@@ -107,7 +107,7 @@ class CasoController extends Controller
         ]);
 
         $file = $request->file('arquivo');
-        $path = $file->storePublicly("casos/{$caso->id}/anexos", 'public');
+        $path = $file->store("casos/{$caso->id}/anexos", 'local');
 
         $anexo = $caso->anexos()->create([
             'nome_arquivo' => $request->input('nome') ?? $file->getClientOriginalName(),
@@ -122,7 +122,13 @@ class CasoController extends Controller
 
     public function destroyAnexo(Caso $caso, Anexo $anexo): JsonResponse
     {
-        Storage::disk('public')->delete($anexo->arquivo);
+        abort_unless(
+            $anexo->anexavel_type === Caso::class
+                && (string) $anexo->anexavel_id === (string) $caso->id,
+            404
+        );
+
+        Storage::disk('local')->delete($anexo->arquivo);
         $anexo->delete();
         return response()->json([
             'success' => true,

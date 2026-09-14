@@ -9,7 +9,7 @@ class CompromissoPolicy
 {
     public function update(User $user, Compromisso $compromisso): bool
     {
-        return true;
+        return $user->hasRole('admin') || (string) $compromisso->user_id === (string) $user->id;
     }
 
     public function delete(User $user, Compromisso $compromisso): bool

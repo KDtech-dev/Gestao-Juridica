@@ -58,7 +58,7 @@ class ProfileControllerTest extends TestCase
             ->putJson('/api/profile/password', [
                 'current_password' => 'senha-antiga',
                 'new_password' => 'senha-nova',
-                'confirm_password' => 'senha-nova',
+                'new_password_confirmation' => 'senha-nova',
             ]);
 
         $response

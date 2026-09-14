@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\CategoriaController;
 use App\Http\Controllers\Api\NotificacaoController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CasoController;
+use App\Http\Controllers\Api\AnexoController;
 use App\Http\Controllers\Auth\PasswordResetController;
 
 Route::prefix('auth')->group(function () {
@@ -45,13 +46,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->middleware('role:admin');
 
+    Route::get('/anexos/{anexo}/visualizar', [AnexoController::class, 'visualizar']);
+    Route::get('/anexos/{anexo}/download', [AnexoController::class, 'download']);
+
     Route::prefix('profile')->group(function () {
         Route::get('/',         [ProfileController::class, 'show']);
         Route::put('/',         [ProfileController::class, 'update']);
         Route::put('/password', [ProfileController::class, 'updatePassword']);
     });
 
-    Route::prefix('clientes')->group(function () {
+    Route::prefix('clientes')->middleware('role:admin')->group(function () {
         Route::get('/',               [ClienteController::class, 'index']);
         Route::post('/',              [ClienteController::class, 'store']);
         Route::get('/{cliente}',      [ClienteController::class, 'show']);
@@ -95,7 +99,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/',                     [NotificacaoController::class, 'limpar']);
     });
 
-    Route::prefix('users')->group(function () {
+    Route::prefix('users')->middleware('role:admin')->group(function () {
         Route::get('/',               [UserController::class, 'index']);
         Route::post('/',              [UserController::class, 'store']);
         Route::get('/{user}',        [UserController::class, 'show']);
@@ -106,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{user}/foto', [UserController::class, 'removerFoto']);
     });
 
-    Route::prefix('casos')->group(function () {
+    Route::prefix('casos')->middleware('role:admin')->group(function () {
         Route::get('/',            [CasoController::class, 'index']);
         Route::post('/',           [CasoController::class, 'store']);
         Route::get('/{caso}',      [CasoController::class, 'show']);

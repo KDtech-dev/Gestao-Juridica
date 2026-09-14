@@ -21,14 +21,20 @@ class AnexoController extends Controller
 
     private function responder(Anexo $anexo, string $disposition): StreamedResponse
     {
-        abort_unless(Storage::disk('public')->exists($anexo->arquivo), 404);
+        abort_unless(auth()->user()?->hasRole('admin'), 403);
 
-        $mime = Storage::disk('public')->mimeType($anexo->arquivo);
+        $disk = str_starts_with((string) $anexo->arquivo, 'casos/')
+            ? 'local'
+            : 'public';
+
+        abort_unless(Storage::disk($disk)->exists($anexo->arquivo), 404);
+
+        $mime = Storage::disk($disk)->mimeType($anexo->arquivo);
         $nome = $anexo->nome_arquivo ?? basename($anexo->arquivo);
 
-        return Storage::disk('public')->response($anexo->arquivo, $nome, [
+        return Storage::disk($disk)->response($anexo->arquivo, $nome, [
             'Content-Type' => $mime,
-            'Content-Disposition' => $disposition . '; filename="' . $nome . '"',
+            'Content-Disposition' => $disposition . '; filename="' . addslashes($nome) . '"',
         ]);
     }
 }
