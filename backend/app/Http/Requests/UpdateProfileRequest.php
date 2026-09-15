@@ -2,13 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\User;
 
-class UpdateProfileRequest extends FormRequest
+class UpdateProfileRequest extends UpdateUserRequest
 {
     public function authorize(): bool
     {
-        return true;
+        return $this->user() !== null;
     }
 
     protected function prepareForValidation(): void
@@ -24,13 +24,25 @@ class UpdateProfileRequest extends FormRequest
 
     public function rules(): array
     {
-        $userId = $this->user()?->id;
+        $rules = parent::rules();
+        unset($rules['password'], $rules['role'], $rules['advogado.foto_perfil'], $rules['funcionario.foto_perfil']);
+        $rules['role'] = ['prohibited'];
+        $rules['password'] = ['prohibited'];
+        $rules['user_id'] = ['prohibited'];
+        $rules['id'] = ['prohibited'];
+        $rules['advogado'] = $this->user()->advogado
+            ? ['sometimes', 'nullable', 'array:data_nascimento,sexo,celular,resumo_pessoal,oab_numero,oab_uf,categorias']
+            : ['prohibited'];
+        $rules['funcionario'] = $this->user()->funcionario
+            ? ['sometimes', 'nullable', 'array:data_nascimento,sexo,celular,resumo_pessoal']
+            : ['prohibited'];
+        $rules['endereco'] = ['sometimes', 'nullable', 'array:logradouro,numero,complemento,bairro,cidade,uf,cep'];
 
-        return [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'email' => ['sometimes', 'email', 'max:255', "unique:users,email,{$userId}"],
-            'cpf' => ['sometimes', 'string', 'size:11', "unique:users,cpf,{$userId}"],
-            'cor_perfil' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
-        ];
+        return $rules;
+    }
+
+    protected function targetUser(): ?User
+    {
+        return $this->user();
     }
 }

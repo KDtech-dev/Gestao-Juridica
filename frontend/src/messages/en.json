@@ -10,12 +10,12 @@
     }
   },
   "branding": {
-    "appName": "Central Jurídica",
+    "appName": "mcaadvogados",
     "tagline": "Intelligent and modern legal management"
   },
   "auth": {
     "login": {
-      "brand": "Central Jurídica",
+      "brand": "mcaadvogados",
       "title": "Login",
       "subtitle": "Access your account to continue.",
       "email": "Email",
@@ -28,7 +28,7 @@
       "back": "Back to website",
       "heroTitle": "Legal management focused on productivity",
       "heroText": "Manage clients, cases, and appointments in one secure, modern interface.",
-      "rights": "© 2026 Central Jurídica. All rights reserved.",
+      "rights": "© 2026 mcaadvogados. All rights reserved.",
       "error": "Could not sign in."
     },
     "forgotPassword": {
@@ -658,6 +658,18 @@
           "update": "Could not update the password.",
           "connection": "Could not connect to the server. Try again later."
         }
+      },
+      "publicPage": {
+        "title": "My public page",
+        "description": "Edit the details shown on your public page. Your name and photo are shared with your private profile. Save to publish changes; the photo is saved when you select a file.",
+        "edit": "Edit public page",
+        "view": "View public page (new tab)",
+        "about": "About the professional",
+        "aboutPlaceholder": "Describe your background and professional practice.",
+        "changePhoto": "Change profile photo",
+        "back": "Back to private profile",
+        "retry": "Try again",
+        "loading": "Loading profile"
       }
     },
     "notificationsPage": {

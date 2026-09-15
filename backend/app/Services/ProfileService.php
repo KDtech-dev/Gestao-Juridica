@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Http\Resources\UserResource;
+use App\Models\Endereco;
 use App\Models\User;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class ProfileService
@@ -16,20 +19,40 @@ class ProfileService
 
     public function updateProfile(User $user, array $data): array
     {
-        $data = array_filter(
-            $data,
-            fn ($value) => $value !== null
-        );
+        return DB::transaction(function () use ($user, $data) {
+            $user->update(Arr::only($data, ['name', 'email', 'cpf', 'cor_perfil']));
 
-        $allowedColumns = array_filter(
-            array_keys($data),
-            fn (string $column) => Schema::hasColumn('users', $column)
-        );
+            foreach (['advogado', 'funcionario'] as $relation) {
+                $profile = $user->{$relation};
+                if (! $profile || ! isset($data[$relation])) {
+                    continue;
+                }
+                $fields = ['data_nascimento', 'sexo', 'celular', 'resumo_pessoal'];
+                if ($relation === 'advogado') {
+                    $fields = array_merge($fields, ['oab_numero', 'oab_uf']);
+                }
+                $profile->update(Arr::only($data[$relation], $fields));
+                if ($relation === 'advogado' && array_key_exists('categorias', $data[$relation])) {
+                    $profile->categorias()->sync($data[$relation]['categorias'] ?? []);
+                }
+            }
 
-        $user->fill(array_intersect_key($data, array_flip($allowedColumns)));
-        $user->save();
+            if (array_key_exists('endereco', $data)) {
+                $profile = $user->funcionario ?? $user->advogado;
+                if ($profile) {
+                    if ($data['endereco'] === null) {
+                        $profile->update(['endereco_id' => null]);
+                    } elseif ($profile->endereco) {
+                        $profile->endereco->update($data['endereco']);
+                    } else {
+                        $address = Endereco::create($data['endereco']);
+                        $profile->update(['endereco_id' => $address->id]);
+                    }
+                }
+            }
 
-        return $this->formatProfile($user->fresh());
+            return $this->formatProfile($user->fresh());
+        });
     }
 
     public function updatePassword(User $user, array $data): void
@@ -47,12 +70,8 @@ class ProfileService
 
     private function formatProfile(User $user): array
     {
-        return [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'cpf' => $user->cpf,
-            'roles' => $user->getRoleNames(),
-        ];
+        $user->load(['advogado.categorias', 'advogado.endereco', 'funcionario.endereco']);
+
+        return (new UserResource($user))->resolve();
     }
 }

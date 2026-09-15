@@ -92,16 +92,6 @@ export default function AdvogadoPublicoView({
                   {oab}
                 </Typography>
               )}
-              {categories.length > 0 && (
-                <Typography color="text.secondary" mt={1.5}>
-                  {categories.join(" · ")}
-                </Typography>
-              )}
-              {bio && (
-                <Typography color="text.secondary" mt={2} lineHeight={1.75}>
-                  {bio.length > 240 ? `${bio.slice(0, 237).trimEnd()}…` : bio}
-                </Typography>
-              )}
               <Button
                 href={contactHref}
                 variant="contained"
@@ -156,18 +146,6 @@ export default function AdvogadoPublicoView({
                 ))}
               </Stack>
             </Box>
-          )}
-          {oab && (
-            <Paper
-              component="section"
-              variant="outlined"
-              sx={{ p: { xs: 3, md: 4 }, borderRadius: 2 }}
-            >
-              <Typography component="h2" variant="h5" fontWeight={800} mb={2}>
-                {t("professionalInfo")}
-              </Typography>
-              <Typography>{oab}</Typography>
-            </Paper>
           )}
           <Paper
             component="section"

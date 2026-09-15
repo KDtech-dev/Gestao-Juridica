@@ -21,9 +21,13 @@ import { categoriaNomeParaChave } from "@/constants/categorias";
 type Props = {
   isAdvogado: boolean;
   profileUser: UserType | null;
+  showPublicSummary?: boolean;
 };
 
-export function CardDadosProfissionais({ isAdvogado }: Props) {
+export function CardDadosProfissionais({
+  isAdvogado,
+  showPublicSummary = false,
+}: Props) {
   const t = useTranslations("internal.profile");
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
   const { control } = useFormContext<ProfileFormSchemaType>();
@@ -54,6 +58,16 @@ export function CardDadosProfissionais({ isAdvogado }: Props) {
         {t("sections.professionalData")}
       </Typography>
 
+      {showPublicSummary && (
+        <InputBasico
+          field="advogado.resumo_pessoal"
+          label={t("publicPage.about")}
+          placeholder={t("publicPage.aboutPlaceholder")}
+          multiline
+          rows={5}
+          maxLength={2000}
+        />
+      )}
       {isAdvogado && (
         <>
           <Box

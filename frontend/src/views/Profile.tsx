@@ -25,9 +25,13 @@ import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { useLanguage } from "@/context/LanguageContext";
 import { ChangePasswordModal } from "@/components/modals/ChangePasswordModal";
-import { getUserById, postFotoPerfil, updateUser } from "@/api/ApiUsers";
+import {
+  getOwnProfile,
+  uploadOwnProfilePhoto,
+  updateOwnProfile,
+} from "@/api/ApiProfile";
+import Link from "next/link";
 import type { CategoriaType, RoleType, UserType } from "@/@core/types";
-import { CardDadosProfissionais } from "@/components/CardDadosProfissionais";
 import { CardDadosPessoais } from "@/components/CardDadosPessoais";
 import { useRouter } from "next/navigation";
 import { toast, formatToastErrorMessage } from "@/utils/toast";
@@ -107,13 +111,13 @@ export default function ProfileView() {
     },
     resolver: zodResolver(profileFormSchema),
   });
-  const { isDirty } = form.formState;
+  const { isDirty, isSubmitting } = form.formState;
   useEffect(() => {
     if (!user?.id) return;
 
     const loadUser = async () => {
       try {
-        const { data: fetchedUser } = await getUserById(String(user.id));
+        const fetchedUser = await getOwnProfile();
 
         setProfileUser(fetchedUser);
 
@@ -123,27 +127,30 @@ export default function ProfileView() {
           name: fetchedUser.name ?? "",
           email: fetchedUser.email ?? "",
           cpf: fetchedUser.cpf ?? "",
-          advogado: (isAdvogadoRef.current || fetchedUser.advogado)
-            ? {
-              celular: fetchedUser.advogado?.celular ?? "",
-              oab_numero: fetchedUser.advogado?.oab_numero ?? "",
-              oab_uf: fetchedUser.advogado?.oab_uf ?? "",
-              categorias:
-                fetchedUser.advogado?.categorias?.map(
-                  (c: CategoriaType) => c.id,
-                ) ?? [],
-              sexo: fetchedUser.advogado?.sexo ?? null,
-              resumo_pessoal: fetchedUser.advogado?.resumo_pessoal ?? "",
-            }
-            : undefined,
-          funcionario: (isFuncionarioRef.current || fetchedUser.funcionario)
-            ? {
-              celular: fetchedUser.funcionario?.celular ?? "",
-              data_nascimento: fetchedUser.funcionario?.data_nascimento ?? "",
-              sexo: fetchedUser.funcionario?.sexo ?? null,
-              resumo_pessoal: fetchedUser.funcionario?.resumo_pessoal ?? "",
-            }
-            : undefined,
+          advogado:
+            isAdvogadoRef.current || fetchedUser.advogado
+              ? {
+                  celular: fetchedUser.advogado?.celular ?? "",
+                  oab_numero: fetchedUser.advogado?.oab_numero ?? "",
+                  oab_uf: fetchedUser.advogado?.oab_uf ?? "",
+                  categorias:
+                    fetchedUser.advogado?.categorias?.map(
+                      (c: CategoriaType) => c.id,
+                    ) ?? [],
+                  sexo: fetchedUser.advogado?.sexo ?? null,
+                  resumo_pessoal: fetchedUser.advogado?.resumo_pessoal ?? "",
+                }
+              : undefined,
+          funcionario:
+            isFuncionarioRef.current || fetchedUser.funcionario
+              ? {
+                  celular: fetchedUser.funcionario?.celular ?? "",
+                  data_nascimento:
+                    fetchedUser.funcionario?.data_nascimento ?? "",
+                  sexo: fetchedUser.funcionario?.sexo ?? null,
+                  resumo_pessoal: fetchedUser.funcionario?.resumo_pessoal ?? "",
+                }
+              : undefined,
           endereco:
             fetchedUser.advogado?.endereco ??
             fetchedUser.funcionario?.endereco ??
@@ -158,7 +165,7 @@ export default function ProfileView() {
     };
 
     loadUser();
-  }, [user?.id]);
+  }, [user?.id, form, t]);
   const formRef = useRef(form);
   useEffect(() => {
     formRef.current.setValue("tema", themeMode);
@@ -168,10 +175,18 @@ export default function ProfileView() {
     if (!user?.id) return;
     const { tema, idioma, ...payload } = data;
     try {
-      await updateUser(String(user.id), {
+      const updatedUser = await updateOwnProfile({
         ...payload,
-        ...(roleNormalized ? { role: roleNormalized } : {}),
+        advogado: payload.advogado
+          ? {
+              celular: payload.advogado.celular,
+              sexo: payload.advogado.sexo,
+              data_nascimento: payload.advogado.data_nascimento,
+            }
+          : undefined,
       });
+      setProfileUser(updatedUser);
+      refreshUser({ name: updatedUser.name });
       await setLanguage(idioma);
       setThemeMode(tema);
       form.reset(data);
@@ -194,14 +209,13 @@ export default function ProfileView() {
     setAvatarUploading(true);
 
     try {
-      const { data: usuarioAtualizado } = await postFotoPerfil(
-        String(user.id),
-        file,
-      );
+      const usuarioAtualizado = await uploadOwnProfilePhoto(file);
 
       setAvatar(usuarioAtualizado.foto_perfil_url ?? null);
       setProfileUser((prev) =>
-        prev ? { ...prev, foto_perfil_url: usuarioAtualizado.foto_perfil_url } : prev,
+        prev
+          ? { ...prev, foto_perfil_url: usuarioAtualizado.foto_perfil_url }
+          : prev,
       );
       refreshUser({ foto_perfil_url: usuarioAtualizado.foto_perfil_url });
       toast.success(t("toast.avatarUploadSuccess"));
@@ -233,7 +247,7 @@ export default function ProfileView() {
             </Typography>
           </Box>
           <FormProvider {...form}>
-            <form>
+            <form onSubmit={handleSaveProfile}>
               <Card sx={{ borderRadius: "16px", overflow: "hidden", p: 0 }}>
                 <Box
                   sx={{
@@ -328,6 +342,9 @@ export default function ProfileView() {
                           <Icon icon="mdi:plus" width={13} color="#fff" />
                         </Box>
                         <input
+                          ref={avatarInputRef}
+                          disabled={avatarUploading || !profileUser}
+                          aria-label={t("publicPage.changePhoto")}
                           type="file"
                           accept="image/*"
                           style={{
@@ -354,11 +371,19 @@ export default function ProfileView() {
                       </Box>
                     </Grid>
                     <Grid>
+                      {temDadosAdvogado && (
+                        <Button
+                          component={Link}
+                          href="/profile/publico"
+                          sx={{ mr: 1, textTransform: "none" }}
+                        >
+                          {t("publicPage.edit")}
+                        </Button>
+                      )}
                       <Button
                         type="submit"
                         variant="contained"
-                        disabled={!isDirty}
-                        onClick={handleSaveProfile}
+                        disabled={!isDirty || isSubmitting || !profileUser}
                         sx={{
                           textTransform: "none",
                           borderRadius: "10px",
@@ -380,10 +405,7 @@ export default function ProfileView() {
                       <CardDadosPessoais
                         isAdvogado={exibirAdvogado}
                         isFuncionario={exibirFuncionario}
-                      />
-                      <CardDadosProfissionais
-                        isAdvogado={exibirAdvogado}
-                        profileUser={profileUser}
+                        hideLawyerSummary
                       />
                       <CardEndereco
                         isAdvogado={exibirAdvogado}

@@ -21,7 +21,7 @@ import {
   institutionalWhatsappHref,
 } from "@/configs/publicContact";
 
-export const logoSrc = "/central-juridico-logo-icon.png";
+import { logoSrc } from "@/configs/branding";
 
 export function Footer() {
   const t = useTranslations("public.footer");
@@ -29,7 +29,7 @@ export function Footer() {
   const [openTerms, setOpenTerms] = useState(false);
 
   const telefone = institutionalPhone;
-  const email = "contato@centraljuridica.com.br";
+  const email = "contato@mcaadvogados.com.br";
 
   const mensagem = t("whatsappMessage");
   const whatsappHref = institutionalWhatsappHref(mensagem);
@@ -126,7 +126,7 @@ export function Footer() {
                 <Box
                   component="img"
                   src={logoSrc}
-                  alt="Logo"
+                  alt="mcaadvogados"
                   sx={{
                     width: 100,
                     height: 100,
@@ -141,7 +141,7 @@ export function Footer() {
                     fontWeight={900}
                     sx={{ fontSize: "1.25rem", lineHeight: 0.5, mb: 0.5 }}
                   >
-                    Central Jurídica
+                    mcaadvogados
                   </Typography>
                   <Typography
                     variant="caption"
@@ -357,7 +357,7 @@ export function Footer() {
                 color="rgba(255,255,255,0.55)"
                 sx={{ fontWeight: 850 }}
               >
-                © {new Date().getFullYear()} Central Jurídica -{" "}
+                © {new Date().getFullYear()} mcaadvogados -{" "}
                 {t("copyrightRights")}
               </Typography>
             </Grid>

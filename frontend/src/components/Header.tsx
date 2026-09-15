@@ -19,7 +19,7 @@ import { useRef, useState, useEffect } from "react";
 import type { PointerEvent } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getRouteByRole } from "@/utils/redirectByRole";
-import { logoSrc } from "./Footer";
+import { logoSrc } from "@/configs/branding";
 import { useTranslations } from "next-intl";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { Icon } from "@/components/AppIcon";
@@ -306,7 +306,7 @@ export function Header() {
                   <Box
                     component="img"
                     src={logoSrc}
-                    alt="Central Jurídica"
+                    alt="mcaadvogados"
                     sx={{
                       width: { xs: 44, sm: 60 },
                       height: { xs: 44, sm: 60 },
@@ -333,7 +333,7 @@ export function Header() {
                         lineHeight: 1.1,
                       }}
                     >
-                      Central Jurídica
+                      mcaadvogados
                     </Typography>
                     <Typography
                       variant="caption"

@@ -73,3 +73,21 @@ npm run start
 Em produção, reinicie o processo Next pelo supervisor já utilizado no servidor após o build. Preserve a configuração existente de acesso à API e o proxy `/storage`. Não configure uma origem de loopback em variáveis destinadas ao navegador.
 
 Não é necessário executar migrations, seeders, gerar chave Laravel ou alterar o banco. Nenhum commit ou push foi executado.
+
+
+## Revisão: edição pelo próprio advogado
+
+- A apresentação foi retirada do Hero e permanece somente em “Sobre o profissional”, eliminando a duplicação.
+- No perfil interno, o atalho “Editar página pública” leva à seção “Minha página pública”, com apresentação, OAB e especialidades. O nome continua nos dados pessoais; a foto também pode ser alterada pelo botão dessa seção. “Salvar alterações” publica os dados; a foto é salva no upload. O link de visualização abre a página publicada em outra aba.
+- O frontend deixou de usar `/users/{id}` (administrativo) para carregar/salvar o perfil do próprio usuário. Usa `GET /api/profile`, `PUT /api/profile` e o novo `POST /api/profile/foto`, todos protegidos por Sanctum e sempre vinculados ao usuário autenticado.
+- A atualização própria valida os campos, permite limpar apresentação/especialidades e impede alterar papel, ID ou proprietário das relações. As rotas administrativas continuam restritas ao administrador. Nenhuma migration.
+- Arquivos adicionais criados: `frontend/src/api/ApiProfile.ts`, `backend/tests/Feature/OwnLawyerProfileTest.php`.
+- Alterados nesta revisão: `ProfileController.php`, `UpdateProfileRequest.php`, `UpdateUserRequest.php`, `ProfileService.php`, `backend/routes/api.php`, `Profile.tsx`, `CardDadosPessoais.tsx`, `CardDadosProfissionais.tsx`, a view pública e as traduções PT/EN/ES.
+- Validação: build e TypeScript aprovados; lint dos arquivos frontend alterados aprovado; 7 testes Laravel com 44 asserções aprovadas (edição própria, visibilidade pública, limpeza de campos, foto, negação de acesso a terceiros/anônimos e regressão de perfil/senha). Testes usam SQLite em memória e armazenamento de fotos simulado.
+- Deploy desta revisão: atualizar backend e frontend juntos. Se houver cache de rotas Laravel, executar `php artisan route:cache` no backend para registrar `/api/profile/foto`. Compilar o frontend e reiniciar o processo existente. Não executar seeders ou migrations.
+
+### Edição pública em tela separada
+
+O botão “Editar página pública” do perfil privado agora abre `/profile/publico`, uma rota protegida com formulário próprio. A edição pública reúne nome, foto, apresentação, OAB e especialidades uma única vez. Nome e foto continuam compartilhados com o cadastro, sem criar cópias no banco. O formulário privado não reenvia apresentação/OAB/especialidades ocultas, evitando sobrescrever o conteúdo público ao salvar dados privados.
+
+Na página pública, a OAB aparece somente no Hero, a apresentação somente em “Sobre o profissional” e as categorias somente em “Áreas de atuação”. Foi retirado o bloco de informações profissionais que repetia a OAB. Novos arquivos: `frontend/src/app/profile/publico/page.tsx` e `frontend/src/views/PublicProfileEditor.tsx`. As rotas de edição continuam usando o usuário autenticado, sem ID de terceiro na URL.

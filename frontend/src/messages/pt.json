@@ -10,12 +10,12 @@
     }
   },
   "branding": {
-    "appName": "Central Jurídica",
+    "appName": "mcaadvogados",
     "tagline": "Gestão jurídica inteligente e moderna"
   },
   "auth": {
     "login": {
-      "brand": "Central Jurídica",
+      "brand": "mcaadvogados",
       "title": "Entrar",
       "subtitle": "Acesse sua conta para continuar.",
       "email": "E-mail",
@@ -28,7 +28,7 @@
       "back": "Voltar para o site",
       "heroTitle": "Gestão Jurídica com foco em produtividade",
       "heroText": "Controle clientes, processos e compromissos em um único lugar, com interface moderna e segura.",
-      "rights": "© 2026 Central Jurídica. Todos os direitos reservados.",
+      "rights": "© 2026 mcaadvogados. Todos os direitos reservados.",
       "error": "Erro ao realizar login."
     },
     "forgotPassword": {
@@ -681,6 +681,18 @@
           "update": "Não foi possível atualizar a senha.",
           "connection": "Não foi possível conectar ao servidor. Tente novamente mais tarde."
         }
+      },
+      "publicPage": {
+        "title": "Minha página pública",
+        "description": "Edite os dados que aparecem na sua página pública. Nome e foto são compartilhados com seu perfil privado. Salve para publicar as alterações; a foto é salva ao selecionar o arquivo.",
+        "edit": "Editar página pública",
+        "view": "Ver página pública (nova aba)",
+        "about": "Sobre o profissional",
+        "aboutPlaceholder": "Apresente sua trajetória e sua atuação profissional.",
+        "changePhoto": "Alterar foto do perfil",
+        "back": "Voltar ao perfil privado",
+        "retry": "Tentar novamente",
+        "loading": "Carregando perfil"
       }
     },
     "notificationsPage": {

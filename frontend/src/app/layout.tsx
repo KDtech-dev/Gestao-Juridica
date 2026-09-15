@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import type { Metadata } from "next";
+import { BRANDING, logoSrc } from "@/configs/branding";
 import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Box } from "@mui/material";
@@ -26,7 +27,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Advocacia Gestão - Sistema de Gestão Jurídica",
+  title: `${BRANDING.appName} - Sistema de Gestão Jurídica`,
+  applicationName: BRANDING.appName,
+  icons: { icon: [{ url: logoSrc, type: "image/png" }], apple: logoSrc },
   description:
     "Sistema de gestão jurídica para advogados e escritórios de advocacia, com controle de clientes, processos e prazos.",
 };

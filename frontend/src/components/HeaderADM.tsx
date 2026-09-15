@@ -28,7 +28,7 @@ import MenuNotificacoes, {
   type Notificacao,
 } from "@/components/MenuNotificações";
 import UserDropdown from "@/components/Userdropdown";
-import { logoSrc } from "./Footer";
+import { logoSrc } from "@/configs/branding";
 
 type Props = {
   showSearch?: boolean;
@@ -155,7 +155,7 @@ export function HeaderDashboard({
       <Box
         component={Link}
         href="/"
-        aria-label="Central Jurídica"
+        aria-label="mcaadvogados"
         sx={{
           display: { xs: "flex", md: "none" },
           alignItems: "center",
@@ -165,7 +165,7 @@ export function HeaderDashboard({
         <Box
           component="img"
           src={logoSrc}
-          alt="Central Jurídica"
+          alt="mcaadvogados"
           sx={{
             width: 40,
             height: 40,

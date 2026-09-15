@@ -20,9 +20,9 @@ class UpdateUserRequest extends FormRequest
     }
     public function rules(): array
     {
-        $user = $this->route('user');
+        $user = $this->targetUser();
         $userId = $user?->id;
-        $advogadoId = optional($this->route('user'))->advogado?->id;
+        $advogadoId = $user?->advogado?->id;
 
         return [
             'name'     => ['sometimes', 'string', 'max:255'],
@@ -59,6 +59,11 @@ class UpdateUserRequest extends FormRequest
             'advogado.categorias'   => ['sometimes', 'nullable', 'array'],
             'advogado.categorias.*' => ['integer', 'exists:categorias,id'],
         ];
+    }
+
+    protected function targetUser(): ?\App\Models\User
+    {
+        return $this->route('user');
     }
 
     public function messages(): array

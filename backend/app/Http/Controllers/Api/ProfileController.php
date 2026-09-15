@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateFotoPerfilRequest;
 use App\Http\Requests\UpdateProfilePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Services\ProfileService;
 use App\Services\ResponseService;
+use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -34,6 +36,13 @@ class ProfileController extends Controller
             ],
             'Perfil atualizado.'
         );
+    }
+
+    public function updatePhoto(UpdateFotoPerfilRequest $request, UserService $users): JsonResponse
+    {
+        $user = $users->atualizarFotoPerfil($request->user(), $request->file('foto_perfil'));
+
+        return ResponseService::success(['user' => $this->service->getProfile($user)]);
     }
 
     public function updatePassword(
