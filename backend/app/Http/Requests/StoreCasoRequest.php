@@ -11,7 +11,6 @@ class StoreCasoRequest extends FormRequest
         return true;
     }
 
-
     public function prepareForValidation(): void
     {
         if ($this->numero_processo) {
@@ -32,10 +31,12 @@ class StoreCasoRequest extends FormRequest
             'data_encerramento' => 'nullable|date|after_or_equal:data_abertura',
             'advogado_id'       => 'nullable|uuid|exists:users,id',
             'categorias'        => 'nullable|array',
-            'categorias.*' => 'integer|exists:categorias,id',
+            'categorias.*'      => 'integer|exists:categorias,id',
             'clientes'          => 'nullable|array',
             'clientes.*.id'     => 'required|uuid|exists:clientes,id',
             'clientes.*.papel'  => 'nullable|in:autor,réu,interveniente,testemunha',
+            'anexos'            => 'nullable|array',
+            'anexos.*'          => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ];
     }
 
@@ -51,6 +52,9 @@ class StoreCasoRequest extends FormRequest
             'data_abertura.date' => 'validation.data_abertura.invalid',
             'data_encerramento.date' => 'validation.data_encerramento.invalid',
             'data_encerramento.after_or_equal' => 'validation.data_encerramento.after_or_equal',
+            'anexos.array' => 'validation.anexos.array',
+            'anexos.*.mimes' => 'validation.anexos.arquivo.mimes',
+            'anexos.*.max' => 'validation.anexos.arquivo.max',
         ];
     }
 }

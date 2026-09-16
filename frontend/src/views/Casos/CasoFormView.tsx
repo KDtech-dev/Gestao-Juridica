@@ -19,6 +19,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/material";
@@ -30,7 +31,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { toast } from "@/utils/toast";
-import { formatCpfCnpj, formatNumeroProcesso } from "@/@core/format";
+import { formatCpfCnpj, formatNumeroProcesso, slugifyPublicacao } from "@/@core/format";
 import { createCasoSchema, CreateCasoPayload } from "@/schemas/CasoSchema";
 import {
   CasoAnexoType,
@@ -42,17 +43,17 @@ import {
 import { getCategorias } from "@/api/ApiCategorias";
 import { getAxios } from "@/configs/axios";
 import {
-  deleteAnexoCaso,
   getCasoById,
   postCaso,
   syncClientesCaso,
   updateCaso,
-  uploadAnexosCaso,
 } from "@/api/apiCasos";
 import InputBasico from "@/components/InputBasico";
 import InputSingleFile from "@/components/InputSingleFile";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 import { categoriaNomeParaChave } from "@/constants/categorias";
+import { getAnexoDownloadUrl, getCasoAnexoDownloadUrl } from "@/api/apiAnexos";
+
 
 type ViewMode = "create" | "edit" | "view";
 
@@ -86,6 +87,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
   const router = useRouter();
   const isView = mode === "view";
   const isCreate = mode === "create";
+
   const [loading, setLoading] = useState(!isCreate);
   const [saving, setSaving] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
@@ -94,20 +96,18 @@ export default function CasoFormView({ mode, casoId }: Props) {
     [],
   );
   const [loadingClientes, setLoadingClientes] = useState(true);
-  const [clientesSelecionados, setClientesSelecionados] = useState<
-    ClienteSelecionado[]
-  >([]);
-  const [clientesIniciais, setClientesIniciais] = useState<
-    ClienteSelecionado[]
-  >([]);
+  const [clientesSelecionados, setClientesSelecionados] =
+    useState<ClienteSelecionado[]>([]);
+  const [clientesIniciais, setClientesIniciais] =
+    useState<ClienteSelecionado[]>([]);
   const [clienteParaAdicionar, setClienteParaAdicionar] =
     useState<ClienteType | null>(null);
   const [papelParaAdicionar, setPapelParaAdicionar] =
     useState<PapelClienteCaso>("autor");
 
-  const [anexosNovos, setAnexosNovos] = useState<File[]>([]);
-  const [anexosExistentes, setAnexosExistentes] = useState<CasoAnexoType[]>([]);
-  const [anexosRemovidos, setAnexosRemovidos] = useState<string[]>([]);
+  const [anexosExistentes, setAnexosExistentes] = useState<CasoAnexoType[]>(
+    [],
+  );
 
   const methods = useForm<CreateCasoPayload>({
     resolver: zodResolver(createCasoSchema(tv)),
@@ -119,12 +119,22 @@ export default function CasoFormView({ mode, casoId }: Props) {
       categorias: [],
       data_abertura: "",
       data_encerramento: "",
+      anexos: [],
+      anexos_remover: [],
     },
   });
-
+  const casoSlug = casoId
+    ? slugifyPublicacao(
+      methods.getValues("titulo") || "caso",
+      casoId,
+    )
+    : "";
   const {
     handleSubmit,
     reset,
+    control,
+    getValues,
+    setValue,
     formState: { isDirty },
   } = methods;
 
@@ -151,7 +161,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
       .then((response) => {
         if (ativo) setClientesDisponiveis(response.data?.data ?? []);
       })
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => {
         if (ativo) setLoadingClientes(false);
       });
@@ -182,6 +192,8 @@ export default function CasoFormView({ mode, casoId }: Props) {
           categorias: caso.categorias?.map((c) => c.id) ?? [],
           data_abertura: caso.data_abertura ?? "",
           data_encerramento: caso.data_encerramento ?? "",
+          anexos: [],
+          anexos_remover: [],
         });
 
         const clientes = (caso.clientes ?? []).map((cliente) => ({
@@ -217,11 +229,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
     });
   }, [clientesSelecionados, clientesIniciais]);
 
-  const hasChanges =
-    isDirty ||
-    hasClientesChanged ||
-    anexosNovos.length > 0 ||
-    anexosRemovidos.length > 0;
+  const hasChanges = isDirty || hasClientesChanged;
 
   const clientesParaAutocomplete = clientesDisponiveis.filter(
     (cliente) => !clientesSelecionados.some((s) => s.cliente.id === cliente.id),
@@ -254,7 +262,11 @@ export default function CasoFormView({ mode, casoId }: Props) {
 
   const handleRemoveExistingAnexo = (anexoId: string) => {
     setAnexosExistentes((prev) => prev.filter((a) => a.id !== anexoId));
-    setAnexosRemovidos((prev) => [...prev, anexoId]);
+    setValue(
+      "anexos_remover",
+      [...(getValues("anexos_remover") ?? []), anexoId],
+      { shouldDirty: true },
+    );
   };
 
   const onSubmitForm = async (values: CreateCasoPayload) => {
@@ -280,14 +292,6 @@ export default function CasoFormView({ mode, casoId }: Props) {
         caso = await syncClientesCaso(caso.id, {
           clientes: payload.clientes ?? [],
         });
-      }
-
-      if (anexosNovos.length > 0) {
-        await uploadAnexosCaso(caso.id, anexosNovos);
-      }
-
-      for (const anexoId of anexosRemovidos) {
-        await deleteAnexoCaso(caso.id, anexoId);
       }
 
       toast.success(isCreate ? t("toast.created") : t("toast.updated"));
@@ -379,7 +383,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
 
                   <Controller
                     name="numero_processo"
-                    control={methods.control}
+                    control={control}
                     render={({ field, fieldState }) => (
                       <TextField
                         {...field}
@@ -431,7 +435,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   <Box sx={{ gridColumn: "1 / -1" }}>
                     <Controller
                       name="categorias"
-                      control={methods.control}
+                      control={control}
                       render={({ field }) => {
                         const selectedIds = Array.isArray(field.value)
                           ? field.value
@@ -653,19 +657,130 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   {t("sections.attachments")}
                 </Typography>
 
-                <InputSingleFile
-                  multiple
-                  values={anexosNovos}
-                  onFilesChange={setAnexosNovos}
-                  existingFiles={anexosExistentes}
-                  onRemoveExistingFile={handleRemoveExistingAnexo}
-                  onlyView={isView}
-                  tipos_aceitos={ANEXOS_TIPOS}
-                  label={t("fields.attachments")}
-                  helperText={t("fields.attachmentsHelper")}
+                <Controller
+                  name="anexos"
+                  control={control}
+                  render={({ field }) => (
+                    <InputSingleFile
+                      multiple
+                      values={field.value ?? []}
+                      onFilesChange={field.onChange}
+                      onlyView={isView}
+                      tipos_aceitos={ANEXOS_TIPOS}
+                      label={t("fields.attachments")}
+                      helperText={t("fields.attachmentsHelper")}
+                    />
+                  )}
                 />
               </Paper>
+              {anexosExistentes.length > 0 && (
+                <Stack spacing={1.5} mt={2}>
+                  {anexosExistentes.map((anexo) => {
+                    const slug = slugifyPublicacao(
+                      getValues("titulo") || "caso",
+                      casoId!,
+                    );
 
+                    const viewerUrl = `/casos/${casoId}/anexos/${anexo.id}/visualizar`;
+
+                    const downloadUrl = getCasoAnexoDownloadUrl(
+                      casoId!,
+                      anexo.id,
+                    );
+
+                    return (
+                      <Box
+                        key={anexo.id}
+                        sx={{
+                          width: "100%",
+                          bgcolor: "background.paper",
+                          border: "1px solid",
+                          borderColor: "divider",
+                          borderRadius: 2,
+                          px: 1.5,
+                          py: 1,
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            flex: 1,
+                            minWidth: 0,
+                            pr: 1,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                            cursor: "pointer",
+                            ":hover": {
+                              color: "primary.main",
+                            },
+                          }}
+                          title={anexo.nome ?? ""}
+                          onClick={() => {
+                            window.open(viewerUrl, "_blank");
+                          }}
+                        >
+                          {anexo.nome || "Anexo"}
+                        </Typography>
+
+                        <Stack direction="row" spacing={0.5}>
+                          <Tooltip title="Visualizar">
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                window.open(viewerUrl, "_blank");
+                              }}
+                            >
+                              <Icon
+                                icon="mdi:eye-outline"
+                                width="1em"
+                                height="1em"
+                              />
+                            </IconButton>
+                          </Tooltip>
+
+                          <Tooltip title="Download">
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.location.href = downloadUrl;
+                              }}
+                            >
+                              <Icon
+                                icon="mdi:download-outline"
+                                width="1em"
+                                height="1em"
+                              />
+                            </IconButton>
+                          </Tooltip>
+
+                          {!isView && (
+                            <Tooltip title="Excluir">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() =>
+                                  handleRemoveExistingAnexo(String(anexo.id))
+                                }
+                              >
+                                <Icon
+                                  icon="mdi:delete-outline"
+                                  width="1em"
+                                  height="1em"
+                                />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Stack>
+                      </Box>
+                    );
+                  })}
+
+                </Stack>
+              )}
               {!isView && (
                 <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
                   <Button

@@ -50,11 +50,6 @@ export function PublicacaoAnexosCard({
             const viewerUrl =
               `/publicacoes/${slug}/anexos/${anexo.id}/visualizar`;
 
-            const arquivoUrl = getAnexoVisualizarUrl(
-              publicacao.id,
-              anexo.id
-            );
-
             const downloadUrl = getAnexoDownloadUrl(
               publicacao.id,
               anexo.id

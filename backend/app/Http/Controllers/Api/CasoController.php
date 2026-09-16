@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCasoRequest;
 use App\Http\Requests\UpdateCasoRequest;
 use App\Http\Requests\SyncClientesCasoRequest;
-use App\Http\Resources\AnexoResource;
 use App\Http\Resources\CasoResource;
 use App\Models\Anexo;
 use App\Models\Caso;
@@ -91,42 +90,42 @@ class CasoController extends Controller
         return response()->json(['message' => 'Cliente desvinculado do caso.']);
     }
 
-    public function indexAnexos(Caso $caso): JsonResponse
+    public function visualizarAnexo(Caso $caso, Anexo $anexo)
     {
-        return response()->json([
-            'success' => true,
-            'data'    => AnexoResource::collection($caso->anexos),
-        ]);
+        abort_unless(
+            $anexo->anexavel_id === $caso->id &&
+                $anexo->anexavel_type === Caso::class,
+            404
+        );
+
+        abort_unless(
+            $anexo->arquivo &&
+                Storage::disk('public')->exists($anexo->arquivo),
+            404
+        );
+
+        return response()->file(
+            Storage::disk('public')->path($anexo->arquivo)
+        );
     }
 
-    public function storeAnexo(Request $request, Caso $caso): JsonResponse
+    public function downloadAnexo(Caso $caso, Anexo $anexo)
     {
-        $request->validate([
-            'arquivo' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
-            'nome'    => 'nullable|string|max:255',
-        ]);
+        abort_unless(
+            $anexo->anexavel_id === $caso->id &&
+                $anexo->anexavel_type === Caso::class,
+            404
+        );
 
-        $file = $request->file('arquivo');
-        $path = $file->storePublicly("casos/{$caso->id}/anexos", 'public');
+        abort_unless(
+            $anexo->arquivo &&
+                Storage::disk('public')->exists($anexo->arquivo),
+            404
+        );
 
-        $anexo = $caso->anexos()->create([
-            'nome_arquivo' => $request->input('nome') ?? $file->getClientOriginalName(),
-            'arquivo'      => $path,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'data'    => new AnexoResource($anexo),
-        ], 201);
-    }
-
-    public function destroyAnexo(Caso $caso, Anexo $anexo): JsonResponse
-    {
-        Storage::disk('public')->delete($anexo->arquivo);
-        $anexo->delete();
-        return response()->json([
-            'success' => true,
-            'data'    => null,
-        ]);
+        return Storage::disk('public')->download(
+            $anexo->arquivo,
+            $anexo->nome_arquivo
+        );
     }
 }
