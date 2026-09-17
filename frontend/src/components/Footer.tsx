@@ -141,7 +141,7 @@ export function Footer() {
                     fontWeight={900}
                     sx={{ fontSize: "1.25rem", lineHeight: 0.5, mb: 0.5 }}
                   >
-                    mcaadvogados
+                    {t("title")}
                   </Typography>
                   <Typography
                     variant="caption"

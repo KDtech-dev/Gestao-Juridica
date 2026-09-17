@@ -10,7 +10,7 @@
     }
   },
   "branding": {
-    "appName": "MCA-Advogados",
+    "appName": "MCA Advogados",
     "tagline": "Gestão jurídica inteligente e moderna"
   },
   "auth": {
@@ -806,6 +806,7 @@
       }
     },
     "header": {
+      "title": "MCA Advogados",
       "home": "Início",
       "publications": "Publicações",
       "team": "Equipe",
@@ -823,6 +824,7 @@
       }
     },
     "footer": {
+      "title": "MCA Advogados",
       "cta": {
         "title": "Agende sua primeira consulta jurídica sem custo.",
         "subtitle": "Atendimentos com análise técnica e orientação estratégica, com clareza desde o primeiro contato.",

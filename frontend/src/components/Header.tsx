@@ -306,7 +306,7 @@ export function Header() {
                   <Box
                     component="img"
                     src={logoSrc}
-                    alt="mcaadvogados"
+                    alt={t('title')}
                     sx={{
                       width: { xs: 44, sm: 60 },
                       height: { xs: 44, sm: 60 },
@@ -333,7 +333,7 @@ export function Header() {
                         lineHeight: 1.1,
                       }}
                     >
-                      mcaadvogados
+                      {t("title")}
                     </Typography>
                     <Typography
                       variant="caption"

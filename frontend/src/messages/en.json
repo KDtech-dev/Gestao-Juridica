@@ -783,6 +783,7 @@
       }
     },
     "header": {
+      "title": "MCA Advogados",
       "home": "Home",
       "publications": "Publications",
       "team": "Team",
@@ -800,6 +801,7 @@
       }
     },
     "footer": {
+      "title": "MCA Advogados",
       "cta": {
         "title": "Schedule your first legal consultation at no cost.",
         "subtitle": "Service with technical analysis and strategic guidance, with clarity from the first contact.",
