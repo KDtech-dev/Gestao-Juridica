@@ -56,12 +56,10 @@ export function Header() {
     offsetY: 0,
   });
 
-  // Compute values that depend on client state
   const isDark = theme.palette.mode === "dark";
   const accessHref =
     isAuthenticated && user ? getRouteByRole(user.roles) : "/login";
 
-  // These values depend on client state and should be computed after mount
   const getThemeToggleLabel = () =>
     isDark ? t("theme.light") : t("theme.dark");
   const getAccessibilityLabel = () => t("accessibility");
@@ -131,7 +129,6 @@ export function Header() {
     }
   };
 
-  // Render consistent content during SSR/hydration
   const renderContent = () => {
     const isMounted = mounted;
     const themeLabel = isMounted ? getThemeToggleLabel() : "";

@@ -126,7 +126,7 @@ export function Footer() {
                 <Box
                   component="img"
                   src={logoSrc}
-                  alt="mcaadvogados"
+                  alt="MCA Advogados"
                   sx={{
                     width: 100,
                     height: 100,

@@ -12,10 +12,11 @@ import {
 import { Icon } from "@/components/AppIcon";
 import Link from "next/link";
 import { useTheme } from "@mui/material/styles";
-import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEffect, useState } from "react";
 import { logoSrc } from "@/configs/branding";
+import { useTranslations } from "next-intl";
+import { useAuth } from "@/hooks/useAuth";
 
 type NavItem = {
   key: string;
@@ -60,6 +61,7 @@ type SidebarItemProps = {
 };
 
 function SidebarItem({ item, active, onNavigate }: SidebarItemProps) {
+
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const handleClick = () => {
@@ -113,6 +115,7 @@ export function SidebarDashboard({ activeKey }: Props) {
   const isDark = theme.palette.mode === "dark";
   const { user, loading, hasRole } = useAuth();
   const { t } = useTranslation();
+  const tt = useTranslations("public.header");
   const [mobileOpen, setMobileOpen] = useState(false);
   const sidebarBackground = isDark ? "var(--sidebar)" : "#0a1834";
   const sidebarBorder = isDark ? "var(--sidebar-border)" : "#142746";
@@ -283,7 +286,7 @@ export function SidebarDashboard({ activeKey }: Props) {
             <Box
               component="img"
               src={logoSrc}
-              alt="mcaadvogados"
+              alt="MCA Advogados"
               sx={{
                 width: 45,
                 height: 45,
@@ -306,7 +309,7 @@ export function SidebarDashboard({ activeKey }: Props) {
                   whiteSpace: "nowrap",
                 }}
               >
-                mcaadvogados
+                {tt("title")}
               </Typography>
             </Box>
           </Box>

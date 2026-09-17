@@ -155,7 +155,7 @@ export function HeaderDashboard({
       <Box
         component={Link}
         href="/"
-        aria-label="mcaadvogados"
+        aria-label="MCA ADVOGADOS"
         sx={{
           display: { xs: "flex", md: "none" },
           alignItems: "center",
@@ -165,7 +165,7 @@ export function HeaderDashboard({
         <Box
           component="img"
           src={logoSrc}
-          alt="mcaadvogados"
+          alt="MCA ADVOGADOS"
           sx={{
             width: 40,
             height: 40,
