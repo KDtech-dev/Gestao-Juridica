@@ -13,7 +13,7 @@ use App\Models\Caso;
 use App\Services\CasoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CasoController extends Controller
 {
@@ -89,6 +89,28 @@ class CasoController extends Controller
         $this->casoService->detachCliente($caso, $clienteId);
 
         return response()->json(['message' => 'Cliente desvinculado do caso.']);
+    }
+
+    public function visualizarAnexo(Caso $caso, Anexo $anexo): StreamedResponse
+    {
+        abort_unless(
+            $anexo->anexavel_type === Caso::class
+                && (string) $anexo->anexavel_id === (string) $caso->id,
+            404
+        );
+
+        return app(AnexoController::class)->visualizar($anexo);
+    }
+
+    public function downloadAnexo(Caso $caso, Anexo $anexo): StreamedResponse
+    {
+        abort_unless(
+            $anexo->anexavel_type === Caso::class
+                && (string) $anexo->anexavel_id === (string) $caso->id,
+            404
+        );
+
+        return app(AnexoController::class)->download($anexo);
     }
 
     public function indexAnexos(Caso $caso): JsonResponse

@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { useEffect, useState } from "react";
+import api from "@/configs/axios";
+import { downloadAnexo } from "@/api/apiAnexos";
+import { toast } from "@/utils/toast";
 
 type AnexoViewerProps = {
   nomeArquivo: string;
@@ -24,6 +27,8 @@ export function AnexoViewer({
   downloadUrl,
 }: AnexoViewerProps) {
   const [zoom, setZoom] = useState(1);
+  const [arquivoUrl, setArquivoUrl] = useState<string | null>(null);
+  const [carregando, setCarregando] = useState(true);
 
   const extensao =
     nomeArquivo.split(".").pop()?.toLowerCase() ?? "";
@@ -39,6 +44,40 @@ export function AnexoViewer({
     "bmp",
     "svg",
   ].includes(extensao);
+
+  useEffect(() => {
+    let blobUrl: string | null = null;
+
+    const carregarArquivo = async () => {
+      try {
+        setCarregando(true);
+
+        const response = await api.get(url, {
+          baseURL: "",
+          responseType: "blob",
+        });
+
+        blobUrl = URL.createObjectURL(response.data);
+
+        setArquivoUrl(blobUrl);
+      } catch (error) {
+        console.error(
+          "Erro ao carregar anexo:",
+          error
+        );
+      } finally {
+        setCarregando(false);
+      }
+    };
+
+    carregarArquivo();
+
+    return () => {
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl);
+      }
+    };
+  }, [url]);
 
   const aumentarZoom = () => {
     setZoom((value) => Math.min(value + 0.1, 3));
@@ -74,7 +113,10 @@ export function AnexoViewer({
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
     };
   }, []);
 
@@ -98,7 +140,8 @@ export function AnexoViewer({
         elevation={0}
         sx={{
           bgcolor: "#252525",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          borderBottom:
+            "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <Toolbar
@@ -188,8 +231,11 @@ export function AnexoViewer({
 
             <Tooltip title="Baixar">
               <IconButton
-                component="a"
-                href={downloadUrl}
+                onClick={() => {
+                  void downloadAnexo(downloadUrl, nomeArquivo).catch(() => {
+                    toast.error("Não foi possível baixar o arquivo.");
+                  });
+                }}
                 sx={{ color: "white" }}
               >
                 <Icon
@@ -202,10 +248,16 @@ export function AnexoViewer({
             <Tooltip title="Abrir em nova aba">
               <IconButton
                 component="a"
-                href={url}
+                href={arquivoUrl ?? "#"}
                 target="_blank"
                 rel="noopener noreferrer"
-                sx={{ color: "white" }}
+                sx={{
+                  color: "white",
+                  pointerEvents: arquivoUrl
+                    ? "auto"
+                    : "none",
+                  opacity: arquivoUrl ? 1 : 0.5,
+                }}
               >
                 <Icon
                   icon="mdi:open-in-new"
@@ -232,49 +284,22 @@ export function AnexoViewer({
             : 0,
         }}
       >
-        {isPdf && (
-          <Box
-            component="iframe"
-            src={url}
-            title={nomeArquivo}
+        {carregando && (
+          <Stack
+            alignItems="center"
+            justifyContent="center"
             sx={{
               width: "100%",
-              height: "100%",
-              border: 0,
-              bgcolor: "white",
-            }}
-          />
-        )}
-
-        {isImage && (
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              minWidth: "100%",
-              minHeight: "100%",
+              color: "white",
             }}
           >
-            <Box
-              component="img"
-              src={url}
-              alt={nomeArquivo}
-              sx={{
-                maxWidth: "none",
-                width: `${zoom * 100}%`,
-                height: "auto",
-                objectFit: "contain",
-                transition: "width 0.15s ease",
-                borderRadius: 1,
-                boxShadow:
-                  "0 4px 30px rgba(0,0,0,0.35)",
-              }}
-            />
-          </Box>
+            <Typography>
+              Carregando arquivo...
+            </Typography>
+          </Stack>
         )}
 
-        {!isPdf && !isImage && (
+        {!carregando && !arquivoUrl && (
           <Stack
             alignItems="center"
             justifyContent="center"
@@ -286,24 +311,93 @@ export function AnexoViewer({
             }}
           >
             <Icon
-              icon="mdi:file-outline"
+              icon="mdi:alert-circle-outline"
               width={64}
               height={64}
             />
 
             <Typography variant="h6">
-              Visualização não disponível
-            </Typography>
-
-            <Typography
-              color="rgba(255,255,255,0.65)"
-              textAlign="center"
-            >
-              Este tipo de arquivo não pode ser
-              visualizado diretamente no navegador.
+              Não foi possível carregar o arquivo
             </Typography>
           </Stack>
         )}
+
+        {!carregando && arquivoUrl && isPdf && (
+          <Box
+            component="iframe"
+            src={arquivoUrl}
+            title={nomeArquivo}
+            sx={{
+              width: "100%",
+              height: "100%",
+              border: 0,
+              bgcolor: "white",
+            }}
+          />
+        )}
+
+        {!carregando && arquivoUrl && isImage && (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              minWidth: "100%",
+              minHeight: "100%",
+            }}
+          >
+            <Box
+              component="img"
+              src={arquivoUrl}
+              alt={nomeArquivo}
+              sx={{
+                maxWidth: "none",
+                width: `${zoom * 100}%`,
+                height: "auto",
+                objectFit: "contain",
+                transition:
+                  "width 0.15s ease",
+                borderRadius: 1,
+                boxShadow:
+                  "0 4px 30px rgba(0,0,0,0.35)",
+              }}
+            />
+          </Box>
+        )}
+
+        {!carregando &&
+          arquivoUrl &&
+          !isPdf &&
+          !isImage && (
+            <Stack
+              alignItems="center"
+              justifyContent="center"
+              spacing={2}
+              sx={{
+                width: "100%",
+                color: "white",
+                p: 4,
+              }}
+            >
+              <Icon
+                icon="mdi:file-outline"
+                width={64}
+                height={64}
+              />
+
+              <Typography variant="h6">
+                Visualização não disponível
+              </Typography>
+
+              <Typography
+                color="rgba(255,255,255,0.65)"
+                textAlign="center"
+              >
+                Este tipo de arquivo não pode ser
+                visualizado diretamente no navegador.
+              </Typography>
+            </Stack>
+          )}
       </Box>
     </Box>
   );

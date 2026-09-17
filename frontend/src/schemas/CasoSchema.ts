@@ -37,6 +37,9 @@ export const createCasoSchema = (t: TFunction) =>
       .nullable(),
 
     clientes: z.array(createCasoClientePayloadSchema()).optional(),
+
+    anexos: z.array(z.instanceof(File)).optional(),
+    anexos_remover: z.array(z.string()).optional(),
   });
 
 export const updateCasoSchema = (t: TFunction) =>
@@ -53,24 +56,10 @@ export const syncClientesCasoSchema = (t: TFunction) =>
     clientes: z.array(createCasoClientePayloadSchema()).optional(),
   });
 
-export const uploadAnexoCasoSchema = (t: TFunction) =>
-  z.object({
-    arquivo: z.instanceof(File, {}),
-    nome: z.string().optional(),
-  });
-
 export type CreateCasoPayload = z.infer<ReturnType<typeof createCasoSchema>>;
 
 export type UpdateCasoPayload = z.infer<ReturnType<typeof updateCasoSchema>>;
 
-export type SyncClientesCasoPayload = z.infer<
-  ReturnType<typeof syncClientesCasoSchema>
->;
+export type SyncClientesCasoPayload = z.infer<ReturnType<typeof syncClientesCasoSchema>>;
 
-export type UploadAnexoCasoPayload = z.infer<
-  ReturnType<typeof uploadAnexoCasoSchema>
->;
-
-export type CasoClientePayload = z.infer<
-  ReturnType<typeof createCasoClientePayloadSchema>
->;
+export type CasoClientePayload = z.infer<ReturnType<typeof createCasoClientePayloadSchema>>;

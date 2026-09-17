@@ -1,4 +1,4 @@
-import { CasoType, CasoAnexoType, PaginatedResponseType } from "@/@core/types";
+import { CasoType, PaginatedResponseType } from "@/@core/types";
 import { getAxios } from "@/configs/axios";
 import {
   CreateCasoPayload,
@@ -28,16 +28,64 @@ const getCasoById = async (id: string): Promise<CasoType> => {
   const response = await getAxios().get(`/casos/${id}`);
   return response.data;
 };
-const postCaso = async (data: CreateCasoPayload): Promise<CasoType> => {
-  const response = await getAxios().post("/casos", data);
+
+const buildCasoFormData = (
+  payload: CreateCasoPayload | UpdateCasoPayload,
+): FormData => {
+  const formData = new FormData();
+
+  const appendIfPresent = (key: string, value: unknown) => {
+    if (value === undefined || value === null) return;
+    formData.append(key, String(value));
+  };
+
+  appendIfPresent("titulo", payload.titulo);
+  appendIfPresent("numero_processo", payload.numero_processo);
+  appendIfPresent("descricao", payload.descricao);
+  appendIfPresent("status", payload.status);
+  appendIfPresent("data_abertura", payload.data_abertura);
+  appendIfPresent("data_encerramento", payload.data_encerramento);
+  appendIfPresent("advogado_id", payload.advogado_id);
+
+  (payload.categorias ?? []).forEach((categoriaId, index) => {
+    formData.append(`categorias[${index}]`, String(categoriaId));
+  });
+
+  (payload.clientes ?? []).forEach((cliente, index) => {
+    formData.append(`clientes[${index}][id]`, cliente.id);
+    formData.append(`clientes[${index}][papel]`, cliente.papel);
+  });
+
+  (payload.anexos ?? []).forEach((arquivo) => {
+    if (arquivo instanceof File) formData.append("anexos[]", arquivo);
+  });
+
+  (payload.anexos_remover ?? []).forEach((anexoId) => {
+    formData.append("anexos_remover[]", anexoId);
+  });
+
+  return formData;
+};
+
+const postCaso = async (payload: CreateCasoPayload): Promise<CasoType> => {
+  const formData = buildCasoFormData(payload);
+  const response = await getAxios({ contentType: "formData" }).post(
+    "/casos",
+    formData,
+  );
   return response.data;
 };
 
 const updateCaso = async (
   id: string,
-  data: UpdateCasoPayload,
+  payload: UpdateCasoPayload,
 ): Promise<CasoType> => {
-  const response = await getAxios().put(`/casos/${id}`, data);
+  const formData = buildCasoFormData(payload);
+  formData.append("_method", "PUT");
+  const response = await getAxios({ contentType: "formData" }).post(
+    `/casos/${id}`,
+    formData,
+  );
   return response.data;
 };
 
@@ -68,42 +116,6 @@ const detachClienteCaso = async (
   await getAxios().delete(`/casos/${casoId}/clientes/${clienteId}`);
 };
 
-const uploadAnexoCaso = async (
-  casoId: string,
-  arquivo: File,
-  nome?: string,
-): Promise<CasoAnexoType> => {
-  const formData = new FormData();
-  formData.append("arquivo", arquivo);
-  if (nome) formData.append("nome", nome);
-
-  const response = await getAxios().post(`/casos/${casoId}/anexos`, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return response.data.data;
-};
-
-const uploadAnexosCaso = async (
-  casoId: string,
-  arquivos: File[],
-): Promise<void> => {
-  for (const arquivo of arquivos) {
-    await uploadAnexoCaso(casoId, arquivo);
-  }
-};
-
-const deleteAnexoCaso = async (
-  casoId: string,
-  anexoId: string,
-): Promise<void> => {
-  await getAxios().delete(`/casos/${casoId}/anexos/${anexoId}`);
-};
-
-const getAnexosCaso = async (casoId: string): Promise<CasoAnexoType[]> => {
-  const response = await getAxios().get(`/casos/${casoId}/anexos`);
-  return response.data.data ?? response.data;
-};
-
 export {
   getCasos,
   getCasoById,
@@ -113,8 +125,4 @@ export {
   attachClientesCaso,
   syncClientesCaso,
   detachClienteCaso,
-  getAnexosCaso,
-  uploadAnexoCaso,
-  uploadAnexosCaso,
-  deleteAnexoCaso,
 };

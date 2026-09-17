@@ -10,6 +10,7 @@ class UpdateCasoRequest extends FormRequest
     {
         return true;
     }
+
     public function prepareForValidation(): void
     {
         if ($this->numero_processo) {
@@ -18,20 +19,26 @@ class UpdateCasoRequest extends FormRequest
             ]);
         }
     }
+
     public function rules(): array
     {
         return [
             'titulo'            => 'sometimes|required|string|max:255',
-            'numero_processo' => 'nullable|string|unique:casos,numero_processo,' . $this->caso->id,
+            'numero_processo'   => 'nullable|string|unique:casos,numero_processo,' . $this->caso->id,
             'descricao'         => 'nullable|string',
             'status'            => 'nullable|in:aberto,em_andamento,encerrado,arquivado',
             'data_abertura'     => 'sometimes|required|date',
             'data_encerramento' => 'nullable|date|after_or_equal:data_abertura',
             'advogado_id'       => 'nullable|uuid|exists:users,id',
             'categorias'        => 'nullable|array',
-            'categorias.*' => 'integer|exists:categorias,id',
+            'categorias.*'      => 'integer|exists:categorias,id',
+            'anexos'            => 'nullable|array',
+            'anexos.*'          => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'anexos_remover'    => 'nullable|array',
+            'anexos_remover.*'  => 'string|uuid',
         ];
     }
+
     public function messages(): array
     {
         return [
@@ -44,6 +51,11 @@ class UpdateCasoRequest extends FormRequest
             'data_abertura.date' => 'validation.data_abertura.invalid',
             'data_encerramento.date' => 'validation.data_encerramento.invalid',
             'data_encerramento.after_or_equal' => 'validation.data_encerramento.after_or_equal',
+            'anexos.array' => 'validation.anexos.array',
+            'anexos.*.mimes' => 'validation.anexos.arquivo.mimes',
+            'anexos.*.max' => 'validation.anexos.arquivo.max',
+            'anexos_remover.array' => 'validation.anexos_remover.array',
+            'anexos_remover.*.uuid' => 'validation.anexos_remover.uuid',
         ];
     }
 }
