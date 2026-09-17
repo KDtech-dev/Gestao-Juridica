@@ -357,7 +357,7 @@ export function Footer() {
                 color="rgba(255,255,255,0.55)"
                 sx={{ fontWeight: 850 }}
               >
-                © {new Date().getFullYear()} mcaadvogados -{" "}
+                © {new Date().getFullYear()} MCA-Advogados -{" "}
                 {t("copyrightRights")}
               </Typography>
             </Grid>
