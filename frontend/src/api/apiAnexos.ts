@@ -9,7 +9,6 @@ export function getAnexoVisualizarUrl(postId: string, anexoId: string) {
 export function getAnexoDownloadUrl(postId: string, anexoId: string) {
   return `${API_URL}/api/posts/${postId}/anexos/${anexoId}/download`;
 }
-<<<<<<< HEAD
 
 // CASOS
 
@@ -27,5 +26,3 @@ export function getCasoAnexoDownloadUrl(
   return `${API_URL}/api/casos/${casoId}/anexos/${anexoId}/download`;
 }
 
-=======
->>>>>>> origin/main

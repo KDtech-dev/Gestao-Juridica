@@ -117,7 +117,6 @@ class CasoController extends Controller
             404
         );
 
-<<<<<<< HEAD
         abort_unless(
             $anexo->arquivo &&
                 Storage::disk('public')->exists($anexo->arquivo),
@@ -128,35 +127,5 @@ class CasoController extends Controller
             $anexo->arquivo,
             $anexo->nome_arquivo
         );
-=======
-        $file = $request->file('arquivo');
-        $path = $file->store("casos/{$caso->id}/anexos", 'local');
-
-        $anexo = $caso->anexos()->create([
-            'nome_arquivo' => $request->input('nome') ?? $file->getClientOriginalName(),
-            'arquivo'      => $path,
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'data'    => new AnexoResource($anexo),
-        ], 201);
-    }
-
-    public function destroyAnexo(Caso $caso, Anexo $anexo): JsonResponse
-    {
-        abort_unless(
-            $anexo->anexavel_type === Caso::class
-                && (string) $anexo->anexavel_id === (string) $caso->id,
-            404
-        );
-
-        Storage::disk('local')->delete($anexo->arquivo);
-        $anexo->delete();
-        return response()->json([
-            'success' => true,
-            'data'    => null,
-        ]);
->>>>>>> origin/main
     }
 }
