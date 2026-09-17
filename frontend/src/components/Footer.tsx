@@ -12,23 +12,27 @@ import {
 import Link from "next/link";
 import { Icon } from "@/components/AppIcon";
 import { useState } from "react";
-import { teamSpecialties } from "@/data/team";
 import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { useTranslations } from "next-intl";
 
-export const logoSrc = "/central-juridico-logo-icon.png";
+import {
+  institutionalPhone,
+  institutionalWhatsappHref,
+} from "@/configs/publicContact";
+
+import { logoSrc } from "@/configs/branding";
 
 export function Footer() {
   const t = useTranslations("public.footer");
   const [openPrivacy, setOpenPrivacy] = useState(false);
   const [openTerms, setOpenTerms] = useState(false);
 
-  const telefone = "5533999377986";
-  const email = "contato@centraljuridica.com.br";
+  const telefone = institutionalPhone;
+  const email = "contato@mcaadvogados.com.br";
 
   const mensagem = t("whatsappMessage");
-  const whatsappHref = `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+  const whatsappHref = institutionalWhatsappHref(mensagem);
 
   return (
     <Box
@@ -116,13 +120,13 @@ export function Footer() {
         sx={{ px: { xs: 2, md: 3 }, py: { xs: 7, md: 10 } }}
       >
         <Grid container spacing={{ xs: 4, md: 6 }} alignItems="flex-start">
-          <Grid size={{ xs: 12, md: 3.5 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Stack spacing={2.2}>
               <Stack direction="row" spacing={1.25} alignItems="center">
                 <Box
                   component="img"
                   src={logoSrc}
-                  alt="Logo"
+                  alt="mcaadvogados"
                   sx={{
                     width: 100,
                     height: 100,
@@ -137,7 +141,7 @@ export function Footer() {
                     fontWeight={900}
                     sx={{ fontSize: "1.25rem", lineHeight: 0.5, mb: 0.5 }}
                   >
-                    Central Jurídica
+                    mcaadvogados
                   </Typography>
                   <Typography
                     variant="caption"
@@ -185,35 +189,6 @@ export function Footer() {
                   >
                     <Icon icon={s.icon} width={20} />
                   </Button>
-                ))}
-              </Stack>
-            </Stack>
-          </Grid>
-
-          <Grid size={{ xs: 12, sm: 6, md: 2.5 }}>
-            <Stack spacing={1.4}>
-              <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
-                {t("specialties.title")}
-              </Typography>
-
-              <Stack
-                component="ul"
-                spacing={0.9}
-                sx={{ listStyle: "none", p: 0, m: 0 }}
-              >
-                {teamSpecialties.map((specialty) => (
-                  <Box key={specialty} component="li">
-                    <Typography
-                      color="rgba(255,255,255,0.66)"
-                      sx={{
-                        fontWeight: 650,
-                        fontSize: "0.95rem",
-                        lineHeight: 1.55,
-                      }}
-                    >
-                      {specialty}
-                    </Typography>
-                  </Box>
                 ))}
               </Stack>
             </Stack>
@@ -293,7 +268,7 @@ export function Footer() {
             </Stack>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 2.999 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 5 }}>
             <Stack spacing={1.4}>
               <Typography fontWeight={900} sx={{ fontSize: "1.02rem" }}>
                 {t("contact.title")}
@@ -382,7 +357,7 @@ export function Footer() {
                 color="rgba(255,255,255,0.55)"
                 sx={{ fontWeight: 850 }}
               >
-                © {new Date().getFullYear()} Central Jurídica -{" "}
+                © {new Date().getFullYear()} mcaadvogados -{" "}
                 {t("copyrightRights")}
               </Typography>
             </Grid>

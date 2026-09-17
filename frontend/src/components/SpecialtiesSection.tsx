@@ -20,6 +20,8 @@ import { getCategorias } from "@/api/ApiCategorias";
 import SpecialtyLawyersCarousel from "./SpecialtyLawyersCarousel";
 import { getAdvogadosPublicos } from "@/api/ApiAdvogados";
 
+import { advogadoHref, advogadoOab } from "@/utils/advogadoPublico";
+
 type Props = {
   translations: ReturnType<typeof useTranslations>;
   advogados?: AdvogadoPublicoType[];
@@ -51,9 +53,7 @@ export default function SpecialtiesSection({ translations }: Props) {
         const response = await getAdvogadosPublicos(selectedSpecialty.id);
         setAdvogadosCategoria(response.data);
       } catch (err) {
-        toast.error(
-          formatToastErrorMessage(err, t("toast.loadLawyersError")),
-        );
+        toast.error(formatToastErrorMessage(err, t("toast.loadLawyersError")));
       } finally {
         setLoadingAdvogados(false);
       }
@@ -93,10 +93,11 @@ export default function SpecialtiesSection({ translations }: Props) {
   const lawyersForSpecialty: LawyerCardType[] = advogadosCategoria.map(
     (advogado) => ({
       id: advogado.uuid,
+      href: advogadoHref(advogado),
       name: advogado.name,
       image: advogado.foto_perfil_url ?? undefined,
       role: t("specialities.roleAdvogado"),
-      oab: `OAB/${advogado.oab_uf} ${advogado.oab_numero}`,
+      oab: advogadoOab(advogado) ?? "",
       description: advogado.resumo_pessoal ?? "",
     }),
   );

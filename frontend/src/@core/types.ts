@@ -132,6 +132,7 @@ export type AdvogadoPublicoType = {
 
 export type LawyerCardType = {
   id: string;
+  href: string;
   name: string;
   image?: string;
   role: string;

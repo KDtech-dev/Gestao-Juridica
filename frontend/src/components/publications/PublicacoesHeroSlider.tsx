@@ -29,18 +29,8 @@ export function PublicacoesHeroSlider({
   const t = useTranslations("public.publications");
   const slides = useMemo(() => publicacoes.slice(0, 5), [publicacoes]);
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeSlide = slides[activeIndex];
-  const activeCategoria = activeSlide.categoria?.nome ?? "Publicação";
-  const activeResumo = activeSlide.resumo;
-  const activeData = formatDateByLocale(
-    activeSlide.publicado_em ?? activeSlide.created_at,
-    locale
-  );
-  const activeSlug = slugifyPublicacao(
-    activeSlide.titulo ?? "publicacao",
-    activeSlide.id,
-  ); const activeBanner =
-    activeSlide.imagem_url ?? `/storage/publicacoes/default-publication.png`;
+  const activeSlide = slides[activeIndex] ?? slides[0];
+
   useEffect(() => {
     if (slides.length <= 1) return;
 
@@ -51,7 +41,20 @@ export function PublicacoesHeroSlider({
     return () => window.clearInterval(interval);
   }, [slides.length]);
 
-  if (slides.length === 0) return null;
+  if (!activeSlide) return null;
+
+  const activeCategoria = activeSlide.categoria?.nome ?? "Publicação";
+  const activeResumo = activeSlide.resumo;
+  const activeData = formatDateByLocale(
+    activeSlide.publicado_em ?? activeSlide.created_at,
+    locale,
+  );
+  const activeSlug = slugifyPublicacao(
+    activeSlide.titulo ?? "publicacao",
+    activeSlide.id,
+  );
+  const activeBanner =
+    activeSlide.imagem_url ?? "/storage/publicacoes/default-publication.png";
 
   const goToPrevious = () => {
     setActiveIndex((current) => (current - 1 + slides.length) % slides.length);

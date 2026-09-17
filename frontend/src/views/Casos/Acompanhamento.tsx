@@ -343,8 +343,16 @@ export default function CasosView() {
               rowCount={totalCount}
               paginationMode={isSearching ? "client" : "server"}
               disableRowSelectionOnClick
+              slotProps={{
+                basePagination: {
+                  material: {
+                    labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                  },
+                },
+              }}
               sx={{
                 border: "none",
+                "--DataGrid-overlayHeight": "220px",
                 "& .MuiDataGrid-columnHeaders": {
                   bgcolor: `${theme.palette.primary.main}08`,
                   fontWeight: 800,
@@ -369,7 +377,7 @@ export default function CasosView() {
                       flexDirection: "column",
                       justifyContent: "center",
                       alignItems: "center",
-                      minHeight: 200,
+                      height: "100%",
                       gap: 1,
                     }}
                   >

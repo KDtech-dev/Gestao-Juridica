@@ -20,7 +20,6 @@ class PublicacaoService
     public function getPublicacoes()
     {
         return Publicacao::query()
-            ->where('user_id', Auth::id())
             ->with(['categoria', 'anexos'])
             ->latest()
             ->get();
@@ -29,7 +28,6 @@ class PublicacaoService
     public function getPublicacaoById(string $id)
     {
         return Publicacao::query()
-            ->where('user_id', Auth::id())
             ->where('id', $id)
             ->with(['categoria', 'anexos'])
             ->firstOrFail();
@@ -90,7 +88,6 @@ class PublicacaoService
         unset($data['anexos'], $data['imagem'], $data['anexos_remover'], $data['imagem_caminho']);
 
         $publicacao = Publicacao::query()
-            ->where('user_id', Auth::id())
             ->findOrFail($id);
 
         $this->handlePublishedAt($data, $publicacao);
@@ -116,7 +113,6 @@ class PublicacaoService
     public function deletePublicacao(string $id)
     {
         $publicacao = Publicacao::query()
-            ->where('user_id', Auth::id())
             ->where('id', $id)
             ->firstOrFail();
 
@@ -162,6 +158,8 @@ class PublicacaoService
         Publicacao $publicacao,
         Anexo $anexo
     ): void {
+        abort_unless((string) $anexo->publicacao_id === (string) $publicacao->id, 404);
+
         if ($anexo->arquivo) {
             Storage::disk('public')->delete($anexo->arquivo);
         }
@@ -241,7 +239,7 @@ class PublicacaoService
         }
 
         $publicacao->anexos()
-            ->whereIn('id', $anexoIds)
+            ->whereIn('uuid', $anexoIds)
             ->get()
             ->each(function ($anexo): void {
                 if ($anexo->arquivo) {

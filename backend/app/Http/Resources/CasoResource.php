@@ -47,7 +47,10 @@ class CasoResource extends JsonResource
                     'id'      => $anexo->uuid,
                     'nome'    => $anexo->nome_arquivo,
                     'viewUrl' => $anexo->arquivo
-                        ? asset('storage/' . $anexo->arquivo)
+                        ? url("/api/anexos/{$anexo->uuid}/visualizar")
+                        : null,
+                    'downloadUrl' => $anexo->arquivo
+                        ? url("/api/anexos/{$anexo->uuid}/download")
                         : null,
                 ])
             ),

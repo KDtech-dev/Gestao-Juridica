@@ -11,9 +11,14 @@ import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 type Props = {
   isAdvogado: boolean;
   isFuncionario: boolean;
+  hideLawyerSummary?: boolean;
 };
 
-export function CardDadosPessoais({ isAdvogado, isFuncionario }: Props) {
+export function CardDadosPessoais({
+  isAdvogado,
+  isFuncionario,
+  hideLawyerSummary = false,
+}: Props) {
   const t = useTranslations("internal.profile");
   const { control } = useFormContext<ProfileFormSchemaType>();
 
@@ -120,7 +125,8 @@ export function CardDadosPessoais({ isAdvogado, isFuncionario }: Props) {
             )}
           />
         )}
-        {(isAdvogado || isFuncionario) && (
+        {((isAdvogado && !hideLawyerSummary) ||
+          (!isAdvogado && isFuncionario)) && (
           <Box sx={{ gridColumn: { md: "1 / -1" } }}>
             <InputBasico
               field={

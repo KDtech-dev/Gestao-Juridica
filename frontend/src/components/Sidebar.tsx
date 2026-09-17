@@ -15,7 +15,7 @@ import { useTheme } from "@mui/material/styles";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEffect, useState } from "react";
-import { logoSrc } from "./Footer";
+import { logoSrc } from "@/configs/branding";
 
 type NavItem = {
   key: string;
@@ -283,7 +283,7 @@ export function SidebarDashboard({ activeKey }: Props) {
             <Box
               component="img"
               src={logoSrc}
-              alt="Central Jurídica"
+              alt="mcaadvogados"
               sx={{
                 width: 45,
                 height: 45,
@@ -306,7 +306,7 @@ export function SidebarDashboard({ activeKey }: Props) {
                   whiteSpace: "nowrap",
                 }}
               >
-                Central Jurídica
+                mcaadvogados
               </Typography>
             </Box>
           </Box>

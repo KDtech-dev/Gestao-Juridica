@@ -11,7 +11,7 @@ type Branding = {
 };
 
 export const BRANDING: Branding = {
-  appName: "Central Jurídica",
+  appName: "mcaadvogados",
   tagline: "Gestão jurídica inteligente e moderna",
   modalImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f",
   primaryColor: "#0f172a",
@@ -21,3 +21,5 @@ export const BRANDING: Branding = {
     cancelText: "Cancelar",
   },
 };
+
+export const logoSrc = "/mcaadvogados-logo.png";

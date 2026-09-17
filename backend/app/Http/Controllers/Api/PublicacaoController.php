@@ -64,6 +64,8 @@ class PublicacaoController extends Controller
 
     public function indexAnexos(Publicacao $publicacao)
     {
+        abort_unless($publicacao->user_id === auth()->id(), 404);
+
         return response()->json([
             'success' => true,
             'data' => $publicacao->anexos,
@@ -75,7 +77,7 @@ class PublicacaoController extends Controller
         Publicacao $publicacao
     ) {
         $request->validate([
-            'arquivo' => 'required|file|mimes,doc,docx,jpg,jpeg,png|max:10240',
+            'arquivo' => 'required|file|mimes:doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
         $anexo = $this->service->uploadAnexo(

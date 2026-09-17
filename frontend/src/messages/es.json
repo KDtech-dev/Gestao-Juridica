@@ -4,15 +4,18 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "delete": "Eliminar",
-    "edit": "Editar"
+    "edit": "Editar",
+    "dataGrid": {
+      "rowsPerPage": "Filas por página:"
+    }
   },
   "branding": {
-    "appName": "Central Jurídica",
+    "appName": "MCA-Advogados",
     "tagline": "Gestión jurídica inteligente y moderna"
   },
   "auth": {
     "login": {
-      "brand": "Central Jurídica",
+      "brand": "MCA Advogados",
       "title": "Iniciar sesión",
       "subtitle": "Accede a tu cuenta para continuar.",
       "email": "Correo electrónico",
@@ -25,7 +28,7 @@
       "back": "Volver al sitio",
       "heroTitle": "Gestión jurídica enfocada en productividad",
       "heroText": "Controla clientes, procesos y compromisos en un solo lugar, con una interfaz moderna y segura.",
-      "rights": "© 2026 Central Jurídica. Todos los derechos reservados.",
+      "rights": "© 2026 MCA Advogados. Todos los derechos reservados.",
       "error": "No fue posible iniciar sesión."
     },
     "forgotPassword": {
@@ -653,6 +656,18 @@
           "update": "No fue posible actualizar la contraseña.",
           "connection": "No fue posible conectar con el servidor. Inténtalo de nuevo más tarde."
         }
+      },
+      "publicPage": {
+        "title": "Mi página pública",
+        "description": "Edite los datos de su página pública. El nombre y la foto se comparten con su perfil privado. Guarde para publicar los cambios; la foto se guarda al seleccionar el archivo.",
+        "edit": "Editar página pública",
+        "view": "Ver página pública (nueva pestaña)",
+        "about": "Sobre el profesional",
+        "aboutPlaceholder": "Presente su trayectoria y su actividad profesional.",
+        "changePhoto": "Cambiar foto de perfil",
+        "back": "Volver al perfil privado",
+        "retry": "Intentar de nuevo",
+        "loading": "Cargando perfil"
       }
     },
     "notificationsPage": {
@@ -871,6 +886,22 @@
       "publicationDocument": "Documento de la publicación",
       "download": "Descargar",
       "view": "Ver"
+    },
+    "lawyer": {
+      "about": "Sobre el profesional",
+      "practiceAreas": "Áreas de práctica",
+      "professionalInfo": "Información profesional",
+      "contact": "Póngase en contacto",
+      "ctaTitle": "¿Necesita orientación jurídica?",
+      "others": "Otros profesionales",
+      "viewProfile": "Ver perfil",
+      "openProfile": "Abrir el perfil de {name}",
+      "notFoundTitle": "Profesional no encontrado",
+      "notFoundDescription": "El perfil solicitado no está disponible.",
+      "errorTitle": "No se pudo cargar el perfil",
+      "errorDescription": "Inténtelo de nuevo en unos momentos.",
+      "retry": "Intentar de nuevo",
+      "home": "Volver al inicio"
     }
   },
   "agenda": {

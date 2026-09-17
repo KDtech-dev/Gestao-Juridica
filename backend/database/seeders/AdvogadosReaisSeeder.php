@@ -197,7 +197,15 @@ class AdvogadosReaisSeeder extends Seeder
                             file_get_contents($origem)
                         );
 
+                        // Mantém o campo legado do perfil de advogado.
                         $perfil->foto_perfil = $destino;
+
+                        // A aplicação atual usa a foto armazenada em users.
+                        // Não sobrescreve uma foto alterada manualmente.
+                        if (empty($user->foto_perfil)) {
+                            $user->foto_perfil = $destino;
+                            $user->save();
+                        }
                     }
                 }
 
