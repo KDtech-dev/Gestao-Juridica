@@ -6,3 +6,6 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+\Illuminate\Support\Facades\Schedule::command('lixeira:limpar')->hourly()->withoutOverlapping();
+\Illuminate\Support\Facades\Schedule::command('auditoria:arquivar')->hourly()->withoutOverlapping();

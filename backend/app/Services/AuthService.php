@@ -39,6 +39,7 @@ class AuthService implements IAuthService
             ]);
         }
 
+        request()->attributes->set('auditoria_usuario', $user);
         $token = $user->createToken('api-token')->plainTextToken;
 
         return [
@@ -55,6 +56,7 @@ class AuthService implements IAuthService
             throw new AuthenticationException('Não autenticado');
         }
 
+        request()->attributes->set('auditoria_usuario', $accessToken->tokenable);
         $accessToken->delete();
     }
 
@@ -70,6 +72,7 @@ class AuthService implements IAuthService
         }
 
         $user = $accessToken->tokenable;
+        request()->attributes->set('auditoria_usuario', $accessToken->tokenable);
         $accessToken->delete();
 
         $newToken = $user->createToken('api-token')->plainTextToken;

@@ -130,3 +130,15 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 });
+
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('lixeira')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\LixeiraController::class, 'index']);
+    Route::post('/{exclusao}/restaurar', [\App\Http\Controllers\Api\LixeiraController::class, 'restaurar']);
+    Route::get('/{exclusao}/arquivo', [\App\Http\Controllers\Api\LixeiraController::class, 'arquivo']);
+});
+
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('auditoria')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\AuditoriaController::class, 'index']);
+    Route::get('/arquivos', [\App\Http\Controllers\Api\AuditoriaController::class, 'arquivos']);
+    Route::get('/arquivos/{arquivo}/download', [\App\Http\Controllers\Api\AuditoriaController::class, 'download']);
+});

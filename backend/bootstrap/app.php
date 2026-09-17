@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->use([
             TrustProxies::class,
             CorsHeaders::class,
+            \App\Http\Middleware\RegistrarAuditoria::class,
         ]);
         $middleware->alias([
             'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,

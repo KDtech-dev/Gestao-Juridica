@@ -140,7 +140,7 @@ class UserService
     public function atualizarFotoPerfil(User $user, UploadedFile $foto): User
     {
         if ($user->foto_perfil) {
-            Storage::disk('public')->delete($user->foto_perfil);
+            app(LixeiraService::class)->guardarArquivo('public', $user->foto_perfil);
         }
 
         $hash = hash_file('sha1', $foto->getRealPath());
@@ -162,7 +162,7 @@ class UserService
     public function removerFotoPerfil(User $user): User
     {
         if ($user->foto_perfil) {
-            Storage::disk('public')->delete($user->foto_perfil);
+            app(LixeiraService::class)->guardarArquivo('public', $user->foto_perfil);
             $user->update(['foto_perfil' => null]);
         }
 
@@ -286,15 +286,7 @@ class UserService
             }
         }
 
-        DB::transaction(function () use ($user) {
-            $perfil = $user->funcionario ?? $user->advogado;
-
-            if ($perfil?->endereco_id) {
-                Endereco::destroy($perfil->endereco_id);
-            }
-
-            $user->delete();
-        });
+        app(LixeiraService::class)->excluir($user);
     }
 
     public function atualizarSenhaPropria(User $user, string $senhaAtual, string $novaSenha): void

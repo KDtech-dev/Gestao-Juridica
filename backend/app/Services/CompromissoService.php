@@ -85,8 +85,7 @@ class CompromissoService
         if (isset($dados['anexo']) && $dados['anexo'] instanceof UploadedFile) {
 
             if ($compromisso->anexo) {
-                Storage::disk('public')
-                    ->delete($compromisso->anexo);
+                app(LixeiraService::class)->guardarArquivo('public', $compromisso->anexo);
             }
 
             $dados['anexo'] = $dados['anexo']
@@ -102,13 +101,7 @@ class CompromissoService
 
     public function deletar(Compromisso $compromisso): void
     {
+        app(LixeiraService::class)->excluir($compromisso);
         app(NotificacaoService::class)->removerNotificacoesDoCompromisso($compromisso);
-
-        if ($compromisso->anexo) {
-            Storage::disk('public')
-                ->delete($compromisso->anexo);
-        }
-
-        $compromisso->delete();
     }
 }

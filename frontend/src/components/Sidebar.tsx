@@ -233,6 +233,8 @@ export function SidebarDashboard({ activeKey }: Props) {
   });
 
   if (isAdmin) {
+    translatedMainItems.push({ key: "auditoria", label: "Logs de atividade", icon: "mdi:clipboard-text-clock-outline", href: "/admin/logs" });
+    translatedMainItems.push({ key: "lixeira", label: "Lixeira e exclusões", icon: "mdi:delete-restore", href: "/lixeira" });
     translatedMainItems.push({
       key: "admin-users",
       label: t("sidebar.items.adminUsers"),

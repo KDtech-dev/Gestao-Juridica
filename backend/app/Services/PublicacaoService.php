@@ -116,9 +116,9 @@ class PublicacaoService
             ->where('id', $id)
             ->firstOrFail();
 
-        $this->deleteImagemAtual($publicacao);
+        app(LixeiraService::class)->excluir($publicacao);
 
-        return $publicacao->delete();
+        return true;
     }
 
     public function uploadBanner(
@@ -160,11 +160,7 @@ class PublicacaoService
     ): void {
         abort_unless((string) $anexo->publicacao_id === (string) $publicacao->id, 404);
 
-        if ($anexo->arquivo) {
-            Storage::disk('public')->delete($anexo->arquivo);
-        }
-
-        $anexo->delete();
+        app(LixeiraService::class)->excluir($anexo);
     }
 
     private function publicQuery()
@@ -242,11 +238,7 @@ class PublicacaoService
             ->whereIn('uuid', $anexoIds)
             ->get()
             ->each(function ($anexo): void {
-                if ($anexo->arquivo) {
-                    Storage::disk('public')->delete($anexo->arquivo);
-                }
-
-                $anexo->delete();
+                app(LixeiraService::class)->excluir($anexo);
             });
     }
 
@@ -273,7 +265,7 @@ class PublicacaoService
     private function deleteImagemAtual(Publicacao $publicacao): void
     {
         if ($publicacao->imagem_caminho) {
-            Storage::disk('public')->delete($publicacao->imagem_caminho);
+            app(LixeiraService::class)->guardarArquivo('public', $publicacao->imagem_caminho);
         }
     }
 }

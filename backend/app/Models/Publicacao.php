@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use App\Enums\StatusPublicacao;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Publicacao extends Model
 {
+    use SoftDeletes;
     use HasFactory, HasUuids;
 
     protected $table = 'publicacoes';

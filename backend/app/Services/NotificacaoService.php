@@ -20,7 +20,7 @@ class NotificacaoService
             ->where('usuario_id', $compromisso->user_id)
             ->where('compromisso_id', $compromisso->id)
             ->where('tipo', 'COMPROMISSO_CRIADO')
-            ->delete();
+            ->forceDelete();
     }
 
     public function sincronizarLembretesCompromissos(User $usuario): void
@@ -104,7 +104,7 @@ class NotificacaoService
     public function removerNotificacoesDoCompromisso(Compromisso $compromisso): void
     {
         $this->notificacoesDoCompromisso($compromisso)
-            ->each(fn (Notificacao $notificacao) => $notificacao->delete());
+            ->each(fn (Notificacao $notificacao) => $notificacao->forceDelete());
     }
 
     private function criarSeNaoExiste(
@@ -162,7 +162,7 @@ class NotificacaoService
     {
         $this->notificacoesDoCompromisso($compromisso)
             ->whereIn('tipo', self::TIPOS_LEMBRETE_COMPROMISSO)
-            ->each(fn (Notificacao $notificacao) => $notificacao->delete());
+            ->each(fn (Notificacao $notificacao) => $notificacao->forceDelete());
     }
 
     private function removerLembretesInvalidos(
@@ -180,7 +180,7 @@ class NotificacaoService
                     ?? $this->buscarCompromissoLegado($notificacao);
 
                 if (!$compromisso || $compromisso->user_id !== $usuario->id) {
-                    $notificacao->delete();
+                    $notificacao->forceDelete();
 
                     return;
                 }
@@ -203,7 +203,7 @@ class NotificacaoService
                     || $notificacao->tipo !== $tipoEsperado;
 
                 if ($invalida) {
-                    $notificacao->delete();
+                    $notificacao->forceDelete();
 
                     return;
                 }

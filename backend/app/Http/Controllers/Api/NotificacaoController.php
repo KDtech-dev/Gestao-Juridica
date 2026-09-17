@@ -71,7 +71,7 @@ class NotificacaoController extends Controller
             $query->whereIn('id', $ids);
         }
 
-        $query->delete();
+        $query->each(fn (Notificacao $item) => app(\App\Services\LixeiraService::class)->excluir($item));
 
         return response()->json([
             'success' => true,

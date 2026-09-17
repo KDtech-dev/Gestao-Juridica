@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notificacao extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, \Illuminate\Database\Eloquent\SoftDeletes;
 
     protected $table = 'notificacoes';
 

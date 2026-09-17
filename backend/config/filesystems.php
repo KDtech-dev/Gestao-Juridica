@@ -29,6 +29,19 @@ return [
     */
 
     'disks' => [
+        'auditoria' => [
+            'driver' => 'local',
+            'root' => storage_path('app/auditoria'),
+            'visibility' => 'private',
+            'throw' => true,
+        ],
+
+        'lixeira' => [
+            'driver' => 'local',
+            'root' => storage_path('app/lixeira'),
+            'visibility' => 'private',
+            'throw' => true,
+        ],
 
         'local' => [
             'driver' => 'local',

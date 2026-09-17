@@ -128,8 +128,7 @@ class CasoController extends Controller
             404
         );
 
-        Storage::disk('local')->delete($anexo->arquivo);
-        $anexo->delete();
+        app(\App\Services\LixeiraService::class)->excluir($anexo);
         return response()->json([
             'success' => true,
             'data'    => null,

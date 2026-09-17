@@ -86,7 +86,7 @@ class CasoService
 
     public function deleteCaso(Caso $caso): void
     {
-        DB::transaction(fn() => $caso->delete());
+        app(LixeiraService::class)->excluir($caso);
     }
 
     public function syncClientes(Caso $caso, array $clientes): Caso
@@ -95,7 +95,12 @@ class CasoService
             $item['id'] => ['papel' => $item['papel'] ?? 'autor'],
         ])->toArray();
 
-        $caso->clientes()->sync($payload);
+        DB::transaction(function () use ($caso, $payload) {
+            foreach ($caso->clientes()->whereNotIn('clientes.id', array_keys($payload))->pluck('clientes.id') as $id) {
+                $this->detachCliente($caso, $id);
+            }
+            $caso->clientes()->sync($payload);
+        });
 
         return $caso->load(['clientes', 'advogado', 'categorias','anexos']);
     }
@@ -113,7 +118,7 @@ class CasoService
 
     public function detachCliente(Caso $caso, string $clienteId): void
     {
-        $caso->clientes()->detach($clienteId);
+        app(LixeiraService::class)->desvincularCliente($caso, $clienteId);
     }
 
     public function syncCategorias(Caso $caso, array $categorias): Caso

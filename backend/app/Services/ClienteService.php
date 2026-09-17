@@ -61,19 +61,22 @@ class ClienteService
             $data['foto_perfil'] = null;
         }
 
+        $original = $cliente->getAttributes();
         try {
             DB::transaction(function () use ($cliente, $data) {
                 $cliente->update($data);
             });
 
             if ($novaFoto && $fotoAntiga) {
-                Storage::disk('public')->delete($fotoAntiga);
+                app(LixeiraService::class)->guardarArquivo('public', $fotoAntiga, 0);
             }
 
             if (array_key_exists('foto_perfil', $data) && is_null($data['foto_perfil']) && $fotoAntiga) {
-                Storage::disk('public')->delete($fotoAntiga);
+                app(LixeiraService::class)->guardarArquivo('public', $fotoAntiga, 0);
             }
         } catch (\Throwable $e) {
+            $cliente->setRawAttributes($original);
+            $cliente->save();
             if ($novaFoto) {
                 Storage::disk('public')->delete($novaFoto);
             }
@@ -87,15 +90,7 @@ class ClienteService
 
     public function deleteCliente(Cliente $cliente): void
     {
-        DB::transaction(function () use ($cliente) {
-            $foto = $cliente->foto_perfil;
-
-            $cliente->delete();
-
-            if ($foto) {
-                Storage::disk('public')->delete($foto);
-            }
-        });
+        app(LixeiraService::class)->excluir($cliente);
     }
 
     protected function storeFotoPerfil(UploadedFile $file): string
