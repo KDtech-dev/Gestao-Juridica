@@ -171,31 +171,38 @@ export default function ProfileView() {
     formRef.current.setValue("tema", themeMode);
     formRef.current.setValue("idioma", language);
   }, [themeMode, language]);
-  const handleSaveProfile = form.handleSubmit(async (data) => {
-    if (!user?.id) return;
-    const { tema, idioma, ...payload } = data;
-    try {
-      const updatedUser = await updateOwnProfile({
-        ...payload,
-        advogado: payload.advogado
-          ? {
-              celular: payload.advogado.celular,
-              sexo: payload.advogado.sexo,
-              data_nascimento: payload.advogado.data_nascimento,
-            }
-          : undefined,
-      });
-      setProfileUser(updatedUser);
-      refreshUser({ name: updatedUser.name });
-      await setLanguage(idioma);
-      setThemeMode(tema);
-      form.reset(data);
-      router.refresh();
-      toast.success(t("toast.saveSuccess"));
-    } catch (err) {
-      toast.error(formatToastErrorMessage(err, t("toast.saveError")));
-    }
-  });
+ const handleSaveProfile = form.handleSubmit(async (data) => {
+  if (!user?.id) return;
+  const { tema, idioma, ...payload } = data;
+  try {
+    const updatedUser = await updateOwnProfile({
+      ...payload,
+      advogado: exibirAdvogado
+        ? {
+            celular: payload.advogado?.celular,
+            sexo: payload.advogado?.sexo,
+            data_nascimento: payload.advogado?.data_nascimento,
+          }
+        : undefined,
+      funcionario: exibirFuncionario
+        ? {
+            celular: payload.funcionario?.celular,
+            sexo: payload.funcionario?.sexo,
+            data_nascimento: payload.funcionario?.data_nascimento,
+          }
+        : undefined,
+    });
+    setProfileUser(updatedUser);
+    refreshUser({ name: updatedUser.name });
+    await setLanguage(idioma);
+    setThemeMode(tema);
+    form.reset(data);
+    router.refresh();
+    toast.success(t("toast.saveSuccess"));
+  } catch (err) {
+    toast.error(formatToastErrorMessage(err, t("toast.saveError")));
+  }
+});
 
   const handleAvatarChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
