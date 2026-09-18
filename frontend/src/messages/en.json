@@ -1023,6 +1023,10 @@
       "unique": "This CPF/CNPJ is already registered.",
       "invalid": "CPF must contain 11 digits and CNPJ must contain 14 digits."
     },
+    "startsAt": {
+      "required": "The date and time are required.",
+      "before_now": "It is not possible to schedule an appointment before the current time."
+    },
     "email": {
       "required": "Email is required.",
       "invalid": "Please enter a valid email address.",

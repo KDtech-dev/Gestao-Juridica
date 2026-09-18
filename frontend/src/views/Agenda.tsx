@@ -36,7 +36,7 @@ import {
   deleteCompromisso,
   listCompromissos,
   updateCompromisso,
-} from "@/services/compromissoService";
+} from "@/api/apiCompromissos";
 import { CompromissoFormValues } from "@/components/forms/CompromissoForm";
 import { getApiErrorMessage } from "@/configs/ApiError";
 import { BaseModal } from "@/components/modals/BaseModal";

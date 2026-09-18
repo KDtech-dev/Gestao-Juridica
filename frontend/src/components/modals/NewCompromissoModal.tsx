@@ -5,7 +5,7 @@ import {
   CompromissoFormValues,
 } from "@/components/forms/CompromissoForm";
 import { BaseModal } from "@/components/modals/BaseModal";
-import { CompromissoPayload } from "@/services/compromissoService";
+import { CompromissoPayload } from "@/api/apiCompromissos";
 import { useTranslation } from "@/hooks/useTranslation";
 
 type Props = {

@@ -1016,6 +1016,10 @@
       "required": "El nombre es obligatorio.",
       "max": "El nombre no puede exceder los 255 caracteres."
     },
+    "startsAt": {
+      "required": "La fecha y la hora son obligatorias.",
+      "before_now": "No es posible programar una cita antes de la hora actual."
+    },
     "cpf_cnpj": {
       "required": "El CPF o CNPJ es obligatorio.",
       "unique": "Este CPF/CNPJ ya está registrado.",

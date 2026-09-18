@@ -3,13 +3,26 @@ import type { useTranslations } from "next-intl";
 
 type TFunction = ReturnType<typeof useTranslations>;
 
+const onlyNumbers = (value: string = "") => value.replace(/\D/g, "");
+
+const isNotBeforeToday = (value?: string | null) => {
+  if (!value) return true;
+  const inputDate = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(inputDate.getTime())) return true;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return inputDate >= today;
+};
+
 export const createCasoClientePayloadSchema = () =>
   z.object({
     id: z.string(),
     papel: z.enum(["autor", "réu", "interveniente", "testemunha"]),
   });
 
-export const createCasoSchema = (t: TFunction) =>
+const casoBaseObjectSchema = (t: TFunction) =>
   z.object({
     titulo: z.string().min(1, t("titulo.required")).max(255, t("titulo.max")),
 
@@ -42,8 +55,17 @@ export const createCasoSchema = (t: TFunction) =>
     anexos_remover: z.array(z.string()).optional(),
   });
 
+export const createCasoSchema = (t: TFunction) =>
+  casoBaseObjectSchema(t).refine(
+    (data) => isNotBeforeToday(data.data_abertura),
+    {
+      message: t("data_abertura.before_today"),
+      path: ["data_abertura"],
+    },
+  );
+
 export const updateCasoSchema = (t: TFunction) =>
-  createCasoSchema(t)
+  casoBaseObjectSchema(t)
     .partial()
     .extend({
       status: z

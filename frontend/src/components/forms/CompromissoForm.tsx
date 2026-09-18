@@ -1,21 +1,17 @@
 "use client";
 
 import { Box, MenuItem, TextField } from "@mui/material";
-import { FormEvent, useMemo, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import {
-  CompromissoPayload,
-  CompromissoStatus,
-  CompromissoTipo,
-} from "@/services/compromissoService";
+  createCompromissoSchema,
+  CompromissoFormValues,
+} from "@/schemas/CompromissoSchema";
+import { CompromissoPayload } from "@/api/apiCompromissos";
 import { useTranslation } from "@/hooks/useTranslation";
 
-export type CompromissoFormValues = {
-  titulo: string;
-  tipo: CompromissoTipo;
-  status: CompromissoStatus;
-  startsAt: Date | null;
-  descricao: string;
-};
+export type { CompromissoFormValues };
 
 type Props = {
   id: string;
@@ -78,55 +74,34 @@ export function CompromissoForm({
   onSubmit,
 }: Props) {
   const { t } = useTranslation();
-  const resolvedInitialValues = useMemo(
-    () => ({ ...defaultValues, ...initialValues }),
-    [initialValues],
-  );
-  const [values, setValues] = useState<CompromissoFormValues>(
-    resolvedInitialValues,
-  );
-  const [startsAtInput, setStartsAtInput] = useState(
-    toDateTimeInputValue(resolvedInitialValues.startsAt ?? null),
-  );
-  const [submitted, setSubmitted] = useState(false);
+  const tv = useTranslations("validation");
 
-  function updateValue<K extends keyof CompromissoFormValues>(
-    name: K,
-    value: CompromissoFormValues[K],
-  ) {
-    setValues((current) => ({ ...current, [name]: value }));
-  }
+  const { control, handleSubmit } = useForm<CompromissoFormValues>({
+    defaultValues: { ...defaultValues, ...initialValues },
+    resolver: zodResolver(createCompromissoSchema(tv)),
+  });
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitted(true);
+  const onSubmitForm = (values: CompromissoFormValues) => {
+  const startsAt = values.startsAt as Date;
+  const data = toDate(startsAt);
+  const hora = toTime(startsAt);
 
-    const formData = new FormData(event.currentTarget);
-    const selectedStartsAt = String(formData.get("startsAt") ?? "");
-    const titulo = values.titulo.trim();
-    const startsAt = fromDateTimeInputValue(selectedStartsAt);
-
-    if (!titulo || !startsAt) return;
-
-    const data = toDate(startsAt);
-    const hora = toTime(startsAt);
-
-    onSubmit({
-      titulo,
-      tipo: values.tipo,
-      status: values.status,
-      data,
-      hora,
-      starts_at: `${data} ${hora}:00`,
-      descricao: values.descricao.trim(),
-    });
-  }
+  onSubmit({
+    titulo: values.titulo.trim(),
+    tipo: values.tipo,
+    status: values.status,
+    data,
+    hora,
+    starts_at: `${data} ${hora}:00`,
+    descricao: values.descricao?.trim(),
+  });
+};
 
   return (
     <Box
       id={id}
       component="form"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmitForm)}
       sx={{
         display: "grid",
         gridTemplateColumns: {
@@ -137,87 +112,109 @@ export function CompromissoForm({
       }}
     >
       <Box sx={{ gridColumn: "1 / -1" }}>
-        <TextField
-          fullWidth
-          required
-          disabled={disabled}
-          label={t("agenda.form.titleLabel")}
-          value={values.titulo}
-          error={submitted && !values.titulo.trim()}
-          helperText={
-            submitted && !values.titulo.trim()
-              ? t("agenda.form.titleRequired")
-              : undefined
-          }
-          onChange={(event) => updateValue("titulo", event.target.value)}
+        <Controller
+          name="titulo"
+          control={control}
+          render={({ field, fieldState }) => (
+            <TextField
+              {...field}
+              fullWidth
+              required
+              disabled={disabled}
+              label={t("agenda.form.titleLabel")}
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+            />
+          )}
         />
       </Box>
 
-      <TextField
-        select
-        fullWidth
-        disabled={disabled}
-        label={t("agenda.form.typeLabel")}
-        value={values.tipo}
-        onChange={(event) =>
-          updateValue("tipo", event.target.value as CompromissoTipo)
-        }
-      >
-        <MenuItem value="COMPROMISSO">{t("agenda.types.appointment")}</MenuItem>
-        <MenuItem value="REUNIAO">{t("agenda.types.meeting")}</MenuItem>
-        <MenuItem value="AUDIENCIA">{t("agenda.types.hearing")}</MenuItem>
-        <MenuItem value="PRAZO">{t("agenda.types.deadline")}</MenuItem>
-        <MenuItem value="LEMBRETE">{t("agenda.types.reminder")}</MenuItem>
-      </TextField>
+      <Controller
+        name="tipo"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            select
+            fullWidth
+            disabled={disabled}
+            label={t("agenda.form.typeLabel")}
+          >
+            <MenuItem value="COMPROMISSO">
+              {t("agenda.types.appointment")}
+            </MenuItem>
+            <MenuItem value="REUNIAO">{t("agenda.types.meeting")}</MenuItem>
+            <MenuItem value="AUDIENCIA">{t("agenda.types.hearing")}</MenuItem>
+            <MenuItem value="PRAZO">{t("agenda.types.deadline")}</MenuItem>
+            <MenuItem value="LEMBRETE">{t("agenda.types.reminder")}</MenuItem>
+          </TextField>
+        )}
+      />
 
-      <TextField
-        select
-        fullWidth
-        disabled={disabled}
-        label={t("agenda.form.statusLabel")}
-        value={values.status}
-        onChange={(event) =>
-          updateValue("status", event.target.value as CompromissoStatus)
-        }
-      >
-        <MenuItem value="PENDENTE">{t("agenda.status.pending")}</MenuItem>
-        <MenuItem value="CONCLUIDO">{t("agenda.status.completed")}</MenuItem>
-        <MenuItem value="CANCELADO">{t("agenda.status.cancelled")}</MenuItem>
-      </TextField>
+      <Controller
+        name="status"
+        control={control}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            select
+            fullWidth
+            disabled={disabled}
+            label={t("agenda.form.statusLabel")}
+          >
+            <MenuItem value="PENDENTE">{t("agenda.status.pending")}</MenuItem>
+            <MenuItem value="CONCLUIDO">
+              {t("agenda.status.completed")}
+            </MenuItem>
+            <MenuItem value="CANCELADO">
+              {t("agenda.status.cancelled")}
+            </MenuItem>
+          </TextField>
+        )}
+      />
 
       <Box sx={{ gridColumn: "1 / -1" }}>
-        <TextField
-          fullWidth
-          required
+        <Controller
           name="startsAt"
-          type="datetime-local"
-          label={t("agenda.form.dateTimeLabel")}
-          value={startsAtInput}
-          disabled={disabled}
-          onChange={(event) => setStartsAtInput(event.target.value)}
-          error={submitted && !fromDateTimeInputValue(startsAtInput)}
-          helperText={
-            submitted && !fromDateTimeInputValue(startsAtInput)
-              ? t("agenda.form.dateTimeRequired")
-              : undefined
-          }
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
+          control={control}
+          render={({ field, fieldState }) => (
+            <TextField
+              fullWidth
+              required
+              type="datetime-local"
+              label={t("agenda.form.dateTimeLabel")}
+              value={toDateTimeInputValue(field.value)}
+              disabled={disabled}
+              onChange={(event) =>
+                field.onChange(fromDateTimeInputValue(event.target.value))
+              }
+              error={!!fieldState.error}
+              helperText={fieldState.error?.message}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+            />
+          )}
         />
       </Box>
 
       <Box sx={{ gridColumn: "1 / -1" }}>
-        <TextField
-          multiline
-          rows={4}
-          fullWidth
-          disabled={disabled}
-          label={t("agenda.form.descriptionLabel")}
-          value={values.descricao}
-          onChange={(event) => updateValue("descricao", event.target.value)}
+        <Controller
+          name="descricao"
+          control={control}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              value={field.value ?? ""}
+              multiline
+              rows={4}
+              fullWidth
+              disabled={disabled}
+              label={t("agenda.form.descriptionLabel")}
+            />
+          )}
         />
       </Box>
     </Box>
