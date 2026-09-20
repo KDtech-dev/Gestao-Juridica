@@ -26,6 +26,7 @@ class UpdateCompromissoRequest extends FormRequest
             'tipo' => ['sometimes', Rule::enum(TipoCompromisso::class)],
             'status' => ['sometimes', Rule::enum(StatusCompromisso::class)],
             'anexo' => ['nullable', 'file'],
+            'user_id' => ['sometimes', 'string', 'uuid', 'exists:users,id'],
         ];
     }
 

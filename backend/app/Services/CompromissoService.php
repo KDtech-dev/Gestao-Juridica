@@ -13,8 +13,7 @@ class CompromissoService
     public function listar(
         bool $somenteDoUsuario = false,
         ?string $periodo = null
-    )
-    {
+    ) {
         $hoje = CarbonImmutable::today();
         $query = Compromisso::query()
             ->with('criador')
@@ -67,7 +66,7 @@ class CompromissoService
                 ->store('compromissos', 'public');
         }
 
-        $dados['user_id'] =  Auth::id();
+        $dados['user_id'] = $dados['user_id'] ?? Auth::id();
 
         $compromisso = Compromisso::create($dados);
 

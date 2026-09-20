@@ -13,10 +13,15 @@ function getFirstWeekDay(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
+export type CalendarCardEvent = {
+  date: Date;
+  color?: string | null;
+};
+
 type CalendarCardProps = {
   value?: Date;
   onSelectDate?: (date: Date) => void;
-  eventDates?: Date[];
+  events?: CalendarCardEvent[];
 };
 
 function dateKey(date: Date) {
@@ -30,7 +35,7 @@ function dateKey(date: Date) {
 export function CalendarCard({
   value,
   onSelectDate,
-  eventDates = [],
+  events = [],
 }: CalendarCardProps) {
   const { t, language } = useTranslation();
   const initial = value ?? new Date();
@@ -100,25 +105,29 @@ export function CalendarCard({
     [t],
   );
 
-  const eventDayCounts = useMemo(() => {
-    const counts = new Map<string, number>();
+  const eventDayInfo = useMemo(() => {
+    const info = new Map<string, { count: number; colors: Set<string> }>();
 
-    eventDates.forEach((date) => {
+    events.forEach(({ date, color }) => {
       const key = dateKey(date);
-      counts.set(key, (counts.get(key) ?? 0) + 1);
+      const entry = info.get(key) ?? { count: 0, colors: new Set<string>() };
+      entry.count += 1;
+      if (color) entry.colors.add(color);
+      info.set(key, entry);
     });
 
-    return counts;
-  }, [eventDates]);
+    return info;
+  }, [events]);
+
   const selectedDateKey = value
     ? dateKey(value)
     : dateKey(
-        new Date(
-          currentDate.getFullYear(),
-          currentDate.getMonth(),
-          selectedDay,
-        ),
-      );
+      new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        selectedDay,
+      ),
+    );
 
   return (
     <Paper
@@ -177,8 +186,13 @@ export function CalendarCard({
                   ),
                 );
                 const isSelected = cellDateKey === selectedDateKey;
-                const eventCount = eventDayCounts.get(cellDateKey) ?? 0;
+                const dayInfo = eventDayInfo.get(cellDateKey);
+                const eventCount = dayInfo?.count ?? 0;
                 const hasEvent = eventCount > 0;
+                const dayColor =
+                  dayInfo && dayInfo.colors.size === 1
+                    ? [...dayInfo.colors][0]
+                    : undefined;
 
                 return (
                   <Box
@@ -194,7 +208,7 @@ export function CalendarCard({
                       borderColor: hasEvent
                         ? isSelected
                           ? "primary.main"
-                          : "primary.light"
+                          : (dayColor ?? "primary.light")
                         : "transparent",
                       display: "grid",
                       placeItems: "center",
@@ -205,7 +219,9 @@ export function CalendarCard({
                       bgcolor: isSelected
                         ? "primary.main"
                         : hasEvent
-                          ? "rgba(25,118,210,0.08)"
+                          ? dayColor
+                            ? `${dayColor}22`
+                            : "rgba(25,118,210,0.08)"
                           : "transparent",
                       cursor: "pointer",
                       fontFamily: "inherit",
@@ -234,8 +250,14 @@ export function CalendarCard({
                           height: eventCount > 1 ? 14 : 6,
                           px: eventCount > 1 ? 0.4 : 0,
                           borderRadius: "999px",
-                          bgcolor: isSelected ? "#fff" : "primary.main",
-                          color: isSelected ? "primary.main" : "#fff",
+                          bgcolor: isSelected
+                            ? "#fff"
+                            : (dayColor ?? "primary.main"),
+                          color: isSelected
+                            ? "primary.main"
+                            : dayColor
+                              ? "#fff"
+                              : "#fff",
                           position: "absolute",
                           bottom: eventCount > 1 ? -2 : 5,
                           left: "50%",

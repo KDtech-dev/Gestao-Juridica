@@ -21,6 +21,7 @@ class CompromissoResource extends JsonResource
             'criador' => [
                 'id' => $this->criador?->id,
                 'nome' => $this->criador?->name,
+                'cor_perfil' => $this->criador?->cor_perfil,
             ],
 
             'can' => [

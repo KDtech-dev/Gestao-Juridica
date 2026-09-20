@@ -10,8 +10,7 @@ use Illuminate\Validation\Rule;
 
 class StoreCompromissoRequest extends FormRequest
 {
-   
-   public function authorize(): bool
+    public function authorize(): bool
     {
         return true;
     }
@@ -27,6 +26,7 @@ class StoreCompromissoRequest extends FormRequest
             'tipo' => ['required', Rule::enum(TipoCompromisso::class)],
             'status' => ['sometimes', Rule::enum(StatusCompromisso::class)],
             'anexo' => ['nullable', 'file'],
+            'user_id' => ['nullable', 'string', 'uuid', 'exists:users,id'],
         ];
     }
 

@@ -24,6 +24,7 @@ export type Compromisso = {
   criador: {
     id?: number | string | null;
     nome?: string | null;
+    cor_perfil?: string | null;
   };
   can?: {
     update?: boolean;
@@ -39,6 +40,7 @@ export type CompromissoPayload = {
   starts_at?: string;
   tipo: CompromissoTipo;
   status?: CompromissoStatus;
+  user_id?: string;
 };
 
 type UnknownRecord = Record<string, unknown>;
@@ -114,6 +116,7 @@ function normalizeCompromisso(raw: unknown): Compromisso {
           ? criador.id
           : null,
       nome: asOptionalString(criador.nome),
+      cor_perfil: asOptionalString(criador.cor_perfil),
     },
     can: {
       update: can.update !== false,

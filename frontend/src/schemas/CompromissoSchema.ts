@@ -25,6 +25,7 @@ export const createCompromissoSchema = (t: TFunction) =>
             status: z.enum(COMPROMISSO_STATUS),
             startsAt: z.date().nullable(),
             descricao: z.string().optional().nullable(),
+            userId: z.string().min(1, t("userId.required")),
         })
         .superRefine((data, ctx) => {
             if (!data.startsAt) {

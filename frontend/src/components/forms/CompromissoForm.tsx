@@ -1,6 +1,13 @@
 "use client";
 
-import { Box, MenuItem, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Box,
+  CircularProgress,
+  MenuItem,
+  TextField,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
@@ -10,8 +17,13 @@ import {
 } from "@/schemas/CompromissoSchema";
 import { CompromissoPayload } from "@/api/apiCompromissos";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/hooks/useAuth";
+import { getAxios } from "@/configs/axios";
+import type { UserType } from "@/@core/types";
 
 export type { CompromissoFormValues };
+
+type UsuarioOption = Pick<UserType, "id" | "name">;
 
 type Props = {
   id: string;
@@ -26,6 +38,7 @@ const defaultValues: CompromissoFormValues = {
   status: "PENDENTE",
   startsAt: new Date(),
   descricao: "",
+  userId: "",
 };
 
 function toDate(value: Date | null) {
@@ -75,27 +88,54 @@ export function CompromissoForm({
 }: Props) {
   const { t } = useTranslation();
   const tv = useTranslations("validation");
+  const { user } = useAuth();
+
+  const [usuarios, setUsuarios] = useState<UsuarioOption[]>([]);
+  const [loadingUsuarios, setLoadingUsuarios] = useState(true);
+
+  useEffect(() => {
+    let ativo = true;
+
+    getAxios()
+      .get("/users", { params: { per_page: 999 } })
+      .then((response) => {
+        if (ativo) setUsuarios(response.data?.data ?? []);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (ativo) setLoadingUsuarios(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   const { control, handleSubmit } = useForm<CompromissoFormValues>({
-    defaultValues: { ...defaultValues, ...initialValues },
+    defaultValues: {
+      ...defaultValues,
+      ...initialValues,
+      userId: initialValues?.userId ?? (user ? String(user.id) : ""),
+    },
     resolver: zodResolver(createCompromissoSchema(tv)),
   });
 
   const onSubmitForm = (values: CompromissoFormValues) => {
-  const startsAt = values.startsAt as Date;
-  const data = toDate(startsAt);
-  const hora = toTime(startsAt);
+    const startsAt = values.startsAt as Date;
+    const data = toDate(startsAt);
+    const hora = toTime(startsAt);
 
-  onSubmit({
-    titulo: values.titulo.trim(),
-    tipo: values.tipo,
-    status: values.status,
-    data,
-    hora,
-    starts_at: `${data} ${hora}:00`,
-    descricao: values.descricao?.trim(),
-  });
-};
+    onSubmit({
+      titulo: values.titulo.trim(),
+      tipo: values.tipo,
+      status: values.status,
+      data,
+      hora,
+      starts_at: `${data} ${hora}:00`,
+      descricao: values.descricao?.trim(),
+      user_id: values.userId,
+    });
+  };
 
   return (
     <Box
@@ -126,6 +166,50 @@ export function CompromissoForm({
               helperText={fieldState.error?.message}
             />
           )}
+        />
+      </Box>
+
+      <Box sx={{ gridColumn: "1 / -1" }}>
+        <Controller
+          name="userId"
+          control={control}
+          render={({ field, fieldState }) => {
+            const selected =
+              usuarios.find((u) => String(u.id) === field.value) ?? null;
+
+            return (
+              <Autocomplete
+                options={usuarios}
+                loading={loadingUsuarios}
+                getOptionLabel={(option) => option.name}
+                isOptionEqualToValue={(option, value) =>
+                  String(option.id) === String(value.id)
+                }
+                value={selected}
+                onChange={(_, value) =>
+                  field.onChange(value ? String(value.id) : "")
+                }
+                disabled={disabled}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t("agenda.form.responsibleLabel")}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message}
+                    InputProps={{
+                      ...params.InputProps,
+                      endAdornment: (
+                        <>
+                          {loadingUsuarios && <CircularProgress size={18} />}
+                          {params.InputProps.endAdornment}
+                        </>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            );
+          }}
         />
       </Box>
 

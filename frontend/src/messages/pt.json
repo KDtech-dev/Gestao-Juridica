@@ -1033,7 +1033,8 @@
       "statusLabel": "Status",
       "dateTimeLabel": "Data e horário",
       "dateTimeRequired": "Informe data e horário.",
-      "descriptionLabel": "Descrição/Pauta"
+      "descriptionLabel": "Descrição/Pauta",
+      "responsibleLabel":"Nome do Responsavel"
     }
   },
   "validation": {
@@ -1043,6 +1044,9 @@
       "invalidUser": "Não encontramos uma conta com esse e-mail.",
       "throttled": "Aguarde um momento antes de tentar novamente.",
       "error": "Não foi possível redefinir sua senha. Tente novamente."
+    },
+    "userId":{
+"required":" O usuario é obrigatorio"
     },
     "startsAt": {
       "required": "A data e hora são obrigatórias.",

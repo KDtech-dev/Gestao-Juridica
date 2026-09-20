@@ -130,6 +130,8 @@ function compromissoToFormValues(
     status: compromisso.status,
     startsAt: compromissoDate(compromisso),
     descricao: compromisso.descricao ?? "",
+    userId:
+      compromisso.criador.id != null ? String(compromisso.criador.id) : "",
   };
 }
 
@@ -251,8 +253,12 @@ export default function AgendaView() {
     setTimelinePage(1);
   }, [agendaPeriod, timelinePageSize, upcomingEvents.length, visao]);
 
-  const calendarEventDates = useMemo(
-    () => compromissos.map((compromisso) => compromissoDate(compromisso)),
+  const calendarEvents = useMemo(
+    () =>
+      compromissos.map((compromisso) => ({
+        date: compromissoDate(compromisso),
+        color: compromisso.criador.cor_perfil ?? null,
+      })),
     [compromissos],
   );
 
@@ -690,8 +696,8 @@ export default function AgendaView() {
                         const isNow = queryTime
                           ? queryTime === eventTime
                           : eventIsToday &&
-                            nowMinutes >= eventMinutes &&
-                            nowMinutes < eventMinutes + 60;
+                          nowMinutes >= eventMinutes &&
+                          nowMinutes < eventMinutes + 60;
                         const isLast =
                           idx === paginatedUpcomingEvents.length - 1;
                         const chip = statusChip(event.status, t);
@@ -974,7 +980,7 @@ export default function AgendaView() {
               <CalendarCard
                 value={selectedDate}
                 onSelectDate={(d) => setSelectedDate(d)}
-                eventDates={calendarEventDates}
+                events={calendarEvents}
               />
 
               <Paper
