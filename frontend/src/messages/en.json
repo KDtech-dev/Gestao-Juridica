@@ -1010,7 +1010,8 @@
       "statusLabel": "Status",
       "dateTimeLabel": "Date and time",
       "dateTimeRequired": "Enter date and time.",
-      "descriptionLabel": "Description/Agenda"
+      "descriptionLabel": "Description/Agenda",
+      "responsibleLabel": "The responsible person's name"
     }
   },
   "validation": {
@@ -1022,6 +1023,9 @@
       "required": "CPF or CNPJ is required.",
       "unique": "This CPF/CNPJ is already registered.",
       "invalid": "CPF must contain 11 digits and CNPJ must contain 14 digits."
+    },
+    "userId": {
+      "required": " username are required."
     },
     "startsAt": {
       "required": "The date and time are required.",

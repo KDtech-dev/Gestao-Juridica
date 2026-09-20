@@ -1008,13 +1008,17 @@
       "statusLabel": "Estado",
       "dateTimeLabel": "Fecha y hora",
       "dateTimeRequired": "Informa fecha y hora.",
-      "descriptionLabel": "Descripción/Pauta"
+      "descriptionLabel": "Descripción/Pauta",
+      "responsibleLabel": "El nombre del responsable "
     }
   },
   "validation": {
     "name": {
       "required": "El nombre es obligatorio.",
       "max": "El nombre no puede exceder los 255 caracteres."
+    },
+    "userId": {
+      "required": "el usuario son obligatorios."
     },
     "startsAt": {
       "required": "La fecha y la hora son obligatorias.",

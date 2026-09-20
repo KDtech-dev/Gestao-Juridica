@@ -1046,7 +1046,7 @@
       "error": "Não foi possível redefinir sua senha. Tente novamente."
     },
     "userId":{
-"required":" O usuario é obrigatorio"
+      "required":" O usuario é obrigatorio"
     },
     "startsAt": {
       "required": "A data e hora são obrigatórias.",
