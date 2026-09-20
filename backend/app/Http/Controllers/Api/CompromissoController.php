@@ -50,7 +50,7 @@ class CompromissoController extends Controller
 
     public function show(Compromisso $compromisso): JsonResponse
     {
-        $compromisso->load('criador');
+        $compromisso = $this->service->buscar($compromisso);
 
         return response()->json([
             'success' => true,
