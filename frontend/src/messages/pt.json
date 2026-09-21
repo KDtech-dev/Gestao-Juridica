@@ -961,7 +961,23 @@
       "title": "Próximos compromissos",
       "loading": "Carregando compromissos...",
       "empty": "Nenhum próximo compromisso encontrado.",
-      "perPage": "Mostrar"
+      "perPage": "Mostrar",
+      "viewAll": "Ver todos"
+    },
+    "list": {
+      "title": "Lista de Compromissos",
+      "subtitle": "Lista completa para todos os compromissos",
+      "filters": {
+        "allTypes": "Todos os tipos",
+        "allStatus": "Todos os status"
+      },
+      "actions": {
+        "markCompleted": "Marcar como concluído",
+        "markCancelled": "Marcar como cancelado",
+        "deleteSelected": "Excluir selecionados",
+        "deleteAll": "Excluir todos"
+      },
+      "notifications": "Notificações"
     },
     "calendar": {
       "selectDay": "Selecionar dia",
@@ -1034,7 +1050,7 @@
       "dateTimeLabel": "Data e horário",
       "dateTimeRequired": "Informe data e horário.",
       "descriptionLabel": "Descrição/Pauta",
-      "responsibleLabel":"Nome do Responsavel"
+      "responsibleLabel": "Nome do Responsavel"
     }
   },
   "validation": {
@@ -1045,8 +1061,8 @@
       "throttled": "Aguarde um momento antes de tentar novamente.",
       "error": "Não foi possível redefinir sua senha. Tente novamente."
     },
-    "userId":{
-      "required":" O usuario é obrigatorio"
+    "userId": {
+      "required": " O usuario é obrigatorio"
     },
     "startsAt": {
       "required": "A data e hora são obrigatórias.",
