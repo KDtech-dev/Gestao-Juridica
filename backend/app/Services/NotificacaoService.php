@@ -104,7 +104,7 @@ class NotificacaoService
     public function removerNotificacoesDoCompromisso(Compromisso $compromisso): void
     {
         $this->notificacoesDoCompromisso($compromisso)
-            ->each(fn (Notificacao $notificacao) => $notificacao->delete());
+            ->each(fn(Notificacao $notificacao) => $notificacao->delete());
     }
 
     private function criarSeNaoExiste(
@@ -158,11 +158,11 @@ class NotificacaoService
         ];
     }
 
-    private function removerLembretesDoCompromisso(Compromisso $compromisso): void
+    public function removerLembretesDoCompromisso(Compromisso $compromisso): void
     {
         $this->notificacoesDoCompromisso($compromisso)
             ->whereIn('tipo', self::TIPOS_LEMBRETE_COMPROMISSO)
-            ->each(fn (Notificacao $notificacao) => $notificacao->delete());
+            ->each(fn(Notificacao $notificacao) => $notificacao->delete());
     }
 
     private function removerLembretesInvalidos(

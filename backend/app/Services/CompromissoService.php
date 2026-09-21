@@ -45,7 +45,7 @@ class CompromissoService
     {
         $agora = CarbonImmutable::now();
 
-        Compromisso::query()
+        $vencidos = Compromisso::query()
             ->where('status', 'PENDENTE')
             ->where(function ($query) use ($agora) {
                 $query->whereDate('data', '<', $agora->toDateString())
@@ -55,7 +55,22 @@ class CompromissoService
                             ->where('hora', '<=', $agora->format('H:i:s'));
                     });
             })
+            ->get();
+
+        if ($vencidos->isEmpty()) {
+            return;
+        }
+
+        Compromisso::query()
+            ->whereIn('id', $vencidos->pluck('id'))
             ->update(['status' => 'CANCELADO']);
+
+        $notificacaoService = app(NotificacaoService::class);
+
+        $vencidos->each(
+            fn(Compromisso $compromisso) =>
+            $notificacaoService->removerLembretesDoCompromisso($compromisso)
+        );
     }
 
     private function aplicarFiltroPeriodo($query, string $periodo, CarbonImmutable $hoje): void
