@@ -25,6 +25,7 @@ import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { CalendarCard } from "@/components/CalendarCard";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useNotifications } from "@/context/NotificationsContext";
 import { NewCompromissoModal } from "@/components/modals/NewCompromissoModal";
 import { EditCompromissoModal } from "@/components/modals/EditCompromissoModal";
@@ -43,97 +44,18 @@ import { BaseModal } from "@/components/modals/BaseModal";
 import { useAuthContext } from "@/context/AuthContext";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 import { useTranslation } from "@/hooks/useTranslation";
+import {
+  compromissoDate,
+  compromissoToFormValues,
+  formatTime,
+  isSameDay,
+  statusChip,
+  timeToMinutes,
+  tipoIcon,
+  tipoLabel,
+} from "@/utils/compromisso";
 
-type Translate = (path: string) => string;
 type AgendaPeriod = "today" | "week" | "month";
-
-function statusChip(status: Compromisso["status"], t: Translate) {
-  if (status === "CONCLUIDO") {
-    return {
-      label: t("agenda.status.completed"),
-      color: "#047857",
-      bg: "#b8ead2",
-    };
-  }
-
-  if (status === "CANCELADO") {
-    return {
-      label: t("agenda.status.cancelled"),
-      color: "#991b1b",
-      bg: "#fee2e2",
-    };
-  }
-
-  return { label: t("agenda.status.pending"), color: "#c2410c", bg: "#ffe3bf" };
-}
-
-function tipoLabel(tipo: Compromisso["tipo"], t: Translate) {
-  const labels: Record<Compromisso["tipo"], string> = {
-    COMPROMISSO: t("agenda.types.appointment"),
-    LEMBRETE: t("agenda.types.reminder"),
-    AUDIENCIA: t("agenda.types.hearing"),
-    PRAZO: t("agenda.types.deadline"),
-    REUNIAO: t("agenda.types.meeting"),
-  };
-
-  return labels[tipo];
-}
-
-function tipoIcon(tipo: Compromisso["tipo"]) {
-  const icons: Record<Compromisso["tipo"], string> = {
-    COMPROMISSO: "mdi:calendar-check-outline",
-    LEMBRETE: "mdi:bell-outline",
-    AUDIENCIA: "mdi:gavel",
-    PRAZO: "mdi:timer-sand",
-    REUNIAO: "mdi:account-group-outline",
-  };
-
-  return icons[tipo];
-}
-
-function timeToMinutes(time: string) {
-  const [hh, mm] = (time || "00:00").split(":").map((s) => parseInt(s, 10));
-
-  return (isNaN(hh) ? 0 : hh) * 60 + (isNaN(mm) ? 0 : mm);
-}
-
-function isSameDay(d1: Date, d2: Date) {
-  return (
-    d1.getFullYear() === d2.getFullYear() &&
-    d1.getMonth() === d2.getMonth() &&
-    d1.getDate() === d2.getDate()
-  );
-}
-
-function compromissoDate(compromisso: Compromisso) {
-  const datePart = compromisso.data.split(/[T\s]/)[0];
-  const [year, month, day] = datePart.split("-").map(Number);
-  const [hour, minute] = (compromisso.hora || "00:00").split(":").map(Number);
-
-  if (!year || !month || !day) {
-    return new Date();
-  }
-
-  return new Date(year, month - 1, day, hour || 0, minute || 0);
-}
-
-function formatTime(compromisso: Compromisso) {
-  return (compromisso.hora || "00:00").slice(0, 5);
-}
-
-function compromissoToFormValues(
-  compromisso: Compromisso,
-): CompromissoFormValues {
-  return {
-    titulo: compromisso.titulo,
-    tipo: compromisso.tipo,
-    status: compromisso.status,
-    startsAt: compromissoDate(compromisso),
-    descricao: compromisso.descricao ?? "",
-    userId:
-      compromisso.criador.id != null ? String(compromisso.criador.id) : "",
-  };
-}
 
 function getNewCompromissoInitialValues(
   date: Date,
@@ -152,24 +74,18 @@ function getNewCompromissoInitialValues(
 
 export default function AgendaView() {
   const { t, language } = useTranslation();
+  const router = useRouter();
   const { isAuthenticated, loading: authLoading } = useAuthContext();
   const [open, setOpen] = useState(false);
   const [visao, setVisao] = useState<CompromissoVisao>("publica");
   const [compromissos, setCompromissos] = useState<Compromisso[]>([]);
-  const [upcomingCompromissos, setUpcomingCompromissos] = useState<
-    Compromisso[]
-  >([]);
+  const [upcomingCompromissos, setUpcomingCompromissos] = useState<Compromisso[]>([]);
   const [selectedEvent, setSelectedEvent] = useState<Compromisso | null>(null);
   const [viewEvent, setViewEvent] = useState<Compromisso | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Compromisso | null>(null);
-  const [loadingUpcomingCompromissos, setLoadingUpcomingCompromissos] =
-    useState(true);
-  const [compromissosError, setCompromissosError] = useState<string | null>(
-    null,
-  );
-  const [upcomingCompromissosError, setUpcomingCompromissosError] = useState<
-    string | null
-  >(null);
+  const [loadingUpcomingCompromissos, setLoadingUpcomingCompromissos] = useState(true);
+  const [compromissosError, setCompromissosError] = useState<string | null>(null,);
+  const [upcomingCompromissosError, setUpcomingCompromissosError] = useState<string | null>(null);  
   const [submittingCompromisso, setSubmittingCompromisso] = useState(false);
   const [deletingCompromisso, setDeletingCompromisso] = useState(false);
   const { addNotification } = useNotifications();
@@ -183,6 +99,7 @@ export default function AgendaView() {
       ? new URLSearchParams(window.location.search).get("time")
       : null;
   const [openEdit, setOpenEdit] = useState(false);
+
   const loadCompromissos = useCallback(async () => {
     if (authLoading || !isAuthenticated) return;
 
@@ -631,16 +548,29 @@ export default function AgendaView() {
                       display: "flex",
                       gap: 1,
                       alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
-                    <Icon icon="mdi:calendar-clock" width={20} />
-                    <Typography
-                      fontWeight={700}
-                      fontSize="1.15rem"
-                      color="text.primary"
+                    <Stack direction="row" gap={1} alignItems="center">
+                      <Icon icon="mdi:calendar-clock" width={20} />
+                      <Typography
+                        fontWeight={700}
+                        fontSize="1.15rem"
+                        color="text.primary"
+                      >
+                        {t("agenda.timeline.title")}
+                      </Typography>
+                    </Stack>
+
+                    <Button
+                      size="small"
+                      variant="text"
+                      endIcon={<Icon icon="mdi:arrow-right" width={16} />}
+                      onClick={() => router.push("/compromissos")}
+                      sx={{ textTransform: "none" }}
                     >
-                      {t("agenda.timeline.title")}
-                    </Typography>
+                      {t("agenda.timeline.viewAll")}
+                    </Button>
                   </Box>
 
                   <Stack sx={{ p: 2 }} spacing={0}>
