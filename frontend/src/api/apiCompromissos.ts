@@ -176,3 +176,12 @@ export async function deleteCompromisso(id: number | string) {
 
   return res.data;
 }
+
+export async function updateCompromissoStatus(
+  id: number | string,
+  status: CompromissoStatus,
+) {
+  const res = await api.put(`/compromissos/${id}`, { status });
+
+  return normalizeCompromisso(res.data?.data ?? res.data);
+}
