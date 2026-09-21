@@ -936,7 +936,23 @@
       "title": "Próximos compromisos",
       "loading": "Cargando compromisos...",
       "empty": "No se encontraron próximos compromisos.",
-      "perPage": "Mostrar"
+      "perPage": "Mostrar",
+      "viewAll": "Ver todos"
+    },
+    "list": {
+      "title": "Lista de compromisos",
+      "subtitle": "Lista completa de todos los compromisos",
+      "filters": {
+        "allTypes": "Todos los tipos",
+        "allStatus": "Todos los estados"
+      },
+      "actions": {
+        "markCompleted": "Marcar como completado",
+        "markCancelled": "Marcar como cancelado",
+        "deleteSelected": "Eliminar seleccionados",
+        "deleteAll": "Eliminar todos"
+      },
+      "notifications": "Notificaciones"
     },
     "calendar": {
       "selectDay": "Seleccionar día",

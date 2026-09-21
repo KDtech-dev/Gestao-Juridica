@@ -938,7 +938,23 @@
       "title": "Upcoming appointments",
       "loading": "Loading appointments...",
       "empty": "No upcoming appointments found.",
-      "perPage": "Show"
+      "perPage": "Show",
+      "viewAll": "View all"
+    },
+    "list": {
+      "title": "Appointments List",
+      "subtitle": "Complete list of all appointments",
+      "filters": {
+        "allTypes": "All types",
+        "allStatus": "All statuses"
+      },
+      "actions": {
+        "markCompleted": "Mark as completed",
+        "markCancelled": "Mark as cancelled",
+        "deleteSelected": "Delete selected",
+        "deleteAll": "Delete all"
+      },
+      "notifications": "Notifications"
     },
     "calendar": {
       "selectDay": "Select day",
