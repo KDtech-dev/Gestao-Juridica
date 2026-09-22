@@ -3,7 +3,9 @@ import {
   Box,
   Container,
   Grid,
+  IconButton,
   Paper,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { Header } from "@/components/Header";
@@ -14,6 +16,7 @@ import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
 
 import { useTranslations } from "next-intl";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
+import IconifyIcon from "@/@core/components/icon";
 
 type HomeViewProps = {
   publicacoes: PublicacaoType[];
@@ -102,15 +105,50 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
       {publicacoes.length > 0 ? (
         <Box
           id="publicacoes"
-          sx={{ scrollMarginTop: "80px" }}
+          sx={{
+            scrollMarginTop: "80px",
+          }}
           py={10}
           bgcolor="background.default"
         >
           <GridDePublicacoes
-            publicacoes={publicacoes.slice(0, 4)}
-            title="Publicações Recentes"
-            subtitle="Mantenha-se atualizado com nossos artigos sobre as últimas mudanças na legislação e jurisprudência."
+            publicacoes={publicacoes.slice(0, 3)}
+            title={t('publicacoes.title')}
+            subtitle={t('publicacoes.subTitle')}
             verMaisHref="/posts"
+            sideAction={
+              <Tooltip title="Ver todas as publicações" arrow>
+                <IconButton
+                  href="/posts"
+                  aria-label="Ver todas as publicações"
+                  sx={{
+                    flexShrink: 0,
+                    width: 48,
+                    height: 48,
+                    borderRadius: "50%",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.paper",
+                    color: "primary.main",
+                    boxShadow: "0 2px 8px rgba(15,23,42,0.08)",
+                    transition: "all 0.25s ease",
+
+                    "&:hover": {
+                      bgcolor: "primary.main",
+                      color: "#fff",
+                      borderColor: "primary.main",
+                      transform: "translateX(4px)",
+                      boxShadow: "0 6px 16px rgba(15,23,42,0.16)",
+                    },
+                  }}
+                >
+                  <IconifyIcon
+                    icon="mdi:arrow-right"
+                    width={22}
+                  />
+                </IconButton>
+              </Tooltip>
+            }
           />
         </Box>
       ) : null}

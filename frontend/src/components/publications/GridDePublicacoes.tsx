@@ -10,7 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CardPublicacao } from "@/components/publications/CardPublicacao";
 import { useTranslations } from "next-intl";
@@ -26,6 +26,7 @@ type GridDePublicacoesProps = {
   onPageChange?: (page: number) => void;
   clientPageSize?: number;
   verMaisHref?: string;
+  sideAction?: ReactNode;
 };
 
 export function GridDePublicacoes({
@@ -35,9 +36,9 @@ export function GridDePublicacoes({
   hideVerMais = false,
   controlledPage,
   controlledPageCount,
-  onPageChange,
+  onPageChange, sideAction,
   clientPageSize,
-  verMaisHref = "/publicacoes",
+  verMaisHref = "/posts",
 }: GridDePublicacoesProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -119,22 +120,52 @@ export function GridDePublicacoes({
           {subtitle ?? t("sectionSubtitle")}
         </Typography>
 
-        <Grid
-          container
-          columns={{ xs: 12, sm: 12, md: 12, lg: 16, xl: 16 }}
-          spacing={3}
-          justifyContent="center"
-          alignItems="stretch"
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "stretch", md: "center" },
+            gap: { xs: 2, md: 3 },
+          }}
         >
-          {publicacoesPaginadas.map((publicacao) => (
+          <Box
+            sx={{
+              flex: 1,
+              minWidth: 0,
+            }}
+          >
             <Grid
-              size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
-              key={publicacao.id}
+              container
+              columns={{ xs: 12, sm: 12, md: 12, lg: 16, xl: 16 }}
+              spacing={3}
+              justifyContent="center"
+              alignItems="stretch"
             >
-              <CardPublicacao publicacao={publicacao} />
+              {publicacoesPaginadas.map((publicacao) => (
+                <Grid
+                  size={{ xs: 12, sm: 6, md: 6, lg: 4, xl: 4 }}
+                  key={publicacao.id}
+                >
+                  <CardPublicacao publicacao={publicacao} />
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          </Box>
+
+          {sideAction && (
+            <Box
+              sx={{
+                flexShrink: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: { xs: "100%", md: 56 },
+              }}
+            >
+              {sideAction}
+            </Box>
+          )}
+        </Box>
 
         {pageCount > 1 && hideVerMais && (
           <Box display="flex" justifyContent="center" sx={{ mt: 6 }}>
