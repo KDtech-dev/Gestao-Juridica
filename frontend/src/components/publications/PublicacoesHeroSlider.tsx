@@ -14,7 +14,11 @@ import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
-import { formatDateByLocale, slugifyPublicacao } from "@/@core/format";
+import {
+  formatDateByLocale,
+  slugifyPublicacao,
+  stripHtml,
+} from "@/@core/format";
 
 type PublicacoesHeroSliderProps = {
   publicacoes: PublicacaoType[];
@@ -27,8 +31,14 @@ export function PublicacoesHeroSlider({
 }: PublicacoesHeroSliderProps) {
   const locale = useLocale();
   const t = useTranslations("public.publications");
-  const slides = useMemo(() => publicacoes.slice(0, 5), [publicacoes]);
+
+  const slides = useMemo(
+    () => publicacoes.slice(0, 5),
+    [publicacoes],
+  );
+
   const [activeIndex, setActiveIndex] = useState(0);
+
   const activeSlide = slides[activeIndex] ?? slides[0];
 
   useEffect(() => {
@@ -43,25 +53,55 @@ export function PublicacoesHeroSlider({
 
   if (!activeSlide) return null;
 
-  const activeCategoria = activeSlide.categoria?.nome ?? "Publicação";
-  const activeResumo = activeSlide.resumo;
+  const activeCategoria =
+    activeSlide.categoria?.nome?.trim() || "Publicação";
+
+  /**
+   * Remove HTML do resumo e utiliza o conteúdo da publicação
+   * como fallback caso o resumo não esteja preenchido.
+   */
+  const resumoOriginal =
+    activeSlide.resumo?.trim() ||
+    activeSlide.conteudo?.trim() ||
+    "";
+
+  const activeResumoTexto = stripHtml(resumoOriginal).trim();
+
+  /**
+   * Limita o resumo para evitar que textos muito grandes
+   * ocupem espaço excessivo no Hero.
+   */
+  const LIMITE_RESUMO = 220;
+
+  const activeResumo =
+    activeResumoTexto.length > LIMITE_RESUMO
+      ? `${activeResumoTexto.slice(0, LIMITE_RESUMO).trimEnd()}...`
+      : activeResumoTexto;
+
   const activeData = formatDateByLocale(
     activeSlide.publicado_em ?? activeSlide.created_at,
     locale,
   );
+
   const activeSlug = slugifyPublicacao(
     activeSlide.titulo ?? "publicacao",
     activeSlide.id,
   );
+
   const activeBanner =
-    activeSlide.imagem_url ?? "/storage/publicacoes/default-publication.png";
+    activeSlide.imagem_url ??
+    "/storage/publicacoes/default-publication.png";
 
   const goToPrevious = () => {
-    setActiveIndex((current) => (current - 1 + slides.length) % slides.length);
+    setActiveIndex(
+      (current) => (current - 1 + slides.length) % slides.length,
+    );
   };
 
   const goToNext = () => {
-    setActiveIndex((current) => (current + 1) % slides.length);
+    setActiveIndex(
+      (current) => (current + 1) % slides.length,
+    );
   };
 
   return (
@@ -80,7 +120,12 @@ export function PublicacoesHeroSlider({
           position: "absolute",
           inset: 0,
           transition: "background-image 0.6s ease",
-          backgroundImage: `linear-gradient(90deg, rgba(15,23,42,0.92), rgba(30,41,59,0.82), rgba(30,58,138,0.72)), url(${activeBanner})`,
+          backgroundImage: `linear-gradient(
+            90deg,
+            rgba(15,23,42,0.92),
+            rgba(30,41,59,0.82),
+            rgba(30,58,138,0.72)
+          ), url(${activeBanner})`,
           backgroundPosition: "center",
           backgroundSize: "cover",
         }}
@@ -112,7 +157,12 @@ export function PublicacoesHeroSlider({
             minWidth: 0,
           }}
         >
-          <Stack direction="row" flexWrap="wrap" gap={1.2} mb={2}>
+          <Stack
+            direction="row"
+            flexWrap="wrap"
+            gap={1.2}
+            mb={2}
+          >
             <Typography
               component="span"
               sx={{
@@ -127,6 +177,7 @@ export function PublicacoesHeroSlider({
             >
               {activeCategoria}
             </Typography>
+
             <Typography
               component="span"
               sx={{
@@ -151,12 +202,10 @@ export function PublicacoesHeroSlider({
               fontSize: { xs: "2.1rem", md: "3.35rem" },
               lineHeight: 1.08,
               mb: 2,
-
               height: {
                 xs: "6.8rem",
                 md: "7.25rem",
               },
-
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
               WebkitLineClamp: {
@@ -176,18 +225,31 @@ export function PublicacoesHeroSlider({
               color: "rgba(255,255,255,0.86)",
               lineHeight: 1.55,
               mb: 4,
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: {
+                xs: 4,
+                md: 3,
+              },
+              overflow: "hidden",
             }}
           >
             {activeResumo}
           </Typography>
 
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+          >
             <Button
               component={Link}
               href={`/publicacoes/${activeSlug}`}
               variant="contained"
               size="large"
-              sx={{ textTransform: "none", fontWeight: 800 }}
+              sx={{
+                textTransform: "none",
+                fontWeight: 800,
+              }}
             >
               {t("readPublication")}
             </Button>
@@ -199,7 +261,10 @@ export function PublicacoesHeroSlider({
             sx={{
               width: "100%",
               maxWidth: 430,
-              justifySelf: { xs: "stretch", md: "end" },
+              justifySelf: {
+                xs: "stretch",
+                md: "end",
+              },
             }}
           >
             {searchCard}
@@ -226,11 +291,17 @@ export function PublicacoesHeroSlider({
                 color: "#fff",
                 border: "1px solid rgba(255,255,255,0.42)",
                 bgcolor: "rgba(15,23,42,0.44)",
-                "&:hover": { bgcolor: "rgba(15,23,42,0.7)" },
+                "&:hover": {
+                  bgcolor: "rgba(15,23,42,0.7)",
+                },
               }}
             >
-              <Icon icon="mdi:chevron-left" width={24} />
+              <Icon
+                icon="mdi:chevron-left"
+                width={24}
+              />
             </IconButton>
+
             <IconButton
               onClick={goToNext}
               aria-label={t("nextPublication")}
@@ -238,10 +309,15 @@ export function PublicacoesHeroSlider({
                 color: "#fff",
                 border: "1px solid rgba(255,255,255,0.42)",
                 bgcolor: "rgba(15,23,42,0.44)",
-                "&:hover": { bgcolor: "rgba(15,23,42,0.7)" },
+                "&:hover": {
+                  bgcolor: "rgba(15,23,42,0.7)",
+                },
               }}
             >
-              <Icon icon="mdi:chevron-right" width={24} />
+              <Icon
+                icon="mdi:chevron-right"
+                width={24}
+              />
             </IconButton>
           </Stack>
 
@@ -264,13 +340,16 @@ export function PublicacoesHeroSlider({
                 })}
                 onClick={() => setActiveIndex(index)}
                 sx={{
-                  width: index === activeIndex ? 34 : 10,
+                  width:
+                    index === activeIndex ? 34 : 10,
                   height: 10,
                   border: 0,
                   borderRadius: 999,
                   cursor: "pointer",
                   bgcolor:
-                    index === activeIndex ? "#fff" : "rgba(255,255,255,0.48)",
+                    index === activeIndex
+                      ? "#fff"
+                      : "rgba(255,255,255,0.48)",
                   transition: "0.2s ease",
                 }}
               />

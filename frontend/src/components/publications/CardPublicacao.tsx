@@ -21,9 +21,11 @@ export function CardPublicacao({ publicacao }: CardPublicacaoProps) {
   const locale = useLocale();
   const titulo = publicacao.titulo?.trim() || "Publicação";
   const slug = `${slugify(titulo) || "publicacao"}-${publicacao.id}`;
-  const resumo =
+  const resumo = stripHtml(
     publicacao.resumo?.trim() ||
-    stripHtml(publicacao.conteudo ?? "").slice(0, 180);
+    publicacao.conteudo ||
+    "",
+  ).slice(0, 180);
   const categoria = publicacao.categoria?.nome?.trim() || "Publicação";
   const data = formatDateByLocale(
     publicacao.publicado_em ?? publicacao.created_at,
