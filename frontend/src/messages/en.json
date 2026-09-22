@@ -1127,7 +1127,8 @@
     },
     "data_abertura": {
       "required": "Opening date is required.",
-      "invalid": "Please provide a valid opening date."
+      "invalid": "Please provide a valid opening date.",
+      "before_today":"The opening date cannot be earlier than the current date."
     },
     "data_encerramento": {
       "invalid": "Please provide a valid closing date.",

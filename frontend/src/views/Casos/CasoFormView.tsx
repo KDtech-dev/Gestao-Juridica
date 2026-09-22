@@ -31,8 +31,9 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { toast } from "@/utils/toast";
-import { formatCpfCnpj, formatNumeroProcesso, slugifyPublicacao } from "@/@core/format";
-import { createCasoSchema, CreateCasoPayload } from "@/schemas/CasoSchema";
+import type { Resolver } from "react-hook-form";
+import { formatCpfCnpj, formatNumeroProcesso } from "@/@core/format";
+import { createCasoSchema, CreateCasoPayload, updateCasoSchema } from "@/schemas/CasoSchema";
 import {
   CasoAnexoType,
   CasoType,
@@ -52,7 +53,7 @@ import InputBasico from "@/components/InputBasico";
 import InputSingleFile from "@/components/InputSingleFile";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 import { categoriaNomeParaChave } from "@/constants/categorias";
-import { getAnexoDownloadUrl, getCasoAnexoDownloadUrl } from "@/api/apiAnexos";
+import { getCasoAnexoDownloadUrl } from "@/api/apiAnexos";
 
 
 type ViewMode = "create" | "edit" | "view";
@@ -70,7 +71,6 @@ const STATUS_OPTIONS = [
 ] as const;
 
 const PAPEL_OPTIONS = ["autor", "réu", "interveniente", "testemunha"] as const;
-
 const ANEXOS_TIPOS = ["pdf", "doc", "docx", "jpg", "jpeg", "png"];
 
 type Props = {
@@ -87,14 +87,11 @@ export default function CasoFormView({ mode, casoId }: Props) {
   const router = useRouter();
   const isView = mode === "view";
   const isCreate = mode === "create";
-
   const [loading, setLoading] = useState(!isCreate);
   const [saving, setSaving] = useState(false);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
-  const [clientesDisponiveis, setClientesDisponiveis] = useState<ClienteType[]>(
-    [],
-  );
+  const [clientesDisponiveis, setClientesDisponiveis] = useState<ClienteType[]>([]);
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [clientesSelecionados, setClientesSelecionados] =
     useState<ClienteSelecionado[]>([]);
@@ -104,13 +101,15 @@ export default function CasoFormView({ mode, casoId }: Props) {
     useState<ClienteType | null>(null);
   const [papelParaAdicionar, setPapelParaAdicionar] =
     useState<PapelClienteCaso>("autor");
+  const [anexosExistentes, setAnexosExistentes] = useState<CasoAnexoType[]>([]);
 
-  const [anexosExistentes, setAnexosExistentes] = useState<CasoAnexoType[]>(
-    [],
+  const casoSchema = useMemo(
+    () => (isCreate ? createCasoSchema(tv) : updateCasoSchema(tv)),
+    [isCreate, tv],
   );
 
   const methods = useForm<CreateCasoPayload>({
-    resolver: zodResolver(createCasoSchema(tv)),
+    resolver: zodResolver(casoSchema) as Resolver<CreateCasoPayload>,
     defaultValues: {
       numero_processo: "",
       titulo: "",
@@ -123,12 +122,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
       anexos_remover: [],
     },
   });
-  const casoSlug = casoId
-    ? slugifyPublicacao(
-      methods.getValues("titulo") || "caso",
-      casoId,
-    )
-    : "";
+
   const {
     handleSubmit,
     reset,
@@ -157,7 +151,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
     let ativo = true;
 
     getAxios()
-      .get("/clientes", { params: { per_page: 999 } })
+      .get("/clientes", { params: { per_page: 10 } })
       .then((response) => {
         if (ativo) setClientesDisponiveis(response.data?.data ?? []);
       })
@@ -267,6 +261,28 @@ export default function CasoFormView({ mode, casoId }: Props) {
       [...(getValues("anexos_remover") ?? []), anexoId],
       { shouldDirty: true },
     );
+  };
+  const handleViewAnexo = (anexoId: string) => {
+    window.open(`/casos/${casoId}/anexos/${anexoId}/visualizar`, "_blank");
+  };
+
+  const handleDownloadAnexo = async (anexoId: string, nomeArquivo?: string) => {
+    try {
+      const { data } = await getAxios().get(
+        getCasoAnexoDownloadUrl(casoId!, anexoId),
+        { responseType: "blob" },
+      );
+      const blobUrl = URL.createObjectURL(data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = nomeArquivo || "anexo";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      toast.error(translateError(err));
+    }
   };
 
   const onSubmitForm = async (values: CreateCasoPayload) => {
@@ -676,18 +692,6 @@ export default function CasoFormView({ mode, casoId }: Props) {
               {anexosExistentes.length > 0 && (
                 <Stack spacing={1.5} mt={2}>
                   {anexosExistentes.map((anexo) => {
-                    const slug = slugifyPublicacao(
-                      getValues("titulo") || "caso",
-                      casoId!,
-                    );
-
-                    const viewerUrl = `/casos/${casoId}/anexos/${anexo.id}/visualizar`;
-
-                    const downloadUrl = getCasoAnexoDownloadUrl(
-                      casoId!,
-                      anexo.id,
-                    );
-
                     return (
                       <Box
                         key={anexo.id}
@@ -713,14 +717,13 @@ export default function CasoFormView({ mode, casoId }: Props) {
                             textOverflow: "ellipsis",
                             whiteSpace: "nowrap",
                             cursor: "pointer",
+                            color: "secondary.main",
                             ":hover": {
-                              color: "primary.main",
+                              color: "primary.dark",
                             },
                           }}
                           title={anexo.nome ?? ""}
-                          onClick={() => {
-                            window.open(viewerUrl, "_blank");
-                          }}
+                          onClick={() => handleViewAnexo(String(anexo.id))}
                         >
                           {anexo.nome || "Anexo"}
                         </Typography>
@@ -729,9 +732,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                           <Tooltip title="Visualizar">
                             <IconButton
                               size="small"
-                              onClick={() => {
-                                window.open(viewerUrl, "_blank");
-                              }}
+                              onClick={() => handleViewAnexo(String(anexo.id))}
                             >
                               <Icon
                                 icon="mdi:eye-outline"
@@ -746,7 +747,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                               size="small"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                window.location.href = downloadUrl;
+                                handleDownloadAnexo(String(anexo.id), anexo.nome);
                               }}
                             >
                               <Icon

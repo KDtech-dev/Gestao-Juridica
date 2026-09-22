@@ -1160,7 +1160,8 @@
     },
     "data_abertura": {
       "required": "A data de abertura é obrigatória.",
-      "invalid": "Informe uma data de abertura válida."
+      "invalid": "Informe uma data de abertura válida.",
+      "before_today":"A data de abertura não pode ser anterior à data atual."
     },
     "data_encerramento": {
       "invalid": "Informe uma data de encerramento válida.",
