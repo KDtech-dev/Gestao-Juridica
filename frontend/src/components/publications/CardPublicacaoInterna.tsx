@@ -130,9 +130,8 @@ export function CardPublicacaoInterna({
         fontSize="0.9rem"
         mb={1.2}
         sx={{ position: "relative", zIndex: 2 }}
-      >
-        {getResumo(publicacao)}
-      </Typography>
+        dangerouslySetInnerHTML={{ __html: getResumo(publicacao) }}
+      />
 
       <Stack
         direction="row"
