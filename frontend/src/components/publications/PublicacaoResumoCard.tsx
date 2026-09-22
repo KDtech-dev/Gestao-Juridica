@@ -25,9 +25,12 @@ export function PublicacaoResumoCard({
       <Typography variant="h6" fontWeight={800} mb={1.5}>
         {t("summary")}
       </Typography>
-      <Typography color="text.secondary" lineHeight={1.8}>
-        {publicacao.resumo}
-      </Typography>
+      <Typography
+        variant="h6"
+        component="div"
+        sx={{ opacity: 0.84, lineHeight: 1.65, "& p": { margin: 0 } }}
+        dangerouslySetInnerHTML={{ __html: publicacao.resumo ?? "" }}
+      />
     </Paper>
   );
 }

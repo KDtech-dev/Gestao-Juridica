@@ -35,8 +35,8 @@ export default function PublicationDetailView({ publicacao }: Props) {
 
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>
         <Stack spacing={3}>
-          <PublicacaoTextoCard publicacao={publicacao} />
           <PublicacaoResumoCard publicacao={publicacao} />
+          <PublicacaoTextoCard publicacao={publicacao} />
           <PublicacaoAnexosCard publicacao={publicacao} />
         </Stack>
       </Container>

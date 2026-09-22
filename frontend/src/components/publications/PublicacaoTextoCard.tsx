@@ -23,8 +23,10 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
         minHeight: { xs: "auto", md: "30em" },
       }}
     >
-      <Typography variant="h5" fontWeight={800} align="center" mb={2}>
-        {publicacao.titulo}
+      <Typography variant="h5"
+        component="div"
+        fontWeight={800} align="center" mb={2}
+        dangerouslySetInnerHTML={{ __html: publicacao.titulo ?? "" }}>
       </Typography>
 
       <Stack

@@ -66,8 +66,8 @@ export function PublicacaoDetailBanner({
           >
             {publicacao.titulo}
           </Typography>
-          <Typography variant="h6" sx={{ opacity: 0.84, lineHeight: 1.65 }}>
-            {publicacao.resumo}
+          <Typography variant="h6" component="div" sx={{ opacity: 0.84, lineHeight: 1.65, "& p": { margin: 0 } }}
+            dangerouslySetInnerHTML={{ __html: publicacao.resumo ?? "" }}>
           </Typography>
 
           <Stack

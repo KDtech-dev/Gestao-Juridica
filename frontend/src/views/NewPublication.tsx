@@ -51,6 +51,7 @@ import { getApiErrorMessage } from "@/configs/ApiError";
 import { toast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
 import InputBasico from "@/components/InputBasico";
+import RichTextEditor from "@/components/RichTextEditor";
 
 type ViewMode = "create" | "edit";
 
@@ -379,7 +380,7 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
                     name="resumo"
                     control={control}
                     render={({ field, fieldState }) => (
-                      <HtmlTextEditor
+                      <RichTextEditor
                         label={t("fields.summary")}
                         value={field.value ?? ""}
                         onChange={field.onChange}
@@ -395,7 +396,7 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
                     name="conteudo"
                     control={control}
                     render={({ field, fieldState }) => (
-                      <HtmlTextEditor
+                      <RichTextEditor
                         label={t("fields.content")}
                         value={field.value ?? ""}
                         onChange={field.onChange}
