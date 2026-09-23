@@ -34,8 +34,8 @@ class UpdateCasoRequest extends FormRequest
             'categorias.*'      => 'integer|exists:categorias,id',
             'anexos'            => 'nullable|array',
             'anexos.*'          => 'file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
-            'anexos_remover'    => 'nullable|array',
-            'anexos_remover.*'  => 'string|uuid',
+            'anexos_remover'   => 'nullable|array',
+            'anexos_remover.*' => 'string|uuid|exists:anexos,uuid',
         ];
     }
 
@@ -55,7 +55,9 @@ class UpdateCasoRequest extends FormRequest
             'anexos.*.mimes' => 'validation.anexos.arquivo.mimes',
             'anexos.*.max' => 'validation.anexos.arquivo.max',
             'anexos_remover.array' => 'validation.anexos_remover.array',
-            'anexos_remover.*.uuid' => 'validation.anexos_remover.uuid',
+            'anexos_remover'   => 'nullable|array',
+            'anexos_remover.*' => 'string|uuid|exists:anexos,uuid',
+            'anexos_remover.*.exists' => 'validation.anexos_remover.exists',
         ];
     }
 }

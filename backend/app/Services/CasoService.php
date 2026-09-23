@@ -162,7 +162,7 @@ class CasoService
         }
 
         $caso->anexos()
-            ->whereIn('id', $anexoIds)
+            ->whereIn('uuid', $anexoIds)
             ->get()
             ->each(function ($anexo): void {
                 if ($anexo->arquivo) {
