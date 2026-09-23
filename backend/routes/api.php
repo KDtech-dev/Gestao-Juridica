@@ -119,9 +119,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{caso}',   [CasoController::class, 'destroy']);
 
         Route::prefix('{caso}/clientes')->group(function () {
-            Route::post('/',           [CasoController::class, 'attachClientes']);
-            Route::put('/',            [CasoController::class, 'syncClientes']);
-            Route::delete('/{cliente}', [CasoController::class, 'detachCliente']);
+            Route::post('/',             [CasoController::class, 'attachClientes']);
+            Route::put('/',              [CasoController::class, 'syncClientes']);
+            Route::delete('/{cliente}',  [CasoController::class, 'detachCliente']);
         });
         Route::get(
             '/{caso}/anexos/{anexo}',

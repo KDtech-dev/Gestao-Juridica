@@ -14,7 +14,7 @@ class SyncClientesCasoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'clientes'         => 'required|array',
+            'clientes'         => 'present|array',
             'clientes.*.id'    => 'required|uuid|exists:clientes,id',
             'clientes.*.papel' => 'nullable|in:autor,réu,interveniente,testemunha',
         ];
