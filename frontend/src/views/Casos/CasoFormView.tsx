@@ -791,9 +791,9 @@ export default function CasoFormView({ mode, casoId }: Props) {
                     {t("actions.cancel")}
                   </Button>
                   <Button
+                    type="submit"
                     variant="contained"
                     disabled={saving || (!isCreate && !hasChanges)}
-                    onClick={() => handleSubmit(onSubmitForm)()}
                   >
                     {saving
                       ? t("actions.saving")
