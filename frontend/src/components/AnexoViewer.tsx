@@ -11,7 +11,8 @@ import {
 } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
 import { useEffect, useState } from "react";
-import api from "@/configs/axios";
+import axios from "axios";
+import { authStorage } from "@/configs/axios";
 
 type AnexoViewerProps = {
   nomeArquivo: string;
@@ -50,8 +51,13 @@ export function AnexoViewer({
       try {
         setCarregando(true);
 
-        const response = await api.get(url, {
+        const response = await axios.get(url, {
           responseType: "blob",
+          withCredentials: true,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            ...(authStorage.get() ? { Authorization: `Bearer ${authStorage.get()}` } : {}),
+          },
         });
 
         blobUrl = URL.createObjectURL(response.data);
