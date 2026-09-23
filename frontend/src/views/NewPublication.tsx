@@ -32,7 +32,6 @@ import { useTranslations } from "next-intl";
 import { Icon } from "@/components/AppIcon";
 import InputImage from "@/components/InputImage";
 import InputSingleFile from "@/components/InputSingleFile";
-import { HtmlTextEditor } from "@/components/publications/HtmlTextEditor";
 import {
   CreatePublicacaoPayload,
   createPublicacaoSchema,
@@ -126,7 +125,7 @@ export default function PublicacaoFormView({ mode, editId }: Props) {
         reset({
           titulo: publicacao.titulo ?? "",
           categoria_id: String(publicacao.categoria_id ?? ""),
-          imagem_caminho: storageUrl(publicacao.imagem_caminho) ?? "", // 👈
+          imagem_caminho: storageUrl(publicacao.imagem_caminho) ?? "", 
           imagem: null,
           autor: publicacao.autor ?? "",
           resumo: publicacao.resumo ?? "",
