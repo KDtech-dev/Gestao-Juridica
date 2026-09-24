@@ -20,7 +20,7 @@ export function getCasoAnexoVisualizarUrl(
 }
 
 export function getCasoAnexoDownloadUrl(
-  casoId: string,
+  casoId: string | undefined,
   anexoId: string
 ) {
   return `${API_URL}/api/casos/${casoId}/anexos/${anexoId}/download`;

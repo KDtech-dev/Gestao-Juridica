@@ -14,7 +14,6 @@ import { PublicacaoType } from "@/@core/types";
 import { slugifyPublicacao } from "@/@core/format";
 import {
   getAnexoDownloadUrl,
-  getAnexoVisualizarUrl,
 } from "@/api/apiAnexos";
 
 type PublicacaoAnexosCardProps = {

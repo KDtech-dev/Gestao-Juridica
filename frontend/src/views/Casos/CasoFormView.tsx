@@ -262,6 +262,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
       { shouldDirty: true },
     );
   };
+
   const handleViewAnexo = (anexoId: string) => {
     window.open(`/casos/${casoId}/anexos/${anexoId}/visualizar`, "_blank");
   };
@@ -750,11 +751,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
                                 handleDownloadAnexo(String(anexo.id), anexo.nome);
                               }}
                             >
-                              <Icon
-                                icon="mdi:download-outline"
-                                width="1em"
-                                height="1em"
-                              />
+                              <Icon icon="mdi:download-outline" width="1em" height="1em" />
                             </IconButton>
                           </Tooltip>
 

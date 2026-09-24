@@ -82,6 +82,35 @@ export function AnexoViewer({
     };
   }, [url]);
 
+  const [baixando, setBaixando] = useState(false);
+
+  const handleDownload = async () => {
+    setBaixando(true);
+    try {
+      const token = authStorage.get();
+      const response = await axios.get(downloadUrl, {
+        responseType: "blob",
+        withCredentials: true,
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+
+      const blobUrl = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = nomeArquivo || "anexo";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Erro ao baixar anexo:", error);
+    } finally {
+      setBaixando(false);
+    }
+  };
   const aumentarZoom = () => {
     setZoom((value) => Math.min(value + 0.1, 3));
   };
@@ -234,17 +263,14 @@ export function AnexoViewer({
 
             <Tooltip title="Baixar">
               <IconButton
-                component="a"
-                href={downloadUrl}
+                onClick={handleDownload}
+                disabled={baixando}
                 sx={{ color: "white" }}
               >
-                <Icon
-                  icon="mdi:download-outline"
-                  width={22}
-                />
+                <Icon icon="mdi:download-outline" width={22} />
               </IconButton>
             </Tooltip>
-
+            
             <Tooltip title="Abrir em nova aba">
               <IconButton
                 component="a"

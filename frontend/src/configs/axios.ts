@@ -6,13 +6,10 @@ const envUrl = getPublicApiOrigin();
 let API_BASE_URL: string;
 
 if (typeof window === "undefined") {
-  // server-side: keep a sensible default for SSR/fetch during development
   API_BASE_URL = envUrl
     ? `${envUrl.replace(/\/$/, "")}/api`
     : "http://127.0.0.1:8000/api";
 } else {
-  // client-side: prefer relative '/api' prefix when no public API URL is configured
-  // ensures axios requests map to Next rewrites -> backend
   API_BASE_URL = envUrl ? `${envUrl.replace(/\/$/, "")}/api` : "/api";
 }
 
@@ -61,7 +58,6 @@ export const getAxios = ({
       contentType === "formData" ? "multipart/form-data" : contentType;
   }
 
-  // Identify requests as XHR and allow cookies to be sent for stateful auth (Sanctum)
   headers["X-Requested-With"] = "XMLHttpRequest";
 
   const instance = axios.create({
@@ -91,7 +87,6 @@ export const getAxios = ({
       return Promise.reject(error);
     },
   );
-
   return instance;
 };
 
