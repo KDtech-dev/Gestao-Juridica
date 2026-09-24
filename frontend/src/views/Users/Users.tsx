@@ -101,7 +101,7 @@ export default function UsersView() {
 
   const handleSubmit = async (
     data: CreateUserPayload | UpdateUserPayload,
-  ): Promise<UserType | void> => {
+  ): Promise<UserType> => {
     setSubmitting(true);
     try {
       let usuario: UserType;
@@ -118,15 +118,9 @@ export default function UsersView() {
         usuario = atualizado;
         toast.success(t("toast.updated"));
       }
-
       handleDialogClose();
       loadUsers();
-
       return usuario;
-    } catch {
-      toast.error(
-        dialogMode === "create" ? t("errors.create") : t("errors.update"),
-      );
     } finally {
       setSubmitting(false);
     }
@@ -370,7 +364,7 @@ export default function UsersView() {
             <Button
               variant="contained"
               onClick={openCreate}
-              startIcon={<Icon icon="mdi:account-plus-outline" width={20} />}
+              startIcon={<Icon icon="mdi:plus" width={20} />}
               sx={{
                 borderRadius: "14px",
                 px: 2.5,

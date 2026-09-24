@@ -36,6 +36,7 @@ import { getCategorias } from "@/api/ApiCategorias";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
+import { applyServerErrors, detectRule } from "@/utils/applyServerErrors";
 import { Controller } from "react-hook-form";
 import { formatCpf, formatTelefone } from "@/@core/format";
 import { categoriaNomeParaChave } from "@/constants/categorias";
@@ -58,6 +59,7 @@ export default function DialogUser({
   mode,
   user,
 }: Props) {
+  const tUsers = useTranslations("internal.users");
   const t = useTranslations("internal.users.dialog");
   const theme = useTheme();
   const tValidation = useTranslations("validation");
@@ -84,8 +86,17 @@ export default function DialogUser({
     mode: "onChange",
     reValidateMode: "onChange",
   });
-  const { handleSubmit, reset, setValue } = methods;
+  const { handleSubmit, reset, setValue, setError } = methods;
 
+
+  const translateServerError = (message: string, field: string) => {
+    if (tValidation.has(message as any)) return tValidation(message as any);
+    const rule = detectRule(message);
+    const leaf = field.split(".").pop() ?? field;
+    const key = rule ? `${leaf}.${rule}` : null;
+    if (key && tValidation.has(key as any)) return tValidation(key as any);
+    return message;
+  };
   const role = useWatch({ control: methods.control, name: "role" }) as
     | RoleType
     | undefined;
@@ -154,7 +165,6 @@ export default function DialogUser({
 
     if (avatarInputRef.current) avatarInputRef.current.value = "";
   };
-
   const handleFormSubmit = handleSubmit(async (data) => {
     const payload = {
       ...data,
@@ -162,7 +172,23 @@ export default function DialogUser({
       funcionario: data.role === "funcionario" ? data.funcionario : undefined,
     };
 
-    const result = await onSubmit(payload);
+    let result: UserType | void;
+
+    try {
+      result = await onSubmit(payload);
+    } catch (err) {
+      const handled = applyServerErrors(err, setError, translateServerError);
+      if (!handled) {
+        toast.error(
+          formatToastErrorMessage(
+            err,
+            isEdit ? tUsers("errors.update") : tUsers("errors.create"),
+          ),
+        );
+      }
+
+      return;
+    }
 
     if (!isEdit && pendingAvatarFile && result?.id) {
       try {
@@ -174,7 +200,6 @@ export default function DialogUser({
       }
     }
 
-    onClose();
   });
 
   const title =
@@ -424,7 +449,7 @@ export default function DialogUser({
                   />
                 )}
               />
-              
+
               <Stack
                 direction="row"
                 spacing={1.5}

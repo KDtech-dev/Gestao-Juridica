@@ -85,7 +85,7 @@ export default function AgendaView() {
   const [deleteTarget, setDeleteTarget] = useState<Compromisso | null>(null);
   const [loadingUpcomingCompromissos, setLoadingUpcomingCompromissos] = useState(true);
   const [compromissosError, setCompromissosError] = useState<string | null>(null,);
-  const [upcomingCompromissosError, setUpcomingCompromissosError] = useState<string | null>(null);  
+  const [upcomingCompromissosError, setUpcomingCompromissosError] = useState<string | null>(null);
   const [submittingCompromisso, setSubmittingCompromisso] = useState(false);
   const [deletingCompromisso, setDeletingCompromisso] = useState(false);
   const { addNotification } = useNotifications();
@@ -382,8 +382,7 @@ export default function AgendaView() {
 
             <Button
               variant="contained"
-              startIcon={<Icon icon="mdi:plus" />}
-              sx={{
+              startIcon={<Icon icon="mdi:plus" width={20} />} sx={{
                 textTransform: "none",
                 borderRadius: "12px",
                 px: 2.2,

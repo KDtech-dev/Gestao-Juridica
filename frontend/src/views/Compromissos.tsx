@@ -360,7 +360,7 @@ export default function CompromissoListView() {
 
             <Button
               variant="contained"
-              startIcon={<Icon icon="mdi:plus" />}
+              startIcon={<Icon icon="mdi:plus" width={20} />}
               sx={{ textTransform: "none", borderRadius: "12px", px: 2.2 }}
               onClick={() => setOpen(true)}
             >

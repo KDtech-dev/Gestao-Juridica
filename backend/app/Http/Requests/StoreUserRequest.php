@@ -105,6 +105,7 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'password' => 'validation.password',
             'role.in'                       => 'validation.role.in',
             'cpf.size'                       => 'validation.cpf.size',
             'advogado.oab_numero.required_if' => 'validation.oab_numero.required_if',

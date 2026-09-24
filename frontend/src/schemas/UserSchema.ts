@@ -5,6 +5,14 @@ type TFunction = ReturnType<typeof useTranslations>;
 
 const onlyNumbers = (value: string = "") => value.replace(/\D/g, "");
 
+const passwordRules = (t: TFunction) =>
+  z
+    .string()
+    .min(1, t("password.required"))
+    .min(8, t("password.min"))
+    .regex(/[A-Za-z]/, t("password.complexity"))
+    .regex(/\d/, t("password.complexity"));
+
 export const UF_SIGLAS = [
   "AC",
   "AL",
@@ -132,7 +140,7 @@ export const createUserBaseSchema = (t: TFunction) =>
       .string()
       .transform((val) => onlyNumbers(val))
       .refine((val) => val.length === 11, t("cpf.size")),
-    password: z.string().min(8, t("password.min")),
+    password: passwordRules(t),
     password_confirmation: z
       .string()
       .min(1, t("password_confirmation.required")),
@@ -199,7 +207,7 @@ export const updateUserBaseSchema = (t: TFunction) =>
       .transform((val) => onlyNumbers(val))
       .refine((val) => !val || val.length === 11, t("cpf.size"))
       .optional(),
-    password: z.string().min(8, t("password.min")).optional(),
+    password: passwordRules(t).optional(),
     password_confirmation: z.string().optional(),
     role: roleEnum.optional(),
     cor_perfil: z

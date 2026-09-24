@@ -1161,7 +1161,7 @@
     "data_abertura": {
       "required": "A data de abertura é obrigatória.",
       "invalid": "Informe uma data de abertura válida.",
-      "before_today":"A data de abertura não pode ser anterior à data atual."
+      "before_today": "A data de abertura não pode ser anterior à data atual."
     },
     "data_encerramento": {
       "invalid": "Informe uma data de encerramento válida.",
@@ -1171,7 +1171,8 @@
       "in": "Função inválida. Valores permitidos: staff, lawyer, admin."
     },
     "cpf": {
-      "size": "O CPF deve conter exatamente 11 dígitos."
+      "size": "O CPF deve conter exatamente 11 dígitos.",
+      "unique":"Este CPF/CNPJ já está cadastrado."
     },
     "uf": {
       "size": "A UF deve conter 2 letras."
@@ -1212,7 +1213,8 @@
     },
     "password": {
       "required": "A senha é obrigatória.",
-      "min": "A senha deve ter pelo menos 8 caracteres."
+      "min": "A senha deve ter pelo menos 8 caracteres.",
+      "complexity": "A senha deve conter letras e números."
     },
     "password_confirmation": {
       "required": "A confirmação de senha é obrigatória.",

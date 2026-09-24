@@ -171,7 +171,7 @@ export default function PublicationsView() {
                 component={Link}
                 href="/publicacoes/nova"
                 variant="contained"
-                startIcon={<Icon icon="mdi:plus" />}
+                startIcon={<Icon icon="mdi:plus" width={20} />}
                 sx={{ textTransform: "none", borderRadius: "12px" }}
               >
                 {t("add")}
@@ -272,8 +272,8 @@ export default function PublicationsView() {
                   : loadError
                     ? t("empty.loadTitle")
                     : t("empty.statusTitle", {
-                        status: t(`tabs.${activeStatus}`).toLowerCase(),
-                      })}
+                      status: t(`tabs.${activeStatus}`).toLowerCase(),
+                    })}
               </Typography>
               <Typography color="text.secondary" fontSize="0.9rem" mt={0.5}>
                 {loadError
@@ -289,8 +289,8 @@ export default function PublicationsView() {
                   component={Link}
                   href="/publicacoes/nova"
                   variant="contained"
-                  startIcon={<Icon icon="mdi:plus" />}
-                  sx={{ textTransform: "none", borderRadius: "12px", mt: 2 }}
+                  startIcon={<Icon icon="mdi:plus" width={20} />}
+                   sx={{ textTransform: "none", borderRadius: "12px", mt: 2 }}
                 >
                   {t("add")}
                 </Button>
@@ -318,8 +318,8 @@ export default function PublicationsView() {
         description={
           deleteTarget
             ? t("deleteDialog.description", {
-                title: deleteTarget.titulo ?? "",
-              })
+              title: deleteTarget.titulo ?? "",
+            })
             : undefined
         }
         confirmText={t("deleteDialog.confirm")}
