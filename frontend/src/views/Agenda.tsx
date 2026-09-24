@@ -54,6 +54,7 @@ import {
   tipoIcon,
   tipoLabel,
 } from "@/utils/compromisso";
+import { AddButton } from "@/components/AddButton";
 
 type AgendaPeriod = "today" | "week" | "month";
 
@@ -380,17 +381,9 @@ export default function AgendaView() {
               </Typography>
             </Box>
 
-            <Button
-              variant="contained"
-              startIcon={<Icon icon="mdi:plus" width={20} />} sx={{
-                textTransform: "none",
-                borderRadius: "12px",
-                px: 2.2,
-              }}
-              onClick={() => setOpen(true)}
-            >
+            <AddButton onClick={() => setOpen(true)}>
               {t("agenda.newAppointment")}
-            </Button>
+            </AddButton>
           </Stack>
 
           <Paper

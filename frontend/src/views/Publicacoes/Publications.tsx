@@ -31,6 +31,7 @@ import {
 } from "@/api/apiPublicacoes";
 import { toast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
+import { AddButton } from "@/components/AddButton";
 
 function normalize(value: string) {
   return value
@@ -167,15 +168,9 @@ export default function PublicationsView() {
               </Typography>
             </Box>
             {canManagePublications && (
-              <Button
-                component={Link}
-                href="/publicacoes/nova"
-                variant="contained"
-                startIcon={<Icon icon="mdi:plus" width={20} />}
-                sx={{ textTransform: "none", borderRadius: "12px" }}
-              >
+              <AddButton component={Link} href="/publicacoes/nova">
                 {t("add")}
-              </Button>
+              </AddButton>
             )}
           </Stack>
 
@@ -285,15 +280,9 @@ export default function PublicationsView() {
                       : t("empty.userSubtitle")}
               </Typography>
               {canManagePublications && !search && (
-                <Button
-                  component={Link}
-                  href="/publicacoes/nova"
-                  variant="contained"
-                  startIcon={<Icon icon="mdi:plus" width={20} />}
-                   sx={{ textTransform: "none", borderRadius: "12px", mt: 2 }}
-                >
+                <AddButton component={Link} href="/publicacoes/nova" sx={{ mt: 2 }}>
                   {t("add")}
-                </Button>
+                </AddButton>
               )}
             </Paper>
           ) : (
