@@ -236,3 +236,24 @@ export type ResetPasswordPayload = {
   password: string;
   password_confirmation: string;
 };
+
+
+import type { Compromisso } from "@/api/apiCompromissos";
+ 
+export type AgendaPeriod = "today" | "week" | "month";
+ 
+export type PageSize = 5 | 10;
+ 
+export type ModalState =
+  | { type: "create" }
+  | { type: "view"; event: Compromisso }
+  | { type: "edit"; event: Compromisso }
+  | { type: "delete"; event: Compromisso }
+  | null;
+ 
+export interface AgendaSummaryData {
+  total: number;
+  finished: number;
+  pending: number;
+  next: Compromisso | null;
+}
