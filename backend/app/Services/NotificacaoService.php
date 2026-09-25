@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Exceptions\WhatsAppEnvioFalhouException;
 use App\Models\Compromisso;
 use App\Models\Notificacao;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Log;
 
 class NotificacaoService
 {
@@ -13,6 +15,8 @@ class NotificacaoService
         'COMPROMISSO_HOJE',
         'COMPROMISSO_SEMANA',
     ];
+
+    public function __construct(protected WhatsAppService $whatsApp) {}
 
     public function registrarCompromissoCriado(Compromisso $compromisso): void
     {
@@ -34,6 +38,7 @@ class NotificacaoService
             ->where('user_id', $usuario->id)
             ->where('status', 'PENDENTE')
             ->whereBetween('data', [$hoje->toDateString(), $fimDaSemana->toDateString()])
+            ->with('criador.funcionario', 'criador.advogado')
             ->orderBy('data')
             ->orderBy('hora')
             ->get()
@@ -137,7 +142,7 @@ class NotificacaoService
             return;
         }
 
-        Notificacao::create([
+        $notificacao = Notificacao::create([
             'usuario_id' => $compromisso->user_id,
             'compromisso_id' => $compromisso->id,
             'tipo' => $tipo,
@@ -145,6 +150,47 @@ class NotificacaoService
             'mensagem' => $mensagem,
             'dados' => $dados,
         ]);
+
+        if ($tipo === 'COMPROMISSO_HOJE') {
+            $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $mensagem);
+        }
+    }
+
+    private function enviarWhatsAppSeNecessario(
+        Notificacao $notificacao,
+        Compromisso $compromisso,
+        string $mensagem
+    ): void {
+        $telefone = $this->resolverTelefone($compromisso->criador);
+
+        if (!$telefone) {
+            return;
+        }
+
+        dispatch(function () use ($notificacao, $telefone, $mensagem) {
+            app(NotificacaoService::class)->enviarWhatsAppJob($notificacao, $telefone, $mensagem);
+        })->onQueue('whatsapp');
+    }
+
+    public function enviarWhatsAppJob(Notificacao $notificacao, string $telefone, string $mensagem): void
+    {
+        try {
+            $this->whatsApp->enviar($telefone, $mensagem);
+
+            $notificacao->update(['whatsapp_enviado_em' => now()]);
+        } catch (WhatsAppEnvioFalhouException $e) {
+            Log::warning('Falha ao enviar lembrete de compromisso via WhatsApp', [
+                'notificacao_id' => $notificacao->id,
+                'compromisso_id' => $compromisso->id ?? null,
+                'erro' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function resolverTelefone(User $usuario): ?string
+    {
+        return $usuario->funcionario?->telefone
+            ?? $usuario->advogado?->telefone;
     }
 
     private function dadosCompromisso(Compromisso $compromisso, string $janela): array

@@ -41,5 +41,10 @@ return [
         // Optional api key if your provider requires it.
         'key' => env('TRANSLATION_API_KEY', ''),
     ],
+    'evolution' => [
+        'url' => env('EVOLUTION_API_URL'),
+        'api_key' => env('EVOLUTION_API_KEY'),
+        'instance' => env('EVOLUTION_INSTANCE_NAME'),
+    ],
 
 ];
