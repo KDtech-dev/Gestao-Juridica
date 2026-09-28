@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Caso extends Model
@@ -48,5 +49,18 @@ class Caso extends Model
     public function anexos(): MorphMany
     {
         return $this->morphMany(Anexo::class, 'anexavel');
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (Caso $caso) {
+            $limpo = $caso->numero_processo ? preg_replace('/\D/', '', $caso->numero_processo) : null;
+            $caso->numero_processo_limpo = ($limpo && strlen($limpo) === 20) ? $limpo : null;
+        });
+    }
+
+    public function comunicacoesDjen(): HasMany
+    {
+        return $this->hasMany(ComunicacaoDjen::class);
     }
 }

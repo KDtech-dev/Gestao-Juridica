@@ -10,3 +10,9 @@ Artisan::command('inspire', function () {
 Schedule::command('compromissos:sincronizar-lembretes')
     ->dailyAt('07:00')
     ->withoutOverlapping();
+
+
+Schedule::command('djen:sincronizar')
+    ->dailyAt('07:00')
+    ->timezone('America/Sao_Paulo')
+    ->withoutOverlapping();

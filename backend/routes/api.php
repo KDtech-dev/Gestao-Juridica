@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\NotificacaoController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CasoController;
 use App\Http\Controllers\Api\AnexoController;
+use App\Http\Controllers\Api\ComunicacaoDjenController;
 use App\Http\Controllers\Auth\PasswordResetController;
 
 Route::prefix('auth')->group(function () {
@@ -84,6 +85,22 @@ Route::middleware('auth:sanctum')->group(function () {
         );
     });
 
+    Route::prefix('comunicacoes-djen')->group(function () {
+        Route::get('/', [ComunicacaoDjenController::class, 'index'])
+            ->middleware('permission:djen.visualizar');
+        Route::get('{comunicacaoDjen}', [ComunicacaoDjenController::class, 'show'])
+            ->middleware('permission:djen.visualizar');
+        Route::patch('{comunicacaoDjen}/lida', [ComunicacaoDjenController::class, 'marcarLida'])
+            ->middleware('permission:djen.visualizar');
+        Route::post('{comunicacaoDjen}/vincular', [ComunicacaoDjenController::class, 'vincular'])
+            ->middleware('permission:djen.visualizar');
+    });
+
+    Route::prefix('advogados')->group(function () {
+        Route::post('/{advogado}/sincronizar-djen', [ComunicacaoDjenController::class, 'sincronizarAdvogado'])
+            ->middleware(['permission:djen.sincronizar', 'throttle:6,1']);
+    });
+
 
     Route::prefix('compromissos')->group(function () {
         Route::get('/',                   [CompromissoController::class, 'index'])->name('compromissos.index');
@@ -117,6 +134,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{caso}',      [CasoController::class, 'show']);
         Route::put('/{caso}',      [CasoController::class, 'update']);
         Route::delete('/{caso}',   [CasoController::class, 'destroy']);
+
+        Route::post('/{caso}/sincronizar-djen', [ComunicacaoDjenController::class, 'sincronizarCaso'])
+            ->middleware(['permission:djen.sincronizar', 'throttle:6,1']);
 
         Route::prefix('{caso}/clientes')->group(function () {
             Route::post('/',             [CasoController::class, 'attachClientes']);
