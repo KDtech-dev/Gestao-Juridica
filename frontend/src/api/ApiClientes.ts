@@ -8,7 +8,7 @@ import {
 const getClientes = async (
   page = 1,
   perPage = 10,
-): Promise<PaginatedResponseType<ClienteType>> => {
+): Promise<PaginatedResponseType<ClienteType>> => { 
   const response = await getAxios().get("/clientes", {
     params: { page, perPage },
   });

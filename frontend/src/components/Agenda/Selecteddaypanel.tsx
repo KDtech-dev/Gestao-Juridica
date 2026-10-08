@@ -10,7 +10,6 @@ import { DayEventItem } from "./Dayeventitem";
 
 interface SelectedDayPanelProps {
   date: Date;
-  /** Todos os compromissos da visão atual; o filtro por dia é feito aqui. */
   events: Compromisso[];
   error: string | null;
   onView: (event: Compromisso) => void;

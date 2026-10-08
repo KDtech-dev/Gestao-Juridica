@@ -54,19 +54,9 @@ export default function ResetPasswordView() {
   const t = useTranslations("auth.resetPassword");
   const tLogin = useTranslations("auth.login");
   const headerT = useTranslations("public.header");
-
   const { language, setLanguage } = useLanguage();
-
   const currentLanguage = languageOptions[language];
-
   const languageLabel = headerT(`language.${currentLanguage.labelKey}`);
-
-  /**
-   * Token e e-mail enviados pelo link recebido no e-mail.
-   *
-   * Exemplo:
-   * /reset-password?token=abc123&email=usuario@email.com
-   */
   const token = searchParams.get("token") ?? "";
   const email = searchParams.get("email") ?? "";
 
@@ -155,7 +145,6 @@ export default function ResetPasswordView() {
         bgcolor: "background.default",
       }}
     >
-      {/* Seletor de idioma */}
 
       <Select<Language>
         value={language}
@@ -262,8 +251,7 @@ export default function ResetPasswordView() {
         ))}
       </Select>
 
-      {/* Painel esquerdo */}
-
+   
       <Box
         sx={{
           display: {
@@ -311,7 +299,6 @@ export default function ResetPasswordView() {
         </Typography>
       </Box>
 
-      {/* Formulário */}
 
       <Box
         sx={{
@@ -349,7 +336,6 @@ export default function ResetPasswordView() {
             }}
           >
             <Stack spacing={2}>
-              {/* Cabeçalho */}
 
               <Box>
                 <Typography
@@ -365,7 +351,6 @@ export default function ResetPasswordView() {
                 </Typography>
               </Box>
 
-              {/* E-mail */}
 
               <TextField
                 label={t("email")}
@@ -375,7 +360,6 @@ export default function ResetPasswordView() {
                 disabled
               />
 
-              {/* Nova senha */}
 
               <TextField
                 label={t("password")}
@@ -418,7 +402,6 @@ export default function ResetPasswordView() {
                 }}
               />
 
-              {/* Confirmar nova senha */}
 
               <TextField
                 label={t("passwordConfirmation")}
@@ -464,9 +447,6 @@ export default function ResetPasswordView() {
                   },
                 }}
               />
-
-              {/* Botão */}
-
               <Button
                 variant="contained"
                 type="submit"

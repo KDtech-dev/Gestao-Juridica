@@ -25,7 +25,6 @@ interface BaseModalProps {
   onClose: () => void;
   title: string;
   sections: Section[];
-  /** Opcional para adicionar elementos extras no cabeçalho */
   headerAction?: ReactNode;
 }
 
@@ -53,7 +52,6 @@ export function BaseModal({
       }
       TransitionProps={{ timeout: 300 }}
     >
-      {/* Título com fundo sutil e ícone decorativo */}
       <DialogTitle
         sx={{
           display: "flex",

@@ -1,10 +1,4 @@
 type ApiOriginOptions = {
-  /**
-   * Quando o frontend está sendo acessado via um domínio público (ex: Dev Tunnel),
-   * não faz sentido o browser tentar chamar um backend em `localhost/127.0.0.1`.
-   * Nesse caso, retornamos string vazia para forçar uso de rotas relativas (`/api`)
-   * e depender do proxy/rewrites do Next.
-   */
   ignoreLocalhostFromBrowser?: boolean;
 };
 

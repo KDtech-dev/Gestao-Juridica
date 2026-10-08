@@ -370,7 +370,6 @@ export default function LoginView() {
 
               <Divider />
 
-              {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
               <a
                 href="/"
                 style={{

@@ -20,9 +20,10 @@ return new class extends Migration
             $table->string('titulo');
             $table->text('mensagem');
             $table->json('dados')
-                ->nullable();
+            ->nullable();
             $table->timestamp('lida_em')
-                ->nullable();
+            ->nullable();
+            $table->timestamp('whatsapp_enviado_em')->nullable();
             $table->timestamps();
         });
     }

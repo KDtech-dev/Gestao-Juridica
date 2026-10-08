@@ -41,5 +41,15 @@ return [
         // Optional api key if your provider requires it.
         'key' => env('TRANSLATION_API_KEY', ''),
     ],
+    'evolution' => [
+        'url' => env('EVOLUTION_API_URL'),
+        'api_key' => env('EVOLUTION_API_KEY'),
+        'instance' => env('EVOLUTION_INSTANCE_NAME'),
+    ],
+    'djen' => [
+        'base_url' => env('DJEN_BASE_URL', 'https://comunicaapi.pje.jus.br/api/v1'),
+        'timeout' => env('DJEN_TIMEOUT', 20),
+        'per_page' => 50, 
+    ],
 
 ];

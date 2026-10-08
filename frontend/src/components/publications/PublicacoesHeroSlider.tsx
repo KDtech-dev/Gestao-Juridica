@@ -56,10 +56,7 @@ export function PublicacoesHeroSlider({
   const activeCategoria =
     activeSlide.categoria?.nome?.trim() || "Publicação";
 
-  /**
-   * Remove HTML do resumo e utiliza o conteúdo da publicação
-   * como fallback caso o resumo não esteja preenchido.
-   */
+
   const resumoOriginal =
     activeSlide.resumo?.trim() ||
     activeSlide.conteudo?.trim() ||
@@ -67,10 +64,7 @@ export function PublicacoesHeroSlider({
 
   const activeResumoTexto = stripHtml(resumoOriginal).trim();
 
-  /**
-   * Limita o resumo para evitar que textos muito grandes
-   * ocupem espaço excessivo no Hero.
-   */
+
   const LIMITE_RESUMO = 220;
 
   const activeResumo =

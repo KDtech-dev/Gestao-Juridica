@@ -15,7 +15,6 @@ interface AgendaTimelineProps {
   events: Compromisso[];
   loading: boolean;
   error: string | null;
-  /** Muda quando visão/período mudam, para voltar à página 1. */
   resetKey: string;
   onView: (event: Compromisso) => void;
   onEdit: (event: Compromisso) => void;

@@ -82,7 +82,6 @@ export function CardDadosPessoais({
           )}
         />
 
-        {/* Data de nascimento — advogado ou funcionário */}
         {(isAdvogado || isFuncionario) && (
           <InputBasico
             field={
@@ -95,7 +94,6 @@ export function CardDadosPessoais({
           />
         )}
 
-        {/* Sexo — advogado ou funcionário */}
         {(isAdvogado || isFuncionario) && (
           <Controller
             name={isAdvogado ? "advogado.sexo" : "funcionario.sexo"}
