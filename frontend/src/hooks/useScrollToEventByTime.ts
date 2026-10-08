@@ -5,11 +5,7 @@ import { useSearchParams } from "next/navigation";
 import type { Compromisso } from "@/api/apiCompromissos";
 import { compromissoDate, formatTime, isSameDay } from "@/utils/compromisso";
 
-/**
- * Lê `?time=HH:mm`, procura o evento na lista COMPLETA (não só na página
- * atual), troca para a página dele e rola até o item.
- * Retorna o `queryTime` para o destaque visual.
- */
+
 export function useScrollToEventByTime(
   events: Compromisso[],
   goToIndex: (index: number) => void,
