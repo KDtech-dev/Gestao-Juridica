@@ -52,7 +52,6 @@ export function CardEndereco({ isAdvogado, isFuncionario }: Props) {
           gap: 1.4,
         }}
       >
-        {/* CEP com busca automática */}
         <Box sx={{ position: "relative" }}>
           <InputBasico
             field="endereco.cep"

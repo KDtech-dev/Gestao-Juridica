@@ -94,7 +94,6 @@ export function CardDadosPessoais({
           />
         )}
 
-        {/* Sexo — advogado ou funcionário */}
         {(isAdvogado || isFuncionario) && (
           <Controller
             name={isAdvogado ? "advogado.sexo" : "funcionario.sexo"}
