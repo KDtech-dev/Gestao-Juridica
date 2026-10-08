@@ -360,7 +360,6 @@ export default function ResetPasswordView() {
                 disabled
               />
 
-              {/* Nova senha */}
 
               <TextField
                 label={t("password")}
