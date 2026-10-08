@@ -402,7 +402,6 @@ export default function ResetPasswordView() {
                 }}
               />
 
-              {/* Confirmar nova senha */}
 
               <TextField
                 label={t("passwordConfirmation")}
