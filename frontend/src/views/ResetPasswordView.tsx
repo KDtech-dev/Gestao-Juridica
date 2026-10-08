@@ -351,7 +351,6 @@ export default function ResetPasswordView() {
                 </Typography>
               </Box>
 
-              {/* E-mail */}
 
               <TextField
                 label={t("email")}
