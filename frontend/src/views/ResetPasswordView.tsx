@@ -145,7 +145,6 @@ export default function ResetPasswordView() {
         bgcolor: "background.default",
       }}
     >
-      {/* Seletor de idioma */}
 
       <Select<Language>
         value={language}
