@@ -447,9 +447,6 @@ export default function ResetPasswordView() {
                   },
                 }}
               />
-
-              {/* Botão */}
-
               <Button
                 variant="contained"
                 type="submit"
