@@ -54,19 +54,9 @@ export default function ResetPasswordView() {
   const t = useTranslations("auth.resetPassword");
   const tLogin = useTranslations("auth.login");
   const headerT = useTranslations("public.header");
-
   const { language, setLanguage } = useLanguage();
-
   const currentLanguage = languageOptions[language];
-
   const languageLabel = headerT(`language.${currentLanguage.labelKey}`);
-
-  /**
-   * Token e e-mail enviados pelo link recebido no e-mail.
-   *
-   * Exemplo:
-   * /reset-password?token=abc123&email=usuario@email.com
-   */
   const token = searchParams.get("token") ?? "";
   const email = searchParams.get("email") ?? "";
 
