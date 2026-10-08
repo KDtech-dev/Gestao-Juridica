@@ -52,7 +52,6 @@ export function BaseModal({
       }
       TransitionProps={{ timeout: 300 }}
     >
-      {/* Título com fundo sutil e ícone decorativo */}
       <DialogTitle
         sx={{
           display: "flex",

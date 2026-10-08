@@ -82,7 +82,6 @@ export function CardDadosPessoais({
           )}
         />
 
-        {/* Data de nascimento — advogado ou funcionário */}
         {(isAdvogado || isFuncionario) && (
           <InputBasico
             field={
