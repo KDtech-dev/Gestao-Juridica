@@ -25,7 +25,6 @@ interface BaseModalProps {
   onClose: () => void;
   title: string;
   sections: Section[];
-  /** Opcional para adicionar elementos extras no cabeçalho */
   headerAction?: ReactNode;
 }
 

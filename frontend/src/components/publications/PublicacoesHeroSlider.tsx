@@ -64,10 +64,7 @@ export function PublicacoesHeroSlider({
 
   const activeResumoTexto = stripHtml(resumoOriginal).trim();
 
-  /**
-   * Limita o resumo para evitar que textos muito grandes
-   * ocupem espaço excessivo no Hero.
-   */
+
   const LIMITE_RESUMO = 220;
 
   const activeResumo =
