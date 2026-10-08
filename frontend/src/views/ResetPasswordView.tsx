@@ -251,8 +251,7 @@ export default function ResetPasswordView() {
         ))}
       </Select>
 
-      {/* Painel esquerdo */}
-
+   
       <Box
         sx={{
           display: {
