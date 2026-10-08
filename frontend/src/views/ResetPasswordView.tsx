@@ -336,7 +336,6 @@ export default function ResetPasswordView() {
             }}
           >
             <Stack spacing={2}>
-              {/* Cabeçalho */}
 
               <Box>
                 <Typography
