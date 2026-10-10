@@ -10,12 +10,12 @@
     }
   },
   "branding": {
-    "appName": "mcaadvogados",
+    "appName": "MCA-Advogados",
     "tagline": "Gestão jurídica inteligente e moderna"
   },
   "auth": {
     "login": {
-      "brand": "mcaadvogados",
+      "brand": "MCA Advogados",
       "title": "Entrar",
       "subtitle": "Acesse sua conta para continuar.",
       "email": "E-mail",

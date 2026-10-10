@@ -58,7 +58,7 @@ class Publicacao extends Model
         return Attribute::make(
             get: fn() => $this->imagem_caminho
                 ? Storage::disk('public')->url($this->imagem_caminho)
-                : asset('images/publicacao-default.jpg'),
+                : '/images/publicacao-default.jpg',
         );
     }
 }
