@@ -22,6 +22,7 @@ class CompromissoController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $this->authorize('viewAny', Compromisso::class);
         $somenteDoUsuario = $request->query('visao') === 'pessoal';
         $periodo = $request->query('periodo');
         $periodo = in_array($periodo, ['today', 'week', 'month'], true)
@@ -50,6 +51,7 @@ class CompromissoController extends Controller
 
     public function show(Compromisso $compromisso): JsonResponse
     {
+        $this->authorize('view', $compromisso);
         $compromisso->load('criador');
 
         return response()->json([

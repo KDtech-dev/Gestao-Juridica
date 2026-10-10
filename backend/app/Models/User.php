@@ -26,6 +26,8 @@ class User extends Authenticatable
 
     protected $guard_name = 'api';
 
+    protected $attributes = ['is_active' => true];
+
     protected $fillable = [
         'id',
         'name',

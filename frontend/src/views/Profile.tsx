@@ -20,6 +20,7 @@ import {
   createProfileFormSchema,
   ProfileFormSchemaType,
 } from "@/schemas/ProfileSchema";
+import CardWhatsApp from "@/components/users/CardWhatsApp";
 import CardSeguranca from "@/components/users/CardSeguranca";
 import CardPersonalizacao from "@/components/users/CardPersonalizacao";
 import { useThemeMode } from "@/theme/ThemeRegistry";
@@ -432,6 +433,7 @@ export default function ProfileView() {
               </Card>
             </form>
           </FormProvider>
+          <CardWhatsApp />
         </Container>
       </Box>
     </Box>

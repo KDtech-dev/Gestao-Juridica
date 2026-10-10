@@ -47,6 +47,10 @@ class RegistrarAuditoria
             $request->isMethod('PUT'), $request->isMethod('PATCH') => 'alterar',
             default => 'criar',
         };
+        if ($action === 'consultar') {
+            return $response;
+        }
+
         $records = [];
         foreach ($route?->parameters() ?? [] as $key => $value) {
             $id = $value instanceof Model ? $value->getKey() : $value;

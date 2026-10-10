@@ -151,3 +151,14 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('auditoria')->group(fu
     Route::get('/arquivos', [\App\Http\Controllers\Api\AuditoriaController::class, 'arquivos']);
     Route::get('/arquivos/{arquivo}/download', [\App\Http\Controllers\Api\AuditoriaController::class, 'download']);
 });
+
+// Only these webhook endpoints are public; payload delivery requires a valid Meta signature.
+Route::get('whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'verify']);
+Route::post('whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'receive']);
+Route::middleware('auth:sanctum')->prefix('whatsapp')->group(function () {
+    Route::get('preferences', [\App\Http\Controllers\Api\WhatsAppController::class, 'show']);
+    Route::put('preferences', [\App\Http\Controllers\Api\WhatsAppController::class, 'update']);
+    Route::post('verification', [\App\Http\Controllers\Api\WhatsAppController::class, 'verification'])->middleware('throttle:5,1');
+    Route::get('history', [\App\Http\Controllers\Api\WhatsAppController::class, 'history']);
+    Route::post('diagnostic', [\App\Http\Controllers\Api\WhatsAppController::class, 'diagnostic'])->middleware(['role:admin', 'throttle:3,1']);
+});

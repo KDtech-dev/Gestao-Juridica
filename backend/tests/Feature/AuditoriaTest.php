@@ -30,7 +30,7 @@ class AuditoriaTest extends TestCase
         return $user;
     }
 
-    public function test_reads_updates_deletions_and_failed_requests_record_actor_and_target_without_payloads(): void
+    public function test_updates_deletions_and_failed_writes_record_actor_and_target_without_payloads(): void
     {
         $user = $this->user('funcionario');
         $client = Cliente::factory()->create();
@@ -41,8 +41,8 @@ class AuditoriaTest extends TestCase
             'password' => 'senha-nao-registrar', 'token' => 'token-nao-registrar',
         ])->assertSuccessful();
         $this->deleteJson('/api/clientes/'.$client->id)->assertSuccessful();
-        $this->getJson('/api/users')->assertForbidden();
-        $this->assertSame(['consultar', 'alterar', 'excluir', 'consultar'], AuditoriaLog::orderBy('id')->pluck('acao')->all());
+        $this->postJson('/api/users', [])->assertForbidden();
+        $this->assertSame(['alterar', 'excluir', 'criar'], AuditoriaLog::orderBy('id')->pluck('acao')->all());
         $this->assertSame($user->id, AuditoriaLog::first()->usuario_id);
         $this->assertSame($client->id, AuditoriaLog::where('acao', 'alterar')->sole()->registros['cliente']);
         $this->assertSame(403, AuditoriaLog::orderByDesc('id')->first()->status_http);
@@ -87,6 +87,7 @@ class AuditoriaTest extends TestCase
         $this->getJson('/api/auditoria')->assertOk();
         $this->getJson('/api/auditoria/arquivos')->assertOk()->assertJsonMissingPath('arquivos.data.0.caminho');
         $this->get('/api/auditoria/arquivos/'.$file->id.'/download')->assertOk()->assertDownload();
+        $this->assertDatabaseHas('auditoria_logs', ['acao' => 'baixar_arquivo', 'status_http' => 200]);
         $this->deleteJson('/api/auditoria')->assertStatus(405);
     }
 
@@ -140,10 +141,10 @@ class AuditoriaTest extends TestCase
     {
         $this->actingAs($this->user(), 'sanctum');
         for ($i = 0; $i < 30; $i++) {
-            $this->logAt(CarbonImmutable::now()->subHour(), ['usuario_nome' => 'Operadora teste', 'modulo' => 'clientes', 'status_http' => 403]);
+            $this->logAt(CarbonImmutable::now()->subHour(), ['usuario_nome' => 'Operadora teste', 'modulo' => 'clientes', 'status_http' => 403, 'acao' => 'alterar']);
         }
         $this->logAt(CarbonImmutable::now(), ['usuario_nome' => 'Outra pessoa']);
-        $url = '/api/auditoria?usuario=Operadora&modulo=clientes&resultado=falha&acao=consultar';
+        $url = '/api/auditoria?usuario=Operadora&modulo=clientes&resultado=falha&acao=alterar';
         $this->getJson($url)->assertOk()->assertJsonPath('total', 30)->assertJsonCount(25, 'data');
         $this->getJson($url.'&page=2')->assertOk()->assertJsonCount(5, 'data');
         $this->getJson('/api/auditoria?inicio=2026-03-03&fim=2026-02-01')->assertUnprocessable();
@@ -155,8 +156,29 @@ class AuditoriaTest extends TestCase
         AuditoriaLog::creating(fn () => throw new \RuntimeException('database failure'));
         $logger = Mockery::mock(LoggerInterface::class);
         Log::shouldReceive('build')->once()->andReturn($logger);
-        $logger->shouldReceive('critical')->once()->withArgs(fn ($message, $data) => $data['acao'] === 'consultar' && ! str_contains(json_encode($data), 'private-search'));
-        $this->getJson('/api/clientes?search=private-search')->assertOk();
+        $logger->shouldReceive('critical')->once()->withArgs(fn ($message, $data) => $data['acao'] === 'criar' && ! str_contains(json_encode($data), 'private-search'));
+        $this->postJson('/api/casos?search=private-search', ['titulo' => 'Caso de teste', 'data_abertura' => '2026-01-01'])->assertCreated();
+    }
+
+    public function test_page_reads_and_head_requests_do_not_create_logs(): void
+    {
+        $this->actingAs($this->user(), 'sanctum');
+        $this->getJson('/api/clientes')->assertOk();
+        $this->head('/api/clientes')->assertOk();
+        $this->getJson('/api/auditoria')->assertOk();
+        $this->getJson('/api/auditoria/arquivos')->assertOk();
+        $this->assertDatabaseCount('auditoria_logs', 0);
+    }
+
+    public function test_old_page_queries_are_hidden_without_deleting_history(): void
+    {
+        $this->actingAs($this->user(), 'sanctum');
+        $this->logAt(CarbonImmutable::now());
+        $visible = $this->logAt(CarbonImmutable::now(), ['acao' => 'alterar']);
+        $this->getJson('/api/auditoria')->assertOk()->assertJsonPath('total', 1)
+            ->assertJsonPath('data.0.id', (string) $visible->id);
+        $this->getJson('/api/auditoria?acao=consultar')->assertOk()->assertJsonPath('total', 0);
+        $this->assertDatabaseCount('auditoria_logs', 2);
     }
 
     private function logAt(CarbonImmutable $date, array $extra = []): AuditoriaLog

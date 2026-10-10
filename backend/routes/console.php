@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 
 \Illuminate\Support\Facades\Schedule::command('lixeira:limpar')->hourly()->withoutOverlapping();
 \Illuminate\Support\Facades\Schedule::command('auditoria:arquivar')->hourly()->withoutOverlapping();
+
+\Illuminate\Support\Facades\Schedule::command('whatsapp:dispatch')->everyMinute()->withoutOverlapping();

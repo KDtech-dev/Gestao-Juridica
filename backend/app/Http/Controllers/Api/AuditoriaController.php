@@ -25,6 +25,7 @@ class AuditoriaController extends Controller
         ]);
 
         return AuditoriaLog::query()
+            ->where('acao', '!=', 'consultar')
             ->when($data['usuario'] ?? null, fn ($q, $name) => $q->where('usuario_nome', 'like', '%'.$name.'%'))
             ->when($data['acao'] ?? null, fn ($q, $action) => $q->where('acao', $action))
             ->when($data['modulo'] ?? null, fn ($q, $module) => $q->where('modulo', $module))

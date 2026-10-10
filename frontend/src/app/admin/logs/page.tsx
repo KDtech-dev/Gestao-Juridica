@@ -49,7 +49,6 @@ type Archive = {
   criado_em: string;
 };
 const actions: Record<string, string> = {
-  consultar: "Consulta",
   criar: "Cadastro / envio",
   alterar: "Alteração",
   excluir: "Exclusão",

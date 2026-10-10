@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \App\Models\Compromisso::observe(\App\Observers\WhatsAppCompromissoObserver::class);
         ResetPassword::createUrlUsing(function (object $notifiable, string $token) {
             return config('app.frontend_url') . '/reset-password?token=' . $token
                 . '&email=' . urlencode($notifiable->getEmailForPasswordReset());

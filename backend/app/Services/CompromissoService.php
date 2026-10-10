@@ -6,6 +6,7 @@ use App\Models\Compromisso;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CompromissoService
@@ -69,11 +70,11 @@ class CompromissoService
 
         $dados['user_id'] =  Auth::id();
 
-        $compromisso = Compromisso::create($dados);
-
-        app(NotificacaoService::class)->registrarCompromissoCriado($compromisso);
-
-        return $compromisso;
+        return DB::transaction(function () use ($dados) {
+            $compromisso = Compromisso::create($dados);
+            app(NotificacaoService::class)->registrarCompromissoCriado($compromisso);
+            return $compromisso;
+        });
     }
 
     public function atualizar(
@@ -92,11 +93,12 @@ class CompromissoService
                 ->store('compromissos', 'public');
         }
 
-        $compromisso->update($dados);
-
-        app(NotificacaoService::class)->sincronizarCompromissoAtualizado($compromisso);
-
-        return $compromisso;
+        return DB::transaction(function () use ($compromisso, $dados) {
+            $compromisso = Compromisso::lockForUpdate()->findOrFail($compromisso->id);
+            $compromisso->update($dados);
+            app(NotificacaoService::class)->sincronizarCompromissoAtualizado($compromisso);
+            return $compromisso;
+        });
     }
 
     public function deletar(Compromisso $compromisso): void
