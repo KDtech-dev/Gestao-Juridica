@@ -10,13 +10,15 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import type { AdvogadoPublicoType } from "@/@core/types";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { LawyerProfileCard } from "@/components/team/LawyerProfileCard";
-import { institutionalWhatsappHref } from "@/configs/publicContact";
 import { advogadoOab } from "@/utils/advogadoPublico";
+import { demoModeEnabled } from "@/configs/demoOffice";
+import { getDemoPublicData } from "@/data/publicDemo";
 
 export default function AdvogadoPublicoView({
   lawyer,
@@ -26,14 +28,22 @@ export default function AdvogadoPublicoView({
   others: AdvogadoPublicoType[];
 }) {
   const t = useTranslations("public.lawyer");
-  const tFooter = useTranslations("public.footer");
-  const contactHref = institutionalWhatsappHref(tFooter("whatsappMessage"));
-  const bio = lawyer.resumo_pessoal?.trim();
+  const locale = useLocale();
+  const demoLawyers = getDemoPublicData(
+    locale === "en" || locale === "es" ? locale : "pt",
+  ).demoAdvogados;
+  const displayedLawyer = demoModeEnabled
+    ? (demoLawyers.find((item) => item.uuid === lawyer.uuid) ?? lawyer)
+    : lawyer;
+  const displayedOthers = demoModeEnabled
+    ? demoLawyers.filter((item) => item.uuid !== displayedLawyer.uuid).slice(0, 3)
+    : others;
+  const bio = displayedLawyer.resumo_pessoal?.trim();
   const categories = [
-    ...new Set((lawyer.categorias ?? []).filter((name) => name.trim())),
+    ...new Set((displayedLawyer.categorias ?? []).filter((name) => name.trim())),
   ];
-  const oab = advogadoOab(lawyer);
-  const initials = lawyer.name
+  const oab = advogadoOab(displayedLawyer);
+  const initials = displayedLawyer.name
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
@@ -61,8 +71,8 @@ export default function AdvogadoPublicoView({
           >
             <Avatar
               variant="rounded"
-              src={lawyer.foto_perfil_url ?? undefined}
-              alt={lawyer.name}
+              src={displayedLawyer.foto_perfil_url ?? undefined}
+              alt={displayedLawyer.name}
               sx={{
                 width: { xs: 180, sm: 220, md: 280 },
                 height: { xs: 210, sm: 260, md: 320 },
@@ -85,7 +95,7 @@ export default function AdvogadoPublicoView({
                   overflowWrap: "anywhere",
                 }}
               >
-                {lawyer.name}
+                {displayedLawyer.name}
               </Typography>
               {oab && (
                 <Typography color="text.primary" fontWeight={700} mt={1.5}>
@@ -93,7 +103,8 @@ export default function AdvogadoPublicoView({
                 </Typography>
               )}
               <Button
-                href={contactHref}
+                component={Link}
+                href="/login"
                 variant="contained"
                 sx={{ mt: 3, textTransform: "none" }}
               >
@@ -162,7 +173,8 @@ export default function AdvogadoPublicoView({
                 {t("ctaTitle")}
               </Typography>
               <Button
-                href={contactHref}
+                component={Link}
+                href="/login"
                 variant="contained"
                 sx={{ textTransform: "none", flexShrink: 0 }}
               >
@@ -170,7 +182,7 @@ export default function AdvogadoPublicoView({
               </Button>
             </Stack>
           </Paper>
-          {others.length > 0 && (
+          {displayedOthers.length > 0 && (
             <Box component="section">
               <Typography component="h2" variant="h5" fontWeight={800} mb={3}>
                 {t("others")}
@@ -186,7 +198,7 @@ export default function AdvogadoPublicoView({
                   gap: 3,
                 }}
               >
-                {others.map((other) => (
+                {displayedOthers.map((other) => (
                   <LawyerProfileCard
                     key={other.uuid}
                     lawyer={other}

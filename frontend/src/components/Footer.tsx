@@ -16,12 +16,13 @@ import { PrivacyTermsModal } from "@/components/PrivacyTermsModal";
 import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { useTranslations } from "next-intl";
 
-import {
-  institutionalPhone,
-  institutionalWhatsappHref,
-} from "@/configs/publicContact";
-
 import { logoSrc } from "@/configs/branding";
+import {
+  institutionalAddress,
+  institutionalEmail,
+  institutionalPhone,
+} from "@/configs/publicContact";
+import { demoOffice } from "@/configs/demoOffice";
 
 export function Footer() {
   const t = useTranslations("public.footer");
@@ -29,14 +30,16 @@ export function Footer() {
   const [openTerms, setOpenTerms] = useState(false);
 
   const telefone = institutionalPhone;
-  const email = "contato@mcaadvogados.com.br";
-
-  const mensagem = t("whatsappMessage");
-  const whatsappHref = institutionalWhatsappHref(mensagem);
+  const endereco = [
+    institutionalAddress.street,
+    institutionalAddress.district,
+    institutionalAddress.city,
+  ].join(", ") + " – " + institutionalAddress.state;
 
   return (
     <Box
       component="footer"
+      id="contato"
       sx={{ bgcolor: "#0b1220", color: "rgba(255,255,255,0.92)" }}
     >
       <Box
@@ -82,31 +85,21 @@ export function Footer() {
             </Box>
 
             <Button
-              component="a"
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
+              component={Link}
+              href="/login"
               variant="contained"
-              startIcon={<Icon icon="mdi:whatsapp" width={20} />}
+              startIcon={<Icon icon="mdi:arrow-right" width={20} />}
               sx={{
                 alignSelf: { xs: "flex-start", md: "auto" },
-                bgcolor: "#05a13e",
                 borderRadius: "999px",
                 px: 3,
-                py: 1.25,
+                py: 1.3,
+                minHeight: 48,
                 textTransform: "none",
                 fontWeight: 900,
-                boxShadow: "0 10px 30px rgba(5,161,62,0.18)",
-                transition:
-                  "transform 200ms ease, background-color 200ms ease, box-shadow 200ms ease",
-                "&:hover": {
-                  bgcolor: "#04923a",
-                  boxShadow: "0 14px 40px rgba(5,161,62,0.28)",
-                  transform: "translateY(-1px)",
-                },
               }}
             >
-              {t("cta.whatsapp")}
+              {t("cta.openDemo")}
             </Button>
           </Stack>
         </Container>
@@ -126,7 +119,7 @@ export function Footer() {
                 <Box
                   component="img"
                   src={logoSrc}
-                  alt="mcaadvogados"
+                  alt={demoOffice.shortName}
                   sx={{
                     width: 100,
                     height: 100,
@@ -139,16 +132,16 @@ export function Footer() {
                 <Box>
                   <Typography
                     fontWeight={900}
-                    sx={{ fontSize: "1.25rem", lineHeight: 0.5, mb: 0.5 }}
+                    sx={{ fontSize: "1.05rem", lineHeight: 1.2, mb: 0.5 }}
                   >
-                    mcaadvogados
+                    {demoOffice.name}
                   </Typography>
                   <Typography
                     variant="caption"
                     color="rgba(255,255,255,0.6)"
-                    sx={{ lineHeight: 0.5, fontSize: "0.95rem" }}
+                    sx={{ lineHeight: 1.35, fontSize: "0.9rem" }}
                   >
-                    Advocacia & Consultoria
+                    {demoOffice.productName}
                   </Typography>
                 </Box>
               </Stack>
@@ -160,37 +153,6 @@ export function Footer() {
                 {t("description")}
               </Typography>
 
-              <Stack
-                direction="row"
-                spacing={1}
-                sx={{ pt: 0.5, flexWrap: "wrap" }}
-              >
-                {[
-                  { icon: "mdi:instagram", label: "Instagram" },
-                  { icon: "mdi:linkedin", label: "LinkedIn" },
-                  { icon: "mdi:facebook", label: "Facebook" },
-                ].map((s) => (
-                  <Button
-                    key={s.label}
-                    component={Link}
-                    href="/"
-                    variant="text"
-                    aria-label={s.label}
-                    sx={{
-                      minWidth: 50,
-                      p: 0,
-                      color: "rgba(255,255,255,0.72)",
-                      transition: "opacity 200ms ease, transform 200ms ease",
-                      "&:hover": {
-                        opacity: 0.95,
-                        transform: "translateY(-1px)",
-                      },
-                    }}
-                  >
-                    <Icon icon={s.icon} width={20} />
-                  </Button>
-                ))}
-              </Stack>
             </Stack>
           </Grid>
 
@@ -208,7 +170,7 @@ export function Footer() {
                 {[
                   { label: t("navigation.home"), href: "/" },
                   { label: t("navigation.publications"), href: "/posts" },
-                  { label: t("navigation.contact"), href: whatsappHref },
+                  { label: t("navigation.contact"), href: "#contato" },
                   {
                     label: t("navigation.privacy"),
                     onClick: () => setOpenPrivacy(true),
@@ -291,9 +253,9 @@ export function Footer() {
                   </Box>
                   <Typography
                     color="rgba(255,255,255,0.66)"
-                    sx={{ lineHeight: 1.55 }}
+                    sx={{ lineHeight: 1.55, overflowWrap: "anywhere", flex: 1, minWidth: 0 }}
                   >
-                    R. Argemiro Aguilar, N° 763, Almenara - MG, CEP: 39900-000
+                    {endereco}
                   </Typography>
                 </Stack>
 
@@ -312,7 +274,7 @@ export function Footer() {
                   </Box>
                   <Typography
                     color="rgba(255,255,255,0.66)"
-                    sx={{ fontWeight: 850 }}
+                    sx={{ fontWeight: 850, overflowWrap: "anywhere", flex: 1, minWidth: 0 }}
                   >
                     {telefone}
                   </Typography>
@@ -333,9 +295,9 @@ export function Footer() {
                   </Box>
                   <Typography
                     color="rgba(255,255,255,0.66)"
-                    sx={{ fontWeight: 850 }}
+                    sx={{ fontWeight: 850, overflowWrap: "anywhere", flex: 1, minWidth: 0 }}
                   >
-                    {email}
+                    {institutionalEmail}
                   </Typography>
                 </Stack>
               </Stack>
@@ -357,7 +319,7 @@ export function Footer() {
                 color="rgba(255,255,255,0.55)"
                 sx={{ fontWeight: 850 }}
               >
-                © {new Date().getFullYear()} mcaadvogados -{" "}
+                © {new Date().getFullYear()} {demoOffice.productName} -{" "}
                 {t("copyrightRights")}
               </Typography>
             </Grid>

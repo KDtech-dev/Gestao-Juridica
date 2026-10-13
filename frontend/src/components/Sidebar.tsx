@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEffect, useState } from "react";
 import { logoSrc } from "@/configs/branding";
+import { demoOffice } from "@/configs/demoOffice";
 
 type NavItem = {
   key: string;
@@ -285,7 +286,7 @@ export function SidebarDashboard({ activeKey }: Props) {
             <Box
               component="img"
               src={logoSrc}
-              alt="mcaadvogados"
+              alt={demoOffice.shortName}
               sx={{
                 width: 45,
                 height: 45,
@@ -308,7 +309,7 @@ export function SidebarDashboard({ activeKey }: Props) {
                   whiteSpace: "nowrap",
                 }}
               >
-                mcaadvogados
+                {demoOffice.shortName}
               </Typography>
             </Box>
           </Box>

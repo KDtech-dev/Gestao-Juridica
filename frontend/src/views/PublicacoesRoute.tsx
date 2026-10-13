@@ -3,10 +3,12 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useAuth } from "@/hooks/useAuth";
 import { usePathname } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import PublicacoesView from "./Publicacoes";
 import { PublicacaoType } from "@/@core/types";
 import PublicationsView from "./Publicacoes/Publications";
+import { demoModeEnabled } from "@/configs/demoOffice";
+import { getDemoPublicData } from "@/data/publicDemo";
 
 type PublicacoesRouteViewProps = {
   publicacoesPublicas: PublicacaoType[];
@@ -18,6 +20,11 @@ export default function PublicacoesRouteView({
   const { isAuthenticated, loading } = useAuth();
   const pathname = usePathname();
   const t = useTranslations("public.publications");
+  const locale = useLocale();
+  const displayedPublications = demoModeEnabled
+    ? getDemoPublicData(locale === "en" || locale === "es" ? locale : "pt")
+        .demoPublicacoes
+    : publicacoesPublicas;
 
   const isPublicRoute = pathname === "/posts";
 
@@ -43,12 +50,12 @@ export default function PublicacoesRouteView({
   }
 
   if (isPublicRoute) {
-    return <PublicacoesView publicacoes={publicacoesPublicas} />;
+    return <PublicacoesView publicacoes={displayedPublications} />;
   }
 
   if (isAuthenticated) {
     return <PublicationsView />;
   }
 
-  return <PublicacoesView publicacoes={publicacoesPublicas} />;
+  return <PublicacoesView publicacoes={displayedPublications} />;
 }

@@ -25,9 +25,14 @@ import { advogadoHref, advogadoOab } from "@/utils/advogadoPublico";
 type Props = {
   translations: ReturnType<typeof useTranslations>;
   advogados?: AdvogadoPublicoType[];
+  mockCategorias?: CategoriaType[];
 };
 
-export default function SpecialtiesSection({ translations }: Props) {
+export default function SpecialtiesSection({
+  translations,
+  advogados,
+  mockCategorias,
+}: Props) {
   const t = translations;
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
 
@@ -46,6 +51,16 @@ export default function SpecialtiesSection({ translations }: Props) {
       return;
     }
 
+    if (mockCategorias) {
+      setAdvogadosCategoria(
+        (advogados ?? []).filter((advogado) =>
+          advogado.categorias.includes(selectedSpecialty.nome),
+        ),
+      );
+      setLoadingAdvogados(false);
+      return;
+    }
+
     const loadAdvogados = async () => {
       setLoadingAdvogados(true);
 
@@ -60,9 +75,15 @@ export default function SpecialtiesSection({ translations }: Props) {
     };
 
     loadAdvogados();
-  }, [selectedSpecialty, t]);
+  }, [advogados, mockCategorias, selectedSpecialty, t]);
 
   useEffect(() => {
+    if (mockCategorias) {
+      setCategorias(mockCategorias);
+      setLoadingCategorias(false);
+      return;
+    }
+
     const loadCategorias = async () => {
       try {
         const response = await getCategorias();
@@ -77,7 +98,7 @@ export default function SpecialtiesSection({ translations }: Props) {
     };
 
     loadCategorias();
-  }, [t]);
+  }, [mockCategorias, t]);
 
   const traduzirNome = (nome: string) => {
     const chave = categoriaNomeParaChave[nome];

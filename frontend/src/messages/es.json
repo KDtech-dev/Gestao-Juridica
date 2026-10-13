@@ -7,15 +7,18 @@
     "edit": "Editar",
     "dataGrid": {
       "rowsPerPage": "Filas por página:"
+    },
+    "demoNotice": {
+      "message": "Entorno de demostración — Todos los nombres, datos e información presentados son ficticios."
     }
   },
   "branding": {
-    "appName": "mcaadvogados",
+    "appName": "Gestão Jurídica",
     "tagline": "Gestión jurídica inteligente y moderna"
   },
   "auth": {
     "login": {
-      "brand": "mcaadvogados",
+      "brand": "Gestão Jurídica",
       "title": "Iniciar sesión",
       "subtitle": "Accede a tu cuenta para continuar.",
       "email": "Correo electrónico",
@@ -28,7 +31,7 @@
       "back": "Volver al sitio",
       "heroTitle": "Gestión jurídica enfocada en productividad",
       "heroText": "Controla clientes, procesos y compromisos en un solo lugar, con una interfaz moderna y segura.",
-      "rights": "© 2026 mcaadvogados. Todos los derechos reservados.",
+      "rights": "© 2026 Gestão Jurídica. Todos los derechos reservados.",
       "error": "No fue posible iniciar sesión."
     },
     "forgotPassword": {
@@ -728,16 +731,20 @@
       "hero": {
         "title": "Derecho Tributario y Empresarial",
         "subtitle": "Especialistas en soluciones jurídicas corporativas.",
-        "cta": "Consulta Gratuita"
+        "cta": "Consulta Gratuita",
+        "demoEyebrow": "Una experiencia de demostración",
+        "demoTitle": "Claridad y seguridad para decisiones importantes.",
+        "demoSubtitle": "Asesoría jurídica empresarial, tributaria y civil con acompañamiento cercano en cada etapa.",
+        "demoCta": "Conocer la demostración"
       },
       "about": {
-        "title": "Sobre el Despacho",
-        "paragraph1": "Con una actuación guiada por la ética, la responsabilidad y el compromiso con los resultados, el despacho Manfrine Chaves de Almeida & Advogados reúne a un equipo multidisciplinario preparado para atender demandas en las áreas de Derecho Público, Laboral, Civil, Previsional y Bancario.",
-        "paragraph2": "Al frente del despacho está Manfrine Chaves de Almeida, abogado y contador, especialista en Derecho Público, Laboral y Civil. El equipo está formado por profesionales con actuaciones complementarias, incluyendo derecho previsional, consultoría legislativa y demandas judiciales estratégicas.",
-        "details": "Integra el equipo Carollaine Damasceno Barros, abogada y contadora, especialista en Derecho Público y Civil. Con una actuación destacada en asesoría jurídica legislativa y consultoría técnica, contribuye con análisis precisos y fundamentados, especialmente en áreas relacionadas con la gestión pública y el control de legalidad. En el área previsional, el despacho cuenta con Luiz Fernando Novais Neves, abogado con actuación enfocada en garantizar derechos y beneficios ante los órganos competentes. El Derecho Público también está representado por Anderson Fazendeiro, especialista en el área, con experiencia en demandas administrativas y judiciales que involucran entes públicos. También forma parte del equipo Saiara Tavares Almeida, abogada especialista en Derecho Público y Previsional, que actúa con dedicación en la defensa de derechos sociales y administrativos. En el área bancaria y pública, se destaca Andressa Fazendeiro, especialista en Derecho Público y Bancario, con actuación estratégica en demandas contractuales y financieras. En el área laboral y previsional, Abraão Lincoln Prates de Almeida actúa en la defensa de los derechos individuales y colectivos en las relaciones laborales y en la garantía de derechos y beneficios ante el INSS. El despacho se consolida como referencia regional por su actuación técnica, atención personalizada y compromiso con la justicia, ofreciendo soluciones jurídicas seguras, eficientes y alineadas con las necesidades de cada cliente.",
+        "title": "Sobre esta demostración",
+        "paragraph1": "Almeida & Costa Advocacia es un despacho ficticio creado para demostrar las funciones de la plataforma Gestão Jurídica y ofrecer una experiencia de gestión jurídica de ejemplo.",
+        "paragraph2": "Los ejemplos de esta página son ficticios e ilustran cómo la plataforma puede apoyar el trabajo diario de un despacho. No representan servicios, profesionales ni clientes reales.",
+        "details": "Los ejemplos de esta página son ficticios e ilustran cómo la plataforma puede apoyar el trabajo diario de un despacho. No representan servicios, profesionales ni clientes reales.",
         "readMore": "Leer más",
         "readLess": "Leer menos",
-        "imageAlt": "Equipo del despacho en reunión"
+        "imageAlt": "Imagen ilustrativa de un despacho"
       },
       "team": {
         "title": "Nuestro Equipo",
@@ -752,12 +759,14 @@
         "previous": "Anterior",
         "next": "Siguiente",
         "roleAdvogado": "Abogado"
-      }
+      },
+      "demoPublicationsTitle": "Publicaciones recientes",
+      "demoPublicationsSubtitle": "Contenido ficticio para mostrar las funciones de gestión y seguimiento jurídico de la plataforma."
     },
     "teamPage": {
       "eyebrow": "Equipo jurídico",
       "title": "Profesionales preparados para demandas estratégicas.",
-      "subtitle": "Conoce a los abogados del despacho por área de actuación y encuentra el perfil más alineado con tu necesidad jurídica.",
+      "subtitle": "Conoce perfiles ficticios creados para demostrar la plataforma.",
       "stats": {
         "professionals": "profesionales",
         "specialties": "áreas de actuación"
@@ -799,12 +808,13 @@
     },
     "footer": {
       "cta": {
-        "title": "Agenda tu primera consulta jurídica sin costo.",
-        "subtitle": "Atención con análisis técnico y orientación estratégica, con claridad desde el primer contacto.",
-        "whatsapp": "Hablar por WhatsApp"
+        "title": "Conoce la plataforma Gestão Jurídica.",
+        "subtitle": "Almeida & Costa Advocacia es un despacho ficticio creado para demostrar las funciones de la plataforma Gestão Jurídica y ofrecer una experiencia de gestión jurídica de ejemplo.",
+        "whatsapp": "Hablar por WhatsApp",
+        "openDemo": "Acceder a la demostración"
       },
       "whatsappMessage": "Hola, me gustaría agendar una consulta jurídica.",
-      "description": "Actuación estratégica para personas y empresas, con foco en seguridad jurídica y resultados.",
+      "description": "Almeida & Costa Advocacia es un despacho ficticio creado para demostrar las funciones de la plataforma Gestão Jurídica y ofrecer una experiencia de gestión jurídica de ejemplo.",
       "specialties": {
         "title": "Especialidades",
         "items": [
@@ -891,7 +901,7 @@
       "about": "Sobre el profesional",
       "practiceAreas": "Áreas de práctica",
       "professionalInfo": "Información profesional",
-      "contact": "Póngase en contacto",
+      "contact": "Acceder a la demostración",
       "ctaTitle": "¿Necesita orientación jurídica?",
       "others": "Otros profesionales",
       "viewProfile": "Ver perfil",
@@ -902,6 +912,43 @@
       "errorDescription": "Inténtelo de nuevo en unos momentos.",
       "retry": "Intentar de nuevo",
       "home": "Volver al inicio"
+    },
+    "productHome": {
+      "eyebrow": "PLATAFORMA DE GESTIÓN PARA ABOGACÍA",
+      "title": "Más claridad para gestionar su operación jurídica",
+      "subtitle": "Centralice clientes, procesos, agenda e información financiera en un solo lugar, con herramientas pensadas para la rutina del estudio jurídico.",
+      "primaryAction": "Acceder al sistema",
+      "secondaryAction": "Ver contenidos",
+      "preview": {
+        "title": "Una visión conectada de la operación",
+        "subtitle": "Recursos esenciales en un solo entorno",
+        "caption": "Organización y seguimiento para apoyar el trabajo diario del estudio."
+      },
+      "featuresHeading": "La rutina jurídica, organizada en un solo sistema",
+      "featuresSubtitle": "Acompañe las principales actividades del estudio con información reunida y flujos de trabajo claros.",
+      "features": {
+        "cases": {
+          "title": "Procesos",
+          "description": "Acompañe plazos, actualizaciones, responsables e información relevante de los casos."
+        },
+        "clients": {
+          "title": "Clientes",
+          "description": "Mantenga registros e historial de relación accesibles para el equipo."
+        },
+        "agenda": {
+          "title": "Agenda",
+          "description": "Organice reuniones, tareas y plazos en una vista centralizada."
+        },
+        "finance": {
+          "title": "Finanzas",
+          "description": "Consulte registros y supervise indicadores financieros de la operación."
+        }
+      },
+      "closing": {
+        "title": "Gestión más sencilla para su equipo jurídico",
+        "subtitle": "Conozca las herramientas de Gestão Jurídica y vea cómo encajan en el flujo de trabajo del estudio."
+      },
+      "copyright": "Desarrollado por KDTech."
     }
   },
   "agenda": {

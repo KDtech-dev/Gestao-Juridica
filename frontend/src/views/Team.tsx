@@ -7,8 +7,10 @@ import { Footer } from "@/components/Footer";
 import { LawyerProfileCard } from "@/components/team/LawyerProfileCard";
 import { Icon } from "@/components/AppIcon";
 import { AdvogadoPublicoType } from "@/@core/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import { demoModeEnabled } from "@/configs/demoOffice";
+import { getDemoPublicData } from "@/data/publicDemo";
 
 type TeamViewProps = {
   advogados: AdvogadoPublicoType[];
@@ -18,33 +20,38 @@ const allSpecialtiesValue = "__all__";
 
 export default function TeamView({ advogados }: TeamViewProps) {
   const t = useTranslations("public.teamPage");
+  const locale = useLocale();
+  const translatedDemo = getDemoPublicData(
+    locale === "en" || locale === "es" ? locale : "pt",
+  ).demoAdvogados;
+  const displayedLawyers = demoModeEnabled ? translatedDemo : advogados;
   const [selectedSpecialty, setSelectedSpecialty] =
     useState<string>(allSpecialtiesValue);
 
   const specialties = useMemo(() => {
     const uniqueSpecialties = new Set<string>();
 
-    advogados.forEach((lawyer) => {
+    displayedLawyers.forEach((lawyer) => {
       lawyer.categorias.forEach((category) => {
         uniqueSpecialties.add(category);
       });
     });
 
     return Array.from(uniqueSpecialties).sort((a, b) => a.localeCompare(b));
-  }, [advogados]);
+  }, [displayedLawyers]);
 
   const filteredLawyers = useMemo(() => {
-    if (selectedSpecialty === allSpecialtiesValue) return advogados;
+    if (selectedSpecialty === allSpecialtiesValue) return displayedLawyers;
 
-    return advogados.filter((lawyer) =>
+    return displayedLawyers.filter((lawyer) =>
       lawyer.categorias.some(
         (category) => category === selectedSpecialty,
       ),
     );
-  }, [advogados, selectedSpecialty]);
+  }, [displayedLawyers, selectedSpecialty]);
 
   const categoryCount = specialties.length;
-  const hasLawyers = advogados.length > 0;
+  const hasLawyers = displayedLawyers.length > 0;
 
   return (
     <Box sx={{ bgcolor: "background.default", color: "text.primary" }}>

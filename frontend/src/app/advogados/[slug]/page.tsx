@@ -11,6 +11,9 @@ import {
 import { stripHtml } from "@/@core/format";
 import { getTranslation } from "@/services/i18n";
 import AdvogadoPublicoView from "@/views/AdvogadoPublico";
+import { demoModeEnabled } from "@/configs/demoOffice";
+import { getDemoPublicData } from "@/data/publicDemo";
+import { getRequestLocale } from "@/services/requestLocale";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +22,17 @@ type Props = { params: Promise<{ slug: string }> };
 const loadProfile = cache(async (slug: string) => {
   const id = advogadoIdFromSlug(slug);
   if (!id) notFound();
+  if (demoModeEnabled) {
+    const { demoAdvogados } = getDemoPublicData(await getRequestLocale());
+    const lawyer = demoAdvogados.find(
+      (item) => item.uuid.toLowerCase() === id.toLowerCase(),
+    );
+    if (!lawyer) notFound();
+    return {
+      lawyer,
+      others: demoAdvogados.filter((item) => item.uuid !== lawyer.uuid).slice(0, 3),
+    };
+  }
   const { data: lawyers } = await getAdvogadosPublicos();
   const lawyer = lawyers.find(
     (item) => item.uuid.toLowerCase() === id.toLowerCase(),

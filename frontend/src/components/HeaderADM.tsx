@@ -29,6 +29,7 @@ import MenuNotificacoes, {
 } from "@/components/MenuNotificações";
 import UserDropdown from "@/components/Userdropdown";
 import { logoSrc } from "@/configs/branding";
+import { demoOffice } from "@/configs/demoOffice";
 
 type Props = {
   showSearch?: boolean;
@@ -142,8 +143,8 @@ export function HeaderDashboard({
               border: "1px solid",
               borderColor: "divider",
               bgcolor: "background.paper",
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               flexShrink: 0,
             }}
           >
@@ -155,7 +156,7 @@ export function HeaderDashboard({
       <Box
         component={Link}
         href="/"
-        aria-label="mcaadvogados"
+        aria-label={demoOffice.shortName}
         sx={{
           display: { xs: "flex", md: "none" },
           alignItems: "center",
@@ -165,7 +166,7 @@ export function HeaderDashboard({
         <Box
           component="img"
           src={logoSrc}
-          alt="mcaadvogados"
+          alt={demoOffice.shortName}
           sx={{
             width: 40,
             height: 40,
@@ -232,7 +233,7 @@ export function HeaderDashboard({
           }}
         >
           <IconButton
-            sx={{ color: "text.secondary", p: 0.45 }}
+            sx={{ color: "text.secondary", p: 1, minWidth: 44, minHeight: 44 }}
             onClick={handleOpenNotifications}
           >
             <Badge

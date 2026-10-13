@@ -7,15 +7,18 @@
     "edit": "Edit",
     "dataGrid": {
       "rowsPerPage": "Rows per page:"
+    },
+    "demoNotice": {
+      "message": "Demonstration environment — All names, data, and information shown are fictional."
     }
   },
   "branding": {
-    "appName": "mcaadvogados",
-    "tagline": "Intelligent and modern legal management"
+    "appName": "Gestão Jurídica",
+    "tagline": "Smart, modern legal practice management"
   },
   "auth": {
     "login": {
-      "brand": "mcaadvogados",
+      "brand": "Gestão Jurídica",
       "title": "Login",
       "subtitle": "Access your account to continue.",
       "email": "Email",
@@ -28,7 +31,7 @@
       "back": "Back to website",
       "heroTitle": "Legal management focused on productivity",
       "heroText": "Manage clients, cases, and appointments in one secure, modern interface.",
-      "rights": "© 2026 mcaadvogados. All rights reserved.",
+      "rights": "© 2026 Gestão Jurídica. All rights reserved.",
       "error": "Could not sign in."
     },
     "forgotPassword": {
@@ -730,16 +733,20 @@
       "hero": {
         "title": "Tax and Business Law",
         "subtitle": "Specialists in corporate legal solutions.",
-        "cta": "Free Consultation"
+        "cta": "Free Consultation",
+        "demoEyebrow": "A demonstration experience",
+        "demoTitle": "Clarity and confidence for important decisions.",
+        "demoSubtitle": "Business, tax, and civil legal guidance with close support at every step.",
+        "demoCta": "Explore the demonstration"
       },
       "about": {
-        "title": "About the Firm",
-        "paragraph1": "Guided by ethics, responsibility, and a commitment to results, Manfrine Chaves de Almeida & Advogados brings together a multidisciplinary team prepared to handle matters in Public, Labor, Civil, Social Security, and Banking Law.",
-        "paragraph2": "The firm is led by Manfrine Chaves de Almeida, an attorney and accountant specializing in Public, Labor, and Civil Law. The team is made up of professionals with complementary practices, including social security law, legislative consulting, and strategic litigation.",
-        "details": "Carollaine Damasceno Barros, an attorney and accountant specializing in Public and Civil Law, is part of the team. With notable work in legislative legal advisory and technical consulting, she contributes precise and well-founded analysis, especially in matters involving public administration and legality control. In social security law, the firm relies on Luiz Fernando Novais Neves, an attorney focused on securing rights and benefits before the competent agencies. Public Law is also represented by Anderson Fazendeiro, a specialist in the field with experience in administrative and judicial matters involving public entities. Saiara Tavares Almeida, an attorney specializing in Public and Social Security Law, also joins the team, working with dedication in the defense of social and administrative rights. In Banking and Public Law, Andressa Fazendeiro stands out as a specialist in Public and Banking Law, with strategic work in contractual and financial matters. In Labor and Social Security Law, Abraão Lincoln Prates de Almeida works to defend individual and collective rights in labor relations and to secure rights and benefits before the INSS. The firm has established itself as a regional reference through technical practice, personalized service, and a commitment to justice, offering secure, efficient legal solutions aligned with each client's needs.",
+        "title": "About this demonstration",
+        "paragraph1": "Almeida & Costa Advocacia is a fictional law firm created to demonstrate the features of the Gestão Jurídica platform and provide a sample legal management experience.",
+        "paragraph2": "The examples on this page are fictional and illustrate how the platform can support a law firm’s daily work. They do not represent real services, professionals, or clients.",
+        "details": "The examples on this page are fictional and illustrate how the platform can support a law firm’s daily work. They do not represent real services, professionals, or clients.",
         "readMore": "Read more",
         "readLess": "Read less",
-        "imageAlt": "Firm team in a meeting"
+        "imageAlt": "Illustrative image of a law office"
       },
       "team": {
         "title": "Our Team",
@@ -754,12 +761,14 @@
         "previous": "Previous",
         "next": "Next",
         "roleAdvogado": "Lawyer"
-      }
+      },
+      "demoPublicationsTitle": "Recent publications",
+      "demoPublicationsSubtitle": "Fictional content showcasing the platform’s legal management and tracking features."
     },
     "teamPage": {
       "eyebrow": "Legal team",
       "title": "Professionals prepared for strategic matters.",
-      "subtitle": "Meet the firm's lawyers by practice area and find the profile best aligned with your legal needs.",
+      "subtitle": "Meet fictional profiles used to demonstrate the platform.",
       "stats": {
         "professionals": "professionals",
         "specialties": "practice areas"
@@ -801,12 +810,13 @@
     },
     "footer": {
       "cta": {
-        "title": "Schedule your first legal consultation at no cost.",
-        "subtitle": "Service with technical analysis and strategic guidance, with clarity from the first contact.",
-        "whatsapp": "Talk on WhatsApp"
+        "title": "Explore the Gestão Jurídica platform.",
+        "subtitle": "Almeida & Costa Advocacia is a fictional law firm created to demonstrate the features of the Gestão Jurídica platform and provide a sample legal management experience.",
+        "whatsapp": "Talk on WhatsApp",
+        "openDemo": "Open the demo"
       },
       "whatsappMessage": "Hello, I would like to schedule a legal consultation.",
-      "description": "Strategic legal support for individuals and companies, focused on legal certainty and results.",
+      "description": "Almeida & Costa Advocacia is a fictional law firm created to demonstrate the features of the Gestão Jurídica platform and provide a sample legal management experience.",
       "specialties": {
         "title": "Specialties",
         "items": [
@@ -893,7 +903,7 @@
       "about": "About the professional",
       "practiceAreas": "Practice areas",
       "professionalInfo": "Professional information",
-      "contact": "Get in touch",
+      "contact": "Open the demo",
       "ctaTitle": "Need legal guidance?",
       "others": "Other professionals",
       "viewProfile": "View profile",
@@ -904,6 +914,43 @@
       "errorDescription": "Please try again in a few moments.",
       "retry": "Try again",
       "home": "Back to home"
+    },
+    "productHome": {
+      "eyebrow": "PRACTICE MANAGEMENT PLATFORM",
+      "title": "More clarity for managing your legal practice",
+      "subtitle": "Bring clients, matters, schedules, and financial information together in one place, with tools designed for the day-to-day work of a law firm.",
+      "primaryAction": "Access the system",
+      "secondaryAction": "Explore resources",
+      "preview": {
+        "title": "A connected view of your practice",
+        "subtitle": "Essential tools in one workspace",
+        "caption": "Organization and visibility to support the firm’s daily work."
+      },
+      "featuresHeading": "Legal work, organized in one system",
+      "featuresSubtitle": "Keep the firm’s key activities in view with shared information and clear workflows.",
+      "features": {
+        "cases": {
+          "title": "Matters",
+          "description": "Track deadlines, updates, owners, and key information for each matter."
+        },
+        "clients": {
+          "title": "Clients",
+          "description": "Keep client records and relationship history accessible to your team."
+        },
+        "agenda": {
+          "title": "Calendar",
+          "description": "Organize meetings, tasks, and deadlines in one central view."
+        },
+        "finance": {
+          "title": "Finance",
+          "description": "Review entries and monitor the operation’s financial indicators."
+        }
+      },
+      "closing": {
+        "title": "Simpler management for your legal team",
+        "subtitle": "Explore Gestão Jurídica and see how its tools fit your firm’s workflow."
+      },
+      "copyright": "Built by KDTech."
     }
   },
   "agenda": {

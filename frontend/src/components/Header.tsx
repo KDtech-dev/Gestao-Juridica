@@ -15,8 +15,8 @@ import {
 import { useTheme } from "@mui/material/styles";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
-import type { PointerEvent } from "react";
+import { useState, useSyncExternalStore } from "react";
+import type { MouseEvent } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getRouteByRole } from "@/utils/redirectByRole";
 import { logoSrc } from "@/configs/branding";
@@ -24,6 +24,7 @@ import { useTranslations } from "next-intl";
 import { useThemeMode } from "@/theme/ThemeRegistry";
 import { Icon } from "@/components/AppIcon";
 import { useLanguage, type Language } from "@/context/LanguageContext";
+import { demoOffice } from "@/configs/demoOffice";
 
 const languageOptions: Record<
   Language,
@@ -34,12 +35,20 @@ const languageOptions: Record<
   es: { shortLabel: "ES", labelKey: "spanish" },
 };
 
-export function Header() {
-  const [mounted, setMounted] = useState(false);
+const subscribeToMount = () => () => {};
+const getMountedSnapshot = () => true;
+const getServerMountedSnapshot = () => false;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+export function Header({
+  productBrand = false,
+}: {
+  productBrand?: boolean;
+} = {}) {
+  const mounted = useSyncExternalStore(
+    subscribeToMount,
+    getMountedSnapshot,
+    getServerMountedSnapshot,
+  );
 
   const t = useTranslations("public.header");
   const theme = useTheme();
@@ -49,12 +58,6 @@ export function Header() {
   const pathname = usePathname();
   const [floatingOpen, setFloatingOpen] = useState(false);
   const [floatingPosition, setFloatingPosition] = useState({ x: 16, y: 112 });
-  const dragRef = useRef({
-    active: false,
-    moved: false,
-    offsetX: 0,
-    offsetY: 0,
-  });
 
   // Compute values that depend on client state
   const isDark = theme.palette.mode === "dark";
@@ -77,58 +80,10 @@ export function Header() {
     { href: "/posts", label: t("publications"), active: pathname === "/posts" },
   ];
 
-  const handleFloatingPointerDown = (
-    event: PointerEvent<HTMLButtonElement>,
-  ) => {
-    const target = event.currentTarget;
-    target.setPointerCapture(event.pointerId);
-    dragRef.current = {
-      active: true,
-      moved: false,
-      offsetX: event.clientX - floatingPosition.x,
-      offsetY: event.clientY - floatingPosition.y,
-    };
-  };
-
-  const handleFloatingPointerMove = (
-    event: PointerEvent<HTMLButtonElement>,
-  ) => {
-    if (!dragRef.current.active) return;
-
-    const buttonSize = 48;
-    const nextX = Math.max(
-      8,
-      Math.min(
-        window.innerWidth - buttonSize - 8,
-        event.clientX - dragRef.current.offsetX,
-      ),
-    );
-    const nextY = Math.max(
-      8,
-      Math.min(
-        window.innerHeight - buttonSize - 8,
-        event.clientY - dragRef.current.offsetY,
-      ),
-    );
-
-    if (
-      Math.abs(nextX - floatingPosition.x) > 3 ||
-      Math.abs(nextY - floatingPosition.y) > 3
-    ) {
-      dragRef.current.moved = true;
-    }
-
-    setFloatingPosition({ x: nextX, y: nextY });
-  };
-
-  const handleFloatingPointerUp = (event: PointerEvent<HTMLButtonElement>) => {
-    event.currentTarget.releasePointerCapture(event.pointerId);
-    const wasMoved = dragRef.current.moved;
-    dragRef.current.active = false;
-
-    if (!wasMoved) {
-      setFloatingOpen((open) => !open);
-    }
+  const toggleMobileSettings = (event: MouseEvent<HTMLButtonElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setFloatingPosition({ x: bounds.left, y: bounds.top });
+    setFloatingOpen((open) => !open);
   };
 
   // Render consistent content during SSR/hydration
@@ -214,7 +169,7 @@ export function Header() {
                     sx={{
                       display: { xs: "none", md: "flex" },
                       minWidth: 64,
-                      height: 34,
+                      height: 44,
                       border: "1px solid",
                       borderColor: "divider",
                       borderRadius: 1,
@@ -245,7 +200,7 @@ export function Header() {
                         key={value}
                         value={value}
                         sx={{
-                          minHeight: 34,
+                          minHeight: 44,
                           fontSize: "0.86rem",
                           "&.Mui-selected": {
                             bgcolor: "rgba(59, 130, 246, 0.18)",
@@ -267,8 +222,8 @@ export function Header() {
                     onClick={() => setThemeMode(isDark ? "light" : "dark")}
                     sx={{
                       display: { xs: "none", md: "inline-flex" },
-                      height: 34,
-                      width: 34,
+                      height: 44,
+                      width: 44,
                       border: "1px solid",
                       borderColor: "divider",
                       bgcolor: "background.paper",
@@ -303,19 +258,37 @@ export function Header() {
                     overflow: "hidden",
                   }}
                 >
-                  <Box
-                    component="img"
-                    src={logoSrc}
-                    alt="mcaadvogados"
-                    sx={{
-                      width: { xs: 44, sm: 60 },
-                      height: { xs: 44, sm: 60 },
-                      borderRadius: 2,
-                      objectFit: "contain",
-                      filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.35))",
-                      flexShrink: 0,
-                    }}
-                  />
+                  {productBrand ? (
+                    <Box
+                      aria-hidden="true"
+                      sx={{
+                        width: { xs: 44, sm: 52 },
+                        height: { xs: 44, sm: 52 },
+                        borderRadius: 2,
+                        display: "grid",
+                        placeItems: "center",
+                        bgcolor: "primary.main",
+                        color: "primary.contrastText",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <Icon icon="mdi:scale-balance" width={27} />
+                    </Box>
+                  ) : (
+                    <Box
+                      component="img"
+                      src={logoSrc}
+                      alt={demoOffice.shortName}
+                      sx={{
+                        width: { xs: 44, sm: 60 },
+                        height: { xs: 44, sm: 60 },
+                        borderRadius: 2,
+                        objectFit: "contain",
+                        filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.35))",
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
 
                   <Box
                     sx={{
@@ -333,7 +306,9 @@ export function Header() {
                         lineHeight: 1.1,
                       }}
                     >
-                      mcaadvogados
+                      {productBrand
+                        ? demoOffice.productName
+                        : demoOffice.shortName}
                     </Typography>
                     <Typography
                       variant="caption"
@@ -346,7 +321,7 @@ export function Header() {
                         fontSize: "0.75rem",
                       }}
                     >
-                      Advocacia & Consultoria
+                      {productBrand ? "KDTech" : demoOffice.productName}
                     </Typography>
                   </Box>
                 </Stack>
@@ -387,6 +362,7 @@ export function Header() {
                         fontWeight: 700,
                         px: { xs: 0.75, sm: 1.5 },
                         minWidth: "auto",
+                        minHeight: 44,
                         fontSize: { xs: "0.78rem", sm: "0.875rem" },
                         whiteSpace: "nowrap",
                       }}
@@ -394,6 +370,25 @@ export function Header() {
                       {item.label}
                     </Button>
                   ))}
+                  <Tooltip title={accessibilityLabel}>
+                    <IconButton
+                      type="button"
+                      aria-label={accessibilityLabel}
+                      onClick={toggleMobileSettings}
+                      sx={{
+                        display: { xs: "inline-flex", md: "none" },
+                        width: 44,
+                        height: 44,
+                        flexShrink: 0,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        bgcolor: "background.paper",
+                        color: "text.primary",
+                      }}
+                    >
+                      <Icon icon="mdi:accessibility" width={22} />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
 
                 {!loading && (
@@ -420,46 +415,13 @@ export function Header() {
           </Container>
         </Box>
 
-        <Box
-          sx={{
-            display: { xs: "block", md: "none" },
-            position: "fixed",
-            left: floatingPosition.x,
-            top: floatingPosition.y,
-            zIndex: 1300,
-            touchAction: "none",
-          }}
-        >
-          <Tooltip title={accessibilityLabel}>
-            <IconButton
-              type="button"
-              aria-label={accessibilityLabel}
-              onPointerDown={handleFloatingPointerDown}
-              onPointerMove={handleFloatingPointerMove}
-              onPointerUp={handleFloatingPointerUp}
-              sx={{
-                width: 48,
-                height: 48,
-                bgcolor: "primary.main",
-                color: "primary.contrastText",
-                boxShadow: "0 14px 34px rgba(15, 23, 42, 0.28)",
-                "&:hover": {
-                  bgcolor: "primary.dark",
-                },
-              }}
-            >
-              <Icon icon="mdi:accessibility" width={24} />
-            </IconButton>
-          </Tooltip>
-        </Box>
-
         {floatingOpen && (
           <Box
             sx={{
               display: { xs: "flex", md: "none" },
               position: "fixed",
               left: `min(${floatingPosition.x}px, calc(100vw - 196px))`,
-              top: `min(${floatingPosition.y + 56}px, calc(100vh - 164px))`,
+              top: `min(${floatingPosition.y + 48}px, calc(100vh - 164px))`,
               zIndex: 1299,
               width: 184,
               flexDirection: "column",
@@ -478,7 +440,7 @@ export function Header() {
               aria-label={languageLabel}
               onChange={handleLanguageChange}
               sx={{
-                height: 36,
+                height: 44,
                 fontSize: "0.84rem",
                 ".MuiSelect-select": {
                   display: "flex",
@@ -509,6 +471,7 @@ export function Header() {
                 justifyContent: "flex-start",
                 textTransform: "none",
                 fontSize: "0.84rem",
+                minHeight: 44,
               }}
             >
               {themeLabel}

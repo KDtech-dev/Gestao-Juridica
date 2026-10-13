@@ -1,6 +1,9 @@
+import { demoOffice } from "@/configs/demoOffice";
+
 type Branding = {
   appName: string;
   tagline: string;
+  description: string;
   modalImage: string;
   primaryColor: string;
   secondaryColor: string;
@@ -11,15 +14,18 @@ type Branding = {
 };
 
 export const BRANDING: Branding = {
-  appName: "mcaadvogados",
+  appName: demoOffice.productName,
   tagline: "Gestão jurídica inteligente e moderna",
+  description:
+    "Plataforma de gestão jurídica para organizar clientes, processos, agenda e informações financeiras em um só lugar.",
   modalImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f",
-  primaryColor: "#0f172a",
-  secondaryColor: "#334155",
+  primaryColor: demoOffice.colors.primary,
+  secondaryColor: demoOffice.colors.secondary,
   modal: {
     confirmText: "Salvar",
     cancelText: "Cancelar",
   },
 };
 
-export const logoSrc = "/mcaadvogados-logo.png";
+export const logoSrc = demoOffice.logo;
+export const productLogoSrc = "/images/gestao-juridica.svg";

@@ -1,5 +1,5 @@
-// Existing institutional contact, shared with the public footer.
-export const institutionalPhone = "5533999377986";
+import { demoOffice } from "@/configs/demoOffice";
 
-export const institutionalWhatsappHref = (message: string) =>
-  `https://wa.me/${institutionalPhone}?text=${encodeURIComponent(message)}`;
+export const institutionalPhone = demoOffice.phone;
+export const institutionalEmail = demoOffice.email;
+export const institutionalAddress = demoOffice.address;
