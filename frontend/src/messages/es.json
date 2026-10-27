@@ -457,6 +457,27 @@
           "photoUploading": "Subiendo foto..."
         }
       },
+      "form": {
+        "title": { "create": "Nuevo usuario", "edit": "Editar usuario", "view": "Datos del usuario" },
+        "sections": {
+          "account": "Datos de acceso",
+          "profile": "Perfil profesional",
+          "access": "Permisos adicionales",
+          "accessDescription": "Permisos agregados al perfil seleccionado."
+        },
+        "permissions": {
+          "title": "Permisos adicionales",
+          "description": "Elige permisos adicionales para este usuario. Los permisos del perfil siguen activos.",
+          "field": "Permisos disponibles",
+          "placeholder": "Buscar permisos",
+          "none": "No hay permisos adicionales seleccionados.",
+          "open": "Configurar permisos",
+          "save": "Aplicar selección",
+          "cancel": "Cancelar"
+        },
+        "actions": { "save": "Guardar usuario", "saving": "Guardando...", "cancel": "Cancelar", "back": "Volver", "edit": "Editar usuario" },
+        "errors": { "load": "No se pudo cargar el usuario.", "save": "No se pudo guardar el usuario.", "permissions": "No se pudieron cargar los permisos." }
+      },
       "resetPasswordModal": {
         "title": "Restablecer contraseña de {name}",
         "description": "Confirma tu contraseña de administrador para establecer una nueva contraseña para {name}.",

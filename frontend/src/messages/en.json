@@ -457,6 +457,27 @@
           "photoUploading": "Uploading photo..."
         }
       },
+      "form": {
+        "title": { "create": "New user", "edit": "Edit user", "view": "User details" },
+        "sections": {
+          "account": "Account details",
+          "profile": "Professional profile",
+          "access": "Additional permissions",
+          "accessDescription": "Permissions added to the selected role."
+        },
+        "permissions": {
+          "title": "Additional permissions",
+          "description": "Choose extra permissions for this user. Permissions inherited from the role remain active.",
+          "field": "Available permissions",
+          "placeholder": "Search permissions",
+          "none": "No additional permissions selected.",
+          "open": "Configure permissions",
+          "save": "Apply selection",
+          "cancel": "Cancel"
+        },
+        "actions": { "save": "Save user", "saving": "Saving...", "cancel": "Cancel", "back": "Back", "edit": "Edit user" },
+        "errors": { "load": "Unable to load the user.", "save": "Unable to save the user.", "permissions": "Unable to load permissions." }
+      },
       "resetPasswordModal": {
         "title": "Reset password for {name}",
         "description": "Confirm your administrator password to set a new password for {name}.",

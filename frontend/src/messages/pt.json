@@ -482,6 +482,27 @@
           "confirmPasswordPlaceholder": "Confirme a senha"
         }
       },
+      "form": {
+        "title": { "create": "Novo usuário", "edit": "Editar usuário", "view": "Dados do usuário" },
+        "sections": {
+          "account": "Dados de acesso",
+          "profile": "Dados do perfil profissional",
+          "access": "Permissões extras",
+          "accessDescription": "Permissões adicionais ao papel selecionado."
+        },
+        "permissions": {
+          "title": "Permissões extras",
+          "description": "Escolha permissões adicionais para este usuário. As permissões do papel continuam ativas.",
+          "field": "Permissões disponíveis",
+          "placeholder": "Buscar permissões",
+          "none": "Nenhuma permissão extra selecionada.",
+          "open": "Configurar permissões",
+          "save": "Aplicar seleção",
+          "cancel": "Cancelar"
+        },
+        "actions": { "save": "Salvar usuário", "saving": "Salvando...", "cancel": "Cancelar", "back": "Voltar", "edit": "Editar usuário" },
+        "errors": { "load": "Não foi possível carregar o usuário.", "save": "Não foi possível salvar o usuário.", "permissions": "Não foi possível carregar as permissões." }
+      },
       "resetPasswordModal": {
         "title": "Redefinir senha de {name}",
         "description": "Confirme sua senha de administrador para definir uma nova senha para {name}.",

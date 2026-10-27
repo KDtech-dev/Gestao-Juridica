@@ -1,9 +1,10 @@
+import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 
 export function useApiErrorTranslator() {
   const t = useTranslations();
 
-  return (error: unknown): string => {
+  return useCallback((error: unknown): string => {
     const data = (error as any)?.response?.data;
 
     if (!data) return "";
@@ -31,5 +32,5 @@ export function useApiErrorTranslator() {
     }
 
     return "";
-  };
+  }, [t]);
 }

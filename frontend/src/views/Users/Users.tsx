@@ -21,16 +21,13 @@ import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { getUsers, postUser, updateUser, deleteUser, syncUserPermissions } from "@/api/ApiUsers";
+import { useRouter } from "next/navigation";
+import { getUsers, deleteUser } from "@/api/ApiUsers";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { UserType, RoleType } from "@/@core/types";
-import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
-import DialogUser from "@/components/modals/DialogUser";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 import AdminResetPasswordModal from "@/components/modals/AdminResetPasswordModal";
-
-type DialogMode = "create" | "edit" | "view";
 
 const ROLE_COLOR: Record<RoleType, "error" | "primary" | "default"> = {
   admin: "error",
@@ -50,11 +47,9 @@ export default function UsersView() {
   const t = useTranslations("internal.users");
   const tCommon = useTranslations("common");
   const theme = useTheme();
+  const router = useRouter();
   const [resetPasswordTarget, setResetPasswordTarget] = useState<UserType | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogMode, setDialogMode] = useState<DialogMode>("create");
   const [users, setUsers] = useState<UserType[]>([]);
-  const [userSelecionado, setUserSelecionado] = useState<UserType | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -64,7 +59,6 @@ export default function UsersView() {
     pageSize: 10,
   });
   const [total, setTotal] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
   const loadUsers = useCallback(
@@ -99,39 +93,6 @@ export default function UsersView() {
 
   const totalCount = isSearching ? usersFiltrados.length : total;
 
-  const handleSubmit = async (
-    data: CreateUserPayload | UpdateUserPayload,
-  ): Promise<UserType> => {
-    setSubmitting(true);
-    try {
-      let usuario: UserType;
-
-      if (dialogMode === "create") {
-        const { data: criado } = await postUser(data as CreateUserPayload);
-        usuario = criado;
-      } else {
-        const { data: atualizado } = await updateUser(
-          userSelecionado!.id,
-          data as UpdateUserPayload,
-        );
-        usuario = atualizado;
-      }
-
-      usuario.permissions_extras = await syncUserPermissions(
-        String(usuario.id),
-        data.permissions ?? [],
-      );
-      toast.success(
-        dialogMode === "create" ? t("toast.created") : t("toast.updated"),
-      );
-      handleDialogClose();
-      loadUsers();
-      return usuario;
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   const handleDelete = async () => {
     if (!deleteTarget) return;
 
@@ -155,28 +116,9 @@ export default function UsersView() {
     }
   };
 
-  const openCreate = () => {
-    setUserSelecionado(null);
-    setDialogMode("create");
-    setDialogOpen(true);
-  };
-
-  const openEdit = (user: UserType) => {
-    setUserSelecionado(user);
-    setDialogMode("edit");
-    setDialogOpen(true);
-  };
-
-  const openView = (user: UserType) => {
-    setUserSelecionado(user);
-    setDialogMode("view");
-    setDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-    setUserSelecionado(null);
-  };
+  const openCreate = () => router.push("/users/new");
+  const openEdit = (user: UserType) => router.push(`/users/${user.id}/edit`);
+  const openView = (user: UserType) => router.push(`/users/${user.id}`);
   const columns: GridColDef<UserType>[] = [
     {
       field: "avatar",
@@ -546,14 +488,6 @@ export default function UsersView() {
         </Container>
       </Box>
 
-      <DialogUser
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        onSubmit={handleSubmit}
-        submitting={submitting}
-        mode={dialogMode}
-        user={userSelecionado}
-      />
       <AdminResetPasswordModal
         open={Boolean(resetPasswordTarget)}
         targetUser={resetPasswordTarget}
