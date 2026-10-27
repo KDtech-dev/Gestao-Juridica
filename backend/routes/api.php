@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\CasoController;
 use App\Http\Controllers\Api\AnexoController;
 use App\Http\Controllers\Api\ComunicacaoDjenController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Enums\PermissionEnum;
 
 Route::prefix('auth')->group(function () {
     Route::post('login',          [AuthController::class, 'login']);
@@ -37,7 +38,7 @@ Route::get('/advogados', [AdvogadoPublicoController::class, 'index']);
 Route::prefix('posts')->group(function () {
     Route::get('/',                          [PostController::class, 'index']);
     Route::get('/{post}',                    [PostController::class, 'show']);
-    Route::get('/{post}/anexos/{anexo}',              [PostController::class, 'anexo'])->name('api.posts.anexos.show'); // visualizar
+    Route::get('/{post}/anexos/{anexo}',              [PostController::class, 'anexo'])->name('api.posts.anexos.show'); 
     Route::get('/{post}/anexos/{anexo}/download',     [PostController::class, 'anexoDownload'])->name('api.posts.anexos.download');
 });
 
@@ -87,18 +88,21 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('comunicacoes-djen')->group(function () {
         Route::get('/', [ComunicacaoDjenController::class, 'index'])
-            ->middleware('permission:djen.visualizar');
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar));
         Route::get('{comunicacaoDjen}', [ComunicacaoDjenController::class, 'show'])
-            ->middleware('permission:djen.visualizar');
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar));
         Route::patch('{comunicacaoDjen}/lida', [ComunicacaoDjenController::class, 'marcarLida'])
-            ->middleware('permission:djen.visualizar');
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar));
         Route::post('{comunicacaoDjen}/vincular', [ComunicacaoDjenController::class, 'vincular'])
-            ->middleware('permission:djen.visualizar');
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar));
     });
 
     Route::prefix('advogados')->group(function () {
         Route::post('/{advogado}/sincronizar-djen', [ComunicacaoDjenController::class, 'sincronizarAdvogado'])
-            ->middleware(['permission:djen.sincronizar', 'throttle:6,1']);
+            ->middleware([
+                PermissionEnum::middlewareAny(PermissionEnum::DjenSincronizar),
+                'throttle:6,1',
+            ]);
     });
 
 
@@ -136,7 +140,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{caso}',   [CasoController::class, 'destroy']);
 
         Route::post('/{caso}/sincronizar-djen', [ComunicacaoDjenController::class, 'sincronizarCaso'])
-            ->middleware(['permission:djen.sincronizar', 'throttle:6,1']);
+            ->middleware([
+                PermissionEnum::middlewareAny(PermissionEnum::DjenSincronizar),
+                'throttle:6,1',
+            ]);
 
         Route::prefix('{caso}/clientes')->group(function () {
             Route::post('/',             [CasoController::class, 'attachClientes']);

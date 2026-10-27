@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PermissionEnum;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Database\Seeder;
@@ -13,64 +14,43 @@ class RolesSeeder extends Seeder
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $catalogo = [
-            'usuarios.visualizar',
-            'usuarios.criar',
-            'usuarios.editar',
-            'usuarios.excluir',
-            'clientes.visualizar',
-            'clientes.criar',
-            'clientes.editar',
-            'clientes.excluir',
-            'casos.visualizar',
-            'casos.criar',
-            'casos.editar',
-            'casos.excluir',
-            'compromissos.visualizar',
-            'compromissos.criar',
-            'compromissos.editar',
-            'compromissos.excluir',
-            'publicacoes.visualizar',
-            'publicacoes.criar',
-            'publicacoes.editar',
-            'publicacoes.excluir',
-            'notificacoes.visualizar',
-            'djen.visualizar',
-            'djen.sincronizar',
-        ];
-
-        $permissoes = collect($catalogo)
-            ->mapWithKeys(fn (string $nome) => [
-                $nome => Permission::firstOrCreate([
-                    'name' => $nome,
+        $permissoes = collect(PermissionEnum::cases())
+            ->mapWithKeys(fn (PermissionEnum $permissao) => [
+                $permissao->value => Permission::firstOrCreate([
+                    'name' => $permissao->value,
                     'guard_name' => 'api',
                 ]),
             ]);
 
         $permissoesPorPapel = [
-            'admin' => $catalogo,
+            'admin' => PermissionEnum::cases(),
             'advogado' => [
-                'clientes.visualizar', 'clientes.criar', 'clientes.editar',
-                'casos.visualizar', 'casos.criar', 'casos.editar',
-                'compromissos.visualizar', 'compromissos.criar', 'compromissos.editar',
-                'publicacoes.visualizar', 'publicacoes.criar', 'publicacoes.editar',
-                'notificacoes.visualizar', 'djen.visualizar', 'djen.sincronizar',
+                PermissionEnum::ClientesVisualizar, PermissionEnum::ClientesCriar, PermissionEnum::ClientesEditar,
+                PermissionEnum::CasosVisualizar, PermissionEnum::CasosCriar, PermissionEnum::CasosEditar,
+                PermissionEnum::CompromissosVisualizar, PermissionEnum::CompromissosCriar, PermissionEnum::CompromissosEditar,
+                PermissionEnum::PublicacoesVisualizar, PermissionEnum::PublicacoesCriar, PermissionEnum::PublicacoesEditar,
+                PermissionEnum::NotificacoesVisualizar, PermissionEnum::DjenVisualizar, PermissionEnum::DjenSincronizar,
             ],
             'funcionario' => [
-                'clientes.visualizar', 'clientes.criar', 'clientes.editar',
-                'casos.visualizar', 'casos.criar', 'casos.editar',
-                'compromissos.visualizar', 'compromissos.criar', 'compromissos.editar',
-                'publicacoes.visualizar', 'publicacoes.criar', 'publicacoes.editar',
-                'notificacoes.visualizar', 'djen.visualizar',
+                PermissionEnum::ClientesVisualizar, PermissionEnum::ClientesCriar, PermissionEnum::ClientesEditar,
+                PermissionEnum::CasosVisualizar, PermissionEnum::CasosCriar, PermissionEnum::CasosEditar,
+                PermissionEnum::CompromissosVisualizar, PermissionEnum::CompromissosCriar, PermissionEnum::CompromissosEditar,
+                PermissionEnum::PublicacoesVisualizar, PermissionEnum::PublicacoesCriar, PermissionEnum::PublicacoesEditar,
+                PermissionEnum::NotificacoesVisualizar, PermissionEnum::DjenVisualizar,
             ],
             'cliente' => [],
         ];
 
-        foreach ($permissoesPorPapel as $nomePapel => $nomesPermissoes) {
+        foreach ($permissoesPorPapel as $nomePapel => $permissoesPapel) {
             $papel = Role::firstOrCreate([
                 'name' => $nomePapel,
                 'guard_name' => 'api',
             ]);
+
+            $nomesPermissoes = array_map(
+                static fn (PermissionEnum $permissao): string => $permissao->value,
+                $permissoesPapel,
+            );
 
             $papel->syncPermissions($permissoes->only($nomesPermissoes)->values());
         }
