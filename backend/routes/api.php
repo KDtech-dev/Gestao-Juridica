@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\CasoController;
 use App\Http\Controllers\Api\AnexoController;
 use App\Http\Controllers\Api\ComunicacaoDjenController;
+use App\Http\Controllers\Api\AccessControlController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Enums\PermissionEnum;
 
@@ -43,6 +44,21 @@ Route::prefix('posts')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::prefix('access-control')
+        ->middleware('permission.manage')
+        ->group(function () {
+            Route::get('/permissions', [AccessControlController::class, 'permissions']);
+            Route::get('/roles', [AccessControlController::class, 'roles']);
+            Route::get('/roles/{role}/permissions', [AccessControlController::class, 'rolePermissions']);
+            Route::put('/roles/{role}/permissions', [AccessControlController::class, 'syncRolePermissions']);
+            Route::post('/roles/{role}/permissions', [AccessControlController::class, 'grantRolePermission']);
+            Route::delete('/roles/{role}/permissions/{permission}', [AccessControlController::class, 'revokeRolePermission']);
+            Route::get('/users/{user}/permissions', [AccessControlController::class, 'userPermissions']);
+            Route::put('/users/{user}/permissions', [AccessControlController::class, 'syncUserPermissions']);
+            Route::post('/users/{user}/permissions', [AccessControlController::class, 'grantUserPermission']);
+            Route::delete('/users/{user}/permissions/{permission}', [AccessControlController::class, 'revokeUserPermission']);
+        });
 
     Route::put('/profile/password', [UserController::class, 'updateOwnPassword']);
     Route::put('/users/{user}/reset-password', [UserController::class, 'resetPassword'])

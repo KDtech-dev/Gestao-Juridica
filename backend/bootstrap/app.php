@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Auth\AuthenticationException;
 use App\Providers\ServiceServiceProvider;
 use App\Http\Middleware\CorsHeaders;
+use App\Http\Middleware\EnsureCanManagePermissions;
 use App\Http\Middleware\TrustProxies;
 use App\Exceptions\DomainException;
 use App\Services\ResponseService;
@@ -32,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'               => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission'         => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'permission.manage' => EnsureCanManagePermissions::class,
         ]);
         $middleware->redirectGuestsTo(fn() => null);
     })

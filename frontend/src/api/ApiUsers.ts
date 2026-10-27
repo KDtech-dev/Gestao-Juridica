@@ -5,6 +5,21 @@ import type {
   UpdateUserPayload,
 } from "@/schemas/UserSchema";
 
+export type PermissionCatalogEntry = {
+  name: string;
+  group: string;
+  group_label: string;
+  action: string;
+  action_label: string;
+};
+
+const getPermissionCatalog = async (): Promise<PermissionCatalogEntry[]> => {
+  const response = await getAxios().get<{ data: PermissionCatalogEntry[] }>(
+    "/access-control/permissions",
+  );
+  return response.data.data;
+};
+
 const getUsers = async (page = 1): Promise<PaginatedResponseType<UserType>> => {
   const response = await getAxios().get("/users", { params: { page } });
   return response.data;
@@ -63,7 +78,21 @@ const resetUserPassword = async (
   return response.data;
 };
 
+const syncUserPermissions = async (
+  id: string,
+  permissions: string[],
+): Promise<string[]> => {
+  const response = await getAxios().put(
+    `/access-control/users/${id}/permissions`,
+    { permissions },
+  );
+  return response.data.data.permissions.map(
+    (permission: { name: string }) => permission.name,
+  );
+};
+
 export {
+  getPermissionCatalog,
   getUsers,
   getUserById,
   postUser,
@@ -71,5 +100,6 @@ export {
   deleteUser,
   postFotoPerfil,
   deleteFotoPerfil,
-  resetUserPassword
+  resetUserPassword,
+  syncUserPermissions,
 };

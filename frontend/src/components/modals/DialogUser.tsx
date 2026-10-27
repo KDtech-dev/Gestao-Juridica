@@ -29,7 +29,7 @@ import type {
 } from "@/schemas/UserSchema";
 import { Avatar, Box } from "@mui/material";
 import { Icon } from "@/components/AppIcon";
-import { postFotoPerfil } from "@/api/ApiUsers";
+import { getPermissionCatalog, postFotoPerfil, type PermissionCatalogEntry } from "@/api/ApiUsers";
 import InputBasico from "@/components/InputBasico";
 import type { UserType, RoleType, CategoriaType } from "@/@core/types";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -41,15 +41,6 @@ import { Controller } from "react-hook-form";
 import { formatCpf, formatTelefone } from "@/@core/format";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
-
-const PERMISSION_OPTIONS = [
-  "usuarios.visualizar", "usuarios.criar", "usuarios.editar", "usuarios.excluir",
-  "clientes.visualizar", "clientes.criar", "clientes.editar", "clientes.excluir",
-  "casos.visualizar", "casos.criar", "casos.editar", "casos.excluir",
-  "compromissos.visualizar", "compromissos.criar", "compromissos.editar", "compromissos.excluir",
-  "publicacoes.visualizar", "publicacoes.criar", "publicacoes.editar", "publicacoes.excluir",
-  "notificacoes.visualizar", "djen.visualizar", "djen.sincronizar",
-];
 
 type Props = {
   open: boolean;
@@ -82,6 +73,7 @@ export default function DialogUser({
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
+  const [permissionCatalog, setPermissionCatalog] = useState<PermissionCatalogEntry[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
   const [visiblePasswords, setVisiblePasswords] = useState({
     password: false,
@@ -130,6 +122,14 @@ export default function DialogUser({
 
     loadCategorias();
   }, [t]);
+
+  useEffect(() => {
+    getPermissionCatalog()
+      .then(setPermissionCatalog)
+      .catch((err) => {
+        toast.error(formatToastErrorMessage(err, "Não foi possível carregar as permissões."));
+      });
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -373,12 +373,17 @@ export default function DialogUser({
             render={({ field, fieldState }) => (
               <Autocomplete
                 multiple
-                options={PERMISSION_OPTIONS}
+                options={permissionCatalog.map((permission) => permission.name)}
                 value={field.value ?? []}
                 onChange={(_, value) => field.onChange(value)}
                 disabled={isReadOnly}
                 getOptionLabel={(permission) =>
-                  permission.replaceAll(".", " · ").replaceAll("_", " ")
+                  (() => {
+                    const item = permissionCatalog.find((entry) => entry.name === permission);
+                    return item
+                      ? `${item.group_label} · ${item.action_label}`
+                      : permission;
+                  })()
                 }
                 renderInput={(params) => (
                   <TextField

@@ -52,7 +52,7 @@ class RolesSeeder extends Seeder
                 $permissoesPapel,
             );
 
-            $papel->syncPermissions($permissoes->only($nomesPermissoes)->values());
+            $papel->givePermissionTo($permissoes->only($nomesPermissoes)->values());
         }
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();

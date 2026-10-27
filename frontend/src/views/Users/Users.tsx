@@ -21,7 +21,7 @@ import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { getUsers, postUser, updateUser, deleteUser } from "@/api/ApiUsers";
+import { getUsers, postUser, updateUser, deleteUser, syncUserPermissions } from "@/api/ApiUsers";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { UserType, RoleType } from "@/@core/types";
 import { CreateUserPayload, UpdateUserPayload } from "@/schemas/UserSchema";
@@ -109,15 +109,21 @@ export default function UsersView() {
       if (dialogMode === "create") {
         const { data: criado } = await postUser(data as CreateUserPayload);
         usuario = criado;
-        toast.success(t("toast.created"));
       } else {
         const { data: atualizado } = await updateUser(
           userSelecionado!.id,
           data as UpdateUserPayload,
         );
         usuario = atualizado;
-        toast.success(t("toast.updated"));
       }
+
+      usuario.permissions_extras = await syncUserPermissions(
+        String(usuario.id),
+        data.permissions ?? [],
+      );
+      toast.success(
+        dialogMode === "create" ? t("toast.created") : t("toast.updated"),
+      );
       handleDialogClose();
       loadUsers();
       return usuario;

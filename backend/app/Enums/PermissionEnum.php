@@ -33,6 +33,57 @@ enum PermissionEnum: string
 
     case DjenVisualizar = 'djen.visualizar';
     case DjenSincronizar = 'djen.sincronizar';
+    case PermissoesGerenciar = 'permissoes.gerenciar';
+
+    public function group(): string
+    {
+        return explode('.', $this->value, 2)[0];
+    }
+
+    public function groupLabel(): string
+    {
+        return match ($this->group()) {
+            'usuarios' => 'Usuários',
+            'clientes' => 'Clientes',
+            'casos' => 'Casos',
+            'compromissos' => 'Compromissos',
+            'publicacoes' => 'Publicações',
+            'notificacoes' => 'Notificações',
+            'djen' => 'DJEN',
+            'permissoes' => 'Permissões',
+            default => 'Outros',
+        };
+    }
+
+    public function action(): string
+    {
+        return explode('.', $this->value, 2)[1];
+    }
+
+    public function actionLabel(): string
+    {
+        return match ($this->action()) {
+            'visualizar' => 'Visualizar',
+            'criar' => 'Criar',
+            'editar' => 'Editar',
+            'excluir' => 'Excluir',
+            'sincronizar' => 'Sincronizar',
+            'gerenciar' => 'Gerenciar permissões',
+            default => ucfirst($this->action()),
+        };
+    }
+
+    /** Retorno serializável para catálogo e gerenciamento de acesso. */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->value,
+            'group' => $this->group(),
+            'group_label' => $this->groupLabel(),
+            'action' => $this->action(),
+            'action_label' => $this->actionLabel(),
+        ];
+    }
 
     /** Permite acesso quando o usuário possui pelo menos uma das permissões. */
     public static function middlewareAny(self ...$permissions): string
