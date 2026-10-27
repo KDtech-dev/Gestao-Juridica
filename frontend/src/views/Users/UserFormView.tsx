@@ -1,0 +1,302 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Autocomplete,
+  Avatar,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Container,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  TextField,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { Resolver } from "react-hook-form";
+import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
+import { Icon } from "@/components/AppIcon";
+import { HeaderDashboard } from "@/components/HeaderADM";
+import { SidebarDashboard } from "@/components/Sidebar";
+import InputBasico from "@/components/InputBasico";
+import ExtraPermissionsModal from "@/components/modals/ExtraPermissionsModal";
+import { getPermissionCatalog, getUserById, postFotoPerfil, postUser, syncUserPermissions, updateUser } from "@/api/ApiUsers";
+import { getCategorias } from "@/api/ApiCategorias";
+import type { CategoriaType, RoleType, UserType } from "@/@core/types";
+import type { PermissionCatalogEntry } from "@/api/ApiUsers";
+import { formatCpf, formatTelefone } from "@/@core/format";
+import { categoriaNomeParaChave } from "@/constants/categorias";
+import { useApiErrorTranslator } from "@/utils/translateApiErrors";
+import { toast } from "@/utils/toast";
+import { CreateUserPayload, UpdateUserPayload, createUserSchema, UF_SIGLAS, updateUserSchema } from "@/schemas/UserSchema";
+
+type Mode = "create" | "edit" | "view";
+type Props = { mode: Mode; userId?: string };
+
+export default function UserFormView({ mode, userId }: Props) {
+  const t = useTranslations("internal.users");
+  const tf = useTranslations("internal.users.form");
+  const td = useTranslations("internal.users.dialog");
+  const tv = useTranslations("validation");
+  const tp = useTranslations("internal.profile.practiceAreas");
+  const router = useRouter();
+  const theme = useTheme();
+  const translateError = useApiErrorTranslator();
+  const isCreate = mode === "create";
+  const isView = mode === "view";
+  const [loading, setLoading] = useState(!isCreate);
+  const [saving, setSaving] = useState(false);
+  const [permissionModalOpen, setPermissionModalOpen] = useState(false);
+  const [permissionCatalog, setPermissionCatalog] = useState<PermissionCatalogEntry[]>([]);
+  const [categorias, setCategorias] = useState<CategoriaType[]>([]);
+  const [user, setUser] = useState<UserType | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const avatarInput = useRef<HTMLInputElement>(null);
+
+  const schema = useMemo(
+    () => (isCreate ? createUserSchema(tv) : updateUserSchema(tv)),
+    [isCreate, tv],
+  );
+  const methods = useForm<CreateUserPayload | UpdateUserPayload>({
+    resolver: zodResolver(schema) as Resolver<CreateUserPayload | UpdateUserPayload>,
+    defaultValues: defaults(null),
+    mode: "onChange",
+  });
+  const { reset } = methods;
+  const role = useWatch({ control: methods.control, name: "role" }) as RoleType | undefined;
+  const permissions = methods.watch("permissions") ?? [];
+
+  useEffect(() => {
+    getPermissionCatalog().then(setPermissionCatalog).catch((error) => {
+      toast.error(translateError(error) || tf("errors.permissions"));
+    });
+    getCategorias().then((response) => setCategorias(response.data)).catch(() => setCategorias([]));
+  }, [translateError]);
+
+  useEffect(() => {
+    if (isCreate || !userId) {
+      setLoading(false);
+      return;
+    }
+
+    let active = true;
+    setLoading(true);
+    getUserById(userId)
+      .then((response) => {
+        if (!active) return;
+        setUser(response.data);
+        reset(defaults(response.data));
+        setAvatarPreview(response.data.foto_perfil_url ?? null);
+      })
+      .catch((error) => toast.error(translateError(error) || tf("errors.load")))
+      .finally(() => active && setLoading(false));
+
+    return () => { active = false; };
+  }, [isCreate, userId, reset, translateError]);
+
+  const handleAvatarSelect = (file?: File) => {
+    if (!file) return;
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+  };
+
+  const onSubmit = methods.handleSubmit(async (values) => {
+    setSaving(true);
+    try {
+      const payload = {
+        ...values,
+        advogado: values.role === "advogado" ? values.advogado : undefined,
+        funcionario: values.role === "funcionario" ? values.funcionario : undefined,
+      };
+      let saved: UserType;
+
+      if (isCreate) {
+        const response = await postUser(payload as CreateUserPayload);
+        saved = response.data;
+      } else {
+        const response = await updateUser(userId!, payload as UpdateUserPayload);
+        saved = response.data;
+      }
+
+      const selectedPermissions = values.role === "advogado" || values.role === "funcionario"
+        ? values.permissions ?? []
+        : [];
+      saved.permissions_extras = await syncUserPermissions(String(saved.id), selectedPermissions);
+
+      if (avatarFile) await postFotoPerfil(String(saved.id), avatarFile);
+
+      toast.success(isCreate ? t("toast.created") : t("toast.updated"));
+      router.push("/users");
+    } catch (error) {
+      toast.error(translateError(error) || tf("errors.save"));
+    } finally {
+      setSaving(false);
+    }
+  });
+
+  const pageTitle = mode === "create" ? tf("title.create") : mode === "edit" ? tf("title.edit") : tf("title.view");
+  const roleFieldsEnabled = role === "advogado" || role === "funcionario";
+
+  if (loading) {
+    return <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center" }}><CircularProgress /></Box>;
+  }
+
+  return (
+    <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
+      <SidebarDashboard activeKey="users" />
+      <Box sx={{ ml: { xs: 0, md: "280px" }, minWidth: 0 }}>
+        <HeaderDashboard showSearch={false} />
+        <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3.2 }}>
+          <Stack direction="row" alignItems="center" spacing={1.5} mb={3.5}>
+            <IconButton onClick={() => router.push("/users")}><Icon icon="mdi:arrow-left" width={22} /></IconButton>
+            <Box>
+              <Typography variant="h4" fontWeight={800}>{pageTitle}</Typography>
+              {user && <Typography color="text.secondary">{user.name}</Typography>}
+            </Box>
+          </Stack>
+
+          <FormProvider {...methods}>
+            <Box component="form" onSubmit={onSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, p: { xs: 2, md: 3 } }}>
+                <Typography fontWeight={700} mb={2}>{tf("sections.account")}</Typography>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 2 }}>
+                  <FormControl fullWidth disabled={isView}>
+                    <InputLabel>{td("fields.role")}</InputLabel>
+                    <Select label={td("fields.role")} value={role ?? "funcionario"} onChange={(event) => methods.setValue("role", event.target.value as RoleType, { shouldDirty: true })}>
+                      <MenuItem value="admin">{td("roles.admin")}</MenuItem>
+                      <MenuItem value="advogado">{td("roles.advogado")}</MenuItem>
+                      <MenuItem value="funcionario">{td("roles.funcionario")}</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <InputBasico field="name" label={td("fields.name")} disabled={isView} />
+                  <InputBasico field="email" label={td("fields.email")} type="email" disabled={isView} />
+                  {isCreate && <Controller name="cpf" control={methods.control} render={({ field, fieldState }) => (
+                    <TextField {...field} label={td("fields.cpf")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} inputProps={{ maxLength: 14 }} onChange={(event) => field.onChange(formatCpf(event.target.value))} />
+                  )} />}
+                  {!isCreate && <TextField label={td("fields.cpf")} value={user?.cpf ?? ""} disabled />}
+                  {isCreate && <InputBasico field="password" label={td("fields.password")} type="password" autoComplete="new-password" />}
+                  {isCreate && <InputBasico field="password_confirmation" label={td("fields.confirmPassword")} type="password" autoComplete="new-password" />}
+                </Box>
+              </Paper>
+
+              {(role === "advogado" || role === "funcionario") && (
+                <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, p: { xs: 2, md: 3 } }}>
+                  <Typography fontWeight={700} mb={2}>{tf("sections.profile")}</Typography>
+                  <Stack spacing={2}>
+                    <Stack direction={{ xs: "column", sm: "row" }} alignItems="center" spacing={2}>
+                      <Avatar src={avatarPreview ?? undefined} sx={{ width: 76, height: 76 }}>{user?.name?.[0]?.toUpperCase()}</Avatar>
+                      {!isView && <>
+                        <Button variant="outlined" onClick={() => avatarInput.current?.click()} startIcon={<Icon icon="mdi:camera" />}>{td("fields.photoHelper")}</Button>
+                        <input ref={avatarInput} hidden type="file" accept="image/*" onChange={(event) => handleAvatarSelect(event.target.files?.[0])} />
+                      </>}
+                    </Stack>
+                    {role === "funcionario" && <>
+                      <Controller name="funcionario.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={field.value ?? ""} label={td("fields.mobile")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
+                      <InputBasico field="funcionario.data_nascimento" label={td("fields.birthDate")} type="date" disabled={isView} />
+                      <InputBasico field="funcionario.resumo_pessoal" label={td("fields.personalSummary")} multiline rows={3} disabled={isView} />
+                    </>}
+                    {role === "advogado" && <>
+                      <Controller name="advogado.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={field.value ?? ""} label={td("fields.mobile")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
+                      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "2fr 1fr" }, gap: 2 }}>
+                        <InputBasico field="advogado.oab_numero" label={td("fields.oabNumber")} disabled={isView} />
+                        <Controller name="advogado.oab_uf" control={methods.control} render={({ field, fieldState }) => <FormControl fullWidth disabled={isView} error={!!fieldState.error}>
+                          <InputLabel>{td("fields.oabUf")}</InputLabel><Select {...field} value={field.value ?? ""} label={td("fields.oabUf")}>
+                            <MenuItem value=""><em>{td("fields.oabUfPlaceholder")}</em></MenuItem>
+                            {UF_SIGLAS.map((uf) => <MenuItem key={uf} value={uf}>{uf}</MenuItem>)}
+                          </Select>
+                        </FormControl>} />
+                      </Box>
+                      <Controller name="advogado.categorias" control={methods.control} render={({ field }) => {
+                        const selectedIds = Array.isArray(field.value) ? field.value : [];
+                        const selected = categorias.filter((category) => selectedIds.includes(category.id));
+                        return <Autocomplete multiple options={categorias} value={selected} disabled={isView} getOptionLabel={(option) => {
+                          const key = categoriaNomeParaChave[option.nome];
+                          return key ? tp(key) : option.nome;
+                        }} isOptionEqualToValue={(option, value) => option.id === value.id} onChange={(_, value) => field.onChange(value.map((category) => category.id))} renderInput={(params) => <TextField {...params} label={td("fields.specialties")} placeholder={td("fields.specialtiesPlaceholder")} />} />;
+                      }} />
+                      <InputBasico field="advogado.resumo_pessoal" label={td("fields.personalSummary")} multiline rows={3} disabled={isView} />
+                    </>}
+                  </Stack>
+                </Paper>
+              )}
+
+              {roleFieldsEnabled && (
+                <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, p: { xs: 2, md: 3 } }}>
+                  <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "stretch", sm: "center" }} justifyContent="space-between" gap={2}>
+                    <Box>
+                      <Typography fontWeight={700}>{tf("sections.access")}</Typography>
+                      <Typography variant="body2" color="text.secondary">{tf("sections.accessDescription")}</Typography>
+                      <Stack direction="row" flexWrap="wrap" gap={0.75} mt={1.5}>
+                        {permissions.length ? permissions.map((permission) => <Chip key={permission} size="small" label={permissionLabel(permissionCatalog, permission)} />) : <Typography variant="body2" color="text.secondary">{tf("permissions.none")}</Typography>}
+                      </Stack>
+                    </Box>
+                    {!isView && <Button variant="outlined" startIcon={<Icon icon="mdi:shield-key-outline" />} onClick={() => setPermissionModalOpen(true)}>{tf("permissions.open")}</Button>}
+                  </Stack>
+                </Paper>
+              )}
+
+              {!isView && <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
+                <Button variant="outlined" onClick={() => router.push("/users")}>{tf("actions.cancel")}</Button>
+                <Button type="submit" variant="contained" disabled={saving}>{saving ? tf("actions.saving") : tf("actions.save")}</Button>
+              </Stack>}
+              {isView && <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
+                <Button variant="outlined" onClick={() => router.push("/users")}>{tf("actions.back")}</Button>
+                <Button variant="contained" onClick={() => router.push(`/users/${userId}/edit`)}>{tf("actions.edit")}</Button>
+              </Stack>}
+            </Box>
+          </FormProvider>
+        </Container>
+      </Box>
+
+      <ExtraPermissionsModal
+        open={permissionModalOpen}
+        catalog={permissionCatalog}
+        selected={permissions}
+        onClose={() => setPermissionModalOpen(false)}
+        onSave={(selected) => {
+          methods.setValue("permissions", selected, { shouldDirty: true });
+          setPermissionModalOpen(false);
+        }}
+      />
+    </Box>
+  );
+}
+
+function defaults(user: UserType | null): Partial<CreateUserPayload | UpdateUserPayload> {
+  return {
+    role: user?.roles?.[0] ?? "funcionario",
+    name: user?.name ?? "",
+    email: user?.email ?? "",
+    cpf: user?.cpf ?? "",
+    ...(user ? {} : { password: "", password_confirmation: "" }),
+    permissions: user?.permissions_extras ?? [],
+    funcionario: {
+      celular: user?.funcionario?.celular ?? "",
+      data_nascimento: user?.funcionario?.data_nascimento ?? "",
+      resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
+    },
+    advogado: {
+      celular: user?.advogado?.celular ?? "",
+      oab_numero: user?.advogado?.oab_numero ?? "",
+      oab_uf: user?.advogado?.oab_uf ?? "",
+      categorias: user?.advogado?.categorias?.map((category) => category.id) ?? [],
+      resumo_pessoal: user?.advogado?.resumo_pessoal ?? "",
+    },
+  };
+}
+
+function permissionLabel(catalog: PermissionCatalogEntry[], name: string): string {
+  const permission = catalog.find((entry) => entry.name === name);
+  return permission ? `${permission.group_label} · ${permission.action_label}` : name;
+}
