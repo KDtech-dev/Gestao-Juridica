@@ -42,6 +42,15 @@ import { formatCpf, formatTelefone } from "@/@core/format";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
 
+const PERMISSION_OPTIONS = [
+  "usuarios.visualizar", "usuarios.criar", "usuarios.editar", "usuarios.excluir",
+  "clientes.visualizar", "clientes.criar", "clientes.editar", "clientes.excluir",
+  "casos.visualizar", "casos.criar", "casos.editar", "casos.excluir",
+  "compromissos.visualizar", "compromissos.criar", "compromissos.editar", "compromissos.excluir",
+  "publicacoes.visualizar", "publicacoes.criar", "publicacoes.editar", "publicacoes.excluir",
+  "notificacoes.visualizar", "djen.visualizar", "djen.sincronizar",
+];
+
 type Props = {
   open: boolean;
   onClose: () => void;
@@ -358,6 +367,32 @@ export default function DialogUser({
             </Select>
           </FormControl>
 
+          <Controller
+            name="permissions"
+            control={methods.control}
+            render={({ field, fieldState }) => (
+              <Autocomplete
+                multiple
+                options={PERMISSION_OPTIONS}
+                value={field.value ?? []}
+                onChange={(_, value) => field.onChange(value)}
+                disabled={isReadOnly}
+                getOptionLabel={(permission) =>
+                  permission.replaceAll(".", " · ").replaceAll("_", " ")
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label={t("fields.extraPermissions")}
+                    placeholder={t("fields.extraPermissionsPlaceholder")}
+                    error={!!fieldState.error}
+                    helperText={fieldState.error?.message ?? t("fields.extraPermissionsHelper")}
+                  />
+                )}
+              />
+            )}
+          />
+
           <InputBasico
             field="name"
             label={t("fields.name")}
@@ -624,6 +659,7 @@ function buildDefaultValues(
 
   return {
     role,
+    permissions: user?.permissions_extras ?? [],
     name: user?.name ?? "",
     email: user?.email ?? "",
     cpf: user?.cpf ?? "",

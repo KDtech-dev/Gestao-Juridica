@@ -2,46 +2,79 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\PermissionRegistrar;
 
 class RolesSeeder extends Seeder
 {
     public function run(): void
     {
-        $djenVisualizar = Permission::firstOrCreate([
-            'name' => 'djen.visualizar',
-            'guard_name' => 'api',
-        ]);
-        $djenSincronizar = Permission::firstOrCreate([
-            'name' => 'djen.sincronizar',
-            'guard_name' => 'api',
-        ]);
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
 
-        $djenVisualizar = Permission::firstOrCreate([
-            'name' => 'djen.visualizar',
-            'guard_name' => 'api',
-        ]);
-        $djenSincronizar = Permission::firstOrCreate([
-            'name' => 'djen.sincronizar',
-            'guard_name' => 'api',
-        ]);
+        $catalogo = [
+            'usuarios.visualizar',
+            'usuarios.criar',
+            'usuarios.editar',
+            'usuarios.excluir',
+            'clientes.visualizar',
+            'clientes.criar',
+            'clientes.editar',
+            'clientes.excluir',
+            'casos.visualizar',
+            'casos.criar',
+            'casos.editar',
+            'casos.excluir',
+            'compromissos.visualizar',
+            'compromissos.criar',
+            'compromissos.editar',
+            'compromissos.excluir',
+            'publicacoes.visualizar',
+            'publicacoes.criar',
+            'publicacoes.editar',
+            'publicacoes.excluir',
+            'notificacoes.visualizar',
+            'djen.visualizar',
+            'djen.sincronizar',
+        ];
 
-        foreach (['admin', 'advogado', 'funcionario', 'cliente'] as $roleName) {
-            $role = Role::firstOrCreate(
-            $role = Role::firstOrCreate(
-                ['name' => $roleName, 'guard_name' => 'api'],
-            );
+        $permissoes = collect($catalogo)
+            ->mapWithKeys(fn (string $nome) => [
+                $nome => Permission::firstOrCreate([
+                    'name' => $nome,
+                    'guard_name' => 'api',
+                ]),
+            ]);
 
-            if (in_array($roleName, ['admin', 'advogado', 'funcionario'], true)) {
-                $role->givePermissionTo($djenVisualizar, $djenSincronizar);
-            }
+        $permissoesPorPapel = [
+            'admin' => $catalogo,
+            'advogado' => [
+                'clientes.visualizar', 'clientes.criar', 'clientes.editar',
+                'casos.visualizar', 'casos.criar', 'casos.editar',
+                'compromissos.visualizar', 'compromissos.criar', 'compromissos.editar',
+                'publicacoes.visualizar', 'publicacoes.criar', 'publicacoes.editar',
+                'notificacoes.visualizar', 'djen.visualizar', 'djen.sincronizar',
+            ],
+            'funcionario' => [
+                'clientes.visualizar', 'clientes.criar', 'clientes.editar',
+                'casos.visualizar', 'casos.criar', 'casos.editar',
+                'compromissos.visualizar', 'compromissos.criar', 'compromissos.editar',
+                'publicacoes.visualizar', 'publicacoes.criar', 'publicacoes.editar',
+                'notificacoes.visualizar', 'djen.visualizar',
+            ],
+            'cliente' => [],
+        ];
 
-            if (in_array($roleName, ['admin', 'advogado', 'funcionario'], true)) {
-                $role->givePermissionTo($djenVisualizar, $djenSincronizar);
-            }
+        foreach ($permissoesPorPapel as $nomePapel => $nomesPermissoes) {
+            $papel = Role::firstOrCreate([
+                'name' => $nomePapel,
+                'guard_name' => 'api',
+            ]);
+
+            $papel->syncPermissions($permissoes->only($nomesPermissoes)->values());
         }
+
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }
-

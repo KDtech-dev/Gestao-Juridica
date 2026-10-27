@@ -72,6 +72,8 @@ class StoreUserRequest extends FormRequest
             'cpf'      => ['required', 'string', 'size:11', 'unique:users,cpf'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
             'role'     => ['required', 'string', 'in:funcionario,advogado,admin'],
+            'permissions' => ['sometimes', 'array'],
+            'permissions.*' => ['string', 'distinct', 'exists:permissions,name'],
 
             'endereco'                  => ['nullable', 'array'],
             'endereco.logradouro'       => ['required_with:endereco', 'string', 'max:255'],

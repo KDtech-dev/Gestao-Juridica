@@ -427,6 +427,9 @@
         },
         "fields": {
           "role": "Role",
+          "extraPermissions": "Additional permissions",
+          "extraPermissionsPlaceholder": "Select permissions beyond the role",
+          "extraPermissionsHelper": "Role permissions remain active; these permissions are added on top.",
           "name": "Name",
           "namePlaceholder": "Enter full name",
           "email": "Email",

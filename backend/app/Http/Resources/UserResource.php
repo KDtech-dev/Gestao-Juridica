@@ -21,6 +21,7 @@ class UserResource extends JsonResource
             'cpf'               => $this->cpf,
             'email_verified_at' => $this->email_verified_at,
             'roles'             => $this->getRoleNames(),
+            'permissions_extras' => $this->getDirectPermissions()->pluck('name')->values(),
             'funcionario'       => $this->whenLoaded(
                 'funcionario',
                 fn() =>

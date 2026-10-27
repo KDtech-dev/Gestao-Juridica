@@ -427,6 +427,9 @@
         },
         "fields": {
           "role": "Perfil",
+          "extraPermissions": "Permisos adicionales",
+          "extraPermissionsPlaceholder": "Selecciona permisos además de los del perfil",
+          "extraPermissionsHelper": "Los permisos del perfil siguen activos; estos se agregan.",
           "name": "Nombre",
           "namePlaceholder": "Ingrese el nombre completo",
           "email": "Correo electrónico",

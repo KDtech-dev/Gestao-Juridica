@@ -452,6 +452,9 @@
         },
         "fields": {
           "role": "Perfil",
+          "extraPermissions": "Permissões extras",
+          "extraPermissionsPlaceholder": "Selecione permissões além das do papel",
+          "extraPermissionsHelper": "As permissões do papel continuam valendo; estas são adicionais.",
           "name": "Nome",
           "photoHelper": "Clique para adicionar uma foto",
           "photoUploading": "Enviando foto...",

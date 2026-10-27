@@ -48,6 +48,10 @@ class UserService
 
             $user->assignRole($dados['role']);
 
+            if (array_key_exists('permissions', $dados)) {
+                $user->syncPermissions($dados['permissions']);
+            }
+
             return $this->carregarRelacoes($user);
         });
     }
@@ -123,6 +127,10 @@ class UserService
 
             if (isset($dados['role']) && !$user->hasRole($dados['role'])) {
                 $user->syncRoles([$dados['role']]);
+            }
+
+            if (array_key_exists('permissions', $dados)) {
+                $user->syncPermissions($dados['permissions']);
             }
 
             return $this->carregarRelacoes($user->fresh());
@@ -253,6 +261,7 @@ class UserService
             'advogado.endereco',
             'advogado.categorias',
             'roles',
+            'permissions',
             ])
             ->paginate($porPagina);
     }
@@ -271,6 +280,7 @@ class UserService
             'funcionario.endereco',
             'advogado.endereco',
             'advogado.categorias',
+            'permissions',
         ]);
     }
 

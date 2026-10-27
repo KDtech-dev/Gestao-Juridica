@@ -145,6 +145,7 @@ export const createUserBaseSchema = (t: TFunction) =>
       .string()
       .min(1, t("password_confirmation.required")),
     role: roleEnum,
+    permissions: z.array(z.string()).optional(),
     endereco: createEnderecoSchema(t).optional(),
     funcionario: createFuncionarioSchema(t).optional(),
     advogado: createAdvogadoSchema(t).optional(),
@@ -210,6 +211,7 @@ export const updateUserBaseSchema = (t: TFunction) =>
     password: passwordRules(t).optional(),
     password_confirmation: z.string().optional(),
     role: roleEnum.optional(),
+    permissions: z.array(z.string()).optional(),
     cor_perfil: z
       .string()
       .regex(/^#[0-9A-Fa-f]{6}$/)
