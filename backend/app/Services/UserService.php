@@ -244,14 +244,17 @@ class UserService
         }
     }
 
-    public function listar(int $porPagina = 15)
+    public function listar(int $porPagina = 15, int|string|null $excluirUsuarioId = null)
     {
-        return User::with([
+        return User::query()
+            ->when($excluirUsuarioId, fn ($query) => $query->whereKeyNot($excluirUsuarioId))
+            ->with([
             'funcionario.endereco',
             'advogado.endereco',
             'advogado.categorias',
             'roles',
-        ])->paginate($porPagina);
+            ])
+            ->paginate($porPagina);
     }
 
     public function buscar(User $user): User

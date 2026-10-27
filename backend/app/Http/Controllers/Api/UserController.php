@@ -26,7 +26,7 @@ class UserController extends Controller
 
     public function index(): AnonymousResourceCollection
     {
-        $users = $this->userService->listar();
+        $users = $this->userService->listar(excluirUsuarioId: Auth::id());
 
         return UserResource::collection($users);
     }

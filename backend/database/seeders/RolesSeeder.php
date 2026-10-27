@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
-use Spatie\Permission\Models\Permission;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 
 class RolesSeeder extends Seeder
@@ -19,7 +19,17 @@ class RolesSeeder extends Seeder
             'guard_name' => 'api',
         ]);
 
+        $djenVisualizar = Permission::firstOrCreate([
+            'name' => 'djen.visualizar',
+            'guard_name' => 'api',
+        ]);
+        $djenSincronizar = Permission::firstOrCreate([
+            'name' => 'djen.sincronizar',
+            'guard_name' => 'api',
+        ]);
+
         foreach (['admin', 'advogado', 'funcionario', 'cliente'] as $roleName) {
+            $role = Role::firstOrCreate(
             $role = Role::firstOrCreate(
                 ['name' => $roleName, 'guard_name' => 'api'],
             );
@@ -27,6 +37,11 @@ class RolesSeeder extends Seeder
             if (in_array($roleName, ['admin', 'advogado', 'funcionario'], true)) {
                 $role->givePermissionTo($djenVisualizar, $djenSincronizar);
             }
+
+            if (in_array($roleName, ['admin', 'advogado', 'funcionario'], true)) {
+                $role->givePermissionTo($djenVisualizar, $djenSincronizar);
+            }
         }
     }
 }
+
