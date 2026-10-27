@@ -20,6 +20,9 @@ class ComunicacaoDjen extends Model
         'sigla_tribunal',
         'nome_orgao',
         'tipo_comunicacao',
+        'status_djen',
+        'motivo_cancelamento',
+        'data_cancelamento',
         'data_disponibilizacao',
         'texto',
         'link',
@@ -30,6 +33,7 @@ class ComunicacaoDjen extends Model
     protected $casts = [
         'payload' => 'array',
         'data_disponibilizacao' => 'date',
+        'data_cancelamento' => 'date',
         'lida_em' => 'datetime',
     ];
 

@@ -20,6 +20,14 @@ class ComunicacaoDjenController extends Controller
 
     public function index(Request $request)
     {
+        $filtros = $request->validate([
+            'por_pagina' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'caso_id' => ['sometimes', 'uuid', 'exists:casos,id'],
+            'sigla_tribunal' => ['sometimes', 'string', 'max:20'],
+            'data_inicio' => ['sometimes', 'date'],
+            'data_fim' => ['sometimes', 'date', 'after_or_equal:data_inicio'],
+            'somente_nao_lidas' => ['sometimes', 'boolean'],
+        ]);
         $query = ComunicacaoDjen::query()->with('caso')->latest('data_disponibilizacao');
 
         if ($request->boolean('somente_nao_lidas')) {
@@ -42,10 +50,18 @@ class ComunicacaoDjenController extends Controller
             $query->whereDate('data_disponibilizacao', '<=', $request->date('data_fim'));
         }
 
-        $comunicacoes = $query->paginate($request->integer('por_pagina', 20));
+        $comunicacoes = $query->paginate($filtros['por_pagina'] ?? 20);
 
         return Response::success()
-            ->data(ComunicacaoDjenResource::collection($comunicacoes))
+            ->data([
+                'items' => ComunicacaoDjenResource::collection($comunicacoes)->resolve($request),
+                'pagination' => [
+                    'current_page' => $comunicacoes->currentPage(),
+                    'per_page' => $comunicacoes->perPage(),
+                    'last_page' => $comunicacoes->lastPage(),
+                    'total' => $comunicacoes->total(),
+                ],
+            ])
             ->send();
     }
 

@@ -13,6 +13,16 @@ export type ArrayResponseType<T> = {
   data: T[];
 };
 
+export type PaginatedData<T> = {
+  items: T[];
+  pagination: {
+    current_page: number;
+    per_page: number;
+    last_page: number;
+    total: number;
+  };
+};
+
 export type ComunicacaoDjenCaso = {
   id: string;
   titulo: string;
@@ -26,6 +36,9 @@ export type ComunicacaoDjen = {
   nome_orgao: string | null;
   tipo_comunicacao: string | null;
   data_disponibilizacao: string | null;
+  status_djen?: string | null;
+  motivo_cancelamento?: string | null;
+  data_cancelamento?: string | null;
   texto: string | null; 
   link: string | null;
   lida: boolean;
@@ -49,7 +62,7 @@ export type SincronizarDjenResultado = {
 
 export const ApiDjen = {
   listar: (filtros?: FiltrosComunicacaoDjen) =>
-    getAxios().get<ArrayResponseType<ComunicacaoDjen>>("/comunicacoes-djen", {
+    getAxios().get<ResponseType<PaginatedData<ComunicacaoDjen>>>("/comunicacoes-djen", {
       params: filtros,
     }),
 
