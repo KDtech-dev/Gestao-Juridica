@@ -160,10 +160,9 @@ export default function ActivityLogsView() {
         <Container maxWidth={false} sx={{ px: { xs: 2, md: 4 }, py: 3 }}>
           <Stack direction={{ xs: "column", md: "row" }} justifyContent="space-between" alignItems={{ xs: "flex-start", md: "center" }} gap={1} mb={2.5}>
             <Box>
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Icon icon="mdi:clipboard-text-clock-outline" width={26} color={theme.palette.primary.main} />
-                <Typography variant="h4" fontWeight={800}>{t("title")}</Typography>
-              </Stack>
+              <Typography variant="h4" fontWeight={800} color="text.primary">
+                {t("title")}
+              </Typography>
               <Typography color="text.secondary" mt={0.6}>{t("subtitle")}</Typography>
             </Box>
             <Chip icon={<Icon icon="mdi:counter" width={18} />} label={t("count", { count: total })} variant="outlined" />
