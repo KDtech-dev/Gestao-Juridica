@@ -323,17 +323,6 @@ class UserService
         });
     }
 
-    public function atualizarSenhaPropria(User $user, string $senhaAtual, string $novaSenha): void
-    {
-        if (! Hash::check($senhaAtual, $user->password)) {
-            throw new InvalidCurrentPasswordException();
-        }
-
-        $user->update([
-            'password' => Hash::make($novaSenha),
-        ]);
-    }
-
     public function resetarSenhaComoAdmin(User $admin, User $alvo, string $senhaAdmin, string $novaSenha): void
     {
         if (! Hash::check($senhaAdmin, $admin->password)) {

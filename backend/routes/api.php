@@ -60,7 +60,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/users/{user}/permissions/{permission}', [AccessControlController::class, 'revokeUserPermission']);
         });
 
-    Route::put('/profile/password', [UserController::class, 'updateOwnPassword']);
     Route::put('/users/{user}/reset-password', [UserController::class, 'resetPassword'])
         ->middleware('role:admin');
 

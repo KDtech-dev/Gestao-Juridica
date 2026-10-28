@@ -1,40 +1,56 @@
-# Sistema de Gestão Administrativa para Escritório de Advocacia
+# Backend
 
-Projeto acadêmico desenvolvido no curso de Análise e Desenvolvimento de Sistemas.
+Backend HTTP do sistema, implementado em Laravel 12. Expõe a API REST consumida pelo frontend Next.js e concentra autenticação, autorização, validação, acesso a dados, uploads e integrações.
 
-## 📌 Descrição
+## Documentação
 
-Este projeto consiste no desenvolvimento de uma plataforma web para gestão administrativa de um escritório de advocacia, seguindo a abordagem MVP (Minimum Viable Product).
+- [Referência da API](docs/API.md): endpoints, autenticação, permissões, parâmetros, formatos e exemplos.
+- [`routes/api.php`](routes/api.php): fonte executável da tabela de rotas.
+- `app/Http/Requests`: regras de entrada e validação.
+- `app/Http/Resources`: estrutura serializada das respostas.
+- `app/Services`: regras de aplicação e coordenação de persistência.
+- `app/Enums`: papéis, permissões e estados de domínio.
 
-O sistema permite o gerenciamento de clientes, compromissos, controle financeiro básico e visualização de métricas através de um dashboard.
+## Organização
 
----
+```text
+app/
+  Console/Commands/    comandos de manutenção
+  Enums/               papéis, permissões e estados
+  Http/Controllers/Api endpoints HTTP
+  Http/Requests/       validação das entradas
+  Http/Resources/      contratos de saída
+  Models/              modelos Eloquent
+  Services/            lógica de aplicação e integrações
+database/
+  migrations/          evolução do esquema
+  seeders/             dados iniciais
+routes/api.php         rotas versionadas pelo prefixo /api
+tests/                 testes Laravel
+```
 
-## 🎯 Objetivo
+Os papéis de usuário atuais são `admin`, `advogado` e `funcionario`. A API usa Sanctum para bearer tokens e Spatie Permission para permissões granulares.
 
-Desenvolver uma aplicação web com autenticação e controle de acesso por perfil, permitindo:
+## Desenvolvimento local
 
-- Gestão de clientes
-- Cadastro de compromissos
-- Controle financeiro básico
-- Dashboard com métricas administrativas
+Requisitos: PHP 8.2+, Composer e um banco compatível com a configuração Laravel.
 
----
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+```
 
-## 🏗 Arquitetura do Sistema
+A API fica disponível em `http://127.0.0.1:8000`; suas rotas começam com `/api`. Configure conexão de banco, URL da aplicação, e-mail e integrações no `.env` conforme o ambiente. Para listar rotas instaladas:
 
-O sistema será dividido em:
+```bash
+php artisan route:list --path=api
+```
 
-### 🔹 Frontend
-- React com Next.js
-- Interface com Sidebar fixa
-- Comunicação com API via HTTP (REST)
+Para desenvolvimento com o frontend, veja [`../README.md`](../README.md). Antes de alterar um endpoint, atualize as Requests/Resources correspondentes e a [referência da API](docs/API.md).
 
-### 🔹 Backend
-- Laravel (API REST)
-- Autenticação com hash de senha (bcrypt)
-- Controle de acesso por perfil (ADMIN e FUNCIONÁRIO)
+## Anexos privados
 
-### 🔹 Banco de Dados
-- MySQL
-- Estrutura relacional
+Novos anexos de casos e compromissos são gravados no disco privado e servidos pelas rotas autenticadas documentadas na API. Para localizar os arquivos legados que ainda estão no disco público, rode `php artisan anexos:privatizar` (prévia sem alterações). Depois de revisar a saída, `php artisan anexos:privatizar --apply` copia e valida os arquivos privados antes de remover as cópias públicas.

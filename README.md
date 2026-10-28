@@ -14,23 +14,15 @@ O projeto está organizado como um monorepo com:
 - [Tecnologias](#tecnologias)
 - [Arquitetura](#arquitetura)
 - [Pré-requisitos](#pré-requisitos)
-- [Configuração do ambiente](#configuração-do-ambiente)
-- [Como executar](#como-executar)
-- [Usuários de teste](#usuários-de-teste)
-- [Rotas da aplicação](#rotas-da-aplicação)
-- [API REST](#api-rest)
-- [Scripts úteis](#scripts-úteis)
-- [Testes e qualidade](#testes-e-qualidade)
-- [Deploy](#deploy)
-- [Estrutura de pastas](#estrutura-de-pastas)
-- [Observações do estado atual](#observações-do-estado-atual)
-- [Solução de problemas](#solução-de-problemas)
+- [Configuração e execução](#configuração-e-execução)
+- [Documentação da API](#documentação-da-api)
+- [Documentação adicional](#documentação-adicional)
 
 ## Visão geral
 
 O sistema atende dois contextos principais:
 
-1. **Site público do escritório**: página inicial, equipe, publicações/artigos jurídicos e detalhes de publicações.
+1. **Site público do escritório**: página inicial, publicações/artigos jurídicos e perfis públicos individuais de advogados. A rota `/equipe` ainda existe, mas não está disponível para visitantes anônimos pelo `AuthGate` e foi removida da navegação pública.
 2. **Dashboard interno**: autenticação, gestão de clientes, agenda, compromissos, publicações, notificações e áreas administrativas.
 
 A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend armazena o token no navegador e envia as requisições autenticadas com `Authorization: Bearer <token>`.
@@ -42,7 +34,7 @@ A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend ar
 - Página institucional com apresentação do escritório.
 - Listagem de publicações públicas.
 - Página de detalhe de publicação.
-- Página de equipe.
+- Perfis públicos individuais de advogados.
 - Suporte a internacionalização base (`pt`, `en`, `es`).
 
 ### Área autenticada
@@ -54,7 +46,7 @@ A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend ar
   - `rascunho`
   - `publicado`
   - `arquivado`
-- Cadastro de categorias jurídicas.
+- Categorias jurídicas para classificar casos e publicações.
 - Agenda de compromissos.
 - Notificações de compromissos do dia/semana.
 - Layout administrativo com sidebar, header, tema e toast.
@@ -77,13 +69,12 @@ O backend trabalha com os papéis:
 - Laravel Sanctum `^4.3`
 - Laravel Reverb `^1.10`
 - Spatie Laravel Permission `^7.2`
-- Kra8 Laravel Snowflake `^2.5`
 - PHPUnit `^11.5`
 - Laravel Pint
 - Banco relacional via Eloquent: MySQL 
 ### Frontend
 
-- Next.js `16.2.0`
+- Next.js `^16.3.6`
 - React `19.2.4`
 - TypeScript `^5`
 - Material UI `^7.3`
@@ -120,7 +111,7 @@ Banco de dados
   | - anexos
   | - compromissos
   | - notificacoes
-  | - cases
+  | - casos
 ```
 
 Fluxo principal de autenticação:
@@ -142,7 +133,7 @@ Instale na máquina:
 - MySQL/MariaDB, caso use `DB_CONNECTION=mysql`.
 - Extensões PHP comuns do Laravel, como `pdo`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `fileinfo`.
 
-## Configuração do ambiente
+## Configuração e execução
 
 ### 1. Clonar o projeto
 
@@ -150,7 +141,7 @@ Instale na máquina:
 git clone <git@github.com:DiegoAndreAfonso/advocacia-gestao.git>
 cd advocacia-gestao
 ```
-### 2. Backend
+### Backend
 
 ```bash
 cd backend
@@ -158,9 +149,13 @@ composer install
 cp .env.example .env
 php artisan key:generate
 ```
+O `.env.example` está configurado para MySQL. Para usar SQLite, selecione `DB_CONNECTION=sqlite` no `.env` e crie o arquivo antes de executar as migrations:
+
 ```bash
 touch database/database.sqlite
 ```
+
+Para MySQL, configure as credenciais e não crie o arquivo SQLite.
 
 Depois rode migrations e seeders:
 
@@ -169,33 +164,27 @@ php artisan migrate --seed
 php artisan storage:link
 ```
 
-### 3. Frontend
+### Frontend
 
-Em outro terminal:
+Em outro terminal, instale e inicie:
 
 ```bash
 cd frontend
 npm install
+npm run dev
 ```
 
 Se `NEXT_PUBLIC_API_URL` não for definido, o Next usa rewrites locais para encaminhar `/api/*` e `/sanctum/*` para `http://127.0.0.1:8000`.
 
-## Como executar
+API disponível em `http://127.0.0.1:8000`; frontend em `http://localhost:3000`.
 
-### Terminal 1: API Laravel
+## Documentação da API
 
-```bash
-cd backend
-php artisan serve
-```
+A referência dos endpoints, autenticação, permissões, parâmetros e formatos está em [backend/docs/API.md](backend/docs/API.md). A documentação do backend e sua organização estão em [backend/README.md](backend/README.md).
 
-API disponível em:
+## Documentação adicional
 
-```text
-http://127.0.0.1:8000
-```
-
-### Terminal 2: Frontend Next.js
+- [Perfis públicos de advogados](docs/perfis-publicos-advogados.md)
 
 ## Autor
 
