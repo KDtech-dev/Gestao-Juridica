@@ -117,17 +117,24 @@
       .replace(/\s+/g, " ")
       .trim();
 
-  export const formatDate = (value?: string | null) => {
-    if (!value) return "Sem data";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return "Sem data";
-    return new Intl.DateTimeFormat("pt-BR", {
+  const intlLocale = (locale: string) =>
+    locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-ES";
+
+  export const formatDate = (value: string | null | undefined, locale: string) => {
+    if (!value) return "-";
+
+    const date = /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? dateFromApi(value)
+      : new Date(value);
+    if (!date || Number.isNaN(date.getTime())) return "-";
+
+    return new Intl.DateTimeFormat(intlLocale(locale), {
       day: "2-digit",
       month: "short",
       year: "numeric",
     })
       .format(date)
-      .replace(".", "");
+      .replace(/\.$/, "");
   };
 
   export const dateFromApi = (value?: string | null): Date | null => {
@@ -170,9 +177,7 @@
     const date = dateFromApi(value);
     if (!date) return "-";
 
-    const dateLocale =
-      locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-ES";
-    return new Intl.DateTimeFormat(dateLocale, { dateStyle: "short" }).format(date);
+    return new Intl.DateTimeFormat(intlLocale(locale), { dateStyle: "short" }).format(date);
   };
 
   export const estimateReadTime = (content?: string | null) => {
@@ -207,14 +212,7 @@
     date: string | Date,
     locale: string,
   ): string {
-    const dateLocale =
-      locale === "pt"
-        ? "pt-BR"
-        : locale === "en"
-          ? "en-US"
-          : "es-ES";
-
-    return new Intl.DateTimeFormat(dateLocale, {
+    return new Intl.DateTimeFormat(intlLocale(locale), {
       day: "2-digit",
       month: "short",
       year: "numeric",

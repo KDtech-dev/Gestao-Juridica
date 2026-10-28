@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Icon } from "@/components/AppIcon";
 import type { PublicacaoType } from "@/@core/types";
 import { estimateReadTime, formatDate, stripHtml } from "@/@core/format";
@@ -33,8 +33,8 @@ const getResumo = (publicacao: PublicacaoType) =>
   publicacao.resumo?.trim() ??
   stripHtml(publicacao.conteudo ?? "").slice(0, 180);
 
-const getData = (publicacao: PublicacaoType) =>
-  formatDate(publicacao.publicado_em ?? publicacao.created_at);
+const getData = (publicacao: PublicacaoType, locale: string) =>
+  formatDate(publicacao.publicado_em ?? publicacao.created_at, locale);
 
 const getReadTime = (publicacao: PublicacaoType) =>
   estimateReadTime(publicacao.conteudo);
@@ -54,6 +54,7 @@ export function CardPublicacaoInterna({
   onArchive,
   onDelete,
 }: CardPublicacaoInternaProps) {
+  const locale = useLocale();
   const t = useTranslations("internal.publications");
   const editHref = `/publicacoes/editar/${publicacao.id}`;
 
@@ -103,7 +104,7 @@ export function CardPublicacaoInterna({
         />
         <Typography color="text.secondary" fontSize="0.82rem">
           {t(`status.${publicacao.status ?? "publicado"}`)} •{" "}
-          {getData(publicacao)} • {getReadTime(publicacao)}
+          {getData(publicacao, locale)} • {getReadTime(publicacao)}
         </Typography>
       </Stack>
 
