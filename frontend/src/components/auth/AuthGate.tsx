@@ -11,11 +11,15 @@ type Props = {
 };
 
 type RoutePermission = {
-  permission: string;
+  permission?: string;
   adminOnly?: boolean;
 };
 
 function permissionForPath(pathname: string): RoutePermission | null {
+  if (pathname === "/admin/logs") {
+    return { adminOnly: true };
+  }
+
   if (pathname === "/admin/team") {
     return { permission: "usuarios.visualizar", adminOnly: true };
   }
@@ -91,7 +95,7 @@ export function AuthGate({ children }: Props) {
   }, [pathname]);
   const routePermission = permissionForPath(pathname);
   const permissionDenied = routePermission !== null && (
-    !hasPermission(routePermission.permission) ||
+    (routePermission.permission !== undefined && !hasPermission(routePermission.permission)) ||
     (routePermission.adminOnly && !hasRole("admin"))
   );
 

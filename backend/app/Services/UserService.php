@@ -23,6 +23,7 @@ class UserService
 
     public function __construct(
         private readonly ImageManagerInterface $imageManager,
+        private readonly ActivityLogger $activityLogger,
     ) {}
     public function criar(array $dados): User
     {
@@ -124,6 +125,13 @@ class UserService
 
             if (isset($dados['role']) && !$user->hasRole($dados['role'])) {
                 $user->syncRoles([$dados['role']]);
+                $this->activityLogger->record(
+                    'role_changed',
+                    'access_control',
+                    $user,
+                    ['role'],
+                    details: ['role' => $dados['role']],
+                );
             }
 
             return $this->carregarRelacoes($user->fresh());

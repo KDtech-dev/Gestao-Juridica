@@ -10,7 +10,10 @@ use Spatie\Permission\PermissionRegistrar;
 
 class AccessControlService
 {
-    public function __construct(private readonly PermissionRegistrar $permissionRegistrar) {}
+    public function __construct(
+        private readonly PermissionRegistrar $permissionRegistrar,
+        private readonly ActivityLogger $activityLogger,
+    ) {}
 
     public function permissionCatalog(): array
     {
@@ -50,6 +53,13 @@ class AccessControlService
     {
         $role->syncPermissions($permissionNames);
         $this->permissionRegistrar->forgetCachedPermissions();
+        $this->activityLogger->record(
+            'permissions_updated',
+            'access_control',
+            $role,
+            ['permissions'],
+            details: ['permissions' => $permissionNames],
+        );
 
         return $this->rolePermissions($role->fresh());
     }
@@ -58,6 +68,13 @@ class AccessControlService
     {
         $role->givePermissionTo($permission->value);
         $this->permissionRegistrar->forgetCachedPermissions();
+        $this->activityLogger->record(
+            'permission_granted',
+            'access_control',
+            $role,
+            ['permissions'],
+            details: ['permission' => $permission->value],
+        );
 
         return $this->rolePermissions($role->fresh());
     }
@@ -66,6 +83,13 @@ class AccessControlService
     {
         $role->revokePermissionTo($permission->value);
         $this->permissionRegistrar->forgetCachedPermissions();
+        $this->activityLogger->record(
+            'permission_revoked',
+            'access_control',
+            $role,
+            ['permissions'],
+            details: ['permission' => $permission->value],
+        );
 
         return $this->rolePermissions($role->fresh());
     }
@@ -85,6 +109,13 @@ class AccessControlService
             $user->syncPermissions($permissionNames);
             $this->permissionRegistrar->forgetCachedPermissions();
         });
+        $this->activityLogger->record(
+            'permissions_updated',
+            'access_control',
+            $user,
+            ['permissions'],
+            details: ['permissions' => $permissionNames],
+        );
 
         return $this->userPermissions($user->fresh());
     }
@@ -93,6 +124,13 @@ class AccessControlService
     {
         $user->givePermissionTo($permission->value);
         $this->permissionRegistrar->forgetCachedPermissions();
+        $this->activityLogger->record(
+            'permission_granted',
+            'access_control',
+            $user,
+            ['permissions'],
+            details: ['permission' => $permission->value],
+        );
 
         return $this->userPermissions($user->fresh());
     }
@@ -101,6 +139,13 @@ class AccessControlService
     {
         $user->revokePermissionTo($permission->value);
         $this->permissionRegistrar->forgetCachedPermissions();
+        $this->activityLogger->record(
+            'permission_revoked',
+            'access_control',
+            $user,
+            ['permissions'],
+            details: ['permission' => $permission->value],
+        );
 
         return $this->userPermissions($user->fresh());
     }

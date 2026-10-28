@@ -11,6 +11,8 @@ use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthService implements IAuthService
 {
+    public function __construct(private readonly ActivityLogger $activityLogger) {}
+
     /**
      * @param array{email:string,password:string,cpf:string} $credentials
      */
@@ -40,6 +42,7 @@ class AuthService implements IAuthService
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
+        $this->activityLogger->record('signed_in', 'auth', $user, actor: $user);
 
         return [
             'token' => $token,
@@ -53,6 +56,10 @@ class AuthService implements IAuthService
 
         if (!$accessToken) {
             throw new AuthenticationException('Não autenticado');
+        }
+
+        if ($accessToken->tokenable instanceof User) {
+            $this->activityLogger->record('signed_out', 'auth', $accessToken->tokenable, actor: $accessToken->tokenable);
         }
 
         $accessToken->delete();

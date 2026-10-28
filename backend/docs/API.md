@@ -58,6 +58,14 @@ Papéis atuais: `admin`, `advogado`, `funcionario`. Permissões granulares são 
 
 ## Rotas autenticadas
 
+### Auditoria do sistema (somente `admin`)
+
+| Método | Caminho | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/activity-logs` | Lista movimentações com paginação `page`, `per_page` (1–100) e filtros opcionais `date` (dia `YYYY-MM-DD`), `from`, `to`, `module`, `event`, `actor` (nome) e `search` (registro). |
+
+Cada item informa responsável, módulo, ação, registro relacionado, nomes dos campos alterados, IP, agente do navegador e horário. O histórico não guarda valores de senhas, documentos ou conteúdo dos casos.
+
 ### Sessão e perfil
 
 | Método | Caminho | Permissão/descrição |

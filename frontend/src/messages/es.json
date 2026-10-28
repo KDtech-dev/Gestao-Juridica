@@ -67,6 +67,55 @@
     "welcome": "Bienvenido al sistema"
   },
   "internal": {
+    "activityLogs": {
+      "title": "Movimientos del sistema",
+      "subtitle": "Consulta los cambios y accesos registrados en el sistema.",
+      "count": "{count} registros",
+      "filters": {
+        "day": "Día",
+        "module": "Módulo",
+        "allModules": "Todos los módulos",
+        "action": "Acción",
+        "allActions": "Todas las acciones",
+        "actor": "Usuario responsable",
+        "actorPlaceholder": "Buscar usuario...",
+        "search": "Registro o elemento",
+        "searchPlaceholder": "Buscar por nombre del registro..."
+      },
+      "table": {
+        "date": "Fecha y hora",
+        "actor": "Responsable",
+        "module": "Módulo",
+        "action": "Acción",
+        "item": "Registro",
+        "changedFields": "Campos modificados",
+        "ip": "Dirección IP"
+      },
+      "modules": {
+        "users": "Usuarios",
+        "clients": "Clientes",
+        "cases": "Casos",
+        "appointments": "Compromisos",
+        "publications": "Publicaciones",
+        "access_control": "Accesos y permisos",
+        "auth": "Sesión",
+        "other": "Otros"
+      },
+      "events": {
+        "created": "Creado",
+        "updated": "Editado",
+        "deleted": "Eliminado",
+        "signed_in": "Inició sesión",
+        "signed_out": "Cerró sesión",
+        "role_changed": "Rol modificado",
+        "permissions_updated": "Permisos actualizados",
+        "permission_granted": "Permiso concedido",
+        "permission_revoked": "Permiso revocado"
+      },
+      "errors": {
+        "load": "No fue posible cargar los movimientos."
+      }
+    },
     "publications": {
       "title": "Publicaciones",
       "subtitle": "Gestiona las publicaciones creadas por ti.",
@@ -775,6 +824,7 @@
       "cases": "Casos",
       "notificacoes": "Notificaciones",
       "adminUsers": "Usuarios",
+      "adminLogs": "Movimientos",
       "profile": "Mi perfil",
       "logout": "Salir",
       "perfil": "Mi perfil",

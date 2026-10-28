@@ -86,6 +86,55 @@
     "welcome": "Bem-vindo ao sistema"
   },
   "internal": {
+    "activityLogs": {
+      "title": "Movimentações do sistema",
+      "subtitle": "Acompanhe alterações e acessos registrados no sistema.",
+      "count": "{count} registros",
+      "filters": {
+        "day": "Dia",
+        "module": "Módulo",
+        "allModules": "Todos os módulos",
+        "action": "Ação",
+        "allActions": "Todas as ações",
+        "actor": "Usuário responsável",
+        "actorPlaceholder": "Buscar usuário...",
+        "search": "Registro ou item",
+        "searchPlaceholder": "Buscar pelo nome do registro..."
+      },
+      "table": {
+        "date": "Data e hora",
+        "actor": "Responsável",
+        "module": "Módulo",
+        "action": "Ação",
+        "item": "Registro",
+        "changedFields": "Campos alterados",
+        "ip": "Endereço IP"
+      },
+      "modules": {
+        "users": "Usuários",
+        "clients": "Clientes",
+        "cases": "Casos",
+        "appointments": "Compromissos",
+        "publications": "Publicações",
+        "access_control": "Acessos e permissões",
+        "auth": "Sessão",
+        "other": "Outros"
+      },
+      "events": {
+        "created": "Criado",
+        "updated": "Editado",
+        "deleted": "Excluído",
+        "signed_in": "Entrou no sistema",
+        "signed_out": "Saiu do sistema",
+        "role_changed": "Papel alterado",
+        "permissions_updated": "Permissões atualizadas",
+        "permission_granted": "Permissão concedida",
+        "permission_revoked": "Permissão removida"
+      },
+      "errors": {
+        "load": "Não foi possível carregar as movimentações."
+      }
+    },
     "publications": {
       "title": "Publicações",
       "subtitle": "Gerencie as publicações criadas por você.",
@@ -800,6 +849,7 @@
       "cases": "Casos",
       "notificacoes": "Notificações",
       "adminUsers": "Usuários",
+      "adminLogs": "Movimentações",
       "profile": "Meu Perfil",
       "logout": "Sair",
       "perfil": "Meu Perfil",

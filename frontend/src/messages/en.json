@@ -67,6 +67,55 @@
     "welcome": "Welcome to the system"
   },
   "internal": {
+    "activityLogs": {
+      "title": "System activity",
+      "subtitle": "Review recorded changes and sign-in activity.",
+      "count": "{count} records",
+      "filters": {
+        "day": "Day",
+        "module": "Module",
+        "allModules": "All modules",
+        "action": "Action",
+        "allActions": "All actions",
+        "actor": "User",
+        "actorPlaceholder": "Search user...",
+        "search": "Record or item",
+        "searchPlaceholder": "Search record names..."
+      },
+      "table": {
+        "date": "Date and time",
+        "actor": "User",
+        "module": "Module",
+        "action": "Action",
+        "item": "Record",
+        "changedFields": "Changed fields",
+        "ip": "IP address"
+      },
+      "modules": {
+        "users": "Users",
+        "clients": "Clients",
+        "cases": "Cases",
+        "appointments": "Appointments",
+        "publications": "Publications",
+        "access_control": "Access and permissions",
+        "auth": "Session",
+        "other": "Other"
+      },
+      "events": {
+        "created": "Created",
+        "updated": "Edited",
+        "deleted": "Deleted",
+        "signed_in": "Signed in",
+        "signed_out": "Signed out",
+        "role_changed": "Role changed",
+        "permissions_updated": "Permissions updated",
+        "permission_granted": "Permission granted",
+        "permission_revoked": "Permission revoked"
+      },
+      "errors": {
+        "load": "Could not load activity records."
+      }
+    },
     "publications": {
       "title": "Publications",
       "subtitle": "Manage the publications created by you.",
@@ -777,6 +826,7 @@
       "cases": "Cases",
       "notificacoes": "Notifications",
       "adminUsers": "Users",
+      "adminLogs": "Activity",
       "profile": "My Profile",
       "logout": "Logout",
       "perfil": "My Profile",

@@ -41,6 +41,8 @@ tests/                 testes Laravel
 
 Os papéis de usuário atuais são `admin`, `advogado` e `funcionario`. A API usa Sanctum para bearer tokens e Spatie Permission para permissões granulares.
 
+O módulo de movimentações registra para administradores alterações de registros, autenticações e mudanças de permissões. A trilha inclui dia, usuário responsável, módulo, ação e item afetado; mantém nomes de campos alterados sem guardar seus valores sensíveis.
+
 ## Desenvolvimento local
 
 Requisitos: PHP 8.2+, Composer e um banco compatível com a configuração Laravel.

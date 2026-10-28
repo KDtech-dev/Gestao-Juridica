@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\CasoController;
 use App\Http\Controllers\Api\AnexoController;
 use App\Http\Controllers\Api\ComunicacaoDjenController;
 use App\Http\Controllers\Api\AccessControlController;
+use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Enums\PermissionEnum;
 
@@ -44,6 +45,9 @@ Route::prefix('posts')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/activity-logs', [ActivityLogController::class, 'index'])
+        ->middleware('role:admin');
 
     Route::prefix('access-control')
         ->middleware('permission.manage')

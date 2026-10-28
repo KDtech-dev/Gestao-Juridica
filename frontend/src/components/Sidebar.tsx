@@ -250,6 +250,15 @@ export function SidebarDashboard({ activeKey }: Props) {
     });
   }
 
+  if (isAdmin) {
+    translatedMainItems.push({
+      key: "admin-logs",
+      label: t("sidebar.items.adminLogs"),
+      icon: "mdi:clipboard-text-clock-outline",
+      href: "/admin/logs",
+    });
+  }
+
   const sidebarContent = (
     <Box
       sx={{
