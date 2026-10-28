@@ -23,7 +23,6 @@ import {
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { PublicacaoType, StatusPublicacao } from "@/@core/types";
-import { useAuth } from "@/hooks/useAuth";
 import {
   deletePublicacao,
   getPublicacoes,
@@ -32,6 +31,7 @@ import {
 import { toast } from "@/utils/toast";
 import { useTranslations } from "next-intl";
 import { AddButton } from "@/components/AddButton";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 function normalize(value: string) {
   return value
@@ -44,7 +44,7 @@ function normalize(value: string) {
 const STATUS_TABS: StatusPublicacao[] = ["publicado", "rascunho", "arquivado"];
 
 export default function PublicationsView() {
-  const { hasRole } = useAuth();
+  const { hasPermission } = usePermission();
   const t = useTranslations("internal.publications");
   const loadErrorFallback = t("errors.load");
   const [search, setSearch] = useState("");
@@ -54,7 +54,10 @@ export default function PublicationsView() {
     useState<StatusPublicacao>("publicado");
   const [deleteTarget, setDeleteTarget] = useState<PublicacaoType | null>(null);
   const [processingPostId, setProcessingPostId] = useState<string | null>(null);
-  const canManagePublications = hasRole("admin") || hasRole("advogado");
+  const canCreate = hasPermission("publicacoes.criar");
+  const canEdit = hasPermission("publicacoes.editar");
+  const canDelete = hasPermission("publicacoes.excluir");
+  const canManagePublications = canCreate || canEdit;
   const [posts, setPosts] = useState<PublicacaoType[]>([]);
   useEffect(() => {
     const loadPublicacoes = async () => {
@@ -75,7 +78,7 @@ export default function PublicationsView() {
   }, [loadErrorFallback]);
 
   const archivePost = async (post: PublicacaoType) => {
-    if (processingPostId) return;
+    if (!canEdit || processingPostId) return;
     setProcessingPostId(post.id);
     try {
       const body = new FormData();
@@ -97,7 +100,7 @@ export default function PublicationsView() {
   };
 
   const confirmDeletePost = async () => {
-    if (!deleteTarget || processingPostId) return;
+    if (!canDelete || !deleteTarget || processingPostId) return;
     setProcessingPostId(deleteTarget.id);
     try {
       await deletePublicacao(deleteTarget.id);
@@ -167,7 +170,7 @@ export default function PublicationsView() {
                 {t("subtitle")}
               </Typography>
             </Box>
-            {canManagePublications && (
+            {canCreate && (
               <AddButton component={Link} href="/publicacoes/nova">
                 {t("add")}
               </AddButton>
@@ -279,7 +282,7 @@ export default function PublicationsView() {
                       ? t("empty.manageSubtitle")
                       : t("empty.userSubtitle")}
               </Typography>
-              {canManagePublications && !search && (
+              {canCreate && !search && (
                 <AddButton component={Link} href="/publicacoes/nova" sx={{ mt: 2 }}>
                   {t("add")}
                 </AddButton>
@@ -294,6 +297,8 @@ export default function PublicationsView() {
                   processingPostId={processingPostId}
                   onArchive={archivePost}
                   onDelete={setDeleteTarget}
+                  canEdit={canEdit}
+                  canDelete={canDelete}
                 />
               ))}
             </Stack>

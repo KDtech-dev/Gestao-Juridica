@@ -17,6 +17,9 @@ interface AgendaModalsProps {
   actions: Pick<AgendaData, "create" | "update" | "remove">;
   selectedDate: Date;
   onSaved: (compromisso: Compromisso) => void;
+  canCreate: boolean;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export function AgendaModals({
@@ -24,6 +27,9 @@ export function AgendaModals({
   actions,
   selectedDate,
   onSaved,
+  canCreate,
+  canEdit,
+  canDelete,
 }: AgendaModalsProps) {
   const { t } = useTranslation();
   const { addNotification } = useNotifications();
@@ -39,6 +45,7 @@ export function AgendaModals({
   );
 
   async function handleCreate(payload: CompromissoPayload) {
+    if (!canCreate) return;
     try {
       const created = await actions.create.run(payload);
       onSaved(created);
@@ -56,7 +63,7 @@ export function AgendaModals({
   }
 
   async function handleEdit(payload: CompromissoPayload) {
-    if (modal?.type !== "edit") return;
+    if (!canEdit || modal?.type !== "edit") return;
 
     try {
       const updated = await actions.update.run({ id: modal.event.id, payload });
@@ -75,7 +82,7 @@ export function AgendaModals({
   }
 
   async function handleDelete() {
-    if (modal?.type !== "delete") return;
+    if (!canDelete || modal?.type !== "delete") return;
 
     try {
       await actions.remove.run(modal.event.id);
@@ -97,7 +104,7 @@ export function AgendaModals({
   return (
     <>
       <NewCompromissoModal
-        open={modal?.type === "create"}
+        open={canCreate && modal?.type === "create"}
         onClose={close}
         onSubmit={handleCreate}
         initialValues={newInitialValues}
@@ -105,7 +112,7 @@ export function AgendaModals({
       />
 
       <EditCompromissoModal
-        open={modal?.type === "edit"}
+        open={canEdit && modal?.type === "edit"}
         onClose={close}
         initialValues={editInitialValues}
         onSubmit={handleEdit}
@@ -117,10 +124,11 @@ export function AgendaModals({
         event={lastEvent}
         onClose={close}
         onEdit={openEdit}
+        canEdit={canEdit}
       />
 
       <ConfirmDialog
-        open={modal?.type === "delete"}
+        open={canDelete && modal?.type === "delete"}
         title={t("agenda.deleteDialog.title")}
        
         description={

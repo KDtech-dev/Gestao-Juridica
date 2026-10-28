@@ -27,6 +27,7 @@ import { deleteCaso, getCasos } from "@/api/apiCasos";
 import { formatNumeroProcesso } from "@/@core/format";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 const STATUS_COLOR: Record<
   StatusCaso,
@@ -39,6 +40,10 @@ const STATUS_COLOR: Record<
 };
 
 export default function CasosView() {
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("casos.criar");
+  const canEdit = hasPermission("casos.editar");
+  const canDelete = hasPermission("casos.excluir");
   const t = useTranslations("internal.cases");
   const tCommon = useTranslations("common");
   const theme = useTheme();
@@ -88,7 +93,7 @@ export default function CasosView() {
   const totalCount = isSearching ? casosFiltrados.length : total;
 
   const handleDelete = async () => {
-    if (!deleteTarget) return;
+    if (!canDelete || !deleteTarget) return;
 
     setDeleting(true);
     try {
@@ -193,26 +198,30 @@ export default function CasosView() {
           >
             <Icon icon="mdi:eye-outline" width={20} />
           </IconButton>
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/casos/${row.id}/editar`);
-            }}
-            sx={{ "&:hover": { color: "warning.main" } }}
-          >
-            <Icon icon="mdi:pencil-outline" width={20} />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={(e) => {
-              e.stopPropagation();
-              setDeleteTarget(row);
-            }}
-            sx={{ "&:hover": { color: "error.main" } }}
-          >
-            <Icon icon="mdi:trash-can-outline" width={20} />
-          </IconButton>
+          {canEdit && (
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/casos/${row.id}/editar`);
+              }}
+              sx={{ "&:hover": { color: "warning.main" } }}
+            >
+              <Icon icon="mdi:pencil-outline" width={20} />
+            </IconButton>
+          )}
+          {canDelete && (
+            <IconButton
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeleteTarget(row);
+              }}
+              sx={{ "&:hover": { color: "error.main" } }}
+            >
+              <Icon icon="mdi:trash-can-outline" width={20} />
+            </IconButton>
+          )}
         </Stack>
       ),
     },
@@ -251,7 +260,7 @@ export default function CasosView() {
               </Typography>
             </Box>
 
-            <Button
+            {canCreate && <Button
               variant="contained"
               onClick={() => router.push("/casos/novo")}
               startIcon={<Icon icon="mdi:plus" width={20} />}
@@ -269,7 +278,7 @@ export default function CasosView() {
               }}
             >
               {t("newCase")}
-            </Button>
+            </Button>}
           </Stack>
 
           <Paper
@@ -389,7 +398,7 @@ export default function CasosView() {
                     <Typography color="text.secondary" variant="h6">
                       {t("empty.title")}
                     </Typography>
-                    {!isSearching && (
+                    {!isSearching && canCreate && (
                       <Button
                         variant="outlined"
                         onClick={() => router.push("/casos/novo")}
@@ -406,7 +415,7 @@ export default function CasosView() {
           </Paper>
         </Container>
         <ConfirmDialog
-          open={Boolean(deleteTarget)}
+          open={canDelete && Boolean(deleteTarget)}
           title={tCommon("delete")}
           description={
             deleteTarget

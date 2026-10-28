@@ -17,9 +17,14 @@ import { SelectedDayPanel } from "@/components/Agenda/Selecteddaypanel";
 import { AgendaModals } from "@/components/Agenda/Agendamodals";
 import { AgendaVisaoTabs } from "@/components/Agenda/Agendavisaotabs";
 import { useAgendaModals } from "@/hooks/UseAgendaModals";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 
 export default function AgendaView() {
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("compromissos.criar");
+  const canEdit = hasPermission("compromissos.editar");
+  const canDelete = hasPermission("compromissos.excluir");
   const [visao, setVisao] = useState<CompromissoVisao>("publica");
   const [period, setPeriod] = useState<AgendaPeriod>("today");
   const [selectedDate, setSelectedDate] = useState(() => new Date());
@@ -59,6 +64,7 @@ export default function AgendaView() {
           <AgendaHeader
             isToday={isSameDay(selectedDate, new Date())}
             onNew={modals.openCreate}
+            canCreate={canCreate}
           />
           <AgendaVisaoTabs value={visao} onChange={setVisao} />
 
@@ -84,6 +90,8 @@ export default function AgendaView() {
                 onView={modals.openView}
                 onEdit={modals.openEdit}
                 onDelete={modals.openDelete}
+                canEdit={canEdit}
+                canDelete={canDelete}
               />
             </Stack>
 
@@ -99,6 +107,7 @@ export default function AgendaView() {
                 error={all.error}
                 onView={modals.openView}
                 onDelete={modals.openDelete}
+                canDelete={canDelete}
               />
             </Stack>
           </Box>
@@ -110,6 +119,9 @@ export default function AgendaView() {
         actions={{ create, update, remove }}
         selectedDate={selectedDate}
         onSaved={handleSaved}
+        canCreate={canCreate}
+        canEdit={canEdit}
+        canDelete={canDelete}
       />
     </Box>
   );

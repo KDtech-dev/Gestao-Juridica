@@ -14,6 +14,7 @@ interface SelectedDayPanelProps {
   error: string | null;
   onView: (event: Compromisso) => void;
   onDelete: (event: Compromisso) => void;
+  canDelete: boolean;
 }
 
 export function SelectedDayPanel({
@@ -22,6 +23,7 @@ export function SelectedDayPanel({
   error,
   onView,
   onDelete,
+  canDelete,
 }: SelectedDayPanelProps) {
   const { t, language } = useTranslation();
 
@@ -96,6 +98,7 @@ export function SelectedDayPanel({
               event={event}
               onView={onView}
               onDelete={onDelete}
+              canDelete={canDelete}
             />
           ))}
         </Stack>

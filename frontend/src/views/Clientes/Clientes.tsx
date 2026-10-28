@@ -30,8 +30,13 @@ import ConfirmDialog from "@/components/users/ConfirmDialog";
 import { formatCpfCnpj, formatDateFromApi } from "@/@core/format";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 import { useDebounce } from "@/@core/hooks/custom/useDebounce";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 export default function ClientesView() {
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("clientes.criar");
+  const canEdit = hasPermission("clientes.editar");
+  const canDelete = hasPermission("clientes.excluir");
   const translateError = useApiErrorTranslator();
   const locale = useLocale();
   const t = useTranslations("internal.clients");
@@ -79,6 +84,7 @@ export default function ClientesView() {
   const isSearching = search.trim().length > 0;
 
   const handleSubmit = async (data: CreateClientePayload) => {
+    if (!canCreate) return;
     setSubmitting(true);
     try {
       await postCliente(data);
@@ -93,7 +99,7 @@ export default function ClientesView() {
     }
   };
   const handleDelete = async () => {
-    if (!deleteTarget) return;
+    if (!canDelete || !deleteTarget) return;
 
     setDeleting(true);
     try {
@@ -190,20 +196,24 @@ export default function ClientesView() {
           >
             <Icon icon="mdi:eye-outline" width={20} />
           </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => router.push(`/clientes/${row.id}/editar`)}
-            sx={{ "&:hover": { color: "warning.main" } }}
-          >
-            <Icon icon="mdi:pencil-outline" width={20} />
-          </IconButton>
-          <IconButton
-            size="small"
-            onClick={() => setDeleteTarget(row)}
-            sx={{ "&:hover": { color: "error.main" } }}
-          >
-            <Icon icon="mdi:trash-can-outline" width={20} />
-          </IconButton>
+          {canEdit && (
+            <IconButton
+              size="small"
+              onClick={() => router.push(`/clientes/${row.id}/editar`)}
+              sx={{ "&:hover": { color: "warning.main" } }}
+            >
+              <Icon icon="mdi:pencil-outline" width={20} />
+            </IconButton>
+          )}
+          {canDelete && (
+            <IconButton
+              size="small"
+              onClick={() => setDeleteTarget(row)}
+              sx={{ "&:hover": { color: "error.main" } }}
+            >
+              <Icon icon="mdi:trash-can-outline" width={20} />
+            </IconButton>
+          )}
         </Stack>
       ),
     },
@@ -233,7 +243,7 @@ export default function ClientesView() {
               </Typography>
             </Box>
 
-            <Button
+            {canCreate && <Button
               variant="contained"
               onClick={() => setDialogOpen(true)}
               startIcon={<Icon icon="mdi:plus" width={20} />}
@@ -251,7 +261,7 @@ export default function ClientesView() {
               }}
             >
               {t("newClient")}
-            </Button>
+            </Button>}
           </Stack>
 
           <Paper
@@ -371,7 +381,7 @@ export default function ClientesView() {
                     <Typography color="text.secondary" variant="h6">
                       {t("empty.title")}
                     </Typography>
-                    {!isSearching && (
+                    {!isSearching && canCreate && (
                       <Button
                         variant="outlined"
                         onClick={() => setDialogOpen(true)}
@@ -397,7 +407,7 @@ export default function ClientesView() {
           cliente={null}
         />
         <ConfirmDialog
-          open={Boolean(deleteTarget)}
+          open={canDelete && Boolean(deleteTarget)}
           title={tCommon("delete")}
           description={
             deleteTarget

@@ -7,6 +7,11 @@
     "edit": "Editar",
     "dataGrid": {
       "rowsPerPage": "Filas por página:"
+    },
+    "accessDenied": {
+      "title": "Acceso denegado",
+      "description": "No tienes permiso para acceder a esta página.",
+      "back": "Volver"
     }
   },
   "branding": {

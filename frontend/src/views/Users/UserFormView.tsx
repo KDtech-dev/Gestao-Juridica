@@ -44,6 +44,7 @@ import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 import { toast } from "@/utils/toast";
 import { CreateUserPayload, UpdateUserPayload, createUserSchema, UF_SIGLAS, updateUserSchema } from "@/schemas/UserSchema";
 import { profileColorName, profileColorTextColor } from "@/constants/profileColors";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 type Mode = "create" | "edit" | "view";
 type Props = { mode: Mode; userId?: string };
@@ -58,6 +59,10 @@ export default function UserFormView({ mode, userId }: Props) {
   const router = useRouter();
   const theme = useTheme();
   const translateError = useApiErrorTranslator();
+  const { hasPermission } = usePermission();
+  const canManagePermissions = hasPermission("permissoes.gerenciar");
+  const canEditUser = hasPermission("usuarios.editar");
+  const canCreateUser = hasPermission("usuarios.criar");
   const isCreate = mode === "create";
   const isView = mode === "view";
   const [loading, setLoading] = useState(!isCreate);
@@ -86,11 +91,13 @@ export default function UserFormView({ mode, userId }: Props) {
   const permissions = methods.watch("permissions") ?? [];
 
   useEffect(() => {
-    getPermissionCatalog().then(setPermissionCatalog).catch((error) => {
-      toast.error(translateError(error) || tf("errors.permissions"));
-    });
+    if (canManagePermissions) {
+      getPermissionCatalog().then(setPermissionCatalog).catch((error) => {
+        toast.error(translateError(error) || tf("errors.permissions"));
+      });
+    }
     getCategorias().then((response) => setCategorias(response.data)).catch(() => setCategorias([]));
-  }, [translateError]);
+  }, [canManagePermissions, translateError]);
 
   useEffect(() => {
     if (isCreate || !userId) {
@@ -120,6 +127,7 @@ export default function UserFormView({ mode, userId }: Props) {
   };
 
   const onSubmit = methods.handleSubmit(async (values) => {
+    if (isCreate ? !canCreateUser : !canEditUser) return;
     setSaving(true);
     try {
       const payload = {
@@ -140,7 +148,9 @@ export default function UserFormView({ mode, userId }: Props) {
       const selectedPermissions = values.role === "advogado" || values.role === "funcionario"
         ? values.permissions ?? []
         : [];
-      saved.permissions_extras = await syncUserPermissions(String(saved.id), selectedPermissions);
+      if (canManagePermissions) {
+        saved.permissions_extras = await syncUserPermissions(String(saved.id), selectedPermissions);
+      }
 
       if (avatarFile) await postFotoPerfil(String(saved.id), avatarFile);
 
@@ -328,7 +338,7 @@ export default function UserFormView({ mode, userId }: Props) {
                         {permissions.length ? permissions.map((permission) => <Chip key={permission} size="small" label={permissionLabel(permissionCatalog, permission)} />) : <Typography variant="body2" color="text.secondary">{tf("permissions.none")}</Typography>}
                       </Stack>
                     </Box>
-                    {!isView && <Button variant="outlined" startIcon={<Icon icon="mdi:shield-key-outline" />} onClick={() => setPermissionModalOpen(true)}>{tf("permissions.open")}</Button>}
+                    {!isView && canManagePermissions && <Button variant="outlined" startIcon={<Icon icon="mdi:shield-key-outline" />} onClick={() => setPermissionModalOpen(true)}>{tf("permissions.open")}</Button>}
                   </Stack>
                 </Paper>
               )}
@@ -339,14 +349,14 @@ export default function UserFormView({ mode, userId }: Props) {
               </Stack>}
               {isView && <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
                 <Button variant="outlined" onClick={() => router.push("/users")}>{tf("actions.back")}</Button>
-                <Button variant="contained" onClick={() => router.push(`/users/${userId}/edit`)}>{tf("actions.edit")}</Button>
+                {canEditUser && <Button variant="contained" onClick={() => router.push(`/users/${userId}/edit`)}>{tf("actions.edit")}</Button>}
               </Stack>}
             </Box>
           </FormProvider>
         </Container>
       </Box>
 
-      <ExtraPermissionsModal
+      {canManagePermissions && <ExtraPermissionsModal
         open={permissionModalOpen}
         catalog={permissionCatalog}
         selected={permissions}
@@ -355,7 +365,7 @@ export default function UserFormView({ mode, userId }: Props) {
           methods.setValue("permissions", selected, { shouldDirty: true });
           setPermissionModalOpen(false);
         }}
-      />
+      />}
     </Box>
   );
 }

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { isAxiosError } from "axios";
 import auth from "@/configs/auth";
 import { authStorage, getAxios } from "@/configs/axios";
 import { getRouteByRole } from "@/utils/redirectByRole";
@@ -112,11 +113,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         storage.setItem(auth.userDataKeyName, JSON.stringify(profile));
         setUser(profile);
       })
-      .catch(() => {
-        // Keep the cached user when the profile refresh is temporarily unavailable.
+      .catch((error) => {
+        if (!isAxiosError(error) || error.response?.status !== 401) return;
+
+        localStorage.removeItem(auth.userDataKeyName);
+        sessionStorage.removeItem(auth.userDataKeyName);
+        setUser(null);
+        router.replace("/");
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [router]);
 
   const isAuthenticated = !!user;
 

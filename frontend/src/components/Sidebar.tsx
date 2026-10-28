@@ -244,7 +244,7 @@ export function SidebarDashboard({ activeKey }: Props) {
     return { ...item, label: t(`sidebar.items.${item.key}`) };
   });
 
-  if (isAdmin) {
+  if (isAdmin && hasPermission("usuarios.visualizar")) {
     translatedMainItems.push({
       key: "admin-users",
       label: t("sidebar.items.adminUsers"),

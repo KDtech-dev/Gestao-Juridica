@@ -20,6 +20,8 @@ interface TimelineItemProps {
   onView: (event: Compromisso) => void;
   onEdit: (event: Compromisso) => void;
   onDelete: (event: Compromisso) => void;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export const TimelineItem = memo(function TimelineItem({
@@ -29,6 +31,8 @@ export const TimelineItem = memo(function TimelineItem({
   onView,
   onEdit,
   onDelete,
+  canEdit,
+  canDelete,
 }: TimelineItemProps) {
   const { t, language } = useTranslation();
   const chip = statusChip(event.status, t);
@@ -109,19 +113,23 @@ export const TimelineItem = memo(function TimelineItem({
               icon="mdi:eye-outline"
               onClick={() => onView(event)}
             />
-            <ActionIconButton
-              tooltip={t("agenda.actions.edit")}
-              label={t("agenda.actions.editAppointment")}
-              icon="mdi:pencil-outline"
-              onClick={() => onEdit(event)}
-            />
-            <ActionIconButton
-              tooltip={t("agenda.actions.delete")}
-              label={t("agenda.actions.deleteAppointment")}
-              icon="mdi:trash-can-outline"
-              color="error"
-              onClick={() => onDelete(event)}
-            />
+            {canEdit && (
+              <ActionIconButton
+                tooltip={t("agenda.actions.edit")}
+                label={t("agenda.actions.editAppointment")}
+                icon="mdi:pencil-outline"
+                onClick={() => onEdit(event)}
+              />
+            )}
+            {canDelete && (
+              <ActionIconButton
+                tooltip={t("agenda.actions.delete")}
+                label={t("agenda.actions.deleteAppointment")}
+                icon="mdi:trash-can-outline"
+                color="error"
+                onClick={() => onDelete(event)}
+              />
+            )}
           </Stack>
         </Stack>
 

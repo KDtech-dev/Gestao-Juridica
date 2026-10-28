@@ -19,6 +19,8 @@ interface AgendaTimelineProps {
   onView: (event: Compromisso) => void;
   onEdit: (event: Compromisso) => void;
   onDelete: (event: Compromisso) => void;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export function AgendaTimeline({
@@ -29,6 +31,8 @@ export function AgendaTimeline({
   onView,
   onEdit,
   onDelete,
+  canEdit,
+  canDelete,
 }: AgendaTimelineProps) {
   const { t } = useTranslation();
   const router = useRouter();
@@ -105,6 +109,8 @@ export function AgendaTimeline({
               onView={onView}
               onEdit={onEdit}
               onDelete={onDelete}
+              canEdit={canEdit}
+              canDelete={canDelete}
             />
           ))}
 

@@ -17,6 +17,7 @@ interface BaseModalProps {
   cancelText?: string;
   maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
   confirmDisabled?: boolean;
+  hideConfirm?: boolean;
 }
 
 export function BaseModal({
@@ -31,6 +32,7 @@ export function BaseModal({
   cancelText,
   maxWidth = "lg",
   confirmDisabled = false,
+  hideConfirm = false,
 }: BaseModalProps) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
@@ -139,7 +141,7 @@ export function BaseModal({
                 {cancelText ?? t("common.cancel")}
               </Button>
 
-              <Button
+              {!hideConfirm && <Button
                 onClick={
                   confirmType === "submit" ? undefined : (onSubmit ?? onClose)
                 }
@@ -150,7 +152,7 @@ export function BaseModal({
                 sx={{ whiteSpace: "nowrap" }}
               >
                 {confirmText ?? t("common.save")}
-              </Button>
+              </Button>}
             </Box>
           </Box>
         </Box>

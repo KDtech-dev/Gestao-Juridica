@@ -29,6 +29,7 @@ import { SidebarDashboard } from "@/components/Sidebar";
 import { getApiErrorMessage } from "@/configs/ApiError";
 import { toast } from "@/utils/toast";
 import LocalizedDatePicker from "@/components/LocalizedDatePicker";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 type Props = {
   mode: "create" | "edit" | "view";
@@ -61,6 +62,8 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
   const t = useTranslations("internal.clients");
   const locale = useLocale();
   const router = useRouter();
+  const { hasPermission } = usePermission();
+  const canViewCases = hasPermission("casos.visualizar");
   const isEdit = mode === "edit";
 
   const loadCliente = useCallback(async () => {
@@ -75,7 +78,7 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
     try {
       const [clienteResponse, casosResponse] = await Promise.all([
         getClienteById(clienteId),
-        getCasos({ page: 1, per_page: 999 }),
+        canViewCases ? getCasos({ page: 1, per_page: 999 }) : Promise.resolve(null),
       ]);
 
       setCliente(clienteResponse);
@@ -87,23 +90,23 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
         data_nascimento: clienteResponse.data_nascimento ?? "",
       });
 
-      const casoDoCliente = casosResponse.data.filter((caso) =>
+      const casoDoCliente = casosResponse?.data.filter((caso) =>
         caso.clientes?.some((c) => String(c.id) === String(clienteId)),
-      );
+      ) ?? [];
       setCasos(casoDoCliente);
     } catch {
       toast.error(t("errors.loadClient"));
     } finally {
       setLoading(false);
     }
-  }, [clienteId, t]);
+  }, [canViewCases, clienteId, t]);
 
   useEffect(() => {
     loadCliente();
   }, [loadCliente]);
 
   const handleEditSubmit = async () => {
-    if (!cliente) return;
+    if (!hasPermission("clientes.editar") || !cliente) return;
     setSubmitting(true);
     try {
       const updated = await updateCliente(cliente.id, form);
@@ -232,7 +235,7 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
               </Box>
             </Paper>
 
-            <Paper
+            {canViewCases && <Paper
               elevation={0}
               sx={{
                 borderRadius: "20px",
@@ -330,9 +333,9 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
                   ))
                 )}
               </Stack>
-            </Paper>
+            </Paper>}
 
-            {isEdit && (
+            {isEdit && hasPermission("clientes.editar") && (
               <Stack direction="row" justifyContent="flex-end" spacing={1.5}>
                 <Button
                   variant="outlined"

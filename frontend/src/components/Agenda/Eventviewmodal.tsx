@@ -17,6 +17,7 @@ interface EventViewModalProps {
   event: Compromisso | null;
   onClose: () => void;
   onEdit: (event: Compromisso) => void;
+  canEdit: boolean;
 }
 
 function InfoRow({ icon, children }: { icon: string; children: ReactNode }) {
@@ -28,7 +29,7 @@ function InfoRow({ icon, children }: { icon: string; children: ReactNode }) {
   );
 }
 
-export function EventViewModal({ open, event, onClose, onEdit }: EventViewModalProps) {
+export function EventViewModal({ open, event, onClose, onEdit, canEdit }: EventViewModalProps) {
   const { t, language } = useTranslation();
 
   return (
@@ -38,6 +39,7 @@ export function EventViewModal({ open, event, onClose, onEdit }: EventViewModalP
       title={t("agenda.viewModal.title")}
       confirmText={t("agenda.actions.edit")}
       cancelText={t("agenda.actions.close")}
+      hideConfirm={!canEdit}
       maxWidth="sm"
       onSubmit={() => {
         if (event) onEdit(event);

@@ -19,6 +19,8 @@ type CardPublicacaoInternaProps = {
   processingPostId: string | null;
   onArchive: (publicacao: PublicacaoType) => void;
   onDelete: (publicacao: PublicacaoType) => void;
+  canEdit: boolean;
+  canDelete: boolean;
 };
 
 const getCategoria = (publicacao: PublicacaoType) =>
@@ -53,6 +55,8 @@ export function CardPublicacaoInterna({
   processingPostId,
   onArchive,
   onDelete,
+  canEdit,
+  canDelete,
 }: CardPublicacaoInternaProps) {
   const locale = useLocale();
   const t = useTranslations("internal.publications");
@@ -143,63 +147,71 @@ export function CardPublicacaoInterna({
         <Typography color="text.secondary" fontSize="0.84rem">
           {t("byAuthor", { author: getAutor(publicacao) })}
         </Typography>
-        <Stack
-          direction="row"
-          spacing={0.5}
-          sx={{ position: "relative", zIndex: 4 }}
-        >
-          <Tooltip title={t("actions.edit")}>
-            <IconButton
-              component={Link}
-              href={editHref}
-              aria-label={t("actions.edit")}
-              size="small"
-              onClick={(event) => event.stopPropagation()}
-              sx={{ border: "1px solid", borderColor: "divider" }}
-            >
-              <Icon icon="mdi:pencil-outline" width={19} />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={t("actions.archive")}>
-            <span>
-              <IconButton
-                aria-label={t("actions.archive")}
-                size="small"
-                disabled={
-                  publicacao.status === "arquivado" ||
-                  processingPostId === publicacao.id
-                }
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onArchive(publicacao);
-                }}
-                sx={{ border: "1px solid", borderColor: "divider" }}
-              >
-                <Icon icon="mdi:archive-outline" width={19} />
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title={t("actions.delete")}>
-            <span>
-              <IconButton
-                aria-label={t("actions.delete")}
-                size="small"
-                disabled={processingPostId === publicacao.id}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onDelete(publicacao);
-                }}
-                sx={{
-                  border: "1px solid",
-                  borderColor: "divider",
-                  color: "error.main",
-                }}
-              >
-                <Icon icon="mdi:trash-can-outline" width={19} />
-              </IconButton>
-            </span>
-          </Tooltip>
-        </Stack>
+        {(canEdit || canDelete) && (
+          <Stack
+            direction="row"
+            spacing={0.5}
+            sx={{ position: "relative", zIndex: 4 }}
+          >
+            {canEdit && (
+              <>
+                <Tooltip title={t("actions.edit")}>
+                  <IconButton
+                    component={Link}
+                    href={editHref}
+                    aria-label={t("actions.edit")}
+                    size="small"
+                    onClick={(event) => event.stopPropagation()}
+                    sx={{ border: "1px solid", borderColor: "divider" }}
+                  >
+                    <Icon icon="mdi:pencil-outline" width={19} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t("actions.archive")}>
+                  <span>
+                    <IconButton
+                      aria-label={t("actions.archive")}
+                      size="small"
+                      disabled={
+                        publicacao.status === "arquivado" ||
+                        processingPostId === publicacao.id
+                      }
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onArchive(publicacao);
+                      }}
+                      sx={{ border: "1px solid", borderColor: "divider" }}
+                    >
+                      <Icon icon="mdi:archive-outline" width={19} />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </>
+            )}
+            {canDelete && (
+              <Tooltip title={t("actions.delete")}>
+                <span>
+                  <IconButton
+                    aria-label={t("actions.delete")}
+                    size="small"
+                    disabled={processingPostId === publicacao.id}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDelete(publicacao);
+                    }}
+                    sx={{
+                      border: "1px solid",
+                      borderColor: "divider",
+                      color: "error.main",
+                    }}
+                  >
+                    <Icon icon="mdi:trash-can-outline" width={19} />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+          </Stack>
+        )}
       </Stack>
     </Paper>
   );

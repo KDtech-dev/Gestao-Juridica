@@ -67,7 +67,10 @@ type BulkDeleteTarget = "selected" | "all" | null;
 export default function CompromissoListView() {
   const { t, language } = useTranslation();
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading } = useAuthContext();
+  const { isAuthenticated, loading: authLoading, hasPermission } = useAuthContext();
+  const canCreate = hasPermission("compromissos.criar");
+  const canEdit = hasPermission("compromissos.editar");
+  const canDelete = hasPermission("compromissos.excluir");
   const { addNotification } = useNotifications();
 
   const [visao, setVisao] = useState<CompromissoVisao>("publica");
@@ -184,7 +187,7 @@ export default function CompromissoListView() {
   }
 
   async function handleBulkUpdateStatus(status: CompromissoStatus) {
-    if (selectedIds.size === 0) return;
+    if (!canEdit || selectedIds.size === 0) return;
 
     try {
       setBulkActionLoading(true);
@@ -207,7 +210,7 @@ export default function CompromissoListView() {
   }
 
   async function handleConfirmBulkDelete() {
-    if (!bulkDeleteTarget) return;
+    if (!canDelete || !bulkDeleteTarget) return;
 
     const ids =
       bulkDeleteTarget === "all"
@@ -242,6 +245,7 @@ export default function CompromissoListView() {
   }
 
   async function handleNewCompromissoSubmit(payload: CompromissoPayload) {
+    if (!canCreate) return;
     try {
       setSubmitting(true);
       await createCompromisso(payload);
@@ -262,7 +266,7 @@ export default function CompromissoListView() {
   }
 
   async function handleEditCompromissoSubmit(payload: CompromissoPayload) {
-    if (!selectedEvent) return;
+    if (!canEdit || !selectedEvent) return;
 
     try {
       setSubmitting(true);
@@ -285,7 +289,7 @@ export default function CompromissoListView() {
   }
 
   async function handleDeleteCompromisso() {
-    if (!deleteTarget) return;
+    if (!canDelete || !deleteTarget) return;
 
     try {
       setDeleting(true);
@@ -311,6 +315,7 @@ export default function CompromissoListView() {
   }
 
   function openEditModal(event: Compromisso) {
+    if (!canEdit) return;
     setViewEvent(null);
     setSelectedEvent(event);
     setOpenEdit(true);
@@ -358,14 +363,14 @@ export default function CompromissoListView() {
               </Typography>
             </Box>
 
-            <Button
+            {canCreate && <Button
               variant="contained"
               startIcon={<Icon icon="mdi:plus" width={20} />}
               sx={{ textTransform: "none", borderRadius: "12px", px: 2.2 }}
               onClick={() => setOpen(true)}
             >
               {t("agenda.newAppointment")}
-            </Button>
+            </Button>}
           </Stack>
 
           <Paper
@@ -469,7 +474,7 @@ export default function CompromissoListView() {
               </Stack>
             </Box>
 
-            {!loading && !error && filteredCompromissos.length > 0 && (
+            {!loading && !error && filteredCompromissos.length > 0 && (canEdit || canDelete) && (
               <Box
                 sx={{
                   px: 2.5,
@@ -495,7 +500,7 @@ export default function CompromissoListView() {
 
                 <Box sx={{ flex: 1 }} />
 
-                <Button
+                {canEdit && <Button
                   size="small"
                   variant="outlined"
                   disabled={selectedIds.size === 0 || bulkActionLoading}
@@ -503,8 +508,8 @@ export default function CompromissoListView() {
                   onClick={() => handleBulkUpdateStatus("CONCLUIDO")}
                 >
                   {t("agenda.list.actions.markCompleted")}
-                </Button>
-                <Button
+                </Button>}
+                {canEdit && <Button
                   size="small"
                   variant="outlined"
                   disabled={selectedIds.size === 0 || bulkActionLoading}
@@ -512,8 +517,8 @@ export default function CompromissoListView() {
                   onClick={() => handleBulkUpdateStatus("CANCELADO")}
                 >
                   {t("agenda.list.actions.markCancelled")}
-                </Button>
-                <Button
+                </Button>}
+                {canDelete && <Button
                   size="small"
                   color="error"
                   variant="outlined"
@@ -522,8 +527,8 @@ export default function CompromissoListView() {
                   onClick={() => setBulkDeleteTarget("selected")}
                 >
                   {t("agenda.list.actions.deleteSelected")}
-                </Button>
-                <Button
+                </Button>}
+                {canDelete && <Button
                   size="small"
                   color="error"
                   variant="outlined"
@@ -532,7 +537,7 @@ export default function CompromissoListView() {
                   onClick={() => setBulkDeleteTarget("all")}
                 >
                   {t("agenda.list.actions.deleteAll")}
-                </Button>
+                </Button>}
               </Box>
             )}
 
@@ -578,11 +583,13 @@ export default function CompromissoListView() {
                     }}
                   >
                     <Stack direction="row" gap={1.5} alignItems="flex-start">
-                      <Checkbox
-                        checked={checked}
-                        onChange={() => toggleSelected(key)}
-                        sx={{ p: 0.4, mt: 0.1 }}
-                      />
+                      {(canEdit || canDelete) && (
+                        <Checkbox
+                          checked={checked}
+                          onChange={() => toggleSelected(key)}
+                          sx={{ p: 0.4, mt: 0.1 }}
+                        />
+                      )}
 
                       <Box
                         sx={{
@@ -661,15 +668,15 @@ export default function CompromissoListView() {
                         mt={0.4}
                         onClick={(clickEvent) => clickEvent.stopPropagation()}
                       >
-                        <Tooltip title={t("agenda.actions.edit")}>
+                        {canEdit && <Tooltip title={t("agenda.actions.edit")}>
                           <IconButton
                             size="small"
                             onClick={() => openEditModal(event)}
                           >
                             <Icon icon="mdi:pencil-outline" width={18} />
                           </IconButton>
-                        </Tooltip>
-                        <Tooltip title={t("agenda.actions.delete")}>
+                        </Tooltip>}
+                        {canDelete && <Tooltip title={t("agenda.actions.delete")}>
                           <IconButton
                             size="small"
                             color="error"
@@ -677,7 +684,7 @@ export default function CompromissoListView() {
                           >
                             <Icon icon="mdi:trash-can-outline" width={18} />
                           </IconButton>
-                        </Tooltip>
+                        </Tooltip>}
                       </Stack>
                     </Stack>
                   </Box>
@@ -731,14 +738,14 @@ export default function CompromissoListView() {
       </Box>
 
       <NewCompromissoModal
-        open={open}
+        open={canCreate && open}
         onClose={() => setOpen(false)}
         onSubmit={handleNewCompromissoSubmit}
         submitting={submitting}
       />
 
       <EditCompromissoModal
-        open={openEdit}
+        open={canEdit && openEdit}
         onClose={() => {
           setOpenEdit(false);
           setSelectedEvent(null);
@@ -754,6 +761,7 @@ export default function CompromissoListView() {
         title={t("agenda.viewModal.title")}
         confirmText={t("agenda.actions.edit")}
         cancelText={t("agenda.actions.close")}
+        hideConfirm={!canEdit}
         maxWidth="sm"
         onSubmit={() => {
           if (!viewEvent) return;
@@ -822,7 +830,7 @@ export default function CompromissoListView() {
       </BaseModal>
 
       <ConfirmDialog
-        open={isConfirmDialogOpen}
+        open={canDelete && isConfirmDialogOpen}
         title={
           bulkDeleteTarget
             ? t("agenda.list.bulkDeleteDialog.title")

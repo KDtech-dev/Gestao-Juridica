@@ -27,6 +27,7 @@ import { formatToastErrorMessage, toast } from "@/utils/toast";
 import { UserType, RoleType } from "@/@core/types";
 import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
+import usePermission from "@/@core/hooks/custom/usePermission";
 import AdminResetPasswordModal from "@/components/modals/AdminResetPasswordModal";
 
 const ROLE_COLOR: Record<RoleType, "error" | "primary" | "default"> = {
@@ -44,6 +45,10 @@ function getUserPerfil(user: UserType) {
 }
 
 export default function UsersView() {
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("usuarios.criar");
+  const canEdit = hasPermission("usuarios.editar");
+  const canDelete = hasPermission("usuarios.excluir");
   const t = useTranslations("internal.users");
   const tCommon = useTranslations("common");
   const theme = useTheme();
@@ -94,7 +99,7 @@ export default function UsersView() {
   const totalCount = isSearching ? usersFiltrados.length : total;
 
   const handleDelete = async () => {
-    if (!deleteTarget) return;
+    if (!canDelete || !deleteTarget) return;
 
     setDeleting(true);
     try {
@@ -116,8 +121,12 @@ export default function UsersView() {
     }
   };
 
-  const openCreate = () => router.push("/users/new");
-  const openEdit = (user: UserType) => router.push(`/users/${user.id}/edit`);
+  const openCreate = () => {
+    if (canCreate) router.push("/users/new");
+  };
+  const openEdit = (user: UserType) => {
+    if (canEdit) router.push(`/users/${user.id}/edit`);
+  };
   const openView = (user: UserType) => router.push(`/users/${user.id}`);
   const columns: GridColDef<UserType>[] = [
     {
@@ -238,7 +247,7 @@ export default function UsersView() {
             <Icon icon="mdi:eye-outline" width={20} />
           </IconButton>
 
-          <IconButton
+          {canEdit && <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
@@ -246,8 +255,8 @@ export default function UsersView() {
             }}
           >
             <Icon icon="mdi:pencil-outline" width={20} />
-          </IconButton>
-          <IconButton
+          </IconButton>}
+          {canEdit && <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
@@ -255,8 +264,8 @@ export default function UsersView() {
             }}
           >
             <Icon icon="mdi:key-outline" width={20} />
-          </IconButton>
-          <IconButton
+          </IconButton>}
+          {canDelete && <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation();
@@ -264,7 +273,7 @@ export default function UsersView() {
             }}
           >
             <Icon icon="mdi:trash-can-outline" width={20} />
-          </IconButton>
+          </IconButton>}
         </Stack>
       ),
     },
@@ -309,7 +318,7 @@ export default function UsersView() {
               </Typography>
             </Box>
 
-            <Button
+            {canCreate && <Button
               variant="contained"
               onClick={openCreate}
               startIcon={<Icon icon="mdi:plus" width={20} />}
@@ -328,7 +337,7 @@ export default function UsersView() {
               }}
             >
               {t("newUser")}
-            </Button>
+            </Button>}
           </Stack>
 
           <Paper
@@ -472,14 +481,14 @@ export default function UsersView() {
                       {t("empty.title")}
                     </Typography>
 
-                    <Button
+                    {canCreate && <Button
                       variant="outlined"
                       onClick={openCreate}
                       startIcon={<Icon icon="mdi:plus" />}
                       sx={{ borderRadius: "12px" }}
                     >
                       {t("empty.action")}
-                    </Button>
+                    </Button>}
                   </Box>
                 ),
               }}
@@ -489,12 +498,12 @@ export default function UsersView() {
       </Box>
 
       <AdminResetPasswordModal
-        open={Boolean(resetPasswordTarget)}
+        open={canEdit && Boolean(resetPasswordTarget)}
         targetUser={resetPasswordTarget}
         onClose={() => setResetPasswordTarget(null)}
       />
       <ConfirmDialog
-        open={Boolean(deleteTarget)}
+        open={canDelete && Boolean(deleteTarget)}
         title={tCommon("delete")}
         description={
           deleteTarget

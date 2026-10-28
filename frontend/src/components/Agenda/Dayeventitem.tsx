@@ -11,12 +11,14 @@ interface DayEventItemProps {
   event: Compromisso;
   onView: (event: Compromisso) => void;
   onDelete: (event: Compromisso) => void;
+  canDelete: boolean;
 }
 
 export const DayEventItem = memo(function DayEventItem({
   event,
   onView,
   onDelete,
+  canDelete,
 }: DayEventItemProps) {
   const { t } = useTranslation();
   const chip = statusChip(event.status, t);
@@ -70,14 +72,16 @@ export const DayEventItem = memo(function DayEventItem({
             <Typography color="text.secondary" fontSize="0.8rem" fontWeight={700}>
               {formatTime(event)}
             </Typography>
-            <ActionIconButton
-              compact
-              tooltip={t("agenda.actions.delete")}
-              label={t("agenda.actions.deleteAppointment")}
-              icon="mdi:trash-can-outline"
-              color="error"
-              onClick={() => onDelete(event)}
-            />
+            {canDelete && (
+              <ActionIconButton
+                compact
+                tooltip={t("agenda.actions.delete")}
+                label={t("agenda.actions.deleteAppointment")}
+                icon="mdi:trash-can-outline"
+                color="error"
+                onClick={() => onDelete(event)}
+              />
+            )}
           </Stack>
         </Stack>
 

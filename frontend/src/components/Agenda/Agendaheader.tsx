@@ -5,9 +5,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 interface AgendaHeaderProps {
   isToday: boolean;
   onNew: () => void;
+  canCreate: boolean;
 }
 
-export function AgendaHeader({ isToday, onNew }: AgendaHeaderProps) {
+export function AgendaHeader({ isToday, onNew, canCreate }: AgendaHeaderProps) {
   const { t } = useTranslation();
 
   return (
@@ -37,7 +38,7 @@ export function AgendaHeader({ isToday, onNew }: AgendaHeaderProps) {
         </Typography>
       </Box>
 
-      <AddButton onClick={onNew}>{t("agenda.newAppointment")}</AddButton>
+      {canCreate && <AddButton onClick={onNew}>{t("agenda.newAppointment")}</AddButton>}
     </Stack>
   );
 }
