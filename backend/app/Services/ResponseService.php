@@ -27,6 +27,8 @@ class ResponseService
                 'success' => false,
                 'message' => $message,
                 'code' => $code,
+                'data' => null,
+                'meta' => null,
             ],
             $code,
             options: JSON_UNESCAPED_SLASHES
@@ -39,14 +41,18 @@ class ResponseService
         ?string $message = null,
         ?array $errors = null
     ) {
+        $status = $code ?? Response::HTTP_INTERNAL_SERVER_ERROR;
+
         return response()->json(
             [
                 'success' => false,
                 'message' => $message ?? $exception->getMessage(),
-                'code' => $code ?? $exception->getCode(),
+                'code' => $status,
                 'errors' => $errors,
+                'data' => null,
+                'meta' => null,
             ],
-            $code ?? Response::HTTP_INTERNAL_SERVER_ERROR
+            $status
         );
     }
 }

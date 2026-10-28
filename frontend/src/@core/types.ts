@@ -1,15 +1,17 @@
 export type ResponseType<T> = {
   success: boolean;
-  message: string;
+  message: string | null;
   data: T;
+  meta?: Record<string, unknown> | null;
 };
 
 export type ArrayResponseType<T> = {
   success: boolean;
-  message: string;
+  message: string | null;
   data: T[];
-  meta?: ResponseMetaType;
+  meta?: ResponseMetaType | null;
   total?: number;
+  links?: PaginationLinksType;
 };
 
 export type MetaType = {
@@ -41,6 +43,8 @@ export type PaginationLinksType = {
 };
 
 export type PaginatedResponseType<T> = {
+  success?: boolean;
+  message?: string | null;
   data: T[];
   meta: PaginationMetaType;
   links: PaginationLinksType;

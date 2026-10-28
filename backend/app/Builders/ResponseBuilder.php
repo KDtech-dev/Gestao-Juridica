@@ -3,7 +3,6 @@
 namespace App\Builders;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ResponseBuilder
@@ -16,12 +15,14 @@ class ResponseBuilder
     public function success(): self
     {
         $this->success = true;
+        $this->status = SymfonyResponse::HTTP_OK;
         return $this;
     }
 
     public function error(): self
     {
         $this->success = false;
+        $this->status = SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR;
         return $this;
     }
 
@@ -40,8 +41,10 @@ class ResponseBuilder
 
     public function status(int $status): self
     {
-        if (!in_array($status, SymfonyResponse::$statusTexts)) {
-            $status = $this->success ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR;
+        if ($status < 100 || $status > 599) {
+            $status = $this->success
+                ? SymfonyResponse::HTTP_OK
+                : SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR;
         }
 
         $this->status = $status;
@@ -51,9 +54,11 @@ class ResponseBuilder
     public function send(): JsonResponse
     {
         return response()->json([
-            'status'  => $this->success,
-            'message' => $this->message,
-            'data'    => $this->success ? $this->data : [],
+            'success' => $this->success,
+            'message' => $this->message !== '' ? $this->message : null,
+            'data'    => $this->success ? $this->data : null,
+            'meta'    => null,
+            ...(!$this->success ? ['code' => $this->status] : []),
         ], $this->status, options: JSON_UNESCAPED_SLASHES);
     }
 }
