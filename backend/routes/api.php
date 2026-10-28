@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/anexos/{anexo}/download', [AnexoController::class, 'download']);
 
     Route::prefix('profile')->group(function () {
+        Route::get('/available-colors', [ProfileController::class, 'availableColors']);
         Route::get('/',         [ProfileController::class, 'show']);
         Route::post('/foto', [ProfileController::class, 'updatePhoto']);
         Route::put('/',         [ProfileController::class, 'update']);
@@ -138,6 +139,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('users')->middleware('role:admin')->group(function () {
+        Route::get('/available-colors', [UserController::class, 'availableColors']);
         Route::get('/',               [UserController::class, 'index']);
         Route::post('/',              [UserController::class, 'store']);
         Route::get('/{user}',        [UserController::class, 'show']);
@@ -177,4 +179,3 @@ Route::middleware('auth:sanctum')->group(function () {
         );
     });
 });
-    

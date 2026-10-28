@@ -576,6 +576,11 @@
     },
     "profile": {
       "title": "My Profile",
+      "colorPicker": {
+        "choose": "Choose profile color",
+        "inUse": "Color used by another user",
+        "noneAvailable": "All palette colors are already in use."
+      },
       "roles": {
         "admin": "Administrator",
         "advogado": "Lawyer",
@@ -1061,6 +1066,10 @@
     }
   },
   "validation": {
+    "cor_perfil": {
+      "in": "Choose an available color from the palette.",
+      "unique": "This color is already in use by another user."
+    },
     "name": {
       "required": "Name is required.",
       "max": "Name cannot exceed 255 characters."

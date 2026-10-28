@@ -178,7 +178,7 @@ export default function UserFormView({ mode, userId }: Props) {
               <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, overflow: "hidden", p: 0 }}>
                 <Box sx={{ minHeight: 112, background: bannerBackground, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, px: { xs: 2, md: 3 } }}>
                   <Typography fontWeight={700} fontSize="1.35rem" color="#fff">{tf("sections.account")}</Typography>
-                  {!isView ? <PickColor name="cor_perfil" defaultColor={user?.cor_perfil ?? "#9e9e9e"} /> : (
+                  {!isView ? <PickColor name="cor_perfil" scope="users" excludeUserId={isCreate ? undefined : userId} defaultColor={user?.cor_perfil ?? "#2563eb"} /> : (
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: corPerfil ?? "#9e9e9e", border: "2px solid rgba(255,255,255,0.8)" }} />
                       <Typography variant="caption" color="rgba(255,255,255,0.9)">{(corPerfil ?? "#9e9e9e").toUpperCase()}</Typography>
@@ -330,7 +330,7 @@ function defaults(user: UserType | null): Partial<CreateUserPayload | UpdateUser
     name: user?.name ?? "",
     email: user?.email ?? "",
     cpf: user?.cpf ?? "",
-    cor_perfil: user?.cor_perfil ?? "#9e9e9e",
+    cor_perfil: user?.cor_perfil ?? "#2563eb",
     ...(user ? {} : { password: "", password_confirmation: "" }),
     permissions: user?.permissions_extras ?? [],
     funcionario: {

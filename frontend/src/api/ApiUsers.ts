@@ -13,6 +13,22 @@ export type PermissionCatalogEntry = {
   action_label: string;
 };
 
+export type ProfileColorOptions = {
+  colors: string[];
+  used: string[];
+};
+
+const getAvailableProfileColors = async (
+  scope: "profile" | "users",
+  excludeUserId?: string,
+): Promise<ProfileColorOptions> => {
+  const response = await getAxios().get<{ data: ProfileColorOptions }>(
+    scope === "profile" ? "/profile/available-colors" : "/users/available-colors",
+    { params: excludeUserId ? { exclude_user_id: excludeUserId } : undefined },
+  );
+  return response.data.data;
+};
+
 const getPermissionCatalog = async (): Promise<PermissionCatalogEntry[]> => {
   const response = await getAxios().get<{ data: PermissionCatalogEntry[] }>(
     "/access-control/permissions",
@@ -93,6 +109,7 @@ const syncUserPermissions = async (
 
 export {
   getPermissionCatalog,
+  getAvailableProfileColors,
   getUsers,
   getUserById,
   postUser,

@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateProfileRequest;
 use App\Services\ProfileService;
 use App\Services\ResponseService;
 use App\Services\UserService;
+use App\Services\ProfileColorService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -22,6 +23,13 @@ class ProfileController extends Controller
     {
         return ResponseService::success([
             'user' => $this->service->getProfile($request->user()),
+        ]);
+    }
+
+    public function availableColors(Request $request, ProfileColorService $colors): JsonResponse
+    {
+        return response()->json([
+            'data' => $colors->choices($request->user()->id),
         ]);
     }
 

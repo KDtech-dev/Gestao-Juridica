@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { useTranslations } from "next-intl";
+import { PROFILE_COLORS } from "@/constants/profileColors";
 
 type TFunction = ReturnType<typeof useTranslations>;
 
@@ -145,7 +146,7 @@ export const createUserBaseSchema = (t: TFunction) =>
       .string()
       .min(1, t("password_confirmation.required")),
     role: roleEnum,
-    cor_perfil: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
+    cor_perfil: z.enum(PROFILE_COLORS),
     permissions: z.array(z.string()).optional(),
     endereco: createEnderecoSchema(t).optional(),
     funcionario: createFuncionarioSchema(t).optional(),
@@ -213,11 +214,7 @@ export const updateUserBaseSchema = (t: TFunction) =>
     password_confirmation: z.string().optional(),
     role: roleEnum.optional(),
     permissions: z.array(z.string()).optional(),
-    cor_perfil: z
-      .string()
-      .regex(/^#[0-9A-Fa-f]{6}$/)
-      .optional()
-      .nullable(),
+    cor_perfil: z.enum(PROFILE_COLORS).optional(),
     endereco: createEnderecoSchema(t).partial().optional().nullable(),
     funcionario: createFuncionarioSchema(t).partial().optional(),
     advogado: createAdvogadoSchema(t).partial().optional(),

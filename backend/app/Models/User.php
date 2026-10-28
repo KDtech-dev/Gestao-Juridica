@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\RoleEnum;
 use App\Notifications\ResetPasswordNotification;
+use App\Services\ProfileColorService;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,22 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, HasUuids;
+
+    protected static function booted(): void
+    {
+        static::saving(function (User $user) {
+            if ($user->cor_perfil) {
+                $user->cor_perfil = strtolower($user->cor_perfil);
+            }
+        });
+
+        static::creating(function (User $user) {
+            if (!$user->cor_perfil) {
+                $user->cor_perfil = app(ProfileColorService::class)->nextAvailable()
+                    ?? throw new \RuntimeException('Não há cores de perfil disponíveis.');
+            }
+        });
+    }
 
     protected $guard_name = 'api';
 

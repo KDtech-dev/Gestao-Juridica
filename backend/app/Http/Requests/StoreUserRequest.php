@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
+use App\Support\ProfileColors;
 use Override;
 
 class StoreUserRequest extends FormRequest
@@ -19,6 +21,9 @@ class StoreUserRequest extends FormRequest
 
         if (isset($data['cpf'])) {
             $data['cpf'] = preg_replace('/\D/', '', $data['cpf']);
+        }
+        if (isset($data['cor_perfil'])) {
+            $data['cor_perfil'] = strtolower($data['cor_perfil']);
         }
 
         if (isset($data['funcionario']['data_nascimento'])) {
@@ -72,7 +77,7 @@ class StoreUserRequest extends FormRequest
             'cpf'      => ['required', 'string', 'size:11', 'unique:users,cpf'],
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
             'role'     => ['required', 'string', 'in:funcionario,advogado,admin'],
-            'cor_perfil' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'cor_perfil' => ['required', 'string', Rule::in(ProfileColors::OPTIONS), Rule::unique('users', 'cor_perfil')],
             'endereco'                  => ['nullable', 'array'],
             'endereco.logradouro'       => ['required_with:endereco', 'string', 'max:255'],
             'endereco.numero'           => ['required_with:endereco', 'string', 'max:20'],
@@ -106,6 +111,8 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'password' => 'validation.password',
+            'cor_perfil.in' => 'validation.cor_perfil.in',
+            'cor_perfil.unique' => 'validation.cor_perfil.unique',
             'role.in'                       => 'validation.role.in',
             'cpf.size'                       => 'validation.cpf.size',
             'advogado.oab_numero.required_if' => 'validation.oab_numero.required_if',

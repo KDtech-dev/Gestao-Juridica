@@ -601,6 +601,11 @@
     },
     "profile": {
       "title": "Meu Perfil",
+      "colorPicker": {
+        "choose": "Escolher cor do perfil",
+        "inUse": "Cor em uso por outro usuário",
+        "noneAvailable": "Todas as cores da paleta já estão em uso."
+      },
       "roles": {
         "admin": "Administrador",
         "advogado": "Advogado",
@@ -1084,6 +1089,10 @@
     }
   },
   "validation": {
+    "cor_perfil": {
+      "in": "Escolha uma cor disponível da paleta.",
+      "unique": "Esta cor já está sendo usada por outro usuário."
+    },
     "resetPassword": {
       "success": "Senha redefinida com sucesso.",
       "invalidToken": "Este link de redefinição é inválido ou já expirou.",

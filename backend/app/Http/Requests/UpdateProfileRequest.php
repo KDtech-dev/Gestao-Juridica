@@ -18,6 +18,9 @@ class UpdateProfileRequest extends UpdateUserRequest
         if (isset($data['cpf'])) {
             $data['cpf'] = preg_replace('/\D/', '', $data['cpf']);
         }
+        if (isset($data['cor_perfil'])) {
+            $data['cor_perfil'] = strtolower($data['cor_perfil']);
+        }
 
         $this->replace($data);
     }

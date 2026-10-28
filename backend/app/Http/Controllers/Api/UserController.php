@@ -13,6 +13,7 @@ use App\Http\Requests\UpdateOwnPasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
+use App\Services\ProfileColorService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -29,6 +30,13 @@ class UserController extends Controller
         $users = $this->userService->listar(excluirUsuarioId: Auth::id());
 
         return UserResource::collection($users);
+    }
+
+    public function availableColors(\Illuminate\Http\Request $request, ProfileColorService $colors): JsonResponse
+    {
+        return response()->json([
+            'data' => $colors->choices($request->query('exclude_user_id')),
+        ]);
     }
 
     public function show(User $user): UserResource

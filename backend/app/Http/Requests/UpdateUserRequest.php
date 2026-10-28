@@ -4,6 +4,8 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rule;
+use App\Support\ProfileColors;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -18,6 +20,14 @@ class UpdateUserRequest extends FormRequest
 
         return $userLogado->id === $userAlvo->id;
     }
+
+    protected function prepareForValidation(): void
+    {
+        if ($this->filled('cor_perfil')) {
+            $this->merge(['cor_perfil' => strtolower($this->input('cor_perfil'))]);
+        }
+    }
+
     public function rules(): array
     {
         $user = $this->targetUser();
@@ -30,7 +40,7 @@ class UpdateUserRequest extends FormRequest
             'cpf'      => ['sometimes', 'string', 'size:11', "unique:users,cpf,{$userId}"],
             'password' => ['sometimes', 'confirmed', Password::min(8)->letters()->numbers()],
             'role'     => ['sometimes', 'string', 'in:funcionario,advogado,admin'],
-            'cor_perfil' => ['sometimes', 'nullable', 'string', 'regex:/^#[0-9A-Fa-f]{6}$/'],
+            'cor_perfil' => ['sometimes', 'required', 'string', Rule::in(ProfileColors::OPTIONS), Rule::unique('users', 'cor_perfil')->ignore($userId)],
 
             'endereco'                  => ['sometimes', 'nullable', 'array'],
             'endereco.logradouro'       => ['required_with:endereco', 'string', 'max:255'],
@@ -69,6 +79,8 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'cor_perfil.in' => 'validation.cor_perfil.in',
+            'cor_perfil.unique' => 'validation.cor_perfil.unique',
             'role.in'                       => 'validation.role.in',
             'cpf.size'                       => 'validation.cpf.size',
             'endereco.uf.size'               => 'validation.uf.size',
