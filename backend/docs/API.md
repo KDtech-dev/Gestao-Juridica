@@ -66,6 +66,16 @@ Papéis atuais: `admin`, `advogado`, `funcionario`. Permissões granulares são 
 
 Cada item informa responsável, módulo, ação, registro relacionado, nomes dos campos alterados, IP, agente do navegador e horário. O histórico não guarda valores de senhas, documentos ou conteúdo dos casos.
 
+Exemplo de consulta para ver todas as movimentações de um dia:
+
+```http
+GET /api/activity-logs?date=2026-10-28&per_page=25
+Authorization: Bearer <token>
+Accept: application/json
+```
+
+Os filtros podem ser combinados, por exemplo `?from=2026-10-01&to=2026-10-28&module=cases&event=updated&actor=Maria&search=contrato`. A resposta segue a paginação Laravel (`data`, `meta` e `links`); cada item inclui `actor_name`, `module`, `event`, `subject_label`, `changed_fields`, `ip_address` e `created_at`.
+
 ### Sessão e perfil
 
 | Método | Caminho | Permissão/descrição |

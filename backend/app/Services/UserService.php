@@ -49,6 +49,13 @@ class UserService
 
 
             $user->assignRole($dados['role']);
+            $this->activityLogger->record(
+                'role_changed',
+                'access_control',
+                $user,
+                ['role'],
+                details: ['role' => $dados['role']],
+            );
 
             return $this->carregarRelacoes($user);
         });

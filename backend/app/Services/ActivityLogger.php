@@ -98,6 +98,7 @@ class ActivityLogger
     private function moduleFor(Model $subject): string
     {
         return match (true) {
+            $subject instanceof Role => 'access_control',
             $subject instanceof User => 'users',
             $subject instanceof Advogado,
             $subject instanceof Funcionario => 'users',
