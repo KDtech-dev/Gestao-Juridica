@@ -38,6 +38,7 @@ import { toast, formatToastErrorMessage } from "@/utils/toast";
 import { CardEndereco } from "@/components/CardEndereco";
 import PickColor from "@/components/PickColor";
 import { Icon } from "@/components/AppIcon";
+import { profileColorTextColor } from "@/constants/profileColors";
 
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
@@ -238,10 +239,10 @@ export default function ProfileView() {
     }
   };
   const corPerfil = form.watch("cor_perfil");
-  const bannerBackground =
-    corPerfil && corPerfil !== "#9e9e9e"
-      ? `linear-gradient(90deg, ${corPerfil} 0%, ${corPerfil}99 100%)`
-      : "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)";
+  const corPerfilText = profileColorTextColor(corPerfil);
+  const bannerBackground = corPerfil
+    ? `linear-gradient(90deg, ${corPerfil} 0%, ${corPerfil}99 100%)`
+    : "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)";
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh" }}>
       <SidebarDashboard activeKey="perfil" />
@@ -263,6 +264,7 @@ export default function ProfileView() {
                     mr: { xs: "-16px", md: "-32px" },
                     height: 150,
                     background: bannerBackground,
+                    borderBottom: corPerfil?.toLowerCase() === "#ffffff" ? "1px solid rgba(0,0,0,0.12)" : "none",
                     display: "flex",
                     alignItems: "flex-end",
                     justifyContent: "space-between",
@@ -272,13 +274,14 @@ export default function ProfileView() {
                   }}
                 >
                   <Grid spacing={6} ml={5}>
-                    <Typography fontWeight={700} fontSize="1.8rem" color="#fff">
+                    <Typography fontWeight={700} fontSize="1.8rem" sx={{ color: corPerfilText }}>
                       {roleLabel}
                     </Typography>
                   </Grid>
                   <PickColor
                     name="cor_perfil"
-                    defaultColor={profileUser?.cor_perfil ?? "#9e9e9e"}
+                    defaultColor={profileUser?.cor_perfil ?? "#2563eb"}
+                    textColor={corPerfilText}
                   />
                 </Box>
                 <Box sx={{ px: 2.5, pb: 3 }}>

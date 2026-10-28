@@ -208,7 +208,9 @@ export function CalendarCard({
                       borderColor: hasEvent
                         ? isSelected
                           ? "primary.main"
-                          : (dayColor ?? "primary.light")
+                          : dayColor?.toLowerCase() === "#ffffff"
+                            ? "divider"
+                            : (dayColor ?? "primary.light")
                         : "transparent",
                       display: "grid",
                       placeItems: "center",
@@ -253,6 +255,8 @@ export function CalendarCard({
                           bgcolor: isSelected
                             ? "#fff"
                             : (dayColor ?? "primary.main"),
+                          border: !isSelected && dayColor?.toLowerCase() === "#ffffff" ? "1px solid" : "none",
+                          borderColor: "divider",
                           color: isSelected
                             ? "primary.main"
                             : dayColor

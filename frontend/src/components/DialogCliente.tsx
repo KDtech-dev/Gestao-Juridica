@@ -191,6 +191,7 @@ export function DialogCliente({
             <LocalizedDatePicker
               value={field.value}
               onChange={field.onChange}
+              onBlur={field.onBlur}
               disabled={isDisabled}
               label={t("fields.birthDate")}
               error={!!errors.data_nascimento}

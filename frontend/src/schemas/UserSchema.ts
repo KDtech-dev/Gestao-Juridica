@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { useTranslations } from "next-intl";
 import { PROFILE_COLORS } from "@/constants/profileColors";
+import { isValidApiDate } from "@/@core/format";
 
 type TFunction = ReturnType<typeof useTranslations>;
 
@@ -74,7 +75,7 @@ const createEnderecoSchema = (t: TFunction) =>
 
 const createFuncionarioSchema = (t: TFunction) =>
   z.object({
-    data_nascimento: z.string().optional().nullable(),
+    data_nascimento: z.string().refine((value) => !value || isValidApiDate(value), t("data_nascimento.invalid")).optional().nullable(),
     sexo: sexoEnum.optional().nullable(),
     celular: z
       .string()
@@ -94,7 +95,7 @@ const createFuncionarioSchema = (t: TFunction) =>
 
 const createAdvogadoSchema = (t: TFunction) =>
   z.object({
-    data_nascimento: z.string().optional().nullable(),
+    data_nascimento: z.string().refine((value) => !value || isValidApiDate(value), t("data_nascimento.invalid")).optional().nullable(),
     sexo: sexoEnum.optional().nullable(),
     celular: z
       .string()

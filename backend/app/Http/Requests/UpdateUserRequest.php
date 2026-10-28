@@ -79,6 +79,8 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'email.email' => 'validation.email.invalid',
+            'email.unique' => 'validation.email.unique',
             'cor_perfil.in' => 'validation.cor_perfil.in',
             'cor_perfil.unique' => 'validation.cor_perfil.unique',
             'role.in'                       => 'validation.role.in',

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { useTranslations } from "next-intl";
+import { isValidApiDate } from "@/@core/format";
 
 type TFunction = ReturnType<typeof useTranslations>;
 
@@ -21,7 +22,10 @@ export const createClienteSchema = (t: TFunction) =>
 
     endereco_id: z.number().optional(),
 
-    data_nascimento: z.string().optional(),
+    data_nascimento: z
+      .string()
+      .refine((value) => !value || isValidApiDate(value), t("data_nascimento.invalid"))
+      .optional(),
 
     foto_perfil: z
       .instanceof(File, {

@@ -24,13 +24,14 @@ import {
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Resolver } from "react-hook-form";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import InputBasico from "@/components/InputBasico";
 import LocalizedDatePicker from "@/components/LocalizedDatePicker";
+import PasswordVisibilityAdornment from "@/components/PasswordVisibilityAdornment";
 import PickColor from "@/components/PickColor";
 import ExtraPermissionsModal from "@/components/modals/ExtraPermissionsModal";
 import { getPermissionCatalog, getUserById, postFotoPerfil, postUser, syncUserPermissions, updateUser } from "@/api/ApiUsers";
@@ -42,12 +43,14 @@ import { categoriaNomeParaChave } from "@/constants/categorias";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 import { toast } from "@/utils/toast";
 import { CreateUserPayload, UpdateUserPayload, createUserSchema, UF_SIGLAS, updateUserSchema } from "@/schemas/UserSchema";
+import { profileColorName, profileColorTextColor } from "@/constants/profileColors";
 
 type Mode = "create" | "edit" | "view";
 type Props = { mode: Mode; userId?: string };
 
 export default function UserFormView({ mode, userId }: Props) {
   const t = useTranslations("internal.users");
+  const locale = useLocale() as "pt" | "en" | "es";
   const tf = useTranslations("internal.users.form");
   const td = useTranslations("internal.users.dialog");
   const tv = useTranslations("validation");
@@ -66,6 +69,8 @@ export default function UserFormView({ mode, userId }: Props) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarHovered, setAvatarHovered] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [passwordConfirmationVisible, setPasswordConfirmationVisible] = useState(false);
 
   const schema = useMemo(
     () => (isCreate ? createUserSchema(tv) : updateUserSchema(tv)),
@@ -151,7 +156,8 @@ export default function UserFormView({ mode, userId }: Props) {
   const pageTitle = mode === "create" ? tf("title.create") : mode === "edit" ? tf("title.edit") : tf("title.view");
   const roleFieldsEnabled = role === "advogado" || role === "funcionario";
   const corPerfil = methods.watch("cor_perfil");
-  const bannerBackground = corPerfil && corPerfil !== "#9e9e9e"
+  const corPerfilText = profileColorTextColor(corPerfil);
+  const bannerBackground = corPerfil
     ? `linear-gradient(90deg, ${corPerfil} 0%, ${corPerfil}99 100%)`
     : "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)";
 
@@ -176,12 +182,12 @@ export default function UserFormView({ mode, userId }: Props) {
           <FormProvider {...methods}>
             <Box component="form" onSubmit={onSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, overflow: "hidden", p: 0 }}>
-                <Box sx={{ minHeight: 112, background: bannerBackground, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, px: { xs: 2, md: 3 } }}>
-                  <Typography fontWeight={700} fontSize="1.35rem" color="#fff">{tf("sections.account")}</Typography>
-                  {!isView ? <PickColor name="cor_perfil" scope="users" excludeUserId={isCreate ? undefined : userId} defaultColor={user?.cor_perfil ?? "#2563eb"} /> : (
+                <Box sx={{ minHeight: 112, background: bannerBackground, borderBottom: corPerfil?.toLowerCase() === "#ffffff" ? "1px solid rgba(0,0,0,0.12)" : "none", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, px: { xs: 2, md: 3 } }}>
+                  <Typography fontWeight={700} fontSize="1.35rem" sx={{ color: corPerfilText }}>{tf("sections.account")}</Typography>
+                  {!isView ? <PickColor name="cor_perfil" scope="users" excludeUserId={isCreate ? undefined : userId} defaultColor={user?.cor_perfil ?? "#2563eb"} textColor={corPerfilText} /> : (
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: corPerfil ?? "#9e9e9e", border: "2px solid rgba(255,255,255,0.8)" }} />
-                      <Typography variant="caption" color="rgba(255,255,255,0.9)">{(corPerfil ?? "#9e9e9e").toUpperCase()}</Typography>
+                      <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: corPerfil ?? "#2563eb", border: "2px solid", borderColor: corPerfil?.toLowerCase() === "#ffffff" ? "rgba(0,0,0,0.35)" : "rgba(255,255,255,0.8)" }} />
+                      <Typography variant="caption" sx={{ color: corPerfilText }}>{profileColorName(corPerfil, locale)}</Typography>
                     </Stack>
                   )}
                 </Box>
@@ -240,8 +246,38 @@ export default function UserFormView({ mode, userId }: Props) {
                     <TextField {...field} fullWidth label={td("fields.cpf")} placeholder={td("fields.cpfPlaceholder")} required error={!!fieldState.error} helperText={fieldState.error?.message} inputProps={{ maxLength: 14 }} onChange={(event) => field.onChange(formatCpf(event.target.value))} />
                   )} />}
                   {!isCreate && <TextField fullWidth label={td("fields.cpf")} value={formatCpf(user?.cpf ?? "")} disabled />}
-                  {isCreate && <InputBasico field="password" label={td("fields.password")} placeholder={td("fields.passwordPlaceholder")} required type="password" autoComplete="new-password" />}
-                  {isCreate && <InputBasico field="password_confirmation" label={td("fields.confirmPassword")} placeholder={td("fields.confirmPasswordPlaceholder")} required type="password" autoComplete="new-password" />}
+                  {isCreate && <InputBasico
+                    field="password"
+                    label={td("fields.password")}
+                    placeholder={td("fields.passwordPlaceholder")}
+                    required
+                    type={passwordVisible ? "text" : "password"}
+                    autoComplete="new-password"
+                    InputProps={{
+                      endAdornment: <PasswordVisibilityAdornment
+                        visible={passwordVisible}
+                        onToggle={() => setPasswordVisible((visible) => !visible)}
+                        showLabel={td("fields.showPassword")}
+                        hideLabel={td("fields.hidePassword")}
+                      />,
+                    }}
+                  />}
+                  {isCreate && <InputBasico
+                    field="password_confirmation"
+                    label={td("fields.confirmPassword")}
+                    placeholder={td("fields.confirmPasswordPlaceholder")}
+                    required
+                    type={passwordConfirmationVisible ? "text" : "password"}
+                    autoComplete="new-password"
+                    InputProps={{
+                      endAdornment: <PasswordVisibilityAdornment
+                        visible={passwordConfirmationVisible}
+                        onToggle={() => setPasswordConfirmationVisible((visible) => !visible)}
+                        showLabel={td("fields.showPassword")}
+                        hideLabel={td("fields.hidePassword")}
+                      />,
+                    }}
+                  />}
                   </Box>
                 </Box>
                 </Box>
@@ -253,12 +289,12 @@ export default function UserFormView({ mode, userId }: Props) {
                   <Stack spacing={2}>
                     {role === "funcionario" && <>
                       <Controller name="funcionario.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={formatTelefone(field.value ?? "")} label={td("fields.mobile")} placeholder={td("fields.mobilePlaceholder")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
-                      <Controller name="funcionario.data_nascimento" control={methods.control} render={({ field, fieldState }) => <LocalizedDatePicker value={field.value} onChange={field.onChange} label={td("fields.birthDate")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} />} />
+                      <Controller name="funcionario.data_nascimento" control={methods.control} render={({ field, fieldState }) => <LocalizedDatePicker value={field.value} onChange={field.onChange} onBlur={field.onBlur} label={td("fields.birthDate")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} />} />
                       <InputBasico field="funcionario.resumo_pessoal" label={td("fields.personalSummary")} placeholder={td("fields.personalSummaryPlaceholder")} multiline rows={3} disabled={isView} />
                     </>}
                     {role === "advogado" && <>
                       <Controller name="advogado.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={formatTelefone(field.value ?? "")} label={td("fields.mobile")} placeholder={td("fields.mobilePlaceholder")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
-                      <Controller name="advogado.data_nascimento" control={methods.control} render={({ field, fieldState }) => <LocalizedDatePicker value={field.value} onChange={field.onChange} label={td("fields.birthDate")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} />} />
+                      <Controller name="advogado.data_nascimento" control={methods.control} render={({ field, fieldState }) => <LocalizedDatePicker value={field.value} onChange={field.onChange} onBlur={field.onBlur} label={td("fields.birthDate")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} />} />
                       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "2fr 1fr" }, gap: 2 }}>
                         <InputBasico field="advogado.oab_numero" label={td("fields.oabNumber")} placeholder={td("fields.oabNumberPlaceholder")} disabled={isView} />
                         <Controller name="advogado.oab_uf" control={methods.control} render={({ field, fieldState }) => <FormControl fullWidth disabled={isView} error={!!fieldState.error}>

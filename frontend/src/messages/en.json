@@ -453,6 +453,8 @@
           "passwordPlaceholder": "Enter password",
           "confirmPassword": "Confirm password",
           "confirmPasswordPlaceholder": "Confirm password",
+          "showPassword": "Show password",
+          "hidePassword": "Hide password",
           "photoHelper": "Click to add a photo",
           "photoLabel": "Profile photo",
           "changePhoto": "Choose photo",
@@ -580,6 +582,10 @@
         "choose": "Choose profile color",
         "inUse": "Color used by another user",
         "noneAvailable": "All palette colors are already in use."
+      },
+      "datePicker": {
+        "invalidInput": "Enter a valid date in the indicated format.",
+        "openCalendar": "Open calendar"
       },
       "roles": {
         "admin": "Administrator",

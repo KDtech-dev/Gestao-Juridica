@@ -139,6 +139,7 @@ export function ClientForm({
           <LocalizedDatePicker
             value={field.value}
             onChange={field.onChange}
+            onBlur={field.onBlur}
             disabled={disabled}
             label={td("fields.birthDate")}
             error={!!errors.data_nascimento}

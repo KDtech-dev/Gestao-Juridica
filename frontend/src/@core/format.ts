@@ -157,6 +157,12 @@
     return `${year}-${month}-${day}`;
   };
 
+  export const isValidApiDate = (value: string): boolean => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const date = dateFromApi(value);
+    return date !== null && dateToApi(date) === value;
+  };
+
   export const formatDateFromApi = (
     value: string | null | undefined,
     locale: string,

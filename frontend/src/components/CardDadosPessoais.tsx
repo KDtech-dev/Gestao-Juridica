@@ -95,6 +95,7 @@ export function CardDadosPessoais({
               <LocalizedDatePicker
                 value={field.value}
                 onChange={field.onChange}
+                onBlur={field.onBlur}
                 label={t("fields.birthDate")}
                 error={!!fieldState.error}
                 helperText={fieldState.error?.message}

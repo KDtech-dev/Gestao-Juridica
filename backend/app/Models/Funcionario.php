@@ -13,6 +13,10 @@ class Funcionario extends Model
 {
     use HasUuids, HasFactory, SoftDeletes;
 
+    protected $casts = [
+        'data_nascimento' => 'date',
+    ];
+
     protected $fillable = [
         'user_id',
         'data_nascimento',

@@ -481,7 +481,9 @@
           "password": "Senha",
           "passwordPlaceholder": "Digite a senha",
           "confirmPassword": "Confirmar senha",
-          "confirmPasswordPlaceholder": "Confirme a senha"
+          "confirmPasswordPlaceholder": "Confirme a senha",
+          "showPassword": "Mostrar senha",
+          "hidePassword": "Ocultar senha"
         }
       },
       "form": {
@@ -605,6 +607,10 @@
         "choose": "Escolher cor do perfil",
         "inUse": "Cor em uso por outro usuário",
         "noneAvailable": "Todas as cores da paleta já estão em uso."
+      },
+      "datePicker": {
+        "invalidInput": "Informe uma data válida no formato indicado.",
+        "openCalendar": "Abrir calendário"
       },
       "roles": {
         "admin": "Administrador",
