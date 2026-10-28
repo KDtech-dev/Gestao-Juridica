@@ -12,6 +12,23 @@
       "title": "Access denied",
       "description": "You do not have permission to access this page.",
       "back": "Go back"
+    },
+    "errorPages": {
+      "goHome": "Go to home",
+      "application": {
+        "title": "Something went wrong",
+        "description": "This page couldn't be loaded. Try again or return to the home page.",
+        "retry": "Try again"
+      },
+      "notFound": {
+        "title": "Page not found",
+        "description": "The address may be incorrect or the page may no longer be available."
+      },
+      "sessionExpired": {
+        "title": "Your session has expired",
+        "description": "Sign in again to continue using the system.",
+        "login": "Sign in again"
+      }
     }
   },
   "branding": {

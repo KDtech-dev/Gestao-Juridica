@@ -12,6 +12,23 @@
       "title": "Acceso denegado",
       "description": "No tienes permiso para acceder a esta página.",
       "back": "Volver"
+    },
+    "errorPages": {
+      "goHome": "Ir al inicio",
+      "application": {
+        "title": "Algo salió mal",
+        "description": "No se pudo cargar esta página. Inténtalo de nuevo o vuelve al inicio.",
+        "retry": "Intentar de nuevo"
+      },
+      "notFound": {
+        "title": "Página no encontrada",
+        "description": "La dirección puede ser incorrecta o la página ya no está disponible."
+      },
+      "sessionExpired": {
+        "title": "Tu sesión ha caducado",
+        "description": "Inicia sesión de nuevo para seguir usando el sistema.",
+        "login": "Iniciar sesión de nuevo"
+      }
     }
   },
   "branding": {

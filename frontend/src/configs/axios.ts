@@ -81,8 +81,22 @@ export const getAxios = ({
   instance.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response?.status === 401) {
+      const authorization =
+        error.config?.headers?.Authorization ??
+        error.config?.headers?.get?.("Authorization");
+      const isLoginRequest = String(error.config?.url ?? "").includes(
+        "/auth/login",
+      );
+
+      if (
+        error.response?.status === 401 &&
+        Boolean(authorization) &&
+        !isLoginRequest
+      ) {
         authStorage.set(null);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("app:session-expired"));
+        }
       }
       return Promise.reject(error);
     },

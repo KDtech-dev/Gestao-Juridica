@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -80,6 +81,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const sessionExpired = useRef(false);
+
+  const expireSession = useCallback(() => {
+    if (typeof window === "undefined" || sessionExpired.current) return;
+    sessionExpired.current = true;
+    authStorage.set(null);
+    localStorage.removeItem(auth.userDataKeyName);
+    sessionStorage.removeItem(auth.userDataKeyName);
+    setUser(null);
+    setLoading(false);
+    router.replace("/session-expired");
+  }, [router]);
+
+  useEffect(() => {
+    window.addEventListener("app:session-expired", expireSession);
+    return () => window.removeEventListener("app:session-expired", expireSession);
+  }, [expireSession]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -114,15 +132,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(profile);
       })
       .catch((error) => {
-        if (!isAxiosError(error) || error.response?.status !== 401) return;
-
-        localStorage.removeItem(auth.userDataKeyName);
-        sessionStorage.removeItem(auth.userDataKeyName);
-        setUser(null);
-        router.replace("/");
+        if (isAxiosError(error) && error.response?.status === 401) {
+          expireSession();
+        }
       })
       .finally(() => setLoading(false));
-  }, [router]);
+  }, [expireSession]);
 
   const isAuthenticated = !!user;
 
@@ -138,6 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const setAuth = useCallback(
     (userData: AuthUser, token: string, remember = true) => {
+      sessionExpired.current = false;
       if (typeof window !== "undefined") {
         const targetStorage = remember ? localStorage : sessionStorage;
         const otherStorage = remember ? sessionStorage : localStorage;

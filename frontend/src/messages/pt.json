@@ -12,6 +12,23 @@
       "title": "Acesso negado",
       "description": "Você não tem permissão para acessar esta página.",
       "back": "Voltar"
+    },
+    "errorPages": {
+      "goHome": "Ir para o início",
+      "application": {
+        "title": "Algo deu errado",
+        "description": "Não foi possível carregar esta página. Tente novamente ou volte ao início.",
+        "retry": "Tentar novamente"
+      },
+      "notFound": {
+        "title": "Página não encontrada",
+        "description": "O endereço pode estar incorreto ou a página não está mais disponível."
+      },
+      "sessionExpired": {
+        "title": "Sua sessão expirou",
+        "description": "Entre novamente para continuar usando o sistema.",
+        "login": "Entrar novamente"
+      }
     }
   },
   "branding": {
