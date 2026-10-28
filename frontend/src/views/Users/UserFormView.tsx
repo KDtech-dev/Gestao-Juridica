@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Autocomplete,
   Avatar,
@@ -64,7 +64,7 @@ export default function UserFormView({ mode, userId }: Props) {
   const [user, setUser] = useState<UserType | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const avatarInput = useRef<HTMLInputElement>(null);
+  const [avatarHovered, setAvatarHovered] = useState(false);
 
   const schema = useMemo(
     () => (isCreate ? createUserSchema(tv) : updateUserSchema(tv)),
@@ -185,25 +185,44 @@ export default function UserFormView({ mode, userId }: Props) {
                   )}
                 </Box>
                 <Box sx={{ p: { xs: 2, md: 3 } }}>
-                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "230px minmax(0, 1fr)" }, gap: { xs: 3, md: 4 }, alignItems: "start" }}>
+                <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "230px minmax(0, 1fr)" }, gap: { xs: 3, md: 4 }, alignItems: "stretch" }}>
                   <Stack alignItems="center" spacing={1.5}>
-                    <Avatar src={avatarPreview ?? undefined} sx={{ width: 180, height: 180, border: "4px solid", borderColor: "background.paper", boxShadow: theme.shadows[2], fontSize: "3rem" }}>{user?.name?.[0]?.toUpperCase()}</Avatar>
+                    <Box
+                      component={isView ? "div" : "label"}
+                      onMouseEnter={() => !isView && setAvatarHovered(true)}
+                      onMouseLeave={() => setAvatarHovered(false)}
+                      sx={{ position: "relative", display: "inline-flex", borderRadius: "50%", cursor: isView ? "default" : "pointer" }}
+                    >
+                      <Avatar
+                        src={avatarPreview ?? undefined}
+                        sx={{ width: 180, height: 180, border: "4px solid", borderColor: "background.paper", boxShadow: theme.shadows[2], fontSize: "3rem", transition: "filter 0.2s", filter: avatarHovered ? "brightness(0.75)" : "none" }}
+                      >{user?.name?.[0]?.toUpperCase()}</Avatar>
+                      {!isView && <>
+                        <Box sx={{ position: "absolute", inset: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", opacity: avatarHovered ? 1 : 0, transition: "opacity 0.2s", pointerEvents: "none" }}>
+                          <Icon icon="mdi:camera" width={30} color="#fff" />
+                        </Box>
+                        <Box sx={{ position: "absolute", bottom: 6, right: 6, width: 30, height: 30, borderRadius: "50%", bgcolor: "primary.main", border: "2px solid #fff", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: 1 }}>
+                          <Icon icon="mdi:plus" width={16} color="#fff" />
+                        </Box>
+                        <input hidden type="file" accept="image/*" aria-label={td("fields.changePhoto")} onChange={(event) => {
+                          handleAvatarSelect(event.target.files?.[0]);
+                          event.currentTarget.value = "";
+                        }} />
+                      </>}
+                    </Box>
                     <Typography fontWeight={700} textAlign="center">{td("fields.photoLabel")}</Typography>
                     <Typography variant="body2" color="text.secondary" textAlign="center">{td("fields.photoHelper")}</Typography>
-                    {!isView && <>
-                      <Button variant="outlined" onClick={() => avatarInput.current?.click()} startIcon={<Icon icon="mdi:camera" />}>{td("fields.changePhoto")}</Button>
-                      <input ref={avatarInput} hidden type="file" accept="image/*" onChange={(event) => handleAvatarSelect(event.target.files?.[0])} />
-                    </>}
                   </Stack>
                   <Box sx={{
                     display: "grid",
                     gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
-                    gridTemplateRows: { sm: isCreate ? "repeat(3, minmax(0, 1fr))" : undefined },
-                    alignContent: "stretch",
-                    alignItems: { sm: isCreate ? "center" : "stretch" },
-                    minHeight: { sm: isCreate ? 320 : undefined },
-                    gap: 2,
+                    alignContent: { sm: isCreate ? "center" : "stretch" },
+                    alignItems: "stretch",
+                    height: { sm: isCreate ? "100%" : undefined },
+                    columnGap: 2,
+                    rowGap: { sm: isCreate ? 2 : 2 },
                   }}>
+                  <InputBasico field="name" label={td("fields.name")} placeholder={td("fields.namePlaceholder")} required={!isView} disabled={isView} />
                   <Controller name="role" control={methods.control} render={({ field, fieldState }) => (
                     <FormControl fullWidth disabled={isView} error={!!fieldState.error} required={!isView}>
                     <InputLabel>{td("fields.role")}</InputLabel>
@@ -215,12 +234,11 @@ export default function UserFormView({ mode, userId }: Props) {
                     {fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
                     </FormControl>
                   )} />
-                  <InputBasico field="name" label={td("fields.name")} placeholder={td("fields.namePlaceholder")} required={!isView} disabled={isView} />
                   <InputBasico field="email" label={td("fields.email")} placeholder={td("fields.emailPlaceholder")} type="email" required={!isView} disabled={isView} />
                   {isCreate && <Controller name="cpf" control={methods.control} render={({ field, fieldState }) => (
-                    <TextField {...field} label={td("fields.cpf")} placeholder={td("fields.cpfPlaceholder")} required error={!!fieldState.error} helperText={fieldState.error?.message} inputProps={{ maxLength: 14 }} onChange={(event) => field.onChange(formatCpf(event.target.value))} />
+                    <TextField {...field} fullWidth label={td("fields.cpf")} placeholder={td("fields.cpfPlaceholder")} required error={!!fieldState.error} helperText={fieldState.error?.message} inputProps={{ maxLength: 14 }} onChange={(event) => field.onChange(formatCpf(event.target.value))} />
                   )} />}
-                  {!isCreate && <TextField label={td("fields.cpf")} value={formatCpf(user?.cpf ?? "")} disabled />}
+                  {!isCreate && <TextField fullWidth label={td("fields.cpf")} value={formatCpf(user?.cpf ?? "")} disabled />}
                   {isCreate && <InputBasico field="password" label={td("fields.password")} placeholder={td("fields.passwordPlaceholder")} required type="password" autoComplete="new-password" />}
                   {isCreate && <InputBasico field="password_confirmation" label={td("fields.confirmPassword")} placeholder={td("fields.confirmPasswordPlaceholder")} required type="password" autoComplete="new-password" />}
                   </Box>
