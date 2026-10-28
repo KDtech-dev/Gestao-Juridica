@@ -2,13 +2,11 @@
 
 import {
   Box,
-  Button,
   Container,
   IconButton,
   Stack,
   Typography,
 } from "@mui/material";
-import Link from "next/link";
 import { Icon } from "@/components/AppIcon";
 import { useMemo, useState } from "react";
 import { LawyerProfileCard } from "@/components/team/LawyerProfileCard";
@@ -92,17 +90,6 @@ export function LawyerCarousel({ lawyers }: Props) {
         ))}
       </Box>
 
-      <Stack alignItems="center" mt={4}>
-        <Button
-          component={Link}
-          href="/equipe"
-          variant="contained"
-          endIcon={<Icon icon="mdi:arrow-right" />}
-          sx={{ textTransform: "none", borderRadius: "999px", px: 3 }}
-        >
-          {t("button")}
-        </Button>
-      </Stack>
     </Container>
   );
 }
