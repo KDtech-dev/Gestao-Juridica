@@ -621,8 +621,7 @@
       "roles": {
         "admin": "Administrador",
         "advogado": "Advogado",
-        "funcionario": "Funcionário",
-        "cliente": "Cliente"
+        "funcionario": "Funcionário"
       }
     },
     "profile": {
@@ -640,7 +639,6 @@
         "admin": "Administrador",
         "advogado": "Advogado",
         "funcionario": "Funcionário",
-        "cliente": "Cliente",
         "user": "Usuário"
       },
       "actions": {
@@ -801,7 +799,6 @@
       "publicacoes": "Publicações",
       "cases": "Casos",
       "notificacoes": "Notificações",
-      "myCases": "Meus Casos",
       "adminUsers": "Usuários",
       "profile": "Meu Perfil",
       "logout": "Sair",

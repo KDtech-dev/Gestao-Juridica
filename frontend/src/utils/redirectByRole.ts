@@ -4,7 +4,6 @@ export function getRouteByRole(roles: string[]): string {
   if (normalized.includes("admin")) return "/agenda";
   if (normalized.includes("advogado")) return "/agenda";
   if (normalized.includes("funcionario")) return "/agenda";
-  if (normalized.includes("cliente")) return "/meu-caso";
 
-  return "/login"; // fallback
+  return "/login";
 }

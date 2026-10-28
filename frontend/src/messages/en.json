@@ -596,8 +596,7 @@
       "roles": {
         "admin": "Administrator",
         "advogado": "Lawyer",
-        "funcionario": "Staff",
-        "cliente": "Client"
+        "funcionario": "Staff"
       }
     },
     "profile": {
@@ -615,7 +614,6 @@
         "admin": "Administrator",
         "advogado": "Lawyer",
         "funcionario": "Staff",
-        "cliente": "Client",
         "user": "User"
       },
       "actions": {
@@ -778,7 +776,6 @@
       "publicacoes": "Publications",
       "cases": "Cases",
       "notificacoes": "Notifications",
-      "myCases": "My Cases",
       "adminUsers": "Users",
       "profile": "My Profile",
       "logout": "Logout",

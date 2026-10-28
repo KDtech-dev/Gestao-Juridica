@@ -232,15 +232,11 @@ export function SidebarDashboard({ activeKey }: Props) {
 
   if (!user) return null;
 
-  const isClient = hasRole("cliente");
   const isAdmin = hasRole("admin");
 
   let translatedMainItems = mainItems.filter(
     (item) => !item.permission || hasPermission(item.permission),
   ).map((item) => {
-    if (item.key === "clientes" && isClient) {
-      return { ...item, label: t("sidebar.items.myCases"), href: "/meu-caso" };
-    }
     return { ...item, label: t(`sidebar.items.${item.key}`) };
   });
 
@@ -252,12 +248,6 @@ export function SidebarDashboard({ activeKey }: Props) {
       href: "/users",
       permission: "usuarios.visualizar",
     });
-  }
-
-  if (isClient) {
-    translatedMainItems = translatedMainItems.filter((it) =>
-      ["clientes", "publicacoes"].includes(it.key),
-    );
   }
 
   const sidebarContent = (

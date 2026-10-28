@@ -38,7 +38,6 @@ class RolesSeeder extends Seeder
                 PermissionEnum::PublicacoesVisualizar, PermissionEnum::PublicacoesCriar, PermissionEnum::PublicacoesEditar,
                 PermissionEnum::DjenVisualizar,
             ],
-            'cliente' => [],
         ];
 
         foreach ($permissoesPorPapel as $nomePapel => $permissoesPapel) {

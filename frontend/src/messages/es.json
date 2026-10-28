@@ -596,8 +596,7 @@
       "roles": {
         "admin": "Administrador",
         "advogado": "Abogado",
-        "funcionario": "Funcionario",
-        "cliente": "Cliente"
+        "funcionario": "Funcionario"
       }
     },
     "profile": {
@@ -615,7 +614,6 @@
         "admin": "Administrador",
         "advogado": "Abogado",
         "funcionario": "Funcionario",
-        "cliente": "Cliente",
         "user": "Usuario"
       },
       "actions": {
@@ -776,7 +774,6 @@
       "publicacoes": "Publicaciones",
       "cases": "Casos",
       "notificacoes": "Notificaciones",
-      "myCases": "Mis casos",
       "adminUsers": "Usuarios",
       "profile": "Mi perfil",
       "logout": "Salir",
