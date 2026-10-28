@@ -64,7 +64,11 @@ export default function CasosView() {
     async (page = 1, perPage = 10) => {
       setLoading(true);
       try {
-        const response = await getCasos({ page, per_page: perPage });
+        const response = await getCasos({
+          page,
+          per_page: perPage,
+          search: search.trim() || undefined,
+        });
         setCasos(response.data);
         setTotal(response.meta.total);
       } catch {
@@ -73,24 +77,16 @@ export default function CasosView() {
         setLoading(false);
       }
     },
-    [t],
+    [search, t],
   );
 
   useEffect(() => {
-    loadCasos(paginationModel.page + 1, paginationModel.pageSize);
+    const timeout = window.setTimeout(() => {
+      loadCasos(paginationModel.page + 1, paginationModel.pageSize);
+    }, 250);
+
+    return () => window.clearTimeout(timeout);
   }, [paginationModel, loadCasos]);
-
-  const casosFiltrados = casos.filter((c) =>
-    [
-      c.titulo,
-      c.numero_processo,
-      ...(c.categorias?.map((cat) => cat.nome) ?? []),
-    ].some((field) => field?.toLowerCase().includes(search.toLowerCase())),
-  );
-
-  const isSearching = search.trim().length > 0;
-  const rowsExibidos = isSearching ? casosFiltrados : casos;
-  const totalCount = isSearching ? casosFiltrados.length : total;
 
   const handleDelete = async () => {
     if (!canDelete || !deleteTarget) return;
@@ -99,7 +95,14 @@ export default function CasosView() {
     try {
       await deleteCaso(deleteTarget.id);
       toast.success(t("toast.deleted"));
-      loadCasos(paginationModel.page + 1, paginationModel.pageSize);
+      if (casos.length === 1 && paginationModel.page > 0) {
+        setPaginationModel((current) => ({
+          ...current,
+          page: current.page - 1,
+        }));
+      } else {
+        loadCasos(paginationModel.page + 1, paginationModel.pageSize);
+      }
       setDeleteTarget(null);
     } catch {
       toast.error(t("errors.delete"));
@@ -305,7 +308,10 @@ export default function CasosView() {
               <TextField
                 placeholder={t("searchPlaceholder")}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPaginationModel((current) => ({ ...current, page: 0 }));
+                }}
                 size="small"
                 sx={{
                   width: { xs: "100%", sm: 450 },
@@ -328,7 +334,7 @@ export default function CasosView() {
                 }}
               />
               <Chip
-                label={t("registeredCount", { count: totalCount })}
+                label={t("registeredCount", { count: total })}
                 size="small"
                 variant="outlined"
                 sx={{
@@ -340,7 +346,7 @@ export default function CasosView() {
             </Stack>
 
             <DataGrid
-              rows={rowsExibidos}
+              rows={casos}
               columns={columns}
               loading={loading}
               getRowId={(row) => row.id}
@@ -349,8 +355,8 @@ export default function CasosView() {
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
               pageSizeOptions={[10, 25, 50]}
-              rowCount={totalCount}
-              paginationMode={isSearching ? "client" : "server"}
+              rowCount={total}
+              paginationMode="server"
               disableRowSelectionOnClick
               slotProps={{
                 basePagination: {

@@ -12,12 +12,19 @@ class CasoService
 {
     public function getCasos(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
+        $search = trim((string) ($filters['search'] ?? ''));
+
         return Caso::query()
             ->with(['clientes', 'advogado', 'categorias'])
             ->when(
-                isset($filters['search']),
-                fn($q) => $q->where('titulo', 'like', "%{$filters['search']}%")
-                    ->orWhere('numero_processo', 'like', "%{$filters['search']}%")
+                $search !== '',
+                fn($q) => $q->where(function ($query) use ($search) {
+                    $query->where('titulo', 'like', "%{$search}%")
+                        ->orWhere('numero_processo', 'like', "%{$search}%")
+                        ->orWhereHas('categorias', fn($categoryQuery) =>
+                            $categoryQuery->where('nome', 'like', "%{$search}%")
+                        );
+                })
             )
             ->when(
                 isset($filters['status']),
@@ -39,6 +46,7 @@ class CasoService
                 fn($q) => $q->where('advogado_id', $filters['advogado_id'])
             )
             ->latest()
+            ->orderBy('id')
             ->paginate($perPage);
     }
 

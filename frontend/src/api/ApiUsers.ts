@@ -36,8 +36,21 @@ const getPermissionCatalog = async (): Promise<PermissionCatalogEntry[]> => {
   return response.data.data;
 };
 
-const getUsers = async (page = 1): Promise<PaginatedResponseType<UserType>> => {
-  const response = await getAxios().get("/users", { params: { page } });
+export type GetUsersParams = {
+  page?: number;
+  per_page?: number;
+  search?: string;
+  role?: RoleType;
+};
+
+type RoleType = "admin" | "advogado" | "funcionario";
+
+const getUsers = async (
+  params: GetUsersParams = {},
+): Promise<PaginatedResponseType<UserType>> => {
+  const response = await getAxios().get("/users", {
+    params: { page: 1, ...params },
+  });
   return response.data;
 };
 

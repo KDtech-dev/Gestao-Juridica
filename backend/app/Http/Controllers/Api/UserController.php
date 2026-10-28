@@ -15,6 +15,7 @@ use App\Models\User;
 use App\Services\UserService;
 use App\Services\ProfileColorService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Auth;
@@ -25,9 +26,19 @@ class UserController extends Controller
 
     public function __construct(protected UserService $userService) {}
 
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $users = $this->userService->listar(excluirUsuarioId: Auth::id());
+        $filters = $request->validate([
+            'search' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'role' => ['sometimes', 'nullable', 'in:admin,advogado,funcionario'],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'per_page' => ['sometimes', 'integer', 'between:1,100'],
+        ]);
+        $users = $this->userService->listar(
+            porPagina: (int) ($filters['per_page'] ?? 15),
+            excluirUsuarioId: Auth::id(),
+            filters: $filters,
+        );
 
         return UserResource::collection($users);
     }

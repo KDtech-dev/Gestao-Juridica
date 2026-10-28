@@ -67,10 +67,15 @@ export default function UsersView() {
   const [deleting, setDeleting] = useState(false);
 
   const loadUsers = useCallback(
-    async (page = 1) => {
+    async (page = 1, perPage = 10) => {
       setLoading(true);
       try {
-        const response = await getUsers(page);
+        const response = await getUsers({
+          page,
+          per_page: perPage,
+          search: search.trim() || undefined,
+          role: roleFilter === "all" ? undefined : roleFilter,
+        });
         setUsers(response.data);
         setTotal(response.meta.total);
       } catch (err) {
@@ -79,24 +84,15 @@ export default function UsersView() {
         setLoading(false);
       }
     },
-    [t],
+    [roleFilter, search, t],
   );
   useEffect(() => {
-    loadUsers(paginationModel.page + 1);
+    const timeout = window.setTimeout(() => {
+      loadUsers(paginationModel.page + 1, paginationModel.pageSize);
+    }, 250);
+
+    return () => window.clearTimeout(timeout);
   }, [paginationModel, loadUsers]);
-
-  const usersFiltrados = users.filter((u) => {
-    const matchSearch = [u.name, u.email, u.cpf].some((field) =>
-      field?.toLowerCase().includes(search.toLowerCase()),
-    );
-    const matchRole = roleFilter === "all" || u.roles?.includes(roleFilter);
-    return matchSearch && matchRole;
-  });
-  const isSearching = search.trim().length > 0 || roleFilter !== "all";
-
-  const rowsExibidos = isSearching ? usersFiltrados : users;
-
-  const totalCount = isSearching ? usersFiltrados.length : total;
 
   const handleDelete = async () => {
     if (!canDelete || !deleteTarget) return;
@@ -105,7 +101,14 @@ export default function UsersView() {
     try {
       await deleteUser(deleteTarget.id);
       toast.success(t("toast.deleted"));
-      loadUsers();
+      if (users.length === 1 && paginationModel.page > 0) {
+        setPaginationModel((current) => ({
+          ...current,
+          page: current.page - 1,
+        }));
+      } else {
+        loadUsers(paginationModel.page + 1, paginationModel.pageSize);
+      }
       setDeleteTarget(null);
     } catch (err: any) {
       const errorCode = err?.response?.data?.error_code;
@@ -366,7 +369,10 @@ export default function UsersView() {
                 <TextField
                   placeholder={t("searchPlaceholder")}
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPaginationModel((current) => ({ ...current, page: 0 }));
+                  }}
                   size="small"
                   sx={{
                     width: { xs: "100%", sm: 380 },
@@ -394,9 +400,10 @@ export default function UsersView() {
                 <TextField
                   select
                   value={roleFilter}
-                  onChange={(e) =>
-                    setRoleFilter(e.target.value as RoleType | "all")
-                  }
+                  onChange={(e) => {
+                    setRoleFilter(e.target.value as RoleType | "all");
+                    setPaginationModel((current) => ({ ...current, page: 0 }));
+                  }}
                   size="small"
                   label={t("filters.role")}
                   sx={{
@@ -428,7 +435,7 @@ export default function UsersView() {
               />
             </Stack>
             <DataGrid
-              rows={rowsExibidos}
+              rows={users}
               columns={columns}
               loading={loading}
               getRowId={(row) => row.id}
@@ -436,8 +443,16 @@ export default function UsersView() {
               getRowHeight={() => "auto"}
               paginationModel={paginationModel}
               onPaginationModelChange={setPaginationModel}
-              rowCount={totalCount}
-              paginationMode={isSearching ? "client" : "server"}
+              rowCount={total}
+              paginationMode="server"
+              pageSizeOptions={[10, 25, 50]}
+              slotProps={{
+                basePagination: {
+                  material: {
+                    labelRowsPerPage: tCommon("dataGrid.rowsPerPage"),
+                  },
+                },
+              }}
               disableRowSelectionOnClick
               sx={{
                 border: "none",

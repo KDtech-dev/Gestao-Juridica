@@ -245,10 +245,28 @@ class UserService
         }
     }
 
-    public function listar(int $porPagina = 15, int|string|null $excluirUsuarioId = null)
+    public function listar(
+        int $porPagina = 15,
+        int|string|null $excluirUsuarioId = null,
+        array $filters = [],
+    )
     {
+        $search = trim((string) ($filters['search'] ?? ''));
+        $cpfSearch = preg_replace('/\D/', '', $search);
+
         return User::query()
             ->when($excluirUsuarioId, fn ($query) => $query->whereKeyNot($excluirUsuarioId))
+            ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search, $cpfSearch) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+
+                if ($cpfSearch !== '') {
+                    $query->orWhere('cpf', 'like', "%{$cpfSearch}%");
+                }
+            }))
+            ->when($filters['role'] ?? null, fn ($query, $role) =>
+                $query->whereHas('roles', fn ($roleQuery) => $roleQuery->where('name', $role))
+            )
             ->with([
             'funcionario.endereco',
             'advogado.endereco',
@@ -256,6 +274,8 @@ class UserService
             'roles.permissions',
             'permissions',
             ])
+            ->orderBy('name')
+            ->orderBy('id')
             ->paginate($porPagina);
     }
 

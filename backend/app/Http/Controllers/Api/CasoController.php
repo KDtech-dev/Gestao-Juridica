@@ -20,8 +20,18 @@ class CasoController extends Controller
 
     public function index(Request $request): JsonResponse
     {
+        $filters = $request->validate([
+            'search' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'status' => ['sometimes', 'nullable', 'string', 'max:50'],
+            'area_direito' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'categoria_id' => ['sometimes', 'nullable', 'integer'],
+            'advogado_id' => ['sometimes', 'nullable', 'uuid'],
+            'page' => ['sometimes', 'integer', 'min:1'],
+            'per_page' => ['sometimes', 'integer', 'between:1,100'],
+        ]);
         $casos = $this->casoService->getCasos(
-            $request->only(['search', 'status', 'categoria_id', 'advogado_id'])
+            $filters,
+            (int) ($filters['per_page'] ?? 15),
         );
 
         return response()->json([
