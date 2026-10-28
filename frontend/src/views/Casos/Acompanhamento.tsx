@@ -54,6 +54,7 @@ export default function CasosView() {
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
+  const isSearching = search.trim().length > 0;
   const [total, setTotal] = useState(0);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
