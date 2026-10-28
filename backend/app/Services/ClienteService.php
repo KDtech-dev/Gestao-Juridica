@@ -13,14 +13,19 @@ class ClienteService
 
     public function getClientes(array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
+        $search = trim((string) ($filters['search'] ?? ''));
+        $documentSearch = preg_replace('/\D/', '', $search);
+
         return Cliente::query()
             ->with('endereco')
-            ->when(
-                isset($filters['search']),
-                fn($q) => $q->where('name', 'like', "%{$filters['search']}%")
-                    ->orWhere('cpf_cnpj', 'like', "%{$filters['search']}%")
-                    ->orWhere('email', 'like', "%{$filters['search']}%")
-            )
+            ->when($search !== '', fn($query) => $query->where(function ($query) use ($search, $documentSearch) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+
+                if ($documentSearch !== '') {
+                    $query->orWhere('cpf_cnpj', 'like', "%{$documentSearch}%");
+                }
+            }))
             ->latest()
             ->paginate($perPage);
     }

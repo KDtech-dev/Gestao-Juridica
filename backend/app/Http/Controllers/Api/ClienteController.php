@@ -21,9 +21,14 @@ class ClienteController extends Controller
 
     public function index(Request $request): AnonymousResourceCollection
     {
+        $filters = $request->validate([
+            'search' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'per_page' => ['sometimes', 'integer', 'between:1,100'],
+        ]);
+
         $clientes = $this->clienteService->getClientes(
-            filters: $request->only(['search']),
-            perPage: $request->integer('per_page', 15)
+            filters: $filters,
+            perPage: $request->integer('per_page', 15),
         );
 
         return ClienteResource::collection($clientes);

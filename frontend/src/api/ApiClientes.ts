@@ -5,12 +5,22 @@ import {
   UpdateClientePayload,
 } from "@/schemas/ClienteSchema";
 
-const getClientes = async (
+type GetClientesParams = {
+  page?: number;
+  perPage?: number;
+  search?: string;
+  signal?: AbortSignal;
+};
+
+const getClientes = async ({
   page = 1,
   perPage = 10,
-): Promise<PaginatedResponseType<ClienteType>> => { 
+  search,
+  signal,
+}: GetClientesParams = {}): Promise<PaginatedResponseType<ClienteType>> => {
   const response = await getAxios().get("/clientes", {
-    params: { page, perPage },
+    params: { page, per_page: perPage, search: search?.trim() || undefined },
+    signal,
   });
 
   return response.data;

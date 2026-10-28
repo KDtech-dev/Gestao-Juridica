@@ -18,7 +18,7 @@ import { DataGrid, GridColDef, GridPaginationModel } from "@mui/x-data-grid";
 import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { postCliente, deleteCliente, getClientes } from "@/api/ApiClientes";
@@ -29,6 +29,7 @@ import DialogCliente from "@/components/DialogCliente";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
 import { formatCpfCnpj, formatDateFromApi } from "@/@core/format";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
+import { useDebounce } from "@/@core/hooks/custom/useDebounce";
 
 export default function ClientesView() {
   const translateError = useApiErrorTranslator();
@@ -41,6 +42,8 @@ export default function ClientesView() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [total, setTotal] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const debouncedSearch = useDebounce(search, 300);
   const [submitting, setSubmitting] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -49,36 +52,31 @@ export default function ClientesView() {
   });
   const theme = useTheme();
   const router = useRouter();
-  const loadClientes = useCallback(
-    async (page = 1, perPage = 10) => {
-      setLoading(true);
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
 
-      try {
-        const { data, meta } = await getClientes(page, perPage);
-
+    getClientes({
+      page: paginationModel.page + 1,
+      perPage: paginationModel.pageSize,
+      search: debouncedSearch,
+      signal: controller.signal,
+    })
+      .then(({ data, meta }) => {
         setClientes(data);
         setTotal(meta.total);
-      } catch {
-        toast.error(t("errors.load"));
-      } finally {
-        setLoading(false);
-      }
-    },
-    [t],
-  );
-  useEffect(() => {
-    loadClientes(paginationModel.page + 1, paginationModel.pageSize);
-  }, [paginationModel, loadClientes]);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) toast.error(t("errors.load"));
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
 
-  const clientesFiltrados = clientes.filter((c) =>
-    [c.name, c.cpf_cnpj, c.email].some((field) =>
-      field?.toLowerCase().includes(search.toLowerCase()),
-    ),
-  );
+    return () => controller.abort();
+  }, [paginationModel, debouncedSearch, refreshKey, t]);
 
   const isSearching = search.trim().length > 0;
-  const rowsExibidos = isSearching ? clientesFiltrados : clientes;
-  const totalCount = isSearching ? clientesFiltrados.length : total;
 
   const handleSubmit = async (data: CreateClientePayload) => {
     setSubmitting(true);
@@ -86,7 +84,8 @@ export default function ClientesView() {
       await postCliente(data);
       toast.success(t("toast.created"));
       setDialogOpen(false);
-      loadClientes(paginationModel.page + 1);
+      setPaginationModel((current) => ({ ...current, page: 0 }));
+      setRefreshKey((current) => current + 1);
     } catch (err) {
       toast.error(translateError(err));
     } finally {
@@ -100,7 +99,11 @@ export default function ClientesView() {
     try {
       await deleteCliente(deleteTarget.id);
       toast.success(t("toast.deleted"));
-      loadClientes(paginationModel.page + 1);
+      if (clientes.length === 1 && paginationModel.page > 0) {
+        setPaginationModel((current) => ({ ...current, page: current.page - 1 }));
+      } else {
+        setRefreshKey((current) => current + 1);
+      }
       setDeleteTarget(null);
     } catch {
       toast.error(t("errors.delete"));
@@ -275,7 +278,10 @@ export default function ClientesView() {
               <TextField
                 placeholder={t("searchPlaceholder")}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPaginationModel((current) => ({ ...current, page: 0 }));
+                }}
                 size="small"
                 sx={{
                   width: { xs: "100%", sm: 450 },
@@ -298,7 +304,7 @@ export default function ClientesView() {
                 }}
               />
               <Chip
-                label={t("registeredCount", { count: totalCount })}
+                label={t("registeredCount", { count: total })}
                 size="small"
                 variant="outlined"
                 sx={{
@@ -310,9 +316,9 @@ export default function ClientesView() {
             </Stack>
 
             <DataGrid
-              rows={rowsExibidos}
-              rowCount={totalCount}
-              paginationMode={isSearching ? "client" : "server"}
+              rows={clientes}
+              rowCount={total}
+              paginationMode="server"
               columns={columns}
               loading={loading}
               getRowId={(row) => row.id}
