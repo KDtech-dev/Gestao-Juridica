@@ -32,6 +32,7 @@ enum PermissionEnum: string
     case PublicacoesExcluir = 'publicacoes.excluir';
 
     case DjenVisualizar = 'djen.visualizar';
+    case DjenVincular = 'djen.vincular';
     case DjenSincronizar = 'djen.sincronizar';
 
     public function group(): string
@@ -67,6 +68,7 @@ enum PermissionEnum: string
             'editar' => 'Editar',
             'excluir' => 'Excluir',
             'sincronizar' => 'Sincronizar',
+            'vincular' => 'Vincular',
             'gerenciar' => 'Gerenciar permissões',
             default => ucfirst($this->action()),
         };

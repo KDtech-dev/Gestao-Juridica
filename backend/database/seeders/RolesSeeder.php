@@ -29,7 +29,7 @@ class RolesSeeder extends Seeder
                 PermissionEnum::CasosVisualizar, PermissionEnum::CasosCriar, PermissionEnum::CasosEditar,
                 PermissionEnum::CompromissosVisualizar, PermissionEnum::CompromissosCriar, PermissionEnum::CompromissosEditar,
                 PermissionEnum::PublicacoesVisualizar, PermissionEnum::PublicacoesCriar, PermissionEnum::PublicacoesEditar,
-                PermissionEnum::DjenVisualizar, PermissionEnum::DjenSincronizar,
+                PermissionEnum::DjenVisualizar, PermissionEnum::DjenVincular, PermissionEnum::DjenSincronizar,
             ],
             'funcionario' => [
                 PermissionEnum::ClientesVisualizar, PermissionEnum::ClientesCriar, PermissionEnum::ClientesEditar,

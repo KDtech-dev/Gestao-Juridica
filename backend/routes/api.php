@@ -124,7 +124,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{comunicacaoDjen}/lida', [ComunicacaoDjenController::class, 'marcarLida'])
             ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar));
         Route::post('{comunicacaoDjen}/vincular', [ComunicacaoDjenController::class, 'vincular'])
-            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar));
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVincular));
     });
 
     Route::prefix('advogados')->group(function () {
