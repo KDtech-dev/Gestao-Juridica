@@ -2,7 +2,6 @@ import { Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import {
   ChangeEventHandler,
-  FocusEventHandler,
   useEffect,
   useState,
 } from "react";
@@ -57,11 +56,6 @@ const PickColor = ({ name, defaultColor }: Props) => {
   }, [watchedColor]);
   const handleUpdateColor: ChangeEventHandler<HTMLInputElement> = (e) => {
     setColorCode(e.target.value);
-  };
-
-  const handleBlurCapture: FocusEventHandler<HTMLInputElement> = (e) => {
-    if (!(e.target instanceof HTMLInputElement)) return;
-
     setValue(name, e.target.value, { shouldDirty: true });
   };
 
@@ -74,7 +68,6 @@ const PickColor = ({ name, defaultColor }: Props) => {
           value={colorCode}
           name={name}
           onChange={handleUpdateColor}
-          onBlur={handleBlurCapture}
         />
       </ColorCircle>
 

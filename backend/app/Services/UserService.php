@@ -37,6 +37,7 @@ class UserService
                 'email'    => $dados['email'],
                 'cpf'      => $dados['cpf'],
                 'password' => Hash::make($dados['password']),
+                'cor_perfil' => $dados['cor_perfil'] ?? null,
             ]);
 
             $this->criarPerfil($user, $dados['role'], $dados, $enderecoId);

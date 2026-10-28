@@ -457,6 +457,8 @@
           "extraPermissionsHelper": "As permissões do papel continuam valendo; estas são adicionais.",
           "name": "Nome",
           "photoHelper": "Clique para adicionar uma foto",
+          "photoLabel": "Foto de perfil",
+          "changePhoto": "Escolher foto",
           "photoUploading": "Enviando foto...",
           "namePlaceholder": "Digite o nome completo",
           "email": "E-mail",

@@ -145,6 +145,7 @@ export const createUserBaseSchema = (t: TFunction) =>
       .string()
       .min(1, t("password_confirmation.required")),
     role: roleEnum,
+    cor_perfil: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional().nullable(),
     permissions: z.array(z.string()).optional(),
     endereco: createEnderecoSchema(t).optional(),
     funcionario: createFuncionarioSchema(t).optional(),

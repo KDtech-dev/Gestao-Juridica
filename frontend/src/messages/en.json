@@ -454,6 +454,8 @@
           "confirmPassword": "Confirm password",
           "confirmPasswordPlaceholder": "Confirm password",
           "photoHelper": "Click to add a photo",
+          "photoLabel": "Profile photo",
+          "changePhoto": "Choose photo",
           "photoUploading": "Uploading photo..."
         }
       },

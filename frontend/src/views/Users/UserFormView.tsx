@@ -10,6 +10,7 @@ import {
   CircularProgress,
   Container,
   FormControl,
+  FormHelperText,
   IconButton,
   InputLabel,
   MenuItem,
@@ -29,6 +30,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import InputBasico from "@/components/InputBasico";
+import PickColor from "@/components/PickColor";
 import ExtraPermissionsModal from "@/components/modals/ExtraPermissionsModal";
 import { getPermissionCatalog, getUserById, postFotoPerfil, postUser, syncUserPermissions, updateUser } from "@/api/ApiUsers";
 import { getCategorias } from "@/api/ApiCategorias";
@@ -147,6 +149,10 @@ export default function UserFormView({ mode, userId }: Props) {
 
   const pageTitle = mode === "create" ? tf("title.create") : mode === "edit" ? tf("title.edit") : tf("title.view");
   const roleFieldsEnabled = role === "advogado" || role === "funcionario";
+  const corPerfil = methods.watch("cor_perfil");
+  const bannerBackground = corPerfil && corPerfil !== "#9e9e9e"
+    ? `linear-gradient(90deg, ${corPerfil} 0%, ${corPerfil}99 100%)`
+    : "linear-gradient(90deg, #2563eb 0%, #60a5fa 100%)";
 
   if (loading) {
     return <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center" }}><CircularProgress /></Box>;
@@ -161,32 +167,56 @@ export default function UserFormView({ mode, userId }: Props) {
           <Stack direction="row" alignItems="center" spacing={1.5} mb={3.5}>
             <IconButton onClick={() => router.push("/users")}><Icon icon="mdi:arrow-left" width={22} /></IconButton>
             <Box>
-              <Typography variant="h4" fontWeight={800}>{pageTitle}</Typography>
+              <Typography variant="h4" fontWeight={800} color="text.primary">{pageTitle}</Typography>
               {user && <Typography color="text.secondary">{user.name}</Typography>}
             </Box>
           </Stack>
 
           <FormProvider {...methods}>
             <Box component="form" onSubmit={onSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, p: { xs: 2, md: 3 } }}>
-                <Typography fontWeight={700} mb={2}>{tf("sections.account")}</Typography>
+              <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, overflow: "hidden", p: 0 }}>
+                <Box sx={{ minHeight: 112, background: bannerBackground, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, px: { xs: 2, md: 3 } }}>
+                  <Typography fontWeight={700} fontSize="1.35rem" color="#fff">{tf("sections.account")}</Typography>
+                  {!isView ? <PickColor name="cor_perfil" defaultColor={user?.cor_perfil ?? "#9e9e9e"} /> : (
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Box sx={{ width: 28, height: 28, borderRadius: "50%", bgcolor: corPerfil ?? "#9e9e9e", border: "2px solid rgba(255,255,255,0.8)" }} />
+                      <Typography variant="caption" color="rgba(255,255,255,0.9)">{(corPerfil ?? "#9e9e9e").toUpperCase()}</Typography>
+                    </Stack>
+                  )}
+                </Box>
+                <Box sx={{ p: { xs: 2, md: 3 } }}>
+                <Stack direction={{ xs: "column", sm: "row" }} alignItems={{ xs: "flex-start", sm: "center" }} spacing={2} mb={3}>
+                  <Avatar src={avatarPreview ?? undefined} sx={{ width: 76, height: 76, border: "3px solid", borderColor: "background.paper", boxShadow: theme.shadows[1] }}>{user?.name?.[0]?.toUpperCase()}</Avatar>
+                  <Box>
+                    <Typography fontWeight={700}>{td("fields.photoLabel")}</Typography>
+                    <Typography variant="body2" color="text.secondary">{td("fields.photoHelper")}</Typography>
+                  </Box>
+                  {!isView && <>
+                    <Button variant="outlined" onClick={() => avatarInput.current?.click()} startIcon={<Icon icon="mdi:camera" />}>{td("fields.changePhoto")}</Button>
+                    <input ref={avatarInput} hidden type="file" accept="image/*" onChange={(event) => handleAvatarSelect(event.target.files?.[0])} />
+                  </>}
+                </Stack>
                 <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" }, gap: 2 }}>
-                  <FormControl fullWidth disabled={isView}>
+                  <Controller name="role" control={methods.control} render={({ field, fieldState }) => (
+                    <FormControl fullWidth disabled={isView} error={!!fieldState.error} required={!isView}>
                     <InputLabel>{td("fields.role")}</InputLabel>
-                    <Select label={td("fields.role")} value={role ?? "funcionario"} onChange={(event) => methods.setValue("role", event.target.value as RoleType, { shouldDirty: true })}>
+                    <Select {...field} label={td("fields.role")} value={field.value ?? "funcionario"}>
                       <MenuItem value="admin">{td("roles.admin")}</MenuItem>
                       <MenuItem value="advogado">{td("roles.advogado")}</MenuItem>
                       <MenuItem value="funcionario">{td("roles.funcionario")}</MenuItem>
                     </Select>
-                  </FormControl>
-                  <InputBasico field="name" label={td("fields.name")} disabled={isView} />
-                  <InputBasico field="email" label={td("fields.email")} type="email" disabled={isView} />
+                    {fieldState.error && <FormHelperText>{fieldState.error.message}</FormHelperText>}
+                    </FormControl>
+                  )} />
+                  <InputBasico field="name" label={td("fields.name")} placeholder={td("fields.namePlaceholder")} required={!isView} disabled={isView} />
+                  <InputBasico field="email" label={td("fields.email")} placeholder={td("fields.emailPlaceholder")} type="email" required={!isView} disabled={isView} />
                   {isCreate && <Controller name="cpf" control={methods.control} render={({ field, fieldState }) => (
-                    <TextField {...field} label={td("fields.cpf")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} inputProps={{ maxLength: 14 }} onChange={(event) => field.onChange(formatCpf(event.target.value))} />
+                    <TextField {...field} label={td("fields.cpf")} placeholder={td("fields.cpfPlaceholder")} required error={!!fieldState.error} helperText={fieldState.error?.message} inputProps={{ maxLength: 14 }} onChange={(event) => field.onChange(formatCpf(event.target.value))} />
                   )} />}
                   {!isCreate && <TextField label={td("fields.cpf")} value={user?.cpf ?? ""} disabled />}
-                  {isCreate && <InputBasico field="password" label={td("fields.password")} type="password" autoComplete="new-password" />}
-                  {isCreate && <InputBasico field="password_confirmation" label={td("fields.confirmPassword")} type="password" autoComplete="new-password" />}
+                  {isCreate && <InputBasico field="password" label={td("fields.password")} placeholder={td("fields.passwordPlaceholder")} required type="password" autoComplete="new-password" />}
+                  {isCreate && <InputBasico field="password_confirmation" label={td("fields.confirmPassword")} placeholder={td("fields.confirmPasswordPlaceholder")} required type="password" autoComplete="new-password" />}
+                </Box>
                 </Box>
               </Paper>
 
@@ -194,22 +224,15 @@ export default function UserFormView({ mode, userId }: Props) {
                 <Paper elevation={0} sx={{ borderRadius: "20px", border: `1px solid ${theme.palette.divider}`, p: { xs: 2, md: 3 } }}>
                   <Typography fontWeight={700} mb={2}>{tf("sections.profile")}</Typography>
                   <Stack spacing={2}>
-                    <Stack direction={{ xs: "column", sm: "row" }} alignItems="center" spacing={2}>
-                      <Avatar src={avatarPreview ?? undefined} sx={{ width: 76, height: 76 }}>{user?.name?.[0]?.toUpperCase()}</Avatar>
-                      {!isView && <>
-                        <Button variant="outlined" onClick={() => avatarInput.current?.click()} startIcon={<Icon icon="mdi:camera" />}>{td("fields.photoHelper")}</Button>
-                        <input ref={avatarInput} hidden type="file" accept="image/*" onChange={(event) => handleAvatarSelect(event.target.files?.[0])} />
-                      </>}
-                    </Stack>
                     {role === "funcionario" && <>
-                      <Controller name="funcionario.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={field.value ?? ""} label={td("fields.mobile")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
+                      <Controller name="funcionario.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={field.value ?? ""} label={td("fields.mobile")} placeholder={td("fields.mobilePlaceholder")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
                       <InputBasico field="funcionario.data_nascimento" label={td("fields.birthDate")} type="date" disabled={isView} />
-                      <InputBasico field="funcionario.resumo_pessoal" label={td("fields.personalSummary")} multiline rows={3} disabled={isView} />
+                      <InputBasico field="funcionario.resumo_pessoal" label={td("fields.personalSummary")} placeholder={td("fields.personalSummaryPlaceholder")} multiline rows={3} disabled={isView} />
                     </>}
                     {role === "advogado" && <>
-                      <Controller name="advogado.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={field.value ?? ""} label={td("fields.mobile")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
+                      <Controller name="advogado.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={field.value ?? ""} label={td("fields.mobile")} placeholder={td("fields.mobilePlaceholder")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
                       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "2fr 1fr" }, gap: 2 }}>
-                        <InputBasico field="advogado.oab_numero" label={td("fields.oabNumber")} disabled={isView} />
+                        <InputBasico field="advogado.oab_numero" label={td("fields.oabNumber")} placeholder={td("fields.oabNumberPlaceholder")} disabled={isView} />
                         <Controller name="advogado.oab_uf" control={methods.control} render={({ field, fieldState }) => <FormControl fullWidth disabled={isView} error={!!fieldState.error}>
                           <InputLabel>{td("fields.oabUf")}</InputLabel><Select {...field} value={field.value ?? ""} label={td("fields.oabUf")}>
                             <MenuItem value=""><em>{td("fields.oabUfPlaceholder")}</em></MenuItem>
@@ -225,7 +248,7 @@ export default function UserFormView({ mode, userId }: Props) {
                           return key ? tp(key) : option.nome;
                         }} isOptionEqualToValue={(option, value) => option.id === value.id} onChange={(_, value) => field.onChange(value.map((category) => category.id))} renderInput={(params) => <TextField {...params} label={td("fields.specialties")} placeholder={td("fields.specialtiesPlaceholder")} />} />;
                       }} />
-                      <InputBasico field="advogado.resumo_pessoal" label={td("fields.personalSummary")} multiline rows={3} disabled={isView} />
+                      <InputBasico field="advogado.resumo_pessoal" label={td("fields.personalSummary")} placeholder={td("fields.personalSummaryPlaceholder")} multiline rows={3} disabled={isView} />
                     </>}
                   </Stack>
                 </Paper>
@@ -279,6 +302,7 @@ function defaults(user: UserType | null): Partial<CreateUserPayload | UpdateUser
     name: user?.name ?? "",
     email: user?.email ?? "",
     cpf: user?.cpf ?? "",
+    cor_perfil: user?.cor_perfil ?? "#9e9e9e",
     ...(user ? {} : { password: "", password_confirmation: "" }),
     permissions: user?.permissions_extras ?? [],
     funcionario: {
