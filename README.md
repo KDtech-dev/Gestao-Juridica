@@ -71,7 +71,7 @@ O backend trabalha com os papéis:
 - Spatie Laravel Permission `^7.2`
 - PHPUnit `^11.5`
 - Laravel Pint
-- Banco relacional via Eloquent: MySQL 
+- Banco relacional via Eloquent: MySQL
 ### Frontend
 
 - Next.js `^16.3.6`
@@ -180,7 +180,9 @@ API disponível em `http://127.0.0.1:8000`; frontend em `http://localhost:3000`.
 
 ## Documentação da API
 
-A referência dos endpoints, autenticação, permissões, parâmetros e formatos está em [backend/docs/API.md](backend/docs/API.md). A documentação do backend e sua organização estão em [backend/README.md](backend/README.md).
+A referência dos endpoints, autenticação, permissões, parâmetros e formatos está em [backend/docs/API.md](backend/docs/API.md). A mesma referência é exibida pelo backend em [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/) depois de iniciar a API. A documentação da organização e operação do backend está em [backend/README.md](backend/README.md).
+
+Na página, abra os accordions por grupo e depois a operação desejada para ver método, caminho, permissão, parâmetros e exemplos de entrada/saída. Para testar uma rota protegida, faça login em `POST /api/auth/login` e use o token retornado no cabeçalho `Authorization: Bearer <token>` via Postman, curl ou outro cliente HTTP. A página é uma referência de leitura; as chamadas não são executadas nela.
 
 ## Documentação adicional
 

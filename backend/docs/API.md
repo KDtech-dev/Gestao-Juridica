@@ -187,6 +187,187 @@ Listagem DJEN retorna `data.items` e `data.pagination` (`current_page`, `per_pag
 
 ## Exemplos
 
+Os exemplos abaixo mostram o envelope JSON produzido pela API. Troque `{id}` pelos identificadores retornados e use `Authorization: Bearer <token>` nas operações protegidas.
+
+### Clientes
+
+#### `POST /api/clientes` — cadastrar cliente
+
+Requer `clientes.criar`. Envie JSON para os campos textuais; para enviar `foto_perfil`, use `multipart/form-data`.
+
+Entrada (`application/json`):
+
+```json
+{
+  "name": "Ana Silva",
+  "cpf_cnpj": "12345678901",
+  "email": "ana.silva@example.com",
+  "telefone": "+55 11 99999-1234",
+  "data_nascimento": "1992-06-15",
+  "endereco_id": null
+}
+```
+
+Saída (`201 Created`):
+
+```json
+{
+  "success": true,
+  "message": null,
+  "data": {
+    "id": "8f5f4f87-5c84-4f57-a184-12213344abcd",
+    "name": "Ana Silva",
+    "cpf_cnpj": "12345678901",
+    "email": "ana.silva@example.com",
+    "telefone": "+55 11 99999-1234",
+    "data_nascimento": "1992-06-15",
+    "foto_perfil_url": null,
+    "created_at": "28/10/2026 14:30"
+  },
+  "meta": null
+}
+```
+
+#### `GET /api/clientes` — listar e buscar
+
+Parâmetros opcionais: `page`, `per_page` (padrão `15`, máximo `100`) e `search`. A busca é feita no servidor e considera nome, e-mail e CPF/CNPJ.
+
+Exemplo: `GET /api/clientes?page=1&per_page=10&search=ana`.
+
+Saída resumida: `data` contém a página de clientes; `meta.total` informa quantos resultados correspondem à busca e `links` traz as URLs de paginação.
+
+#### `GET /api/clientes/{cliente}` — consultar cliente
+
+Resposta `200 OK`: envelope `success`, `message`, `data` e `meta`. `data` tem os campos do recurso de cliente e inclui `endereco` quando a relação foi carregada; um cliente sem endereço pode retornar `endereco: null`.
+
+#### `PUT /api/clientes/{cliente}` — atualizar cliente
+
+Requer `clientes.editar`. Envie somente os campos que deseja alterar. Exemplo:
+
+```json
+{
+  "telefone": "+55 11 98888-4321",
+  "data_nascimento": null
+}
+```
+
+Retorna `200 OK` com o recurso atualizado em `data`, no mesmo formato de `GET /api/clientes/{cliente}`.
+
+#### `DELETE /api/clientes/{cliente}` — remover cliente
+
+Requer `clientes.excluir`. Retorna `200 OK`:
+
+```json
+{
+  "success": true,
+  "message": "Cliente removido com sucesso.",
+  "data": null,
+  "meta": null
+}
+```
+
+### Casos
+
+#### `POST /api/casos` — criar caso
+
+Requer `casos.criar`. O exemplo sem arquivos pode ser enviado como JSON. Para anexos, envie `multipart/form-data` com cada arquivo em `anexos[]`.
+
+Entrada:
+
+```json
+{
+  "titulo": "Ação de cobrança",
+  "numero_processo": "0000000-00.2026.8.26.0100",
+  "descricao": "Cobrança contratual.",
+  "status": "aberto",
+  "data_abertura": "2026-10-28",
+  "data_encerramento": null,
+  "advogado_id": "0c2fecec-2e9c-4b42-8aca-267db77ce001",
+  "categorias": [1],
+  "clientes": [
+    { "id": "8f5f4f87-5c84-4f57-a184-12213344abcd", "papel": "autor" }
+  ]
+}
+```
+
+Resposta (`201 Created`):
+
+```json
+{
+  "success": true,
+  "message": null,
+  "data": {
+    "id": "d010d37b-4485-42a4-a010-000000000001",
+    "numero_processo": "00000000020268260100",
+    "titulo": "Ação de cobrança",
+    "descricao": "Cobrança contratual.",
+    "status": "aberto",
+    "data_abertura": "2026-10-28",
+    "data_encerramento": null,
+    "advogado": { "id": "0c2fecec-2e9c-4b42-8aca-267db77ce001", "name": "João Advogado" },
+    "categorias": [{ "id": 1, "nome": "Direito Civil" }],
+    "clientes": [{
+      "id": "8f5f4f87-5c84-4f57-a184-12213344abcd",
+      "name": "Ana Silva",
+      "email": "ana.silva@example.com",
+      "telefone": "+55 11 99999-1234",
+      "papel": "autor"
+    }],
+    "anexos": [],
+    "created_at": "2026-10-28 14:30:00",
+    "updated_at": "2026-10-28 14:30:00"
+  },
+  "meta": null
+}
+```
+
+Quando houver anexos, `data.anexos` inclui nome e URLs autenticadas de visualização e download.
+
+### Compromissos
+
+#### `POST /api/compromissos` — cadastrar compromisso
+
+Requer `compromissos.criar`. Entrada JSON:
+
+```json
+{
+  "titulo": "Reunião com cliente",
+  "descricao": "Analisar documentos do caso.",
+  "data": "2026-11-02",
+  "hora": "14:30",
+  "tipo": "REUNIAO",
+  "status": "PENDENTE"
+}
+```
+
+Resposta `200 OK`:
+
+```json
+{
+  "success": true,
+  "message": null,
+  "data": {
+    "id": "4b1eb141-310e-4ff9-a622-ef02003e3134",
+    "titulo": "Reunião com cliente",
+    "descricao": "Analisar documentos do caso.",
+    "data": "2026-11-02",
+    "hora": "14:30",
+    "tipo": "REUNIAO",
+    "status": "PENDENTE",
+    "anexo": null,
+    "criador": {
+      "id": "0c2fecec-2e9c-4b42-8aca-267db77ce001",
+      "nome": "João Advogado",
+      "cor_perfil": "#3b82f6"
+    },
+    "can": { "update": true, "delete": true }
+  },
+  "meta": null
+}
+```
+
+Para enviar um anexo, use `multipart/form-data` com o campo `anexo`. A URL retornada aponta para a rota autenticada de visualização do arquivo.
+
 ### Login
 
 ```bash
