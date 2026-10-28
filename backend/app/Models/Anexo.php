@@ -52,9 +52,17 @@ class Anexo extends Model
     protected function url(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->arquivo
-                ? Storage::disk('public')->url($this->arquivo)
-                : null,
+            get: function () {
+                if (!$this->arquivo) {
+                    return null;
+                }
+
+                if ($this->anexavel_type === Caso::class) {
+                    return url("/api/anexos/{$this->uuid}/visualizar");
+                }
+
+                return Storage::disk('public')->url($this->arquivo);
+            },
         );
     }
 }

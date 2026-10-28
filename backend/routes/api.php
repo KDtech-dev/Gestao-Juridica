@@ -146,6 +146,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{compromisso}', [CompromissoController::class, 'show'])
             ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosVisualizar))
             ->name('compromissos.show');
+        Route::get('/{compromisso}/anexo/visualizar', [CompromissoController::class, 'visualizarAnexo'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosVisualizar));
+        Route::get('/{compromisso}/anexo/download', [CompromissoController::class, 'downloadAnexo'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosVisualizar));
         Route::put('/{compromisso}', [CompromissoController::class, 'update'])
             ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosEditar))
             ->name('compromissos.update');

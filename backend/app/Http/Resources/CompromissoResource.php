@@ -17,7 +17,9 @@ class CompromissoResource extends JsonResource
             'hora' => $this->hora ? substr((string) $this->hora, 0, 5) : null,
             'tipo' => $this->tipo,
             'status' => $this->status,
-            'anexo' => $this->anexo,
+            'anexo' => $this->anexo
+                ? url("/api/compromissos/{$this->id}/anexo/visualizar")
+                : null,
             'criador' => [
                 'id' => $this->criador?->id,
                 'nome' => $this->criador?->name,

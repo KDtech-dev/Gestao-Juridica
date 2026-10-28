@@ -100,12 +100,13 @@ class CasoController extends Controller
 
         abort_unless(
             $anexo->arquivo &&
-                Storage::disk('public')->exists($anexo->arquivo),
+                str_starts_with($anexo->arquivo, "casos/{$caso->id}/anexos/") &&
+                Storage::disk('local')->exists($anexo->arquivo),
             404
         );
 
         return response()->file(
-            Storage::disk('public')->path($anexo->arquivo)
+            Storage::disk('local')->path($anexo->arquivo)
         );
     }
 
@@ -119,11 +120,12 @@ class CasoController extends Controller
 
         abort_unless(
             $anexo->arquivo &&
-                Storage::disk('public')->exists($anexo->arquivo),
+                str_starts_with($anexo->arquivo, "casos/{$caso->id}/anexos/") &&
+                Storage::disk('local')->exists($anexo->arquivo),
             404
         );
 
-        return Storage::disk('public')->download(
+        return Storage::disk('local')->download(
             $anexo->arquivo,
             $anexo->nome_arquivo
         );

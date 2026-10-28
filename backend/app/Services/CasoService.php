@@ -146,7 +146,7 @@ class CasoService
                 continue;
             }
 
-            $path = $anexo->storePublicly("casos/{$caso->id}/anexos", 'public');
+            $path = $anexo->store("casos/{$caso->id}/anexos", 'local');
 
             $caso->anexos()->create([
                 'nome_arquivo' => $anexo->getClientOriginalName(),
@@ -166,6 +166,7 @@ class CasoService
             ->get()
             ->each(function ($anexo): void {
                 if ($anexo->arquivo) {
+                    Storage::disk('local')->delete($anexo->arquivo);
                     Storage::disk('public')->delete($anexo->arquivo);
                 }
 

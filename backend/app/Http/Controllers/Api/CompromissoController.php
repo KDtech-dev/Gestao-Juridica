@@ -11,6 +11,8 @@ use App\Http\Resources\CompromissoResource;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\StoreCompromissoRequest;
 use App\Http\Requests\UpdateCompromissoRequest;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class CompromissoController extends Controller
 {
@@ -55,6 +57,38 @@ class CompromissoController extends Controller
         return response()->json([
             'success' => true,
             'data' => new CompromissoResource($compromisso),
+        ]);
+    }
+
+    public function visualizarAnexo(Compromisso $compromisso): StreamedResponse
+    {
+        return $this->responderAnexo($compromisso, 'inline');
+    }
+
+    public function downloadAnexo(Compromisso $compromisso): StreamedResponse
+    {
+        return $this->responderAnexo($compromisso, 'attachment');
+    }
+
+    private function responderAnexo(
+        Compromisso $compromisso,
+        string $disposition,
+    ): StreamedResponse {
+        $path = $compromisso->anexo;
+
+        abort_unless(
+            $path &&
+                str_starts_with($path, 'compromissos/') &&
+                Storage::disk('local')->exists($path),
+            404,
+        );
+
+        $name = basename($path);
+        $mime = Storage::disk('local')->mimeType($path) ?: 'application/octet-stream';
+
+        return Storage::disk('local')->response($path, $name, [
+            'Content-Type' => $mime,
+            'Content-Disposition' => $disposition . '; filename="' . addslashes($name) . '"',
         ]);
     }
 

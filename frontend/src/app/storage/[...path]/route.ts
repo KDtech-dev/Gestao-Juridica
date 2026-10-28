@@ -11,6 +11,10 @@ export const GET = async (
   { params }: { params: Promise<{ path: string[] }> },
 ) => {
   const { path } = await params;
+  if (["casos", "compromissos"].includes(path[0] ?? "")) {
+    return new NextResponse(null, { status: 404 });
+  }
+
   const response = await fetch(
     `${getStorageOrigin()}/storage/${path.map(encodeURIComponent).join("/")}`,
     { cache: "no-store" },

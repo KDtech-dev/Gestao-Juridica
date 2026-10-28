@@ -104,7 +104,7 @@ class CompromissoService
 
         if (isset($dados['anexo']) && $dados['anexo'] instanceof UploadedFile) {
             $dados['anexo'] = $dados['anexo']
-                ->store('compromissos', 'public');
+                ->store('compromissos', 'local');
         }
 
         $dados['user_id'] = $dados['user_id'] ?? Auth::id();
@@ -125,12 +125,14 @@ class CompromissoService
         if (isset($dados['anexo']) && $dados['anexo'] instanceof UploadedFile) {
 
             if ($compromisso->anexo) {
+                Storage::disk('local')
+                    ->delete($compromisso->anexo);
                 Storage::disk('public')
                     ->delete($compromisso->anexo);
             }
 
             $dados['anexo'] = $dados['anexo']
-                ->store('compromissos', 'public');
+                ->store('compromissos', 'local');
         }
 
         $compromisso->update($dados);
@@ -145,6 +147,8 @@ class CompromissoService
         app(NotificacaoService::class)->removerNotificacoesDoCompromisso($compromisso);
 
         if ($compromisso->anexo) {
+            Storage::disk('local')
+                ->delete($compromisso->anexo);
             Storage::disk('public')
                 ->delete($compromisso->anexo);
         }
