@@ -45,6 +45,7 @@ import { toast } from "@/utils/toast";
 import { CreateUserPayload, UpdateUserPayload, createUserSchema, UF_SIGLAS, updateUserSchema } from "@/schemas/UserSchema";
 import { profileColorName, profileColorTextColor } from "@/constants/profileColors";
 import usePermission from "@/@core/hooks/custom/usePermission";
+import { PROFILE_COLORS } from "@/constants/profileColors";
 
 type Mode = "create" | "edit" | "view";
 type Props = { mode: Mode; userId?: string };
@@ -371,12 +372,13 @@ export default function UserFormView({ mode, userId }: Props) {
 }
 
 function defaults(user: UserType | null): Partial<CreateUserPayload | UpdateUserPayload> {
+  const profileColor = PROFILE_COLORS.find((color) => color === user?.cor_perfil) ?? PROFILE_COLORS[0];
   return {
     role: user?.roles?.[0] ?? "funcionario",
     name: user?.name ?? "",
     email: user?.email ?? "",
     cpf: user?.cpf ?? "",
-    cor_perfil: user?.cor_perfil ?? "#2563eb",
+    cor_perfil: profileColor,
     ...(user ? {} : { password: "", password_confirmation: "" }),
     permissions: user?.permissions_extras ?? [],
     funcionario: {

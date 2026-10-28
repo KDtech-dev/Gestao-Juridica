@@ -18,6 +18,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createProfileFormSchema,
+  ProfileFormOutputType,
   ProfileFormSchemaType,
 } from "@/schemas/ProfileSchema";
 import CardSeguranca from "@/components/users/CardSeguranca";
@@ -38,7 +39,7 @@ import { toast, formatToastErrorMessage } from "@/utils/toast";
 import { CardEndereco } from "@/components/CardEndereco";
 import PickColor from "@/components/PickColor";
 import { Icon } from "@/components/AppIcon";
-import { profileColorTextColor } from "@/constants/profileColors";
+import { PROFILE_COLORS, profileColorTextColor } from "@/constants/profileColors";
 
 export default function ProfileView() {
   const t = useTranslations("internal.profile");
@@ -84,7 +85,7 @@ export default function ProfileView() {
   const roleLabel = roleNormalized
     ? t(`roles.${roleNormalized}`)
     : t("roles.user");
-  const form = useForm<ProfileFormSchemaType>({
+  const form = useForm<ProfileFormSchemaType, unknown, ProfileFormOutputType>({
     mode: "onSubmit",
     reValidateMode: "onSubmit",
     defaultValues: {
@@ -158,7 +159,9 @@ export default function ProfileView() {
             null,
           tema: themeModeRef.current,
           idioma: languageRef.current,
-          cor_perfil: fetchedUser.cor_perfil ?? null,
+          cor_perfil:
+            PROFILE_COLORS.find((color) => color === fetchedUser.cor_perfil) ??
+            null,
         });
       } catch (err) {
         toast.error(formatToastErrorMessage(err, t("toast.loadProfileError")));
@@ -197,7 +200,7 @@ export default function ProfileView() {
     refreshUser({ name: updatedUser.name });
     await setLanguage(idioma);
     setThemeMode(tema);
-    form.reset(data);
+    form.reset(form.getValues());
     router.refresh();
     toast.success(t("toast.saveSuccess"));
   } catch (err) {

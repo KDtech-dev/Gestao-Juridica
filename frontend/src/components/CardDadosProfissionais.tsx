@@ -12,7 +12,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import InputBasico from "@/components/InputBasico";
-import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
+import type { ProfileFormOutputType, ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 import type { CategoriaType, UserType } from "@/@core/types";
 import { getCategorias } from "@/api/ApiCategorias";
 import { formatToastErrorMessage, toast } from "@/utils/toast";
@@ -30,7 +30,7 @@ export function CardDadosProfissionais({
 }: Props) {
   const t = useTranslations("internal.profile");
   const tPracticeAreas = useTranslations("internal.profile.practiceAreas");
-  const { control } = useFormContext<ProfileFormSchemaType>();
+  const { control } = useFormContext<ProfileFormSchemaType, unknown, ProfileFormOutputType>();
   const [categorias, setCategorias] = useState<CategoriaType[]>([]);
   const [loadingCategorias, setLoadingCategorias] = useState(true);
 

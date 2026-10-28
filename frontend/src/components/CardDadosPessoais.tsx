@@ -7,7 +7,7 @@ import { clearNumber, formatCpf, formatTelefone } from "@/@core/format";
 import InputBasico from "@/components/InputBasico";
 import LocalizedDatePicker from "@/components/LocalizedDatePicker";
 import TextField from "@mui/material/TextField";
-import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
+import type { ProfileFormOutputType, ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 
 type Props = {
   isAdvogado: boolean;
@@ -21,7 +21,7 @@ export function CardDadosPessoais({
   hideLawyerSummary = false,
 }: Props) {
   const t = useTranslations("internal.profile");
-  const { control } = useFormContext<ProfileFormSchemaType>();
+  const { control } = useFormContext<ProfileFormSchemaType, unknown, ProfileFormOutputType>();
 
   return (
     <Box>

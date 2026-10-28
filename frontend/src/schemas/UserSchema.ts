@@ -215,7 +215,7 @@ export const updateUserBaseSchema = (t: TFunction) =>
     password_confirmation: z.string().optional(),
     role: roleEnum.optional(),
     permissions: z.array(z.string()).optional(),
-    cor_perfil: z.enum(PROFILE_COLORS).optional(),
+    cor_perfil: z.enum(PROFILE_COLORS).nullable().optional(),
     endereco: createEnderecoSchema(t).partial().optional().nullable(),
     funcionario: createFuncionarioSchema(t).partial().optional(),
     advogado: createAdvogadoSchema(t).partial().optional(),

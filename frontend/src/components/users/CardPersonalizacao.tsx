@@ -14,7 +14,7 @@ import {
 
 import { Controller, UseFormReturn } from "react-hook-form";
 
-import { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
+import { ProfileFormOutputType, ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 
 import { useThemeMode } from "@/theme/ThemeRegistry";
 
@@ -22,7 +22,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useTranslations } from "next-intl";
 
 type Props = {
-  form: UseFormReturn<ProfileFormSchemaType>;
+  form: UseFormReturn<ProfileFormSchemaType, unknown, ProfileFormOutputType>;
 };
 
 const CardPersonalizacao = ({ form }: Props) => {

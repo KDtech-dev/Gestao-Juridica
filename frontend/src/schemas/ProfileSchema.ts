@@ -10,6 +10,7 @@ export const createProfileFormSchema = (t: TFunction) =>
     idioma: z.enum(["pt", "en", "es"]),
   });
 
-export type ProfileFormSchemaType = z.infer<
-  ReturnType<typeof createProfileFormSchema>
->;
+type ProfileFormSchema = ReturnType<typeof createProfileFormSchema>;
+
+export type ProfileFormSchemaType = z.input<ProfileFormSchema>;
+export type ProfileFormOutputType = z.output<ProfileFormSchema>;

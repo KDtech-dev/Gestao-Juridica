@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import InputBasico from "@/components/InputBasico";
 import { useFormContext } from "react-hook-form";
-import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
+import type { ProfileFormOutputType, ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 
 type Props = {
   isAdvogado: boolean;
@@ -14,7 +14,7 @@ type Props = {
 
 export function CardEndereco({ isAdvogado, isFuncionario }: Props) {
   const t = useTranslations("internal.profile");
-  const { setValue } = useFormContext<ProfileFormSchemaType>();
+  const { setValue } = useFormContext<ProfileFormSchemaType, unknown, ProfileFormOutputType>();
   const [loadingCep, setLoadingCep] = useState(false);
 
   if (!isAdvogado && !isFuncionario) return null;
