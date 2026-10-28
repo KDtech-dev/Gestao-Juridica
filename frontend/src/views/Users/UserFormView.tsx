@@ -222,12 +222,12 @@ export default function UserFormView({ mode, userId }: Props) {
                   </Stack>
                   <Box sx={{
                     display: "grid",
-                    gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
-                    alignContent: { sm: isCreate ? "center" : "stretch" },
+                    gridTemplateColumns: { xs: "1fr", sm: isCreate ? "repeat(2, 1fr)" : "1fr" },
+                    alignContent: "center",
                     alignItems: "stretch",
-                    height: { sm: isCreate ? "100%" : undefined },
+                    height: { sm: "100%" },
                     columnGap: 2,
-                    rowGap: { sm: isCreate ? 2 : 2 },
+                    rowGap: { sm: isCreate ? 2 : 1 },
                   }}>
                   <InputBasico field="name" label={td("fields.name")} placeholder={td("fields.namePlaceholder")} required={!isView} disabled={isView} />
                   <Controller name="role" control={methods.control} render={({ field, fieldState }) => (

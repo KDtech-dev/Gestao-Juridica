@@ -474,6 +474,8 @@
           "description": "Elige permisos adicionales para este usuario. Los permisos del perfil siguen activos.",
           "field": "Permisos disponibles",
           "placeholder": "Buscar permisos",
+          "selectedCount": "{count} permiso(s) seleccionado(s)",
+          "noResults": "No se encontraron permisos.",
           "none": "No hay permisos adicionales seleccionados.",
           "open": "Configurar permisos",
           "save": "Aplicar selección",

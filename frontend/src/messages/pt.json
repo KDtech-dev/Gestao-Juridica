@@ -499,6 +499,8 @@
           "description": "Escolha permissões adicionais para este usuário. As permissões do papel continuam ativas.",
           "field": "Permissões disponíveis",
           "placeholder": "Buscar permissões",
+          "selectedCount": "{count} permissão(ões) selecionada(s)",
+          "noResults": "Nenhuma permissão encontrada.",
           "none": "Nenhuma permissão extra selecionada.",
           "open": "Configurar permissões",
           "save": "Aplicar seleção",

@@ -474,6 +474,8 @@
           "description": "Choose extra permissions for this user. Permissions inherited from the role remain active.",
           "field": "Available permissions",
           "placeholder": "Search permissions",
+          "selectedCount": "{count} permission(s) selected",
+          "noResults": "No permissions found.",
           "none": "No additional permissions selected.",
           "open": "Configure permissions",
           "save": "Apply selection",

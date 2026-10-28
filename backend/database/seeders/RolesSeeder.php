@@ -29,14 +29,14 @@ class RolesSeeder extends Seeder
                 PermissionEnum::CasosVisualizar, PermissionEnum::CasosCriar, PermissionEnum::CasosEditar,
                 PermissionEnum::CompromissosVisualizar, PermissionEnum::CompromissosCriar, PermissionEnum::CompromissosEditar,
                 PermissionEnum::PublicacoesVisualizar, PermissionEnum::PublicacoesCriar, PermissionEnum::PublicacoesEditar,
-                PermissionEnum::NotificacoesVisualizar, PermissionEnum::DjenVisualizar, PermissionEnum::DjenSincronizar,
+                PermissionEnum::DjenVisualizar, PermissionEnum::DjenSincronizar,
             ],
             'funcionario' => [
                 PermissionEnum::ClientesVisualizar, PermissionEnum::ClientesCriar, PermissionEnum::ClientesEditar,
                 PermissionEnum::CasosVisualizar, PermissionEnum::CasosCriar, PermissionEnum::CasosEditar,
                 PermissionEnum::CompromissosVisualizar, PermissionEnum::CompromissosCriar, PermissionEnum::CompromissosEditar,
                 PermissionEnum::PublicacoesVisualizar, PermissionEnum::PublicacoesCriar, PermissionEnum::PublicacoesEditar,
-                PermissionEnum::NotificacoesVisualizar, PermissionEnum::DjenVisualizar,
+                PermissionEnum::DjenVisualizar,
             ],
             'cliente' => [],
         ];

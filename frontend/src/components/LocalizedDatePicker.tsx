@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -10,7 +10,7 @@ import { es } from "date-fns/locale/es";
 import { ptBR } from "date-fns/locale/pt-BR";
 import { useLocale, useTranslations } from "next-intl";
 import { IconButton, InputAdornment, Popover, TextField } from "@mui/material";
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { dateFromApi, dateToApi } from "@/@core/format";
 import { Icon } from "@/components/AppIcon";
 
@@ -71,6 +71,7 @@ export default function LocalizedDatePicker({
   const [inputError, setInputError] = useState(false);
   const [touched, setTouched] = useState(false);
   const [calendarAnchor, setCalendarAnchor] = useState<HTMLElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!value) {
@@ -124,10 +125,35 @@ export default function LocalizedDatePicker({
     setCalendarAnchor(null);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    const input = event.currentTarget;
+    const start = input.selectionStart ?? 0;
+    const end = input.selectionEnd ?? start;
+
+    if (start !== end) return;
+
+    const separatorIndex = event.key === "Backspace" ? start - 1 : start;
+    const digitIndex = event.key === "Backspace" ? separatorIndex - 1 : separatorIndex + 1;
+    const separatorAdjacent = event.key === "Backspace" || event.key === "Delete";
+
+    if (
+      separatorAdjacent &&
+      input.value[separatorIndex] === "/" &&
+      /\d/.test(input.value[digitIndex] ?? "")
+    ) {
+      event.preventDefault();
+      const nextValue = input.value.slice(0, digitIndex) + input.value.slice(digitIndex + 1);
+      handleTextChange(nextValue);
+      const nextCaret = event.key === "Backspace" ? digitIndex : start + 1;
+      requestAnimationFrame(() => inputRef.current?.setSelectionRange(nextCaret, nextCaret));
+    }
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={adapterLocale}>
       <TextField
         fullWidth
+        inputRef={inputRef}
         label={label}
         value={inputValue}
         disabled={disabled}
@@ -136,6 +162,7 @@ export default function LocalizedDatePicker({
         error={error || inputError}
         helperText={helperText || (inputError ? t("invalidInput") : undefined)}
         onChange={(event) => handleTextChange(event.target.value)}
+        onKeyDown={handleKeyDown}
         onBlur={() => {
           setTouched(true);
           setInputError(Boolean(inputValue.trim()) && !parseInput(inputValue));

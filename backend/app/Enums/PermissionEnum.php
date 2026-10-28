@@ -4,6 +4,8 @@ namespace App\Enums;
 
 enum PermissionEnum: string
 {
+    case PermissoesGerenciar = 'permissoes.gerenciar';
+
     case UsuariosVisualizar = 'usuarios.visualizar';
     case UsuariosCriar = 'usuarios.criar';
     case UsuariosEditar = 'usuarios.editar';
@@ -29,11 +31,8 @@ enum PermissionEnum: string
     case PublicacoesEditar = 'publicacoes.editar';
     case PublicacoesExcluir = 'publicacoes.excluir';
 
-    case NotificacoesVisualizar = 'notificacoes.visualizar';
-
     case DjenVisualizar = 'djen.visualizar';
     case DjenSincronizar = 'djen.sincronizar';
-    case PermissoesGerenciar = 'permissoes.gerenciar';
 
     public function group(): string
     {
