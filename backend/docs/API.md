@@ -66,6 +66,8 @@ Papéis atuais: `admin`, `advogado`, `funcionario`. Permissões granulares são 
 
 Cada item informa responsável, módulo, ação, registro relacionado, nomes dos campos alterados, IP, agente do navegador e horário. O histórico não guarda valores de senhas, documentos ou conteúdo dos casos.
 
+São registrados eventos de criação, edição e exclusão em usuários, clientes, casos, compromissos e publicações, login/logout e mudanças de papéis e permissões. As consultas retornam os registros do mais recente para o mais antigo. A API não expõe operações para editar ou apagar o histórico.
+
 Exemplo de consulta para ver todas as movimentações de um dia:
 
 ```http

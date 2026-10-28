@@ -41,7 +41,11 @@ tests/                 testes Laravel
 
 Os papéis de usuário atuais são `admin`, `advogado` e `funcionario`. A API usa Sanctum para bearer tokens e Spatie Permission para permissões granulares.
 
-O módulo de movimentações registra para administradores alterações de registros, autenticações e mudanças de permissões. A trilha inclui dia, usuário responsável, módulo, ação e item afetado; mantém nomes de campos alterados sem guardar seus valores sensíveis.
+### Movimentações e auditoria
+
+Administradores podem consultar a tela **Movimentações** em `/admin/logs`. Ela lista as ações mais recentes e permite filtrar por dia, intervalo de datas, módulo, ação, responsável e registro. A tela consome `GET /api/activity-logs`, endpoint autenticado e restrito ao papel `admin`.
+
+A trilha registra criação, edição e exclusão de usuários, clientes, casos, compromissos e publicações, além de entradas/saídas de sessão e alterações de papéis e permissões. Cada item contém responsável, data/hora, módulo, ação, registro afetado, nomes dos campos alterados e metadados técnicos da requisição. Valores sensíveis dos campos não são armazenados. A tabela `activity_logs` é criada pela migration `2026_10_28_000002_create_activity_logs_table.php`; em uma instalação nova, `php artisan migrate --seed` cria a tabela junto das demais.
 
 ## Desenvolvimento local
 

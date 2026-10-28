@@ -51,6 +51,7 @@ A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend ar
 - Notificações de compromissos do dia/semana.
 - Layout administrativo com sidebar, header, tema e toast.
 - Telas administrativas para usuários e equipe no frontend.
+- Auditoria de movimentações acessível a administradores em `/admin/logs`, com filtros por dia, módulo, ação, responsável e registro.
 
 ### Perfis de acesso
 
@@ -59,6 +60,8 @@ O backend trabalha com os papéis:
 - `admin`
 - `advogado`
 - `funcionario`
+
+O histórico administrativo registra criação, edição e exclusão de registros dos módulos principais, entradas e saídas de sessão e mudanças de papel e permissões. Ele armazena os nomes dos campos alterados, sem guardar valores de campos sensíveis. A tabela `activity_logs` é criada pelas migrations do backend.
 
 ## Tecnologias
 
