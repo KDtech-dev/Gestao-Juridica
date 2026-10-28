@@ -167,6 +167,7 @@ export type UserType = {
   cpf: string;
   email_verified_at: string | null;
   roles: RoleType[];
+  permissions?: string[];
   permissions_extras: string[];
   funcionario: FuncionarioType | null;
   advogado: AdvogadoType | null;

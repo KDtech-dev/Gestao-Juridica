@@ -253,7 +253,7 @@ class UserService
             'funcionario.endereco',
             'advogado.endereco',
             'advogado.categorias',
-            'roles',
+            'roles.permissions',
             'permissions',
             ])
             ->paginate($porPagina);
@@ -269,7 +269,7 @@ class UserService
     private function carregarRelacoes(User $user): User
     {
         return $user->load([
-            'roles',
+            'roles.permissions',
             'funcionario.endereco',
             'advogado.endereco',
             'advogado.categorias',

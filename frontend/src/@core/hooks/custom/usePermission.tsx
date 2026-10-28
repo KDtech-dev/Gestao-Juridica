@@ -1,20 +1,35 @@
-import { useRouter } from "next/router";
-import { useLoading } from "./useLoading";
-import { useEffect } from "react";
+"use client";
 
-const useCheckPermission = (checkPermission: Promise<boolean>) => {
-  const { loading, stopLoading } = useLoading(true);
-  const router = useRouter();
+import { useAuthContext } from "@/context/AuthContext";
 
-  useEffect(() => {
-    checkPermission
-      .then((success) => {
-        if (success) stopLoading();
-      })
-      .catch(() => router.replace("/403"));
-  }, [checkPermission, router, stopLoading]);
+type PermissionSet = string | readonly string[];
+type MatchMode = "all" | "any";
 
-  return { loading };
-};
+export default function usePermission(
+  required?: PermissionSet,
+  mode: MatchMode = "all",
+) {
+  const { loading, hasPermission } = useAuthContext();
 
-export default useCheckPermission;
+  const requiredPermissions =
+    typeof required === "string" ? [required] : required ?? [];
+
+  const hasAnyPermission = (permissions: readonly string[]) =>
+    permissions.some(hasPermission);
+  const hasAllPermissions = (permissions: readonly string[]) =>
+    permissions.every(hasPermission);
+
+  const allowed =
+    requiredPermissions.length > 0 &&
+    (mode === "all"
+      ? hasAllPermissions(requiredPermissions)
+      : hasAnyPermission(requiredPermissions));
+
+  return {
+    allowed,
+    loading,
+    hasPermission,
+    hasAnyPermission,
+    hasAllPermissions,
+  };
+}

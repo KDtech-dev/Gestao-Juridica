@@ -9,7 +9,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import auth from "@/configs/auth";
-import { authStorage } from "@/configs/axios";
+import { authStorage, getAxios } from "@/configs/axios";
 import { getRouteByRole } from "@/utils/redirectByRole";
 
 export type AuthUser = {
@@ -17,6 +17,7 @@ export type AuthUser = {
   name: string;
   email: string;
   roles: string[];
+  permissions: string[];
   idioma?: "pt" | "en" | "es" | null;
   foto_perfil_url?: string | null;
 };
@@ -26,6 +27,7 @@ type AuthContextValue = {
   loading: boolean;
   isAuthenticated: boolean;
   hasRole: (role: string) => boolean;
+  hasPermission: (permission: string) => boolean;
   setAuth: (userData: AuthUser, token: string, remember?: boolean) => void;
   logout: () => void;
   redirectByRole: () => void;
@@ -61,6 +63,9 @@ function safeParseUser(raw: string | null): AuthUser | null {
       name: parsed.name,
       email: parsed.email,
       roles,
+      permissions: Array.isArray(parsed.permissions)
+        ? parsed.permissions.map(String)
+        : [],
       idioma,
       foto_perfil_url:
         typeof parsed.foto_perfil_url === "string" ? parsed.foto_perfil_url : null,
@@ -83,16 +88,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       sessionStorage.getItem(auth.userDataKeyName),
     );
     const nextUser = token && storedUser ? storedUser : null;
-    queueMicrotask(() => {
-      setUser(nextUser);
-      setLoading(false);
-    });
+
+    if (!nextUser) {
+      queueMicrotask(() => {
+        setUser(null);
+        setLoading(false);
+      });
+      return;
+    }
+
+    setUser(nextUser);
+    getAxios()
+      .get("/profile")
+      .then((response) => {
+        const profile = safeParseUser(
+          JSON.stringify(response.data?.data?.user ?? response.data?.user),
+        );
+        if (!profile) return;
+
+        const storage = localStorage.getItem(auth.userDataKeyName)
+          ? localStorage
+          : sessionStorage;
+        storage.setItem(auth.userDataKeyName, JSON.stringify(profile));
+        setUser(profile);
+      })
+      .catch(() => {
+        // Keep the cached user when the profile refresh is temporarily unavailable.
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const isAuthenticated = !!user;
 
   const hasRole = useCallback(
     (role: string) => user?.roles?.includes(role) ?? false,
+    [user],
+  );
+
+  const hasPermission = useCallback(
+    (permission: string) => user?.permissions?.includes(permission) ?? false,
     [user],
   );
 
@@ -153,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       isAuthenticated,
       hasRole,
+      hasPermission,
       setAuth,
       logout,
       redirectByRole,
@@ -163,6 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       loading,
       isAuthenticated,
       hasRole,
+      hasPermission,
       setAuth,
       logout,
       redirectByRole,

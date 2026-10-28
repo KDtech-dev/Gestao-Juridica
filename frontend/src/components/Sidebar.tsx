@@ -17,12 +17,14 @@ import { useEffect, useState } from "react";
 import { logoSrc } from "@/configs/branding";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/hooks/useAuth";
+import usePermission from "@/@core/hooks/custom/usePermission";
 
 type NavItem = {
   key: string;
   label: string;
   icon: string;
   href?: string;
+  permission?: string;
   onClick?: () => void;
 };
 
@@ -32,18 +34,21 @@ const mainItems: NavItem[] = [
     label: "",
     icon: "mdi:calendar-month-outline",
     href: "/agenda",
+    permission: "compromissos.visualizar",
   },
   {
     key: "publicacoes",
     label: "",
     icon: "mdi:newspaper-variant-outline",
     href: "/publicacoes?modo=interna",
+    permission: "publicacoes.visualizar",
   },
   {
     key: "clientes",
     label: "",
     icon: "mdi:account-group-outline",
     href: "/clientes",
+    permission: "clientes.visualizar",
   },
 
   {
@@ -51,6 +56,7 @@ const mainItems: NavItem[] = [
     label: "",
     icon: "mdi:briefcase-outline",
     href: "/casos",
+    permission: "casos.visualizar",
   },
 ];
 
@@ -114,6 +120,7 @@ export function SidebarDashboard({ activeKey }: Props) {
   const theme = useTheme();
   const isDark = theme.palette.mode === "dark";
   const { user, loading, hasRole } = useAuth();
+  const { hasPermission } = usePermission();
   const { t } = useTranslation();
   const tt = useTranslations("public.header");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -228,7 +235,9 @@ export function SidebarDashboard({ activeKey }: Props) {
   const isClient = hasRole("cliente");
   const isAdmin = hasRole("admin");
 
-  let translatedMainItems = mainItems.map((item) => {
+  let translatedMainItems = mainItems.filter(
+    (item) => !item.permission || hasPermission(item.permission),
+  ).map((item) => {
     if (item.key === "clientes" && isClient) {
       return { ...item, label: t("sidebar.items.myCases"), href: "/meu-caso" };
     }
@@ -241,6 +250,7 @@ export function SidebarDashboard({ activeKey }: Props) {
       label: t("sidebar.items.adminUsers"),
       icon: "mdi:account-multiple-outline",
       href: "/users",
+      permission: "usuarios.visualizar",
     });
   }
 
