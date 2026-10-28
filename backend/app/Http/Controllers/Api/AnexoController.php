@@ -2,21 +2,45 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PermissionEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Anexo;
+use App\Models\Caso;
+use App\Models\Cliente;
+use App\Models\Publicacao;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AnexoController extends Controller
 {
-    public function visualizar(Anexo $anexo): StreamedResponse
+    public function visualizar(Request $request, Anexo $anexo): StreamedResponse
     {
+        $this->authorizeRead($request, $anexo);
+
         return $this->responder($anexo, disposition: 'inline');
     }
 
-    public function download(Anexo $anexo): StreamedResponse
+    public function download(Request $request, Anexo $anexo): StreamedResponse
     {
+        $this->authorizeRead($request, $anexo);
+
         return $this->responder($anexo, disposition: 'attachment');
+    }
+
+    private function authorizeRead(Request $request, Anexo $anexo): void
+    {
+        $permission = match ($anexo->anexavel_type) {
+            Caso::class => PermissionEnum::CasosVisualizar,
+            Cliente::class => PermissionEnum::ClientesVisualizar,
+            Publicacao::class => PermissionEnum::PublicacoesVisualizar,
+            default => null,
+        };
+
+        abort_unless(
+            $permission && $request->user()?->can($permission->value),
+            403
+        );
     }
 
     private function responder(Anexo $anexo, string $disposition): StreamedResponse

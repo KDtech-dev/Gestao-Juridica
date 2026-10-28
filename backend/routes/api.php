@@ -76,31 +76,44 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('clientes')->group(function () {
-        Route::get('/',               [ClienteController::class, 'index']);
-        Route::post('/',              [ClienteController::class, 'store']);
-        Route::get('/{cliente}',      [ClienteController::class, 'show']);
-        Route::put('/{cliente}',      [ClienteController::class, 'update']);
-        Route::delete('/{cliente}',   [ClienteController::class, 'destroy']);
+        Route::get('/', [ClienteController::class, 'index'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::ClientesVisualizar));
+        Route::post('/', [ClienteController::class, 'store'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::ClientesCriar));
+        Route::get('/{cliente}', [ClienteController::class, 'show'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::ClientesVisualizar));
+        Route::put('/{cliente}', [ClienteController::class, 'update'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::ClientesEditar));
+        Route::delete('/{cliente}', [ClienteController::class, 'destroy'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::ClientesExcluir));
     });
 
     Route::prefix('publicacoes')->group(function () {
 
-        Route::get('/',                [PublicacaoController::class, 'index']);
-        Route::post('/',               [PublicacaoController::class, 'store']);
-        Route::get('/{publicacao}',    [PublicacaoController::class, 'show']);
-        Route::put('/{publicacao}',    [PublicacaoController::class, 'update']);
-        Route::delete('/{publicacao}', [PublicacaoController::class, 'destroy']);
+        Route::get('/', [PublicacaoController::class, 'index'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesVisualizar));
+        Route::post('/', [PublicacaoController::class, 'store'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesCriar));
+        Route::get('/{publicacao}', [PublicacaoController::class, 'show'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesVisualizar));
+        Route::put('/{publicacao}', [PublicacaoController::class, 'update'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesEditar));
+        Route::delete('/{publicacao}', [PublicacaoController::class, 'destroy'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesExcluir));
 
         Route::prefix('{publicacao}/anexos')->group(function () {
-            Route::get('/',           [PublicacaoController::class, 'indexAnexos']);
-            Route::post('/',          [PublicacaoController::class, 'storeAnexo']);
-            Route::delete('/{anexo}', [PublicacaoController::class, 'destroyAnexo']);
+            Route::get('/', [PublicacaoController::class, 'indexAnexos'])
+                ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesVisualizar));
+            Route::post('/', [PublicacaoController::class, 'storeAnexo'])
+                ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesEditar));
+            Route::delete('/{anexo}', [PublicacaoController::class, 'destroyAnexo'])
+                ->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesEditar));
         });
 
         Route::post(
             '/{publicacao}/banner',
             [PublicacaoController::class, 'storeBanner']
-        );
+        )->middleware(PermissionEnum::middlewareAny(PermissionEnum::PublicacoesEditar));
     });
 
     Route::prefix('comunicacoes-djen')->group(function () {
@@ -124,11 +137,21 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::prefix('compromissos')->group(function () {
-        Route::get('/',                   [CompromissoController::class, 'index'])->name('compromissos.index');
-        Route::post('/',                  [CompromissoController::class, 'store'])->name('compromissos.store');
-        Route::get('/{compromisso}',      [CompromissoController::class, 'show'])->name('compromissos.show');
-        Route::put('/{compromisso}',      [CompromissoController::class, 'update'])->name('compromissos.update');
-        Route::delete('/{compromisso}',   [CompromissoController::class, 'destroy'])->name('compromissos.destroy');
+        Route::get('/', [CompromissoController::class, 'index'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosVisualizar))
+            ->name('compromissos.index');
+        Route::post('/', [CompromissoController::class, 'store'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosCriar))
+            ->name('compromissos.store');
+        Route::get('/{compromisso}', [CompromissoController::class, 'show'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosVisualizar))
+            ->name('compromissos.show');
+        Route::put('/{compromisso}', [CompromissoController::class, 'update'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosEditar))
+            ->name('compromissos.update');
+        Route::delete('/{compromisso}', [CompromissoController::class, 'destroy'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CompromissosExcluir))
+            ->name('compromissos.destroy');
     });
 
     Route::prefix('notificacoes')->group(function () {
@@ -151,11 +174,16 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('casos')->group(function () {
-        Route::get('/',            [CasoController::class, 'index']);
-        Route::post('/',           [CasoController::class, 'store']);
-        Route::get('/{caso}',      [CasoController::class, 'show']);
-        Route::put('/{caso}',      [CasoController::class, 'update']);
-        Route::delete('/{caso}',   [CasoController::class, 'destroy']);
+        Route::get('/', [CasoController::class, 'index'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosVisualizar));
+        Route::post('/', [CasoController::class, 'store'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosCriar));
+        Route::get('/{caso}', [CasoController::class, 'show'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosVisualizar));
+        Route::put('/{caso}', [CasoController::class, 'update'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosEditar));
+        Route::delete('/{caso}', [CasoController::class, 'destroy'])
+            ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosExcluir));
 
         Route::post('/{caso}/sincronizar-djen', [ComunicacaoDjenController::class, 'sincronizarCaso'])
             ->middleware([
@@ -164,18 +192,21 @@ Route::middleware('auth:sanctum')->group(function () {
             ]);
 
         Route::prefix('{caso}/clientes')->group(function () {
-            Route::post('/',             [CasoController::class, 'attachClientes']);
-            Route::put('/',              [CasoController::class, 'syncClientes']);
-            Route::delete('/{cliente}',  [CasoController::class, 'detachCliente']);
+            Route::post('/', [CasoController::class, 'attachClientes'])
+                ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosEditar));
+            Route::put('/', [CasoController::class, 'syncClientes'])
+                ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosEditar));
+            Route::delete('/{cliente}', [CasoController::class, 'detachCliente'])
+                ->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosEditar));
         });
         Route::get(
             '/{caso}/anexos/{anexo}',
             [CasoController::class, 'visualizarAnexo']
-        );
+        )->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosVisualizar));
 
         Route::get(
             '/{caso}/anexos/{anexo}/download',
             [CasoController::class, 'downloadAnexo']
-        );
+        )->middleware(PermissionEnum::middlewareAny(PermissionEnum::CasosVisualizar));
     });
 });
