@@ -15,7 +15,7 @@ class ClienteResource extends JsonResource
             'cpf_cnpj'        => $this->cpf_cnpj,
             'email'           => $this->email,
             'telefone'        => $this->telefone,
-            'data_nascimento' => $this->data_nascimento?->format('d/m/Y'),
+            'data_nascimento' => $this->data_nascimento?->format('Y-m-d'),
             'foto_perfil_url' => $this->foto_perfil
                 ? asset('storage/' . $this->foto_perfil)
                 : null,

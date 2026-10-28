@@ -12,7 +12,7 @@ class FuncionarioResource extends JsonResource
         return [
             'id'               => $this->id,
             'user_id'          => $this->user_id,
-            'data_nascimento'  => $this->data_nascimento,
+            'data_nascimento'  => $this->data_nascimento?->format('Y-m-d'),
             'sexo'             => $this->sexo,
             'celular'          => $this->celular,
             'resumo_pessoal'   => $this->resumo_pessoal,

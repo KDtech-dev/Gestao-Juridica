@@ -5,6 +5,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 import { clearNumber, formatCpf, formatTelefone } from "@/@core/format";
 import InputBasico from "@/components/InputBasico";
+import LocalizedDatePicker from "@/components/LocalizedDatePicker";
 import TextField from "@mui/material/TextField";
 import type { ProfileFormSchemaType } from "@/schemas/ProfileSchema";
 
@@ -83,14 +84,22 @@ export function CardDadosPessoais({
         />
 
         {(isAdvogado || isFuncionario) && (
-          <InputBasico
-            field={
+          <Controller
+            name={
               isAdvogado
                 ? "advogado.data_nascimento"
                 : "funcionario.data_nascimento"
             }
-            label={t("fields.birthDate")}
-            type="date"
+            control={control}
+            render={({ field, fieldState }) => (
+              <LocalizedDatePicker
+                value={field.value}
+                onChange={field.onChange}
+                label={t("fields.birthDate")}
+                error={!!fieldState.error}
+                helperText={fieldState.error?.message}
+              />
+            )}
           />
         )}
 

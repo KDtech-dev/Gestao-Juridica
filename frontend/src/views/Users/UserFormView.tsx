@@ -30,6 +30,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import InputBasico from "@/components/InputBasico";
+import LocalizedDatePicker from "@/components/LocalizedDatePicker";
 import PickColor from "@/components/PickColor";
 import ExtraPermissionsModal from "@/components/modals/ExtraPermissionsModal";
 import { getPermissionCatalog, getUserById, postFotoPerfil, postUser, syncUserPermissions, updateUser } from "@/api/ApiUsers";
@@ -252,11 +253,12 @@ export default function UserFormView({ mode, userId }: Props) {
                   <Stack spacing={2}>
                     {role === "funcionario" && <>
                       <Controller name="funcionario.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={formatTelefone(field.value ?? "")} label={td("fields.mobile")} placeholder={td("fields.mobilePlaceholder")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
-                      <InputBasico field="funcionario.data_nascimento" label={td("fields.birthDate")} type="date" disabled={isView} />
+                      <Controller name="funcionario.data_nascimento" control={methods.control} render={({ field, fieldState }) => <LocalizedDatePicker value={field.value} onChange={field.onChange} label={td("fields.birthDate")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} />} />
                       <InputBasico field="funcionario.resumo_pessoal" label={td("fields.personalSummary")} placeholder={td("fields.personalSummaryPlaceholder")} multiline rows={3} disabled={isView} />
                     </>}
                     {role === "advogado" && <>
                       <Controller name="advogado.celular" control={methods.control} render={({ field, fieldState }) => <TextField {...field} value={formatTelefone(field.value ?? "")} label={td("fields.mobile")} placeholder={td("fields.mobilePlaceholder")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} onChange={(event) => field.onChange(formatTelefone(event.target.value))} />} />
+                      <Controller name="advogado.data_nascimento" control={methods.control} render={({ field, fieldState }) => <LocalizedDatePicker value={field.value} onChange={field.onChange} label={td("fields.birthDate")} disabled={isView} error={!!fieldState.error} helperText={fieldState.error?.message} />} />
                       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "2fr 1fr" }, gap: 2 }}>
                         <InputBasico field="advogado.oab_numero" label={td("fields.oabNumber")} placeholder={td("fields.oabNumberPlaceholder")} disabled={isView} />
                         <Controller name="advogado.oab_uf" control={methods.control} render={({ field, fieldState }) => <FormControl fullWidth disabled={isView} error={!!fieldState.error}>
@@ -337,6 +339,7 @@ function defaults(user: UserType | null): Partial<CreateUserPayload | UpdateUser
       resumo_pessoal: user?.funcionario?.resumo_pessoal ?? "",
     },
     advogado: {
+      data_nascimento: user?.advogado?.data_nascimento ?? "",
       celular: user?.advogado?.celular ?? "",
       oab_numero: user?.advogado?.oab_numero ?? "",
       oab_uf: user?.advogado?.oab_uf ?? "",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
   Box,
@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { ClienteType, CasoType, StatusCaso } from "@/@core/types";
-import { formatCpfCnpj } from "@/@core/format";
+import { formatCpfCnpj, formatDateFromApi } from "@/@core/format";
 import { getClienteById, updateCliente } from "@/api/ApiClientes";
 import { getCasos } from "@/api/apiCasos";
 import { CreateClientePayload } from "@/schemas/ClienteSchema";
@@ -28,6 +28,7 @@ import { Icon } from "@/components/AppIcon";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { getApiErrorMessage } from "@/configs/ApiError";
 import { toast } from "@/utils/toast";
+import LocalizedDatePicker from "@/components/LocalizedDatePicker";
 
 type Props = {
   mode: "create" | "edit" | "view";
@@ -58,6 +59,7 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
   );
   const theme = useTheme();
   const t = useTranslations("internal.clients");
+  const locale = useLocale();
   const router = useRouter();
   const isEdit = mode === "edit";
 
@@ -191,11 +193,11 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
                       value={form.telefone}
                       onChange={(v) => setForm((f) => ({ ...f, telefone: v }))}
                     />
-                    <EditItem
+                    <LocalizedDatePicker
                       label={t("dialog.fields.birthDate")}
                       value={form.data_nascimento}
-                      onChange={(v) =>
-                        setForm((f) => ({ ...f, data_nascimento: v }))
+                      onChange={(value) =>
+                        setForm((f) => ({ ...f, data_nascimento: value }))
                       }
                     />
                   </>
@@ -219,7 +221,7 @@ export default function ClienteFormView({ mode, clienteId }: Props) {
                     />
                     <DetailItem
                       label={t("dialog.fields.birthDate")}
-                      value={cliente?.data_nascimento}
+                      value={formatDateFromApi(cliente?.data_nascimento, locale)}
                     />
                     <DetailItem
                       label={t("detail.fields.createdAt")}

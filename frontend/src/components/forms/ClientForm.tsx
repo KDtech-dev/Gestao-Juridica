@@ -10,6 +10,7 @@ import {
 import { useEffect } from "react";
 import { ClienteType } from "@/@core/types";
 import { useTranslations } from "next-intl";
+import LocalizedDatePicker from "@/components/LocalizedDatePicker";
 
 type Props = {
   id: string;
@@ -25,6 +26,7 @@ export function ClientForm({
   onSubmit,
 }: Props) {
   const t = useTranslations("validation");
+  const td = useTranslations("internal.clients.dialog");
 
   const {
     control,
@@ -134,13 +136,11 @@ export function ClientForm({
         name="data_nascimento"
         control={control}
         render={({ field }) => (
-          <TextField
-            {...field}
-            fullWidth
+          <LocalizedDatePicker
+            value={field.value}
+            onChange={field.onChange}
             disabled={disabled}
-            label="Data de Nascimento"
-            type="date"
-            InputLabelProps={{ shrink: true }}
+            label={td("fields.birthDate")}
             error={!!errors.data_nascimento}
             helperText={errors.data_nascimento?.message}
           />

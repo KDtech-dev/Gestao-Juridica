@@ -130,6 +130,45 @@
       .replace(".", "");
   };
 
+  export const dateFromApi = (value?: string | null): Date | null => {
+    if (!value) return null;
+
+    const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      const [, year, month, day] = match;
+      const date = new Date(Number(year), Number(month) - 1, Number(day));
+      if (
+        date.getFullYear() !== Number(year) ||
+        date.getMonth() !== Number(month) - 1 ||
+        date.getDate() !== Number(day)
+      ) return null;
+      return date;
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
+
+  export const dateToApi = (value?: Date | null): string | null => {
+    if (!value || Number.isNaN(value.getTime())) return null;
+    const year = value.getFullYear();
+    const month = String(value.getMonth() + 1).padStart(2, "0");
+    const day = String(value.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  export const formatDateFromApi = (
+    value: string | null | undefined,
+    locale: string,
+  ): string => {
+    const date = dateFromApi(value);
+    if (!date) return "-";
+
+    const dateLocale =
+      locale === "pt" ? "pt-BR" : locale === "en" ? "en-US" : "es-ES";
+    return new Intl.DateTimeFormat(dateLocale, { dateStyle: "short" }).format(date);
+  };
+
   export const estimateReadTime = (content?: string | null) => {
     const words = stripHtml(content ?? "")
       .split(/\s+/)

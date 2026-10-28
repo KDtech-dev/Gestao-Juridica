@@ -19,7 +19,7 @@ import { Icon } from "@/components/AppIcon";
 import { HeaderDashboard } from "@/components/HeaderADM";
 import { SidebarDashboard } from "@/components/Sidebar";
 import { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { postCliente, deleteCliente, getClientes } from "@/api/ApiClientes";
 import { toast } from "@/utils/toast";
@@ -27,11 +27,12 @@ import { ClienteType } from "@/@core/types";
 import { CreateClientePayload } from "@/schemas/ClienteSchema";
 import DialogCliente from "@/components/DialogCliente";
 import ConfirmDialog from "@/components/users/ConfirmDialog";
-import { formatCpfCnpj } from "@/@core/format";
+import { formatCpfCnpj, formatDateFromApi } from "@/@core/format";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 
 export default function ClientesView() {
   const translateError = useApiErrorTranslator();
+  const locale = useLocale();
   const t = useTranslations("internal.clients");
   const tCommon = useTranslations("common");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -165,7 +166,7 @@ export default function ClientesView() {
       headerName: t("table.birthDate"),
       renderCell: ({ row }) => (
         <Typography variant="body2" color="text.secondary">
-          {row.data_nascimento || "-"}
+          {formatDateFromApi(row.data_nascimento, locale)}
         </Typography>
       ),
     },

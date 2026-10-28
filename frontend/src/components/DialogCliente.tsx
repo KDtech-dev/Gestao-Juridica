@@ -10,6 +10,7 @@ import { BaseModal } from "@/components/modals/BaseModal";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { formatCpfCnpj, formatTelefone } from "@/@core/format";
+import LocalizedDatePicker from "@/components/LocalizedDatePicker";
 
 type DialogMode = "create" | "edit" | "view";
 
@@ -187,13 +188,11 @@ export function DialogCliente({
           name="data_nascimento"
           control={control}
           render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
+            <LocalizedDatePicker
+              value={field.value}
+              onChange={field.onChange}
               disabled={isDisabled}
               label={t("fields.birthDate")}
-              type="date"
-              InputLabelProps={{ shrink: true }}
               error={!!errors.data_nascimento}
               helperText={errors.data_nascimento?.message}
             />

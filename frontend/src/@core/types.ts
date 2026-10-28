@@ -97,7 +97,7 @@ export type ClienteType = {
   cpf_cnpj: string;
   email: string;
   telefone: string;
-  data_nascimento: string;
+  data_nascimento: string | null;
   foto_perfil_url: string;
   endereco: EnderecoType;
   created_at: string;
@@ -143,6 +143,7 @@ export type LawyerCardType = {
 export type AdvogadoType = {
   id: string;
   user_id: string;
+  data_nascimento: string | null;
   sexo: SexoType | null;
   celular: string | null;
   resumo_pessoal: string | null;
