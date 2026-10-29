@@ -1,4 +1,3 @@
-// components/compromissos/CompromissoViewModal.tsx
 "use client";
 
 import { Box, Divider, Stack, Typography } from "@mui/material";
