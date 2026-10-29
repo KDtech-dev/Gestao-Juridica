@@ -63,7 +63,6 @@ export function CalendarCard({
 
   useEffect(() => {
     if (!value) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentDate(new Date(value.getFullYear(), value.getMonth(), 1));
     setSelectedDay(value.getDate());
   }, [value]);
