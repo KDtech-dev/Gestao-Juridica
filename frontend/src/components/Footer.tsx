@@ -336,7 +336,7 @@ export function Footer() {
                     sx={{ fontWeight: 850 }}
                   >
                     {email}
-                  </Typography>
+                  </Typography> 
                 </Stack>
               </Stack>
             </Stack>

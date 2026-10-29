@@ -36,6 +36,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        // As cores são dados de preferência; não há um valor anterior seguro para restaurar.
     }
 };
