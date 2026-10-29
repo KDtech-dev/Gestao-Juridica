@@ -22,7 +22,6 @@ export const advogadoOab = (
   return numero ? `OAB${uf ? `/${uf}` : ""} ${numero}` : null;
 };
 
-// Public storage is already proxied by Next. Never serialize a loopback image URL.
 export function publicLawyerPhoto(
   value: string | null | undefined,
 ): string | null {
