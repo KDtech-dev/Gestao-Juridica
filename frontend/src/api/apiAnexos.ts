@@ -1,7 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
-// PUBLICAÇÕES
-
 export function getAnexoVisualizarUrl(postId: string, anexoId: string) {
   return `${API_URL}/api/posts/${postId}/anexos/${anexoId}`;
 }
