@@ -69,7 +69,6 @@ class TestUsersSeeder extends Seeder
             ]
         );
 
-        // Advogados genéricos — um para cada uma das 6 categorias existentes
         $advogadosData = [
             [
                 'user' => [
