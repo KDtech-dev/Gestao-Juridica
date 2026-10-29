@@ -49,7 +49,6 @@ class TestUsersSeeder extends Seeder
             Categoria::whereIn('nome', ['Direito Civil', 'Direito Trabalhista'])->pluck('id')
         );
 
-        // Funcionário
         $funcionario = User::updateOrCreate(
             ['email' => 'funcionario@example.com'],
             [
