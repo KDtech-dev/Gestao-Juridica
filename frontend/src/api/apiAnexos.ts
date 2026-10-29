@@ -8,8 +8,6 @@ export function getAnexoDownloadUrl(postId: string, anexoId: string) {
   return `${API_URL}/api/posts/${postId}/anexos/${anexoId}/download`;
 }
 
-// CASOS
-
 export function getCasoAnexoVisualizarUrl(
   casoId: string,
   anexoId: string
