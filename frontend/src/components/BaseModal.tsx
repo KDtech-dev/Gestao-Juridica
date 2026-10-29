@@ -1,4 +1,3 @@
-// components/BaseModal.tsx
 "use client";
 
 import {
