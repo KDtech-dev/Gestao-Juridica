@@ -1,4 +1,4 @@
-// ** Icon Imports
+
 import { Icon, type IconProps } from "@/components/AppIcon";
 
 const IconifyIcon = ({ icon, ...rest }: IconProps) => {
