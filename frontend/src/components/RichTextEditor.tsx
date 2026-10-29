@@ -46,7 +46,6 @@ interface RichTextEditorProps {
   placeholder?: string;
 }
 
-// ---------- Toolbar ----------
 
 const HEADING_OPTIONS = [
   { label: "Texto normal", level: 0 as const },
