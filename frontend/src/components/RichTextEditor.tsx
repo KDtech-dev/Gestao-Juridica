@@ -265,7 +265,6 @@ function Toolbar({ editor }: { editor: Editor | null }) {
   );
 }
 
-// ---------- Editor principal ----------
 
 export default function RichTextEditor({
   label,
