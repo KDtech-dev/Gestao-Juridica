@@ -32,12 +32,12 @@
     }
   },
   "branding": {
-    "appName": "MCA Advogados",
+    "appName": "Central Juridico",
     "tagline": "Gestão jurídica inteligente e moderna"
   },
   "auth": {
     "login": {
-      "brand": "MCA Advogados",
+      "brand": "Central Juridico",
       "title": "Entrar",
       "subtitle": "Acesse sua conta para continuar.",
       "email": "E-mail",
@@ -50,7 +50,7 @@
       "back": "Voltar para o site",
       "heroTitle": "Gestão Jurídica com foco em produtividade",
       "heroText": "Controle clientes, processos e compromissos em um único lugar, com interface moderna e segura.",
-      "rights": "© 2026 MCA Advogados. Todos os direitos reservados.",
+      "rights": "© 2026 KD Tech Todos os direitos reservados.",
       "error": "Erro ao realizar login."
     },
     "forgotPassword": {
@@ -917,7 +917,7 @@
       }
     },
     "header": {
-      "title": "MCA Advogados",
+      "title": "Central Juridico",
       "home": "Início",
       "publications": "Publicações",
       "team": "Equipe",
@@ -935,7 +935,7 @@
       }
     },
     "footer": {
-      "title": "MCA Advogados",
+      "title": "Central Juridico",
       "cta": {
         "title": "Agende sua primeira consulta jurídica sem custo.",
         "subtitle": "Atendimentos com análise técnica e orientação estratégica, com clareza desde o primeiro contato.",

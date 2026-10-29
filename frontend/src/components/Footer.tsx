@@ -126,7 +126,7 @@ export function Footer() {
                 <Box
                   component="img"
                   src={logoSrc}
-                  alt="MCA Advogados"
+                  alt="Central Juridico"
                   sx={{
                     width: 100,
                     height: 100,
@@ -357,7 +357,7 @@ export function Footer() {
                 color="rgba(255,255,255,0.55)"
                 sx={{ fontWeight: 850 }}
               >
-                © {new Date().getFullYear()} MCA-Advogados -{" "}
+                © {new Date().getFullYear()} KD Tech -{" "}
                 {t("copyrightRights")}
               </Typography>
             </Grid>

@@ -32,12 +32,12 @@
     }
   },
   "branding": {
-    "appName": "MCA-Advogados",
+    "appName": "Central Juridico",
     "tagline": "Intelligent and modern legal management"
   },
   "auth": {
     "login": {
-      "brand": "MCA Advogados",
+      "brand": "Central Juridico",
       "title": "Login",
       "subtitle": "Access your account to continue.",
       "email": "Email",
@@ -50,7 +50,7 @@
       "back": "Back to website",
       "heroTitle": "Legal management focused on productivity",
       "heroText": "Manage clients, cases, and appointments in one secure, modern interface.",
-      "rights": "© 2026 MCA Advogados. All rights reserved.",
+      "rights": "© 2026 KD Tech. All rights reserved.",
       "error": "Could not sign in."
     },
     "forgotPassword": {
@@ -894,7 +894,7 @@
       }
     },
     "header": {
-      "title": "MCA Advogados",
+      "title": "Central Juridico",
       "home": "Home",
       "publications": "Publications",
       "team": "Team",
@@ -912,7 +912,7 @@
       }
     },
     "footer": {
-      "title": "MCA Advogados",
+      "title": "Central Juridico",
       "cta": {
         "title": "Schedule your first legal consultation at no cost.",
         "subtitle": "Service with technical analysis and strategic guidance, with clarity from the first contact.",
