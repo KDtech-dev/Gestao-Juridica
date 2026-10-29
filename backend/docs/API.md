@@ -200,10 +200,15 @@ Status: `rascunho`, `publicado`, `arquivado`. Limites e formatos de arquivos est
 | `GET` | `/api/comunicacoes-djen/{comunicacaoDjen}` | `djen.visualizar`. |
 | `PATCH` | `/api/comunicacoes-djen/{comunicacaoDjen}/lida` | `djen.visualizar`; marca como lida. |
 | `POST` | `/api/comunicacoes-djen/{comunicacaoDjen}/vincular` | `djen.vincular`; corpo `caso_id` UUID existente. |
-| `POST` | `/api/casos/{caso}/sincronizar-djen` | `djen.sincronizar`; sincroniza comunicações do caso. |
-| `POST` | `/api/advogados/{advogado}/sincronizar-djen` | `djen.sincronizar`; limita a 6 solicitações por minuto. |
+| `POST` | `/api/casos/{caso}/sincronizar-djen` | `djen.sincronizar`; enfileira a sincronização do caso e retorna HTTP `202` com a execução criada. Uma execução pendente/em andamento existente é retornada com HTTP `200`. |
+| `POST` | `/api/advogados/{advogado}/sincronizar-djen` | `djen.sincronizar`; enfileira a sincronização do advogado; limita a 6 solicitações por minuto. |
+| `GET` | `/api/djen-sync-runs/{djenSyncRun}` | `djen.visualizar` ou `djen.sincronizar`; consulta progresso e resultado da execução. Somente o iniciador ou um administrador pode consultar. |
 
 Listagem DJEN retorna `data.items` e `data.pagination` (`current_page`, `per_page`, `last_page`, `total`).
+
+As execuções têm status `queued`, `running`, `completed` ou `failed`, contadores de páginas/comunicações criadas/atualizadas e `last_error` quando falham. Após uma execução bem-sucedida, o próximo pedido usa o checkpoint concluído com sobreposição de três dias para capturar publicações atrasadas; a chave externa `djen_id` mantém a gravação idempotente. Os jobs usam a fila `djen`, com até três tentativas e espera progressiva. O padrão limita cada consulta a 20 páginas; se esse limite for atingido, a execução falha explicitamente e não avança o checkpoint.
+
+Para processar os jobs, configure `QUEUE_CONNECTION=database`, aplique as migrations e mantenha um worker ativo, por exemplo `php artisan queue:work --queue=djen,default --tries=3 --timeout=1800`. O comando diário `php artisan djen:sincronizar` também apenas enfileira as execuções.
 
 ## Exemplos
 

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Anexo;
 use App\Models\Categoria;
+use App\Models\Permission;
 use App\Models\Publicacao;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,6 +30,7 @@ class PublicacaoUploadTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
+        $user->givePermissionTo(Permission::findOrCreate('publicacoes.criar', 'api'));
         $categoria = Categoria::factory()->create();
 
         $response = $this
@@ -68,6 +70,7 @@ class PublicacaoUploadTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
+        $user->givePermissionTo(Permission::findOrCreate('publicacoes.editar', 'api'));
         $categoria = Categoria::factory()->create();
         $publicacao = Publicacao::factory()
             ->for($user, 'user')

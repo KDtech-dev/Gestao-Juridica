@@ -7,6 +7,7 @@
     "build": "next build",
     "build:gh": "NEXT_PUBLIC_DEPLOY_TARGET=gh-pages next build",
     "start": "next start",
+    "typecheck": "tsc --noEmit",
     "lint": "eslint",
     "deploy": "gh-pages -d out",
     "deploy:gh": "npm run build:gh && gh-pages -d out",

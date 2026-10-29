@@ -49,7 +49,11 @@ return [
     'djen' => [
         'base_url' => env('DJEN_BASE_URL', 'https://comunicaapi.pje.jus.br/api/v1'),
         'timeout' => env('DJEN_TIMEOUT', 20),
-        'per_page' => 50, 
+        'per_page' => (int) env('DJEN_PER_PAGE', 50),
+        'max_pages' => (int) env('DJEN_MAX_PAGES', 20),
+        'page_delay_us' => (int) env('DJEN_PAGE_DELAY_US', 500000),
+        'retry_attempts' => (int) env('DJEN_RETRY_ATTEMPTS', 3),
+        'retry_delay_ms' => (int) env('DJEN_RETRY_DELAY_MS', 1000),
     ],
 
 ];

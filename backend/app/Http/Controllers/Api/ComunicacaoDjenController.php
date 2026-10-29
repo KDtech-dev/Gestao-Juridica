@@ -8,15 +8,17 @@ use App\Exceptions\DjenIndisponivelException;
 use App\Facades\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ComunicacaoDjenResource;
+use App\Http\Resources\DjenSyncRunResource;
 use App\Models\Advogado;
 use App\Models\Caso;
 use App\Models\ComunicacaoDjen;
-use App\Services\DjenService;
+use App\Models\DjenSyncRun;
+use App\Services\DjenSyncCoordinator;
 use Illuminate\Http\Request;
 
 class ComunicacaoDjenController extends Controller
 {
-    public function __construct(private DjenService $service) {}
+    public function __construct(private DjenSyncCoordinator $syncCoordinator) {}
 
     public function index(Request $request)
     {
@@ -94,14 +96,15 @@ class ComunicacaoDjenController extends Controller
             ->send();
     }
 
-    public function sincronizarCaso(Caso $caso)
+    public function sincronizarCaso(Caso $caso, Request $request)
     {
         try {
-            $qtd = $this->service->sincronizarCaso($caso, now()->subDays(3));
+            [$run, $created] = $this->syncCoordinator->enqueue($caso, $request->user());
 
             return Response::success()
-                ->message("{$qtd} comunicação(ões) sincronizada(s).")
-                ->data(['sincronizadas' => $qtd])
+                ->message($created ? 'Sincronização adicionada à fila.' : 'Já existe uma sincronização em andamento para este caso.')
+                ->data(new DjenSyncRunResource($run))
+                ->status($created ? 202 : 200)
                 ->send();
         } catch (CasoSemNumeroProcessoException | DjenIndisponivelException $e) {
             return Response::error()
@@ -111,14 +114,15 @@ class ComunicacaoDjenController extends Controller
         }
     }
 
-    public function sincronizarAdvogado(Advogado $advogado)
+    public function sincronizarAdvogado(Advogado $advogado, Request $request)
     {
         try {
-            $qtd = $this->service->sincronizarAdvogado($advogado, now()->subDays(3));
+            [$run, $created] = $this->syncCoordinator->enqueue($advogado, $request->user());
 
             return Response::success()
-                ->message("{$qtd} comunicação(ões) sincronizada(s).")
-                ->data(['sincronizadas' => $qtd])
+                ->message($created ? 'Sincronização adicionada à fila.' : 'Já existe uma sincronização em andamento para este advogado.')
+                ->data(new DjenSyncRunResource($run))
+                ->status($created ? 202 : 200)
                 ->send();
         } catch (AdvogadoSemOabException | DjenIndisponivelException $e) {
             return Response::error()
@@ -126,5 +130,17 @@ class ComunicacaoDjenController extends Controller
                 ->status(422)
                 ->send();
         }
+    }
+
+    public function syncRun(DjenSyncRun $djenSyncRun, Request $request)
+    {
+        abort_unless(
+            $request->user()->hasRole('admin') || $djenSyncRun->initiated_by === $request->user()->id,
+            403,
+        );
+
+        return Response::success()
+            ->data(new DjenSyncRunResource($djenSyncRun))
+            ->send();
     }
 }

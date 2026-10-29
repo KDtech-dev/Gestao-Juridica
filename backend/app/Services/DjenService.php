@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Exceptions\AdvogadoSemOabException;
 use App\Exceptions\CasoSemNumeroProcessoException;
+use App\Exceptions\DjenPageLimitReachedException;
 use App\Models\Advogado;
 use App\Models\Caso;
 use App\Models\ComunicacaoDjen;
@@ -13,15 +14,13 @@ use NumeroCnj as GlobalNumeroCnj;
 
 class DjenService
 {
-    private const MAX_PAGINAS = 20;
-
     private const SUFIXOS_OAB = ['', 'A', 'B', 'O'];
 
     public function __construct(private DjenClient $client) {}
 
 
 
-    public function sincronizarCaso(Caso $caso, ?Carbon $desde = null): int
+    public function sincronizarCaso(Caso $caso, ?Carbon $desde = null, ?callable $onPage = null): int
     {
         $numero = $caso->numero_processo_limpo;
 
@@ -36,28 +35,45 @@ class DjenService
             'itensPorPagina' => config('services.djen.per_page'),
         ]);
 
-        return $this->buscarEGravar($filtros, $caso);
+        return $this->buscarEGravar($filtros, $caso, $onPage);
     }
 
-    private function buscarEGravar(array $filtros, ?Caso $caso = null): int
+    private function buscarEGravar(array $filtros, ?Caso $caso = null, ?callable $onPage = null): int
     {
         $total = 0;
+        $criados = 0;
+        $atualizados = 0;
         $porPagina = (int) config('services.djen.per_page');
+        $limitePaginas = max(1, (int) config('services.djen.max_pages', 20));
 
-        for ($pagina = 1; $pagina <= self::MAX_PAGINAS; $pagina++) {
+        for ($pagina = 1; $pagina <= $limitePaginas; $pagina++) {
             $resposta = $this->client->consultar($filtros + ['pagina' => $pagina]);
             $itens = $resposta['items'] ?? [];
 
             foreach ($itens as $item) {
-                $this->gravar($item, $caso);
+                $registro = $this->gravar($item, $caso);
                 $total++;
+                $registro->wasRecentlyCreated ? $criados++ : $atualizados++;
+            }
+
+            if ($onPage !== null) {
+                $onPage([
+                    'pages_completed' => $pagina,
+                    'items_processed' => $total,
+                    'items_created' => $criados,
+                    'items_updated' => $atualizados,
+                ]);
             }
 
             if (count($itens) < $porPagina) {
                 break;
             }
 
-            usleep(500_000);
+            if ($pagina === $limitePaginas) {
+                throw DjenPageLimitReachedException::forLimit($limitePaginas);
+            }
+
+            $this->waitBetweenRequests();
         }
 
         return $total;
@@ -115,7 +131,7 @@ class DjenService
         }
     }
 
-    public function sincronizarAdvogado(Advogado $advogado, ?Carbon $desde = null): int
+    public function sincronizarAdvogado(Advogado $advogado, ?Carbon $desde = null, ?callable $onPage = null): int
     {
         $numero = preg_replace('/\D/', '', (string) $advogado->oab_numero);
 
@@ -124,6 +140,12 @@ class DjenService
         }
 
         $total = 0;
+        $totais = [
+            'pages_completed' => 0,
+            'items_processed' => 0,
+            'items_created' => 0,
+            'items_updated' => 0,
+        ];
 
         foreach (self::SUFIXOS_OAB as $sufixo) {
             $filtros = array_filter([
@@ -133,11 +155,32 @@ class DjenService
                 'itensPorPagina' => config('services.djen.per_page'),
             ]);
 
-            $total += $this->buscarEGravar($filtros);
+            $stats = $totais;
+            $processados = $this->buscarEGravar($filtros, onPage: function (array $pageStats) use (&$stats, $totais, $onPage): void {
+                $stats = [
+                    'pages_completed' => $totais['pages_completed'] + $pageStats['pages_completed'],
+                    'items_processed' => $totais['items_processed'] + $pageStats['items_processed'],
+                    'items_created' => $totais['items_created'] + $pageStats['items_created'],
+                    'items_updated' => $totais['items_updated'] + $pageStats['items_updated'],
+                ];
+                if ($onPage !== null) {
+                    $onPage($stats);
+                }
+            });
+            $total += $processados;
+            $totais = $stats;
 
-            usleep(500_000);
+            $this->waitBetweenRequests();
         }
 
         return $total;
+    }
+
+    private function waitBetweenRequests(): void
+    {
+        $delay = max(0, (int) config('services.djen.page_delay_us', 500_000));
+        if ($delay > 0) {
+            usleep($delay);
+        }
     }
 }

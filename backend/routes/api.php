@@ -130,6 +130,9 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVincular));
     });
 
+    Route::get('/djen-sync-runs/{djenSyncRun}', [ComunicacaoDjenController::class, 'syncRun'])
+        ->middleware(PermissionEnum::middlewareAny(PermissionEnum::DjenVisualizar, PermissionEnum::DjenSincronizar));
+
     Route::prefix('advogados')->group(function () {
         Route::post('/{advogado}/sincronizar-djen', [ComunicacaoDjenController::class, 'sincronizarAdvogado'])
             ->middleware([

@@ -2,13 +2,13 @@ import { getAxios } from "@/configs/axios";
 
 
 export type ResponseType<T> = {
-  status: boolean;
+  success: boolean;
   message: string;
   data: T;
 };
 
 export type ArrayResponseType<T> = {
-  status: boolean;
+  success: boolean;
   message: string;
   data: T[];
 };
@@ -56,8 +56,20 @@ export type FiltrosComunicacaoDjen = {
   por_pagina?: number;
 };
 
-export type SincronizarDjenResultado = {
-  sincronizadas: number;
+export type DjenSyncRun = {
+  id: string;
+  target_type: "caso" | "advogado";
+  target_id: string;
+  status: "queued" | "running" | "completed" | "failed";
+  from_date: string;
+  checkpoint_at: string | null;
+  pages_completed: number;
+  items_processed: number;
+  items_created: number;
+  items_updated: number;
+  last_error: string | null;
+  started_at: string | null;
+  completed_at: string | null;
 };
 
 export const ApiDjen = {
@@ -81,12 +93,15 @@ export const ApiDjen = {
     ),
 
   sincronizarCaso: (casoId: string) =>
-    getAxios().post<ResponseType<SincronizarDjenResultado>>(
+    getAxios().post<ResponseType<DjenSyncRun>>(
       `/casos/${casoId}/sincronizar-djen`,
     ),
 
   sincronizarAdvogado: (advogadoId: string) =>
-    getAxios().post<ResponseType<SincronizarDjenResultado>>(
+    getAxios().post<ResponseType<DjenSyncRun>>(
       `/advogados/${advogadoId}/sincronizar-djen`,
     ),
+
+  obterSincronizacao: (runId: string) =>
+    getAxios().get<ResponseType<DjenSyncRun>>(`/djen-sync-runs/${runId}`),
 };

@@ -3,6 +3,7 @@
 namespace App\Services\Djen;
 
 use App\Exceptions\DjenIndisponivelException;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class DjenClient
@@ -12,7 +13,14 @@ class DjenClient
         $resposta = Http::baseUrl(config('services.djen.base_url'))
             ->acceptJson()
             ->timeout(config('services.djen.timeout'))
-            ->retry(3, 1000, throw: false)
+            ->retry(
+                config('services.djen.retry_attempts', 3),
+                config('services.djen.retry_delay_ms', 1000),
+                when: static fn ($exception): bool => ! $exception instanceof RequestException
+                    || $exception->response->status() === 429
+                    || $exception->response->serverError(),
+                throw: false,
+            )
             ->get('/comunicacao', $filtros);
 
         if ($resposta->status() === 403) {

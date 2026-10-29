@@ -67,6 +67,30 @@ php artisan route:list --path=api
 
 Para desenvolvimento com o frontend, veja [`../README.md`](../README.md). Ao criar ou alterar um endpoint, atualize `routes/api.php`, as Requests e Resources aplicáveis e os exemplos correspondentes em `docs/API.md`; a página `/api/docs/` usa esse Markdown.
 
+## Testes
+
+Execute a suíte Laravel com:
+
+```bash
+php artisan test
+```
+
+Os testes de integração usam SQLite em memória para não alterar o banco de desenvolvimento. O PHP precisa ter `pdo_sqlite` habilitado. A suíte inclui verificações de autorização e filtros para movimentações, além de fluxos de perfil, publicações, anexos e dados públicos.
+
+Os testes de DJEN simulam as respostas HTTP e verificam paginação, retry de erro temporário, idempotência, checkpoint incremental, enfileiramento e consulta de progresso sem acessar o serviço externo.
+
+### Worker DJEN
+
+Com `QUEUE_CONNECTION=database`, mantenha um worker em execução para processar sincronizações e tentativas:
+
+```bash
+php artisan queue:work --queue=djen,default --tries=3 --timeout=1800
+```
+
+O comando agendado `php artisan djen:sincronizar` cria uma execução por caso aberto e advogado com OAB válida. A tabela `djen_sync_runs` mantém status, início/fim, data inicial consultada, progresso, contagens e erro da última tentativa. Consulte o estado pela API `GET /api/djen-sync-runs/{id}`.
+
+O limite padrão é de 20 páginas por consulta (`DJEN_MAX_PAGES`). Se a última página vier cheia, a execução fica `failed`, mostra o limite em `last_error` e preserva o checkpoint para que a sincronização não aparente sucesso parcial. Ajuste o limite conforme o volume esperado. `DB_QUEUE_RETRY_AFTER` deve ficar acima do timeout do worker.
+
 ## Anexos privados
 
 Novos anexos de casos e compromissos são gravados no disco privado e servidos pelas rotas autenticadas documentadas na API. Para localizar os arquivos legados que ainda estão no disco público, rode `php artisan anexos:privatizar` (prévia sem alterações). Depois de revisar a saída, `php artisan anexos:privatizar --apply` copia e valida os arquivos privados antes de remover as cópias públicas.

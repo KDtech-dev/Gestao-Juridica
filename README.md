@@ -49,6 +49,7 @@ A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend ar
 - Categorias jurídicas para classificar casos e publicações.
 - Agenda de compromissos.
 - Notificações de compromissos do dia/semana.
+- Consulta e sincronização de comunicações DJEN por caso e advogado, processadas em fila com estado e checkpoint incremental.
 - Layout administrativo com sidebar, header, tema e toast.
 - Telas administrativas para usuários e equipe no frontend.
 - Auditoria de movimentações acessível a administradores em `/admin/logs`, com filtros por dia, módulo, ação, responsável e registro.
@@ -190,6 +191,17 @@ Na página, abra os accordions por grupo e depois a operação desejada para ver
 ## Documentação adicional
 
 - [Perfis públicos de advogados](docs/perfis-publicos-advogados.md)
+
+## Verificações
+
+Os testes de integração do backend usam SQLite em memória; instale/habilite a extensão `pdo_sqlite` do PHP para executá-los. Na raiz do projeto:
+
+```bash
+cd backend && php artisan test
+cd ../frontend && npm run typecheck && npm run lint && npm run build
+```
+
+O backend inclui testes de autorização, filtros e privacidade da trilha de movimentações, além dos testes existentes para perfil, publicações e downloads. O frontend ainda não tem um framework de testes de componentes; `typecheck`, `lint` e `build` verificam tipos, regras estáticas e compilação.
 
 ## Autor
 

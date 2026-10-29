@@ -4,47 +4,49 @@ namespace App\Console\Commands;
 
 use App\Models\Advogado;
 use App\Models\Caso;
-use App\Services\DjenService;
+use App\Services\DjenSyncCoordinator;
 use Illuminate\Console\Command;
 
 class SincronizarDjenCommand extends Command
 {
     protected $signature = 'djen:sincronizar';
 
-    protected $description = 'Busca no DJEN as comunicações dos casos abertos';
+    protected $description = 'Enfileira sincronizações DJEN para casos abertos e advogados';
 
-    public function handle(DjenService $service): int
+    public function handle(DjenSyncCoordinator $coordinator): int
     {
-        $falhas = 0;
+        $enfileiradas = 0;
+        $ignoradas = 0;
 
-        Caso::query()
-            ->where('status', 'aberto')
-            ->whereNotNull('numero_processo_limpo')
-            ->each(function (Caso $caso) use ($service, &$falhas) {
+        Caso::query()->where('status', 'aberto')->whereNotNull('numero_processo_limpo')->each(
+            function (Caso $caso) use ($coordinator, &$enfileiradas, &$ignoradas): void {
                 try {
-                    $qtd = $service->sincronizarCaso($caso, now()->subDays(3));
-                    $this->line("Caso {$caso->numero_processo}: {$qtd} comunicação(ões)");
-                } catch (\Throwable $e) {
-                    $falhas++;
-                    report($e);
-                    $this->error("Caso {$caso->numero_processo}: {$e->getMessage()}");
+                    [$run, $created] = $coordinator->enqueue($caso);
+                    $created ? $enfileiradas++ : $ignoradas++;
+                    $this->line("Caso {$caso->numero_processo}: {$run->status} ({$run->id})");
+                } catch (\Throwable $exception) {
+                    $ignoradas++;
+                    report($exception);
+                    $this->warn("Caso {$caso->numero_processo}: {$exception->getMessage()}");
                 }
-            });
+            }
+        );
 
-
-        Advogado::query()
-            ->whereNotNull('oab_numero')
-            ->whereNotNull('oab_uf')
-            ->each(function (Advogado $advogado) use ($service, &$falhas) {
+        Advogado::query()->whereNotNull('oab_numero')->whereNotNull('oab_uf')->each(
+            function (Advogado $advogado) use ($coordinator, &$enfileiradas, &$ignoradas): void {
                 try {
-                    $qtd = $service->sincronizarAdvogado($advogado, now()->subDays(3));
-                    $this->line("OAB {$advogado->oab_numero}/{$advogado->oab_uf}: {$qtd} comunicação(ões)");
-                } catch (\Throwable $e) {
-                    $falhas++;
-                    report($e);
-                    $this->error("OAB {$advogado->oab_numero}: {$e->getMessage()}");
+                    [$run, $created] = $coordinator->enqueue($advogado);
+                    $created ? $enfileiradas++ : $ignoradas++;
+                    $this->line("OAB {$advogado->oab_numero}/{$advogado->oab_uf}: {$run->status} ({$run->id})");
+                } catch (\Throwable $exception) {
+                    $ignoradas++;
+                    report($exception);
+                    $this->warn("OAB {$advogado->oab_numero}: {$exception->getMessage()}");
                 }
-            });
-        return $falhas ? self::FAILURE : self::SUCCESS;
+            }
+        );
+
+        $this->info("Enfileiradas: {$enfileiradas}; ignoradas ou já em andamento: {$ignoradas}.");
+        return self::SUCCESS;
     }
 }
