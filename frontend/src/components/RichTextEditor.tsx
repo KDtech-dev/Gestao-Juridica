@@ -289,7 +289,6 @@ export default function RichTextEditor({
       }),
     ],
     content: value || "",
-    // evita mismatch de SSR (Next.js)
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
