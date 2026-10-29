@@ -77,7 +77,6 @@ const InputImage = ({
   useEffect(() => {
     if (typeof onImageChange !== "undefined" && file instanceof File)
       onImageChange(file);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [file]);
 
   const inputProps = getInputProps({ id });
