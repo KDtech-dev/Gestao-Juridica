@@ -24,7 +24,6 @@ class TestUsersSeeder extends Seeder
         );
         $admin->syncRoles([RoleEnum::ADMIN->value]);
 
-        // Advogado principal
         $advogado = User::updateOrCreate(
             ['email' => 'advogado@example.com'],
             [
