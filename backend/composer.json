@@ -7,6 +7,12 @@
         "laravel",
         "framework"
     ],
+    "authors": [
+        {
+            "name": "KD Tech",
+            "homepage": "https://github.com/KDtech-dev/Gestao-Juridica"
+        }
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",

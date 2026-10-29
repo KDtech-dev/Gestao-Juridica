@@ -22,7 +22,7 @@ O projeto está organizado como um monorepo com:
 
 O sistema atende dois contextos principais:
 
-1. **Site público do escritório**: página inicial, publicações/artigos jurídicos e perfis públicos individuais de advogados. A rota `/equipe` ainda existe, mas não está disponível para visitantes anônimos pelo `AuthGate` e foi removida da navegação pública.
+1. **Site público do escritório**: página inicial, publicações/artigos jurídicos e perfis públicos individuais de advogados.
 2. **Dashboard interno**: autenticação, gestão de clientes, agenda, compromissos, publicações, notificações e áreas administrativas.
 
 A autenticação é feita pela API Laravel usando Laravel Sanctum. O frontend armazena o token no navegador e envia as requisições autenticadas com `Authorization: Bearer <token>`.
@@ -142,7 +142,7 @@ Instale na máquina:
 ### 1. Clonar o projeto
 
 ```bash
-git clone <git@github.com:DiegoAndreAfonso/advocacia-gestao.git>
+git clone git@github.com:KDtech-dev/Gestao-Juridica.git
 cd advocacia-gestao
 ```
 ### Backend
@@ -203,12 +203,10 @@ cd ../frontend && npm run typecheck && npm run lint && npm run build
 
 O backend inclui testes de autorização, filtros e privacidade da trilha de movimentações, além dos testes existentes para perfil, publicações e downloads. O frontend ainda não tem um framework de testes de componentes; `typecheck`, `lint` e `build` verificam tipos, regras estáticas e compilação.
 
-## Autor
+## Autoria
 
-**Diego André Afonso**
-
-Estudante de Análise e Desenvolvimento de Sistemas
+**KD Tech**
 
 ## Licença
 
-Este projeto informa licença MIT nos manifestos do backend. Caso o repositório precise de distribuição formal, adicione um arquivo `LICENSE` na raiz.
+Este projeto está licenciado sob a licença MIT. Consulte o arquivo [LICENSE](LICENSE). Copyright © 2026 KD Tech.
