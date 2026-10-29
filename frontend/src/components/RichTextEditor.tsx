@@ -300,8 +300,6 @@ export default function RichTextEditor({
     },
   });
 
-  // mantém o editor sincronizado se o value mudar externamente
-  // (ex.: reset do form, carregar dados de edição)
   useEffect(() => {
     if (!editor) return;
     const current = editor.getHTML();
