@@ -14,7 +14,6 @@ class TestUsersSeeder extends Seeder
 {
     public function run(): void
     {
-        // Admin
         $admin = User::updateOrCreate(
             ['email' => 'teste@email.com'],
             [
