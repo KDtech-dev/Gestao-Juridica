@@ -7,11 +7,85 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 use App\Services\WhatsAppService;
 use App\Services\ConfiguracaoSistemaService;
+use App\Services\NotificacaoService;
+use App\Models\Notificacao;
 use Illuminate\Http\Request;
 use Throwable;
 
 class WhatsAppController extends Controller
 {
+    public function messageStatuses(NotificacaoService $notificacoes): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $notificacoes->listarEnviosWhatsApp(),
+        ]);
+    }
+
+    public function retryMessage(Notificacao $notificacao, NotificacaoService $notificacoes): JsonResponse
+    {
+        if (!$notificacoes->reenviarWhatsApp($notificacao)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Esta mensagem não pode ser reenviada. Verifique se está com falha e se o destinatário tem celular cadastrado.',
+            ], 409);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Mensagem colocada novamente na fila.',
+        ], 202);
+    }
+
+    public function deliveryUpdate(Request $request): JsonResponse
+    {
+        $expectedToken = (string) config('services.baileys.token');
+        $providedToken = (string) $request->bearerToken();
+
+        abort_unless(
+            $expectedToken !== ''
+                && $providedToken !== ''
+                && hash_equals($expectedToken, $providedToken),
+            401,
+            'Não autorizado.'
+        );
+
+        $validated = $request->validate([
+            'message_id' => ['required', 'string', 'max:150'],
+            'status' => ['required', 'integer', 'in:1,2,3'],
+        ]);
+
+        $notificacao = Notificacao::query()
+            ->where('whatsapp_message_id', $validated['message_id'])
+            ->first();
+
+        abort_unless($notificacao, 404, 'Mensagem ainda não registrada.');
+
+        $status = (int) $validated['status'];
+        $ordem = ['pending' => 0, 'queued' => 0, 'sent' => 1, 'delivered' => 2, 'read' => 3];
+        $statusAtual = $notificacao->whatsapp_status ?? 'pending';
+        $atualizacoes = [];
+
+        if (($ordem[$statusAtual] ?? 0) <= $status) {
+            $atualizacoes['whatsapp_status'] = match ($status) {
+                3 => 'read',
+                2 => 'delivered',
+                default => 'sent',
+            };
+        }
+
+        if ($status >= 2 && !$notificacao->whatsapp_entregue_em) {
+            $atualizacoes['whatsapp_entregue_em'] = now();
+        }
+        if ($status >= 3 && !$notificacao->whatsapp_lido_em) {
+            $atualizacoes['whatsapp_lido_em'] = now();
+        }
+
+        $notificacao->update($atualizacoes);
+
+        return response()->json(['success' => true]);
+    }
+
     public function settings(ConfiguracaoSistemaService $configuracoes): JsonResponse
     {
         return response()->json([

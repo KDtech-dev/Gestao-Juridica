@@ -91,7 +91,7 @@ O envio de lembretes usa um serviço Node separado com Baileys. Consulte [`whats
 
 O horário padrão do lembrete WhatsApp é definido na tela administrativa `/admin/whatsapp`; antes da primeira alteração, usa `COMPROMISSO_LEMBRETE_HORARIO` (padrão `07:00`). O horário usa o fuso `APP_TIMEZONE`. A sincronização ao abrir a tela de notificações não envia WhatsApp; o envio é disparado pelo comando agendado nesse horário. Em desenvolvimento, mantenha `php artisan schedule:work` e o worker da fila em execução; em produção, configure o cron do Laravel Scheduler para rodar a cada minuto. Se alterar o valor de fallback no `.env`, limpe o cache de configuração (`php artisan config:clear`).
 
-O estado do WhatsApp é mantido na notificação: horário de enfileiramento, horário de envio confirmado pelo serviço e erro da última falha. A reivindicação atômica do envio evita que execuções concorrentes enfileirem a mesma notificação; mensagens já enviadas não são repetidas.
+O estado do WhatsApp é mantido na notificação: fila, envio, confirmação de entrega/leitura e falha. A tela administrativa lista os envios recentes e permite reenfileirar falhas quando há celular cadastrado. A reivindicação atômica evita que execuções concorrentes enfileirem a mesma notificação.
 
 Na mesma tela administrativa, o conteúdo dos lembretes pode incluir ou ocultar o primeiro nome do responsável, o tipo, a data e o horário do compromisso. O título do compromisso e o período do lembrete permanecem na mensagem; a descrição não é enviada.
 
