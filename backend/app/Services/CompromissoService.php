@@ -14,8 +14,6 @@ class CompromissoService
         bool $somenteDoUsuario = false,
         ?string $periodo = null
     ) {
-        $this->expirarVencidos();
-
         $hoje = CarbonImmutable::today();
         $query = Compromisso::query()
             ->with('criador')
@@ -36,41 +34,7 @@ class CompromissoService
 
     public function buscar(Compromisso $compromisso): Compromisso
     {
-        $this->expirarVencidos();
-
         return $compromisso->fresh('criador');
-    }
-
-    private function expirarVencidos(): void
-    {
-        $agora = CarbonImmutable::now();
-
-        $vencidos = Compromisso::query()
-            ->where('status', 'PENDENTE')
-            ->where(function ($query) use ($agora) {
-                $query->whereDate('data', '<', $agora->toDateString())
-                    ->orWhere(function ($query) use ($agora) {
-                        $query->whereDate('data', $agora->toDateString())
-                            ->whereNotNull('hora')
-                            ->where('hora', '<=', $agora->format('H:i:s'));
-                    });
-            })
-            ->get();
-
-        if ($vencidos->isEmpty()) {
-            return;
-        }
-
-        Compromisso::query()
-            ->whereIn('id', $vencidos->pluck('id'))
-            ->update(['status' => 'CANCELADO']);
-
-        $notificacaoService = app(NotificacaoService::class);
-
-        $vencidos->each(
-            fn(Compromisso $compromisso) =>
-            $notificacaoService->removerLembretesDoCompromisso($compromisso)
-        );
     }
 
     private function aplicarFiltroPeriodo($query, string $periodo, CarbonImmutable $hoje): void
