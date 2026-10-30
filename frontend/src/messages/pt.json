@@ -535,6 +535,37 @@
           "load": "Erro ao carregar o caso.",
           "create": "Erro ao criar o caso.",
           "update": "Erro ao atualizar o caso."
+        },
+        "djen": {
+          "title": "Comunicações DJEN",
+          "description": "{total} comunicação(ões) vinculada(s) a este caso.",
+          "unreadCount": "Não lidas nesta página: {count}",
+          "sync": "Sincronizar DJEN",
+          "syncing": "Sincronizando...",
+          "syncQueued": "Sincronização adicionada à fila.",
+          "syncError": "Não foi possível iniciar a sincronização DJEN.",
+          "syncCompleted": "Sincronização concluída. Novas comunicações: {count}.",
+          "syncFailed": "A sincronização não foi concluída. Tente novamente ou contate a administração.",
+          "syncProgressUnavailable": "A sincronização está ativa, mas o progresso não está disponível para este usuário.",
+          "syncProgress": "Páginas: {pages} · comunicações processadas: {items}",
+          "syncStatus": {
+            "queued": "Sincronização na fila",
+            "running": "Sincronizando comunicações"
+          },
+          "missingProcessNumber": "Cadastre um número CNJ válido no caso para sincronizar as comunicações.",
+          "loading": "Carregando comunicações...",
+          "empty": "Nenhuma comunicação DJEN vinculada a este caso.",
+          "loadError": "Não foi possível carregar as comunicações DJEN.",
+          "retryLoad": "Tentar novamente",
+          "communicationFallback": "Comunicação judicial",
+          "courtUnavailable": "Tribunal ou órgão não informado",
+          "unread": "Não lida",
+          "court": "Órgão emissor",
+          "publicationStatus": "Status DJEN: {status}",
+          "textUnavailable": "O texto desta comunicação não está disponível.",
+          "officialLink": "Abrir publicação oficial",
+          "markRead": "Marcar como lida",
+          "markReadError": "Não foi possível marcar a comunicação como lida."
         }
       }
     },

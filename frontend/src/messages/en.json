@@ -510,6 +510,37 @@
           "load": "Error loading case.",
           "create": "Error creating case.",
           "update": "Error updating case."
+        },
+        "djen": {
+          "title": "DJEN Communications",
+          "description": "{total} communication(s) linked to this case.",
+          "unreadCount": "Unread on this page: {count}",
+          "sync": "Sync DJEN",
+          "syncing": "Syncing...",
+          "syncQueued": "Synchronization added to the queue.",
+          "syncError": "Could not start DJEN synchronization.",
+          "syncCompleted": "Synchronization completed. New communications: {count}.",
+          "syncFailed": "Synchronization did not complete. Try again or contact an administrator.",
+          "syncProgressUnavailable": "Synchronization is active, but progress is unavailable to this user.",
+          "syncProgress": "Pages: {pages} · communications processed: {items}",
+          "syncStatus": {
+            "queued": "Synchronization queued",
+            "running": "Synchronizing communications"
+          },
+          "missingProcessNumber": "Add a valid CNJ number to the case to synchronize communications.",
+          "loading": "Loading communications...",
+          "empty": "No DJEN communications linked to this case.",
+          "loadError": "Could not load DJEN communications.",
+          "retryLoad": "Try again",
+          "communicationFallback": "Court communication",
+          "courtUnavailable": "Court or office not provided",
+          "unread": "Unread",
+          "court": "Issuing office",
+          "publicationStatus": "DJEN status: {status}",
+          "textUnavailable": "The text of this communication is unavailable.",
+          "officialLink": "Open official publication",
+          "markRead": "Mark as read",
+          "markReadError": "Could not mark this communication as read."
         }
       }
     },

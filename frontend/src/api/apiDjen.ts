@@ -48,6 +48,7 @@ export type ComunicacaoDjen = {
 };
 
 export type FiltrosComunicacaoDjen = {
+  page?: number;
   somente_nao_lidas?: boolean;
   caso_id?: string;
   sigla_tribunal?: string;

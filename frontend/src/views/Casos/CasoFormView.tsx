@@ -54,6 +54,7 @@ import InputSingleFile from "@/components/InputSingleFile";
 import { useApiErrorTranslator } from "@/utils/translateApiErrors";
 import { categoriaNomeParaChave } from "@/constants/categorias";
 import { getCasoAnexoDownloadUrl } from "@/api/apiAnexos";
+import DjenCaseCommunications from "@/components/cases/DjenCaseCommunications";
 
 
 type ViewMode = "create" | "edit" | "view";
@@ -131,6 +132,7 @@ export default function CasoFormView({ mode, casoId }: Props) {
     setValue,
     formState: { isDirty },
   } = methods;
+  const numeroProcessoAtual = methods.watch("numero_processo");
 
   useEffect(() => {
     const loadCategorias = async () => {
@@ -520,6 +522,13 @@ export default function CasoFormView({ mode, casoId }: Props) {
                   </Box>
                 </Box>
               </Paper>
+
+              {isView && casoId && (
+                <DjenCaseCommunications
+                  casoId={casoId}
+                  hasProcessNumber={String(numeroProcessoAtual ?? "").replace(/\D/g, "").length === 20}
+                />
+              )}
 
               <Paper
                 elevation={0}
