@@ -125,6 +125,11 @@
       "deliveryEmpty": "Ainda não há lembretes de WhatsApp registrados.",
       "deliveryLoadError": "Não foi possível carregar o acompanhamento dos envios.",
       "unknownRecipient": "Responsável não identificado",
+      "deliveryError": {
+        "missing_phone": "O responsável pelo compromisso não tem celular cadastrado.",
+        "not_configured": "O serviço de WhatsApp não está configurado.",
+        "send_failed": "Não foi possível enviar a mensagem. Verifique a conexão e tente novamente."
+      },
       "deliveredAt": "Entregue em {date}",
       "readAt": "Lida em {date}",
       "retry": "Tentar novamente",

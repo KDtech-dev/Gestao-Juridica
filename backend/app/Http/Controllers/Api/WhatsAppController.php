@@ -210,9 +210,15 @@ class WhatsAppController extends Controller
             ], 503);
         }
 
-        return response()->json($response->json() ?? [
+        $data = $response->json() ?? [
             'success' => false,
             'message' => 'Resposta inválida do serviço Baileys.',
-        ], $response->status())->header('Cache-Control', 'no-store');
+        ];
+
+        if (is_array($data)) {
+            unset($data['last_error']);
+        }
+
+        return response()->json($data, $response->status())->header('Cache-Control', 'no-store');
     }
 }

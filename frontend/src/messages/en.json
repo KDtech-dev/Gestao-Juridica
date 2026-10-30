@@ -106,6 +106,11 @@
       "deliveryEmpty": "No WhatsApp reminders have been recorded yet.",
       "deliveryLoadError": "Could not load message tracking.",
       "unknownRecipient": "Recipient not identified",
+      "deliveryError": {
+        "missing_phone": "The person responsible for this appointment has no mobile number registered.",
+        "not_configured": "The WhatsApp service is not configured.",
+        "send_failed": "The message could not be sent. Check the connection and try again."
+      },
       "deliveredAt": "Delivered at {date}",
       "readAt": "Read at {date}",
       "retry": "Retry",

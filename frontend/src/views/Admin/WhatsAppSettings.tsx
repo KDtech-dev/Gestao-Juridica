@@ -25,7 +25,6 @@ import { toast, formatToastErrorMessage } from "@/utils/toast";
 type ConnectionState = {
   status: string;
   phone?: string | null;
-  last_error?: string | null;
   qr_image?: string | null;
 };
 
@@ -42,7 +41,7 @@ type WhatsAppMessageRecord = {
   responsavel: string | null;
   pode_reenviar: boolean;
   status: "pending" | "queued" | "sent" | "delivered" | "read" | "failed";
-  erro: string | null;
+  erro_codigo: "missing_phone" | "not_configured" | "send_failed" | null;
   criada_em: string | null;
   entregue_em: string | null;
   lida_em: string | null;
@@ -389,7 +388,6 @@ export default function WhatsAppSettingsView() {
               ) : (
                 <Stack spacing={2}>
                   <Alert severity="warning">{t("waitingQr")}</Alert>
-                  {connection?.last_error && <Typography color="text.secondary">{connection.last_error}</Typography>}
                   <Button variant="outlined" onClick={() => void refresh()} sx={{ alignSelf: "flex-start" }}>
                     {t("refresh")}
                   </Button>
@@ -435,8 +433,8 @@ export default function WhatsAppSettingsView() {
                             {record.responsavel || t("unknownRecipient")}
                             {record.criada_em ? ` · ${new Date(record.criada_em).toLocaleString()}` : ""}
                           </Typography>
-                          {record.erro && (
-                            <Typography variant="body2" color="error.main">{record.erro}</Typography>
+                          {record.erro_codigo && (
+                            <Typography variant="body2" color="error.main">{t(`deliveryError.${record.erro_codigo}`)}</Typography>
                           )}
                           {record.lida_em && (
                             <Typography variant="caption" color="text.secondary">

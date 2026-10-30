@@ -237,8 +237,14 @@ class NotificacaoService
                 $telefone = $this->resolverTelefone($notificacao->usuario);
                 $status = $notificacao->whatsapp_status
                     ?? ($telefone ? 'pending' : 'failed');
-                $erro = $notificacao->whatsapp_erro
-                    ?? (!$telefone ? 'O responsável pelo compromisso não tem celular cadastrado.' : null);
+                $erroCodigo = null;
+                if ($status === 'failed') {
+                    $erroCodigo = !$telefone
+                        ? 'missing_phone'
+                        : ($notificacao->whatsapp_erro === 'O serviço WhatsApp não está configurado.'
+                            ? 'not_configured'
+                            : 'send_failed');
+                }
 
                 return [
                     'id' => $notificacao->id,
@@ -246,7 +252,7 @@ class NotificacaoService
                     'responsavel' => $notificacao->usuario?->name,
                     'pode_reenviar' => $status === 'failed' && (bool) $telefone,
                     'status' => $status,
-                    'erro' => $erro,
+                    'erro_codigo' => $erroCodigo,
                     'criada_em' => $notificacao->created_at?->toISOString(),
                     'enfileirada_em' => $notificacao->whatsapp_enfileirado_em?->toISOString(),
                     'enviada_em' => $notificacao->whatsapp_enviado_em?->toISOString(),
