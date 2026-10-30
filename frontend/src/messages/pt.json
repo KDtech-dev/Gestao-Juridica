@@ -93,7 +93,7 @@
       "scheduleHelp": "Os compromissos pendentes do dia serão enviados neste horário, no fuso configurado para o sistema.",
       "remindersEnabled": "Lembretes automáticos ativos",
       "remindersPaused": "Lembretes automáticos pausados",
-      "remindersToggleHelp": "Ao pausar, novos lembretes automáticos não serão enviados. O envio manual de teste continua disponível.",
+      "remindersToggleHelp": "Salve as configurações para aplicar. Ao pausar, os lembretes automáticos na fila também são suspensos; envios já iniciados podem terminar. Mensagens manuais de teste continuam disponíveis.",
       "scheduleTime": "Horário de envio",
       "saveSettings": "Salvar configurações",
       "settingsSaving": "Salvando...",

@@ -74,7 +74,7 @@
       "scheduleHelp": "Pending appointments for the day will be sent at this time, using the system timezone.",
       "remindersEnabled": "Automatic reminders enabled",
       "remindersPaused": "Automatic reminders paused",
-      "remindersToggleHelp": "When paused, new automatic reminders will not be sent. Manual test messages remain available.",
+      "remindersToggleHelp": "Save the settings to apply the change. Pausing also suspends automatic reminders in the queue; messages already being sent may finish. Manual test messages remain available.",
       "scheduleTime": "Send time",
       "saveSettings": "Save settings",
       "settingsSaving": "Saving...",

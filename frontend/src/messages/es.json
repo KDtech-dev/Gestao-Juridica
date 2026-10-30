@@ -74,7 +74,7 @@
       "scheduleHelp": "Los compromisos pendientes del día se enviarán a esta hora, según la zona horaria del sistema.",
       "remindersEnabled": "Recordatorios automáticos activos",
       "remindersPaused": "Recordatorios automáticos pausados",
-      "remindersToggleHelp": "Al pausar, no se enviarán nuevos recordatorios automáticos. Los mensajes manuales de prueba seguirán disponibles.",
+      "remindersToggleHelp": "Guarda la configuración para aplicar el cambio. Al pausar, también se suspenden los recordatorios automáticos en cola; los envíos ya iniciados pueden terminar. Los mensajes manuales de prueba siguen disponibles.",
       "scheduleTime": "Hora de envío",
       "saveSettings": "Guardar configuración",
       "settingsSaving": "Guardando...",
