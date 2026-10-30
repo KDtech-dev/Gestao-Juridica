@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             NotificacaoSeeder::class,
             ClienteSeeder::class,
             CasoSeeder::class,
+            DjenTriageSeeder::class,
         ]);
     }
 }
