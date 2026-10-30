@@ -51,6 +51,8 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('role:admin');
 
     Route::prefix('admin/whatsapp')->middleware('role:admin')->group(function () {
+        Route::get('/settings', [WhatsAppController::class, 'settings']);
+        Route::put('/settings', [WhatsAppController::class, 'updateSettings']);
         Route::get('/status', [WhatsAppController::class, 'status']);
         Route::get('/qr', [WhatsAppController::class, 'qr']);
         Route::post('/test-message', [WhatsAppController::class, 'enviarTeste']);

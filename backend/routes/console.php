@@ -8,7 +8,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('compromissos:sincronizar-lembretes')
-    ->dailyAt(config('compromissos.horario_lembrete_whatsapp'))
+    ->everyMinute()
     ->timezone(config('app.timezone'))
     ->withoutOverlapping();
 

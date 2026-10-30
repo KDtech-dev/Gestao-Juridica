@@ -89,7 +89,7 @@ php artisan queue:work --queue=djen,whatsapp,default --tries=3 --timeout=1800
 
 O envio de lembretes usa um serviço Node separado com Baileys. Consulte [`whatsapp/README.md`](whatsapp/README.md) para instalar, iniciar e parear a sessão. Os endpoints administrativos da API exibem o estado e o QR da conexão.
 
-O horário do lembrete WhatsApp de compromissos do dia é configurado por `COMPROMISSO_LEMBRETE_HORARIO` (formato `HH:MM`, padrão `07:00`) e usa o fuso `APP_TIMEZONE`. A sincronização ao abrir a tela de notificações não envia WhatsApp; o envio é disparado pelo comando agendado nesse horário. Em desenvolvimento, mantenha `php artisan schedule:work` e o worker da fila em execução; em produção, configure o cron do Laravel Scheduler para rodar a cada minuto. Depois de alterar a variável, limpe o cache de configuração (`php artisan config:clear`) e reinicie o worker da fila.
+O horário padrão do lembrete WhatsApp é definido na tela administrativa `/admin/whatsapp`; antes da primeira alteração, usa `COMPROMISSO_LEMBRETE_HORARIO` (padrão `07:00`). O horário usa o fuso `APP_TIMEZONE`. A sincronização ao abrir a tela de notificações não envia WhatsApp; o envio é disparado pelo comando agendado nesse horário. Em desenvolvimento, mantenha `php artisan schedule:work` e o worker da fila em execução; em produção, configure o cron do Laravel Scheduler para rodar a cada minuto. Se alterar o valor de fallback no `.env`, limpe o cache de configuração (`php artisan config:clear`).
 
 O estado do WhatsApp é mantido na notificação: horário de enfileiramento, horário de envio confirmado pelo serviço e erro da última falha. A reivindicação atômica do envio evita que execuções concorrentes enfileirem a mesma notificação; mensagens já enviadas não são repetidas.
 

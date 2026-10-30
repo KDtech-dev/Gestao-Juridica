@@ -6,11 +6,37 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
 use App\Services\WhatsAppService;
+use App\Services\ConfiguracaoSistemaService;
 use Illuminate\Http\Request;
 use Throwable;
 
 class WhatsAppController extends Controller
 {
+    public function settings(ConfiguracaoSistemaService $configuracoes): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data' => ['horario_lembrete' => $configuracoes->horarioLembreteWhatsapp()],
+        ]);
+    }
+
+    public function updateSettings(Request $request, ConfiguracaoSistemaService $configuracoes): JsonResponse
+    {
+        $validated = $request->validate([
+            'horario_lembrete' => ['required', 'date_format:H:i'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Horário padrão do lembrete atualizado.',
+            'data' => [
+                'horario_lembrete' => $configuracoes->atualizarHorarioLembreteWhatsapp(
+                    $validated['horario_lembrete']
+                ),
+            ],
+        ]);
+    }
+
     public function status(): JsonResponse
     {
         return $this->consultarServico('/status');
