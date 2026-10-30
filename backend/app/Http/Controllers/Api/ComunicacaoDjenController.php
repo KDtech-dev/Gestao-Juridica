@@ -29,11 +29,16 @@ class ComunicacaoDjenController extends Controller
             'data_inicio' => ['sometimes', 'date'],
             'data_fim' => ['sometimes', 'date', 'after_or_equal:data_inicio'],
             'somente_nao_lidas' => ['sometimes', 'boolean'],
+            'sem_caso' => ['sometimes', 'boolean'],
         ]);
         $query = ComunicacaoDjen::query()->with('caso')->latest('data_disponibilizacao');
 
         if ($request->boolean('somente_nao_lidas')) {
             $query->whereNull('lida_em');
+        }
+
+        if ($request->boolean('sem_caso')) {
+            $query->whereNull('caso_id');
         }
 
         if ($request->filled('caso_id')) {

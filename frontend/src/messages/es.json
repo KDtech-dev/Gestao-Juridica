@@ -67,6 +67,40 @@
     "welcome": "Bienvenido al sistema"
   },
   "internal": {
+    "djen": {
+      "triage": {
+        "title": "Clasificación de comunicaciones DJEN",
+        "subtitle": "{total} comunicación(es) sin caso asociado.",
+        "filters": "Filtros",
+        "courtFilter": "Tribunal (sigla)",
+        "dateStart": "Fecha inicial",
+        "dateEnd": "Fecha final",
+        "unreadOnly": "Solo sin leer",
+        "applyFilters": "Aplicar filtros",
+        "linkPermissionHint": "Para vincular, necesitas permisos de vinculación DJEN y visualización de casos.",
+        "retry": "Intentar de nuevo",
+        "loadError": "No se pudieron cargar las comunicaciones sin caso.",
+        "loading": "Cargando comunicaciones...",
+        "emptyTitle": "La bandeja de clasificación está vacía",
+        "emptySubtitle": "No hay comunicaciones sin caso que coincidan con estos filtros.",
+        "communicationFallback": "Comunicación judicial",
+        "unread": "Sin leer",
+        "courtUnavailable": "Tribunal u órgano no informado",
+        "court": "Órgano emisor",
+        "textUnavailable": "El texto de esta comunicación no está disponible.",
+        "officialLink": "Abrir publicación oficial",
+        "linkCase": "Vincular a un caso",
+        "dialogTitle": "Elegir el caso que se vinculará",
+        "caseSelect": "Caso",
+        "caseSearch": "Busca por nombre o número de proceso",
+        "caseLoadError": "No se pudieron cargar los casos.",
+        "cancel": "Cancelar",
+        "confirmLink": "Confirmar vínculo",
+        "linking": "Vinculando...",
+        "linkSuccess": "Comunicación vinculada al caso.",
+        "linkError": "No se pudo vincular la comunicación al caso."
+      }
+    },
     "whatsapp": {
       "title": "WhatsApp",
       "subtitle": "Conecta la cuenta del despacho para enviar recordatorios desde el sistema.",
@@ -921,6 +955,7 @@
       "clientes": "Clientes",
       "publicacoes": "Publicaciones",
       "cases": "Casos",
+      "djen-triage": "Clasificación DJEN",
       "notificacoes": "Notificaciones",
       "adminUsers": "Usuarios",
       "adminLogs": "Movimientos",

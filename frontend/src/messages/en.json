@@ -67,6 +67,40 @@
     "welcome": "Welcome to the system"
   },
   "internal": {
+    "djen": {
+      "triage": {
+        "title": "DJEN communications triage",
+        "subtitle": "{total} communication(s) without an associated case.",
+        "filters": "Filters",
+        "courtFilter": "Court (acronym)",
+        "dateStart": "Start date",
+        "dateEnd": "End date",
+        "unreadOnly": "Unread only",
+        "applyFilters": "Apply filters",
+        "linkPermissionHint": "To link a communication, you need DJEN linking and case viewing permissions.",
+        "retry": "Try again",
+        "loadError": "Could not load communications without a case.",
+        "loading": "Loading communications...",
+        "emptyTitle": "Triage inbox is empty",
+        "emptySubtitle": "There are no unassociated communications matching these filters.",
+        "communicationFallback": "Court communication",
+        "unread": "Unread",
+        "courtUnavailable": "Court or office not provided",
+        "court": "Issuing office",
+        "textUnavailable": "The text of this communication is unavailable.",
+        "officialLink": "Open official publication",
+        "linkCase": "Link to case",
+        "dialogTitle": "Choose a case to link",
+        "caseSelect": "Case",
+        "caseSearch": "Search by title or case number",
+        "caseLoadError": "Could not load cases.",
+        "cancel": "Cancel",
+        "confirmLink": "Confirm link",
+        "linking": "Linking...",
+        "linkSuccess": "Communication linked to the case.",
+        "linkError": "Could not link the communication to the case."
+      }
+    },
     "whatsapp": {
       "title": "WhatsApp",
       "subtitle": "Connect the firm's account to send reminders from the system.",
@@ -923,6 +957,7 @@
       "clientes": "Clients",
       "publicacoes": "Publications",
       "cases": "Cases",
+      "djen-triage": "DJEN triage",
       "notificacoes": "Notifications",
       "adminUsers": "Users",
       "adminLogs": "Activity",

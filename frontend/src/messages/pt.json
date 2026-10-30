@@ -86,6 +86,40 @@
     "welcome": "Bem-vindo ao sistema"
   },
   "internal": {
+    "djen": {
+      "triage": {
+        "title": "Triagem de comunicações DJEN",
+        "subtitle": "{total} comunicação(ões) ainda sem caso associado.",
+        "filters": "Filtros",
+        "courtFilter": "Tribunal (sigla)",
+        "dateStart": "Data inicial",
+        "dateEnd": "Data final",
+        "unreadOnly": "Somente não lidas",
+        "applyFilters": "Aplicar filtros",
+        "linkPermissionHint": "Para vincular, você precisa das permissões de vinculação DJEN e visualização de casos.",
+        "retry": "Tentar novamente",
+        "loadError": "Não foi possível carregar as comunicações sem caso.",
+        "loading": "Carregando comunicações...",
+        "emptyTitle": "Caixa de triagem vazia",
+        "emptySubtitle": "Não há comunicações sem caso com os filtros selecionados.",
+        "communicationFallback": "Comunicação judicial",
+        "unread": "Não lida",
+        "courtUnavailable": "Tribunal ou órgão não informado",
+        "court": "Órgão emissor",
+        "textUnavailable": "O texto desta comunicação não está disponível.",
+        "officialLink": "Abrir publicação oficial",
+        "linkCase": "Vincular a caso",
+        "dialogTitle": "Escolher caso para vincular",
+        "caseSelect": "Caso",
+        "caseSearch": "Pesquise pelo nome ou número do processo",
+        "caseLoadError": "Não foi possível carregar os casos.",
+        "cancel": "Cancelar",
+        "confirmLink": "Confirmar vínculo",
+        "linking": "Vinculando...",
+        "linkSuccess": "Comunicação vinculada ao caso.",
+        "linkError": "Não foi possível vincular a comunicação ao caso."
+      }
+    },
     "whatsapp": {
       "title": "WhatsApp",
       "subtitle": "Conecte a conta do escritório para enviar lembretes pelo sistema.",
@@ -946,6 +980,7 @@
       "clientes": "Clientes",
       "publicacoes": "Publicações",
       "cases": "Casos",
+      "djen-triage": "Triagem DJEN",
       "notificacoes": "Notificações",
       "adminUsers": "Usuários",
       "adminLogs": "Movimentações",

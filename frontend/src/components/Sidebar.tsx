@@ -58,6 +58,13 @@ const mainItems: NavItem[] = [
     href: "/casos",
     permission: "casos.visualizar",
   },
+  {
+    key: "djen-triage",
+    label: "",
+    icon: "mdi:inbox-arrow-down-outline",
+    href: "/djen/triagem",
+    permission: "djen.visualizar",
+  },
 ];
 
 type SidebarItemProps = {
