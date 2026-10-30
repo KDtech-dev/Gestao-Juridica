@@ -52,6 +52,35 @@ export default function WhatsAppSettingsView() {
   const [sendingTest, setSendingTest] = useState(false);
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState(t("defaultTestMessage"));
+  const [reminderTime, setReminderTime] = useState("07:00");
+  const [loadingReminderTime, setLoadingReminderTime] = useState(true);
+  const [savingReminderTime, setSavingReminderTime] = useState(false);
+
+  const loadReminderTime = useCallback(async () => {
+    try {
+      const response = await getAxios().get("/admin/whatsapp/settings");
+      const settings = getData<{ horario_lembrete: string }>(response);
+      setReminderTime(settings.horario_lembrete);
+    } catch (settingsError) {
+      toast.error(formatToastErrorMessage(settingsError, t("scheduleLoadError")));
+    } finally {
+      setLoadingReminderTime(false);
+    }
+  }, [t]);
+
+  const saveReminderTime = async () => {
+    setSavingReminderTime(true);
+    try {
+      await getAxios().put("/admin/whatsapp/settings", {
+        horario_lembrete: reminderTime,
+      });
+      toast.success(t("scheduleSaved"));
+    } catch (settingsError) {
+      toast.error(formatToastErrorMessage(settingsError, t("scheduleSaveError")));
+    } finally {
+      setSavingReminderTime(false);
+    }
+  };
 
   const sendTestMessage = async () => {
     setSendingTest(true);
@@ -89,9 +118,10 @@ export default function WhatsAppSettingsView() {
 
   useEffect(() => {
     void refresh();
+    void loadReminderTime();
     const timer = window.setInterval(() => void refresh(), 4000);
     return () => window.clearInterval(timer);
-  }, [refresh]);
+  }, [loadReminderTime, refresh]);
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
@@ -107,6 +137,37 @@ export default function WhatsAppSettingsView() {
               <Typography color="text.secondary" mt={0.6}>{t("subtitle")}</Typography>
             </Box>
             {error && <Alert severity="error">{t("serviceUnavailable")}</Alert>}
+            <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
+              <Stack spacing={2}>
+                <Box>
+                  <Typography variant="h6" fontWeight={700} color="text.primary">
+                    {t("scheduleTitle")}
+                  </Typography>
+                  <Typography color="text.secondary" mt={0.5}>
+                    {t("scheduleHelp")}
+                  </Typography>
+                </Box>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} alignItems={{ sm: "center" }}>
+                  <TextField
+                    type="time"
+                    label={t("scheduleTime")}
+                    value={reminderTime}
+                    onChange={(event) => setReminderTime(event.target.value)}
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                    disabled={loadingReminderTime || savingReminderTime}
+                    sx={{ width: { sm: 180 } }}
+                  />
+                  <Button
+                    variant="contained"
+                    onClick={() => void saveReminderTime()}
+                    disabled={loadingReminderTime || savingReminderTime || !reminderTime}
+                  >
+                    {savingReminderTime ? t("scheduleSaving") : t("scheduleSave")}
+                  </Button>
+                </Stack>
+              </Stack>
+            </Paper>
             <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
               {loading && !connection ? (
                 <Stack alignItems="center" spacing={2} sx={{ py: 5 }}>
