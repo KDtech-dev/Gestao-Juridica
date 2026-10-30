@@ -40,7 +40,7 @@ type WhatsAppMessageRecord = {
   id: string;
   titulo: string;
   responsavel: string | null;
-  telefone: string | null;
+  pode_reenviar: boolean;
   status: "pending" | "queued" | "sent" | "delivered" | "read" | "failed";
   erro: string | null;
   criada_em: string | null;
@@ -456,7 +456,7 @@ export default function WhatsAppSettingsView() {
                             color={record.status === "failed" ? "error" : record.status === "read" || record.status === "delivered" ? "success" : "default"}
                             variant={record.status === "queued" || record.status === "pending" ? "outlined" : "filled"}
                           />
-                          {record.status === "failed" && record.telefone && (
+                          {record.status === "failed" && record.pode_reenviar && (
                             <Button
                               size="small"
                               variant="outlined"
