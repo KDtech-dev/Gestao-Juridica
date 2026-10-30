@@ -12,7 +12,7 @@ npm install
 npm start
 ```
 
-Por padrão, o serviço escuta apenas em `127.0.0.1:3100` e guarda credenciais em `backend/whatsapp/storage/auth`. Mantenha esse diretório persistente e privado. Para outro host/porta, defina `HOST`, `PORT` e `BAILEYS_AUTH_DIR`; atualize também `BAILEYS_SERVICE_URL` no Laravel. Em produção, configure o serviço como processo supervisionado e forneça armazenamento persistente protegido.
+Por padrão, o serviço escuta apenas em `127.0.0.1:3100` e guarda credenciais em `backend/whatsapp/storage/auth`. Mantenha esse diretório persistente e privado. Para outro host/porta, defina `HOST`, `PORT` e `BAILEYS_AUTH_DIR`; atualize também `BAILEYS_SERVICE_URL` no Laravel. Se a API Laravel estiver em outro endereço, defina `BAILEYS_CALLBACK_URL` no ambiente do processo Node (padrão `http://127.0.0.1:8000/api/internal/whatsapp/delivery`). Em produção, configure o serviço como processo supervisionado e forneça armazenamento persistente protegido.
 
 ## Pareamento
 

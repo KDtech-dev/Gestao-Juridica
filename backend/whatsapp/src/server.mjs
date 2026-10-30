@@ -10,12 +10,10 @@ import QRCode from 'qrcode';
 
 const port = Number(process.env.PORT || 3100);
 const host = process.env.HOST || '127.0.0.1';
-async function loadServiceToken() {
-  if (process.env.BAILEYS_SERVICE_TOKEN) return process.env.BAILEYS_SERVICE_TOKEN;
-
+async function readBackendEnvValue(name) {
   try {
     const laravelEnv = await readFile(path.resolve('../.env'), 'utf8');
-    const line = laravelEnv.split(/\r?\n/).find((entry) => /^\s*BAILEYS_SERVICE_TOKEN\s*=/.test(entry));
+    const line = laravelEnv.split(/\r?\n/).find((entry) => new RegExp(`^\\s*${name}\\s*=`).test(entry));
     const value = line?.slice(line.indexOf('=') + 1).trim() || '';
     return value.replace(/^("([\s\S]*)"|'([\s\S]*)')$/, (_, _quoted, doubleQuoted, singleQuoted) => doubleQuoted ?? singleQuoted ?? '');
   } catch {
@@ -23,7 +21,10 @@ async function loadServiceToken() {
   }
 }
 
-const token = await loadServiceToken();
+const token = process.env.BAILEYS_SERVICE_TOKEN || await readBackendEnvValue('BAILEYS_SERVICE_TOKEN');
+const callbackUrl = process.env.BAILEYS_CALLBACK_URL
+  || await readBackendEnvValue('BAILEYS_CALLBACK_URL')
+  || 'http://127.0.0.1:8000/api/internal/whatsapp/delivery';
 const authDirectory = path.resolve(process.env.BAILEYS_AUTH_DIR || './storage/auth');
 const state = { status: 'starting', qr: null, phone: null, lastError: null };
 let socket;
@@ -74,6 +75,14 @@ async function connect() {
   });
 
   socket.ev.on('creds.update', saveCreds);
+  socket.ev.on('messages.update', (updates) => {
+    for (const { key, update } of updates) {
+      const status = Number(update?.status);
+      if (key?.fromMe && key.id && [1, 2, 3].includes(status)) {
+        void reportMessageStatus(key.id, status);
+      }
+    }
+  });
   socket.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
     if (qr) state.qr = qr;
     if (connection === 'open') {
@@ -92,6 +101,33 @@ async function connect() {
       }
     }
   });
+}
+
+async function reportMessageStatus(messageId, status) {
+  const retryDelays = [0, 500, 2_000, 5_000, 15_000];
+
+  for (const delay of retryDelays) {
+    if (delay) await new Promise((resolve) => setTimeout(resolve, delay));
+
+    try {
+      const response = await fetch(callbackUrl, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${token}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({ message_id: messageId, status }),
+        signal: AbortSignal.timeout(5_000),
+      });
+
+      if (response.ok) return;
+      if (response.status !== 404 && response.status < 500) break;
+    } catch {
+      // Continue retrying transient connection errors.
+    }
+  }
+
+  console.warn(`Não foi possível sincronizar o status da mensagem ${messageId} com o Laravel.`);
 }
 
 const server = createServer(async (request, response) => {
