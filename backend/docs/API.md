@@ -198,11 +198,15 @@ Status: `rascunho`, `publicado`, `arquivado`. Limites e formatos de arquivos est
 | --- | --- | --- |
 | `GET` | `/api/admin/whatsapp/settings` | Consulta o horário padrão `HH:MM` e as opções de conteúdo da mensagem. |
 | `PUT` | `/api/admin/whatsapp/settings` | Atualiza o horário padrão e os booleanos `mensagem.incluir_nome`, `incluir_tipo`, `incluir_data` e `incluir_hora`. |
+| `GET` | `/api/admin/whatsapp/messages` | Lista os últimos 30 lembretes com status, destinatário e horários de envio, entrega ou leitura. |
+| `POST` | `/api/admin/whatsapp/messages/{notificacao}/retry` | Reenfileira um lembrete que falhou, se o responsável tiver celular. |
 | `GET` | `/api/admin/whatsapp/status` | Estado da conexão Baileys e telefone pareado. |
 | `GET` | `/api/admin/whatsapp/qr` | QR temporário para parear a sessão; disponível enquanto o serviço aguarda leitura. |
 | `POST` | `/api/admin/whatsapp/test-message` | Envia uma mensagem de teste; corpo `phone` com DDI e DDD e `message` com o texto. |
 
 Os lembretes de compromisso do dia são enviados ao responsável por meio da fila `whatsapp`. O horário padrão pode ser alterado na tela administrativa do WhatsApp; antes da primeira alteração, o sistema usa `COMPROMISSO_LEMBRETE_HORARIO` (padrão `07:00`). Configure também `BAILEYS_SERVICE_URL` e `BAILEYS_SERVICE_TOKEN` no Laravel e no processo Node em `backend/whatsapp`. Instruções para iniciar o serviço e parear a sessão estão em [`whatsapp/README.md`](../whatsapp/README.md).
+
+O processo Baileys envia confirmações de status para `POST /api/internal/whatsapp/delivery`, autenticado pelo mesmo token compartilhado. Configure `BAILEYS_CALLBACK_URL` no ambiente Node se a API Laravel não estiver em `http://127.0.0.1:8000`.
 
 ### DJEN
 

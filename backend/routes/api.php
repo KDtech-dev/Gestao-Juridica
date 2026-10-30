@@ -21,6 +21,8 @@ use App\Http\Controllers\Api\WhatsAppController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Enums\PermissionEnum;
 
+Route::post('/internal/whatsapp/delivery', [WhatsAppController::class, 'deliveryUpdate']);
+
 Route::prefix('auth')->group(function () {
     Route::post('login',          [AuthController::class, 'login']);
     Route::post('forgot-password', [PasswordController::class, 'sendResetLinkEmail']);
@@ -53,6 +55,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('admin/whatsapp')->middleware('role:admin')->group(function () {
         Route::get('/settings', [WhatsAppController::class, 'settings']);
         Route::put('/settings', [WhatsAppController::class, 'updateSettings']);
+        Route::get('/messages', [WhatsAppController::class, 'messageStatuses']);
+        Route::post('/messages/{notificacao}/retry', [WhatsAppController::class, 'retryMessage']);
         Route::get('/status', [WhatsAppController::class, 'status']);
         Route::get('/qr', [WhatsAppController::class, 'qr']);
         Route::post('/test-message', [WhatsAppController::class, 'enviarTeste']);

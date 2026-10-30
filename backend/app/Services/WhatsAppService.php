@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class WhatsAppService
 {
-    public function enviar(string $telefone, string $mensagem): void
+    public function enviar(string $telefone, string $mensagem): ?string
     {
         $url = rtrim((string) config('services.baileys.url'), '/');
         $token = (string) config('services.baileys.token');
@@ -28,6 +28,8 @@ class WhatsAppService
         if ($response->failed()) {
             throw new WhatsAppEnvioFalhouException($response->json('message') ?? $response->body());
         }
+
+        return $response->json('message_id');
     }
 
     private function formatarNumero(string $telefone): string
