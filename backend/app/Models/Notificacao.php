@@ -23,6 +23,10 @@ class Notificacao extends Model
         'whatsapp_enviado_em',
         'whatsapp_enfileirado_em',
         'whatsapp_erro',
+        'whatsapp_status',
+        'whatsapp_message_id',
+        'whatsapp_entregue_em',
+        'whatsapp_lido_em',
     ];
 
     protected $casts = [
@@ -30,6 +34,8 @@ class Notificacao extends Model
         'lida_em' => 'datetime',
         'whatsapp_enviado_em' => 'datetime',
         'whatsapp_enfileirado_em' => 'datetime',
+        'whatsapp_entregue_em' => 'datetime',
+        'whatsapp_lido_em' => 'datetime',
     ];
 
     public function usuario()

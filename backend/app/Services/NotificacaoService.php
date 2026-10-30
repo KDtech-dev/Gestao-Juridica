@@ -170,10 +170,20 @@ class NotificacaoService
         $telefone = $this->resolverTelefone($compromisso->criador);
 
         if (!$telefone) {
+            $notificacao->update([
+                'whatsapp_status' => 'failed',
+                'whatsapp_erro' => 'O responsável pelo compromisso não tem celular cadastrado.',
+            ]);
+
             return;
         }
 
         if (!config('services.baileys.token')) {
+            $notificacao->update([
+                'whatsapp_status' => 'failed',
+                'whatsapp_erro' => 'O serviço WhatsApp não está configurado.',
+            ]);
+
             return;
         }
 
@@ -184,6 +194,10 @@ class NotificacaoService
             ->update([
                 'whatsapp_enfileirado_em' => now(),
                 'whatsapp_erro' => null,
+                'whatsapp_status' => 'queued',
+                'whatsapp_message_id' => null,
+                'whatsapp_entregue_em' => null,
+                'whatsapp_lido_em' => null,
             ]);
 
         if (!$claimed) {
@@ -196,6 +210,7 @@ class NotificacaoService
             $notificacao->update([
                 'whatsapp_enfileirado_em' => null,
                 'whatsapp_erro' => mb_substr($exception->getMessage(), 0, 4000),
+                'whatsapp_status' => 'failed',
             ]);
 
             Log::warning('Não foi possível colocar o WhatsApp na fila', [
@@ -203,6 +218,63 @@ class NotificacaoService
                 'erro' => $exception->getMessage(),
             ]);
         }
+    }
+
+    public function listarEnviosWhatsApp(int $limite = 30): array
+    {
+        return Notificacao::query()
+            ->where('tipo', 'COMPROMISSO_HOJE')
+            ->with(['usuario.funcionario', 'usuario.advogado', 'compromisso'])
+            ->latest()
+            ->limit($limite)
+            ->get()
+            ->map(function (Notificacao $notificacao): array {
+                $telefone = $this->resolverTelefone($notificacao->usuario);
+                $status = $notificacao->whatsapp_status
+                    ?? ($telefone ? 'pending' : 'failed');
+                $erro = $notificacao->whatsapp_erro
+                    ?? (!$telefone ? 'O responsável pelo compromisso não tem celular cadastrado.' : null);
+
+                return [
+                    'id' => $notificacao->id,
+                    'titulo' => $notificacao->compromisso?->titulo ?? $notificacao->titulo,
+                    'responsavel' => $notificacao->usuario?->name,
+                    'telefone' => $telefone,
+                    'status' => $status,
+                    'erro' => $erro,
+                    'criada_em' => $notificacao->created_at?->toISOString(),
+                    'enfileirada_em' => $notificacao->whatsapp_enfileirado_em?->toISOString(),
+                    'enviada_em' => $notificacao->whatsapp_enviado_em?->toISOString(),
+                    'entregue_em' => $notificacao->whatsapp_entregue_em?->toISOString(),
+                    'lida_em' => $notificacao->whatsapp_lido_em?->toISOString(),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    public function reenviarWhatsApp(Notificacao $notificacao): bool
+    {
+        if ($notificacao->tipo !== 'COMPROMISSO_HOJE' || $notificacao->whatsapp_status !== 'failed') {
+            return false;
+        }
+
+        $compromisso = $notificacao->compromisso()
+            ->with('criador.funcionario', 'criador.advogado')
+            ->first();
+
+        if (!$compromisso) {
+            $notificacao->update([
+                'whatsapp_erro' => 'O compromisso relacionado não existe mais.',
+            ]);
+
+            return false;
+        }
+
+        $notificacao->setRelation('usuario', $compromisso->criador);
+        $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $notificacao->mensagem);
+
+        return $notificacao->fresh()->whatsapp_status === 'queued';
     }
 
     private function resolverTelefone(User $usuario): ?string
