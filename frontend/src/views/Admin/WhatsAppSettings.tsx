@@ -5,6 +5,7 @@ import {
   Alert,
   Box,
   Button,
+  Chip,
   CircularProgress,
   Container,
   FormControlLabel,
@@ -33,6 +34,18 @@ type ReminderMessageOptions = {
   incluir_tipo: boolean;
   incluir_data: boolean;
   incluir_hora: boolean;
+};
+
+type WhatsAppMessageRecord = {
+  id: string;
+  titulo: string;
+  responsavel: string | null;
+  telefone: string | null;
+  status: "pending" | "queued" | "sent" | "delivered" | "read" | "failed";
+  erro: string | null;
+  criada_em: string | null;
+  entregue_em: string | null;
+  lida_em: string | null;
 };
 
 function getData<T>(response: { data?: { data?: T } & T }): T {
@@ -70,6 +83,35 @@ export default function WhatsAppSettingsView() {
   });
   const [loadingReminderTime, setLoadingReminderTime] = useState(true);
   const [savingReminderTime, setSavingReminderTime] = useState(false);
+  const [messageRecords, setMessageRecords] = useState<WhatsAppMessageRecord[]>([]);
+  const [loadingMessageRecords, setLoadingMessageRecords] = useState(true);
+  const [retryingMessageId, setRetryingMessageId] = useState<string | null>(null);
+
+  const loadMessageRecords = useCallback(async (silent = false) => {
+    try {
+      const response = await getAxios().get("/admin/whatsapp/messages");
+      setMessageRecords(getData<WhatsAppMessageRecord[]>(response));
+    } catch (statusError) {
+      if (!silent) {
+        toast.error(formatToastErrorMessage(statusError, t("deliveryLoadError")));
+      }
+    } finally {
+      setLoadingMessageRecords(false);
+    }
+  }, [t]);
+
+  const retryMessage = async (id: string) => {
+    setRetryingMessageId(id);
+    try {
+      await getAxios().post(`/admin/whatsapp/messages/${id}/retry`);
+      toast.success(t("retryQueued"));
+      await loadMessageRecords();
+    } catch (retryError) {
+      toast.error(formatToastErrorMessage(retryError, t("retryError")));
+    } finally {
+      setRetryingMessageId(null);
+    }
+  };
 
   const loadReminderTime = useCallback(async () => {
     try {
@@ -149,9 +191,14 @@ export default function WhatsAppSettingsView() {
   useEffect(() => {
     void refresh();
     void loadReminderTime();
+    void loadMessageRecords();
     const timer = window.setInterval(() => void refresh(), 4000);
-    return () => window.clearInterval(timer);
-  }, [loadReminderTime, refresh]);
+    const messageTimer = window.setInterval(() => void loadMessageRecords(true), 20000);
+    return () => {
+      window.clearInterval(timer);
+      window.clearInterval(messageTimer);
+    };
+  }, [loadMessageRecords, loadReminderTime, refresh]);
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
@@ -348,6 +395,83 @@ export default function WhatsAppSettingsView() {
                   </Button>
                 </Stack>
               )}
+            </Paper>
+            <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
+              <Stack spacing={2}>
+                <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ sm: "center" }} gap={1}>
+                  <Box>
+                    <Typography variant="h6" fontWeight={700} color="text.primary">
+                      {t("deliveryTitle")}
+                    </Typography>
+                    <Typography color="text.secondary" mt={0.5}>
+                      {t("deliveryHelp")}
+                    </Typography>
+                  </Box>
+                  <Button variant="outlined" onClick={() => void loadMessageRecords()} disabled={loadingMessageRecords}>
+                    {t("deliveryRefresh")}
+                  </Button>
+                </Stack>
+                {loadingMessageRecords ? (
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <CircularProgress size={18} />
+                    <Typography color="text.secondary">{t("deliveryLoading")}</Typography>
+                  </Stack>
+                ) : messageRecords.length === 0 ? (
+                  <Typography color="text.secondary">{t("deliveryEmpty")}</Typography>
+                ) : (
+                  <Stack divider={<Box sx={{ borderBottom: "1px solid", borderColor: "divider" }} />}>
+                    {messageRecords.map((record) => (
+                      <Stack
+                        key={record.id}
+                        direction={{ xs: "column", sm: "row" }}
+                        justifyContent="space-between"
+                        alignItems={{ sm: "center" }}
+                        gap={1.5}
+                        sx={{ py: 1.5 }}
+                      >
+                        <Stack spacing={0.35} sx={{ minWidth: 0 }}>
+                          <Typography fontWeight={600}>{record.titulo}</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {record.responsavel || t("unknownRecipient")}
+                            {record.criada_em ? ` · ${new Date(record.criada_em).toLocaleString()}` : ""}
+                          </Typography>
+                          {record.erro && (
+                            <Typography variant="body2" color="error.main">{record.erro}</Typography>
+                          )}
+                          {record.lida_em && (
+                            <Typography variant="caption" color="text.secondary">
+                              {t("readAt", { date: new Date(record.lida_em).toLocaleString() })}
+                            </Typography>
+                          )}
+                          {!record.lida_em && record.entregue_em && (
+                            <Typography variant="caption" color="text.secondary">
+                              {t("deliveredAt", { date: new Date(record.entregue_em).toLocaleString() })}
+                            </Typography>
+                          )}
+                        </Stack>
+                        <Stack direction="row" spacing={1} alignItems="center" flexShrink={0}>
+                          <Chip
+                            size="small"
+                            label={t(`deliveryStatus.${record.status}`)}
+                            color={record.status === "failed" ? "error" : record.status === "read" || record.status === "delivered" ? "success" : "default"}
+                            variant={record.status === "queued" || record.status === "pending" ? "outlined" : "filled"}
+                          />
+                          {record.status === "failed" && record.telefone && (
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              onClick={() => void retryMessage(record.id)}
+                              disabled={retryingMessageId !== null}
+                            >
+                              {retryingMessageId === record.id ? t("retrying") : t("retry")}
+                            </Button>
+                          )}
+                        </Stack>
+                      </Stack>
+                    ))}
+                  </Stack>
+                )}
+              </Stack>
             </Paper>
           </Stack>
         </Container>
