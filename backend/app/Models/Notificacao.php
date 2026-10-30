@@ -21,12 +21,15 @@ class Notificacao extends Model
         'dados',
         'lida_em',
         'whatsapp_enviado_em',
+        'whatsapp_enfileirado_em',
+        'whatsapp_erro',
     ];
 
     protected $casts = [
         'dados' => 'array',
         'lida_em' => 'datetime',
         'whatsapp_enviado_em' => 'datetime',
+        'whatsapp_enfileirado_em' => 'datetime',
     ];
 
     public function usuario()

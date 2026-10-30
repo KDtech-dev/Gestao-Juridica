@@ -40,11 +40,23 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
         }
 
         $whatsApp->enviar($this->telefone, $this->mensagem);
-        $notificacao->update(['whatsapp_enviado_em' => now()]);
+        $notificacao->update([
+            'whatsapp_enviado_em' => now(),
+            'whatsapp_enfileirado_em' => null,
+            'whatsapp_erro' => null,
+        ]);
     }
 
     public function failed(Throwable $exception): void
     {
+        Notificacao::query()
+            ->whereKey($this->notificacaoId)
+            ->whereNull('whatsapp_enviado_em')
+            ->update([
+                'whatsapp_enfileirado_em' => null,
+                'whatsapp_erro' => mb_substr($exception->getMessage(), 0, 4000),
+            ]);
+
         Log::warning('Falha ao enviar notificação via WhatsApp após novas tentativas', [
             'notificacao_id' => $this->notificacaoId,
             'erro' => $exception->getMessage(),

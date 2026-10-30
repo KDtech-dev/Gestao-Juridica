@@ -7,6 +7,8 @@ use App\Models\Compromisso;
 use App\Models\Notificacao;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class NotificacaoService
 {
@@ -139,7 +141,7 @@ class NotificacaoService
                 'dados' => $dados,
             ]);
 
-            if ($enviarWhatsApp && $tipo === 'COMPROMISSO_HOJE' && !$notificacao->whatsapp_enviado_em) {
+            if ($enviarWhatsApp && $tipo === 'COMPROMISSO_HOJE') {
                 $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $mensagem);
             }
 
@@ -175,7 +177,32 @@ class NotificacaoService
             return;
         }
 
-        EnviarNotificacaoWhatsAppJob::dispatch($notificacao->id, $telefone, $mensagem);
+        $claimed = Notificacao::query()
+            ->whereKey($notificacao->id)
+            ->whereNull('whatsapp_enviado_em')
+            ->whereNull('whatsapp_enfileirado_em')
+            ->update([
+                'whatsapp_enfileirado_em' => now(),
+                'whatsapp_erro' => null,
+            ]);
+
+        if (!$claimed) {
+            return;
+        }
+
+        try {
+            EnviarNotificacaoWhatsAppJob::dispatch($notificacao->id, $telefone, $mensagem);
+        } catch (Throwable $exception) {
+            $notificacao->update([
+                'whatsapp_enfileirado_em' => null,
+                'whatsapp_erro' => mb_substr($exception->getMessage(), 0, 4000),
+            ]);
+
+            Log::warning('Não foi possível colocar o WhatsApp na fila', [
+                'notificacao_id' => $notificacao->id,
+                'erro' => $exception->getMessage(),
+            ]);
+        }
     }
 
     private function resolverTelefone(User $usuario): ?string
