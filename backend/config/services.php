@@ -44,6 +44,7 @@ return [
     'baileys' => [
         'url' => env('BAILEYS_SERVICE_URL', 'http://127.0.0.1:3100'),
         'token' => env('BAILEYS_SERVICE_TOKEN'),
+        'retention_days' => (int) env('WHATSAPP_RETENTION_DAYS', 90),
     ],
     'djen' => [
         'base_url' => env('DJEN_BASE_URL', 'https://comunicaapi.pje.jus.br/api/v1'),

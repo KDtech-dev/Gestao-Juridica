@@ -17,3 +17,8 @@ Schedule::command('djen:sincronizar')
     ->dailyAt('07:00')
     ->timezone('America/Sao_Paulo')
     ->withoutOverlapping();
+
+Schedule::command('whatsapp:limpar-historico')
+    ->dailyAt('03:30')
+    ->timezone(config('app.timezone'))
+    ->withoutOverlapping();

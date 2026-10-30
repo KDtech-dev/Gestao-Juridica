@@ -30,7 +30,7 @@ class WhatsAppService
             $temporario = $status === 408 || $status === 425 || $status === 429 || $status >= 500;
 
             throw new WhatsAppEnvioFalhouException(
-                $response->json('message') ?? $response->body(),
+                "Serviço Baileys retornou HTTP {$status}.",
                 $temporario,
                 $status,
             );

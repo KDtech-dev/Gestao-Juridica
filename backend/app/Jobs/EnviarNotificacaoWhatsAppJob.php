@@ -22,8 +22,6 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
 
     public function __construct(
         public readonly string $notificacaoId,
-        public readonly string $telefone,
-        public readonly string $mensagem,
     ) {
         $this->onQueue('whatsapp');
     }
@@ -41,8 +39,16 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
             return;
         }
 
+        $notificacao->loadMissing(['usuario.funcionario', 'usuario.advogado']);
+        $telefone = $notificacao->usuario?->funcionario?->celular
+            ?? $notificacao->usuario?->advogado?->celular;
+
+        if (!$telefone) {
+            throw new WhatsAppEnvioFalhouException('O responsável pelo compromisso não tem celular cadastrado.', false);
+        }
+
         try {
-            $messageId = $whatsApp->enviar($this->telefone, $this->mensagem);
+            $messageId = $whatsApp->enviar($telefone, $notificacao->mensagem);
         } catch (WhatsAppEnvioFalhouException $exception) {
             if (!$exception->retryable) {
                 $this->fail($exception);

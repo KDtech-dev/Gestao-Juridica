@@ -158,14 +158,13 @@ class NotificacaoService
         ]);
 
         if ($enviarWhatsApp && $tipo === 'COMPROMISSO_HOJE') {
-            $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $mensagem);
+            $this->enviarWhatsAppSeNecessario($notificacao, $compromisso);
         }
     }
 
     private function enviarWhatsAppSeNecessario(
         Notificacao $notificacao,
-        Compromisso $compromisso,
-        string $mensagem
+        Compromisso $compromisso
     ): void {
         $telefone = $this->resolverTelefone($compromisso->criador);
 
@@ -205,7 +204,7 @@ class NotificacaoService
         }
 
         try {
-            EnviarNotificacaoWhatsAppJob::dispatch($notificacao->id, $telefone, $mensagem);
+            EnviarNotificacaoWhatsAppJob::dispatch($notificacao->id);
         } catch (Throwable $exception) {
             $notificacao->update([
                 'whatsapp_enfileirado_em' => null,
@@ -224,6 +223,12 @@ class NotificacaoService
     {
         return Notificacao::query()
             ->where('tipo', 'COMPROMISSO_HOJE')
+            ->where(function ($query): void {
+                $query->whereNotNull('whatsapp_status')
+                    ->orWhereNotNull('whatsapp_erro')
+                    ->orWhereNotNull('whatsapp_enviado_em')
+                    ->orWhereNotNull('whatsapp_enfileirado_em');
+            })
             ->with(['usuario.funcionario', 'usuario.advogado', 'compromisso'])
             ->latest()
             ->limit($limite)
@@ -239,7 +244,7 @@ class NotificacaoService
                     'id' => $notificacao->id,
                     'titulo' => $notificacao->compromisso?->titulo ?? $notificacao->titulo,
                     'responsavel' => $notificacao->usuario?->name,
-                    'telefone' => $telefone,
+                    'pode_reenviar' => $status === 'failed' && (bool) $telefone,
                     'status' => $status,
                     'erro' => $erro,
                     'criada_em' => $notificacao->created_at?->toISOString(),
@@ -272,7 +277,7 @@ class NotificacaoService
         }
 
         $notificacao->setRelation('usuario', $compromisso->criador);
-        $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $notificacao->mensagem);
+        $this->enviarWhatsAppSeNecessario($notificacao, $compromisso);
 
         return $notificacao->fresh()->whatsapp_status === 'queued';
     }
