@@ -8,6 +8,7 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Drawer,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -47,6 +48,7 @@ export function Header() {
   const { language, setLanguage } = useLanguage();
   const { isAuthenticated, user, loading } = useAuth();
   const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [floatingOpen, setFloatingOpen] = useState(false);
   const [floatingPosition, setFloatingPosition] = useState({ x: 16, y: 112 });
   const dragRef = useRef({
@@ -55,6 +57,10 @@ export function Header() {
     offsetX: 0,
     offsetY: 0,
   });
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   const isDark = theme.palette.mode === "dark";
   const accessHref =
@@ -151,11 +157,11 @@ export function Header() {
             sx={{ px: { xs: 1, sm: 0 }, pr: { sm: 3 } }}
           >
             <Stack
-              direction={{ xs: "column", md: "row" }}
-              alignItems={{ xs: "stretch", md: "center" }}
+              direction="row"
+              alignItems="center"
               justifyContent="space-between"
-              gap={{ xs: 1.25, md: 2 }}
-              py={{ xs: 1.25, md: 2 }}
+              gap={{ xs: 1, md: 2 }}
+              py={{ xs: 1, md: 2 }}
             >
               <Stack
                 direction="row"
@@ -163,7 +169,7 @@ export function Header() {
                 alignItems="center"
                 sx={{
                   minWidth: 0,
-                  width: { xs: "100%", md: "auto" },
+                  width: "auto",
                   ml: { xs: 0, md: "-18px" },
                 }}
               >
@@ -354,7 +360,7 @@ export function Header() {
                 spacing={{ xs: 0.75, sm: 2 }}
                 alignItems="center"
                 justifyContent={{ xs: "space-between", md: "flex-end" }}
-                sx={{ minWidth: 0, width: { xs: "100%", md: "auto" } }}
+                sx={{ minWidth: 0, width: "auto" }}
               >
                 <Stack
                   component="nav"
@@ -362,6 +368,7 @@ export function Header() {
                   spacing={{ xs: 0.5, sm: 1 }}
                   alignItems="center"
                   sx={{
+                    display: { xs: "none", md: "flex" },
                     minWidth: 0,
                     overflowX: "auto",
                     scrollbarWidth: "none",
@@ -375,10 +382,6 @@ export function Header() {
                       href={item.href}
                       variant="text"
                       sx={{
-                        display: {
-                          xs: item.active ? "none" : "inline-flex",
-                          md: "inline-flex",
-                        },
                         color: "text.primary",
                         textTransform: "none",
                         fontWeight: 700,
@@ -399,6 +402,7 @@ export function Header() {
                     href={accessHref}
                     variant="contained"
                     sx={{
+                      display: { xs: "none", md: "inline-flex" },
                       bgcolor: "primary.main",
                       borderRadius: "999px",
                       px: { xs: 1.5, sm: 3 },
@@ -412,14 +416,87 @@ export function Header() {
                     {isAuthenticated ? t("access") : t("login")}
                   </Button>
                 )}
+                <IconButton
+                  type="button"
+                  aria-label={t("menuOpen")}
+                  aria-expanded={mobileMenuOpen}
+                  aria-controls="public-mobile-navigation"
+                  onClick={() => {
+                    setFloatingOpen(false);
+                    setMobileMenuOpen(true);
+                  }}
+                  sx={{ display: { xs: "inline-flex", md: "none" }, color: "text.primary" }}
+                >
+                  <Icon icon="mdi:menu" width={26} />
+                </IconButton>
               </Stack>
             </Stack>
           </Container>
         </Box>
 
+        <Drawer
+          anchor="right"
+          open={mobileMenuOpen}
+          onClose={() => setMobileMenuOpen(false)}
+          PaperProps={{
+            id: "public-mobile-navigation",
+            sx: {
+              width: "min(320px, 88vw)",
+              bgcolor: "background.paper",
+              color: "text.primary",
+              p: 2.5,
+            },
+          }}
+        >
+          <Stack spacing={2.5}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between">
+              <Typography variant="h6" fontWeight={800}>{t("title")}</Typography>
+              <IconButton
+                type="button"
+                aria-label={t("menuClose")}
+                onClick={() => setMobileMenuOpen(false)}
+                edge="end"
+              >
+                <Icon icon="mdi:close" width={22} />
+              </IconButton>
+            </Stack>
+            <Stack component="nav" spacing={0.75} aria-label={t("menuOpen")}>
+              {navItems.map((item) => (
+                <Button
+                  key={item.href}
+                  component={Link}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  variant={item.active ? "contained" : "text"}
+                  sx={{
+                    justifyContent: "flex-start",
+                    px: 1.5,
+                    py: 1.1,
+                    textTransform: "none",
+                    fontWeight: 700,
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+              {!loading && (
+                <Button
+                  component={Link}
+                  href={accessHref}
+                  onClick={() => setMobileMenuOpen(false)}
+                  variant="contained"
+                  sx={{ mt: 1, borderRadius: "999px", textTransform: "none", fontWeight: 700 }}
+                >
+                  {isAuthenticated ? t("access") : t("login")}
+                </Button>
+              )}
+            </Stack>
+          </Stack>
+        </Drawer>
+
         <Box
           sx={{
-            display: { xs: "block", md: "none" },
+            display: { xs: mobileMenuOpen ? "none" : "block", md: "none" },
             position: "fixed",
             left: floatingPosition.x,
             top: floatingPosition.y,

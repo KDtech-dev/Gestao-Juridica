@@ -1036,6 +1036,8 @@
       "access": "Open",
       "login": "Login",
       "accessibility": "Accessibility",
+      "menuOpen": "Open navigation menu",
+      "menuClose": "Close navigation menu",
       "theme": {
         "light": "Switch to light theme",
         "dark": "Switch to dark theme"

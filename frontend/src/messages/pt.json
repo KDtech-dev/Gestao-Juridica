@@ -1059,6 +1059,8 @@
       "access": "Acessar",
       "login": "Login",
       "accessibility": "Acessibilidade",
+      "menuOpen": "Abrir menu de navegação",
+      "menuClose": "Fechar menu de navegação",
       "theme": {
         "light": "Ativar tema claro",
         "dark": "Ativar tema escuro"
