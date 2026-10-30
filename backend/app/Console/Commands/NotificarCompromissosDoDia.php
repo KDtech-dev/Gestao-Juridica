@@ -19,6 +19,8 @@ class NotificarCompromissosDoDia extends Command
             return self::SUCCESS;
         }
 
+        $enviarWhatsApp = $configuracoes->lembretesWhatsappAtivos();
+
         $fimDaSemana = CarbonImmutable::today()->endOfWeek();
 
         User::query()
@@ -26,9 +28,14 @@ class NotificarCompromissosDoDia extends Command
                 $query->where('status', 'PENDENTE')
                     ->whereDate('data', '<=', $fimDaSemana->toDateString());
             })
-            ->each(fn (User $usuario) => $service->sincronizarLembretesCompromissos($usuario, enviarWhatsApp: true));
+            ->each(fn (User $usuario) => $service->sincronizarLembretesCompromissos(
+                $usuario,
+                enviarWhatsApp: $enviarWhatsApp,
+            ));
 
-        $this->info('Lembretes sincronizados.');
+        $this->info($enviarWhatsApp
+            ? 'Lembretes sincronizados e envios WhatsApp enfileirados.'
+            : 'Lembretes sincronizados; envios WhatsApp estão pausados.');
 
         return self::SUCCESS;
     }

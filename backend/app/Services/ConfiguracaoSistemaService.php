@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class ConfiguracaoSistemaService
 {
     private const HORARIO_LEMBRETE_WHATSAPP = 'compromisso_horario_lembrete_whatsapp';
+    private const LEMBRETES_WHATSAPP_ATIVOS = 'whatsapp_lembretes_ativos';
     private const OPCOES_MENSAGEM_WHATSAPP = [
         'incluir_nome' => 'whatsapp_mensagem_incluir_nome',
         'incluir_tipo' => 'whatsapp_mensagem_incluir_tipo',
@@ -21,6 +22,23 @@ class ConfiguracaoSistemaService
             ->whereKey(self::HORARIO_LEMBRETE_WHATSAPP)
             ->value('valor')
             ?? config('compromissos.horario_lembrete_whatsapp', '07:00');
+    }
+
+    public function lembretesWhatsappAtivos(): bool
+    {
+        return ConfiguracaoSistema::query()
+            ->whereKey(self::LEMBRETES_WHATSAPP_ATIVOS)
+            ->value('valor') !== '0';
+    }
+
+    public function atualizarLembretesWhatsappAtivos(bool $ativo): bool
+    {
+        ConfiguracaoSistema::query()->updateOrCreate(
+            ['chave' => self::LEMBRETES_WHATSAPP_ATIVOS],
+            ['valor' => $ativo ? '1' : '0'],
+        );
+
+        return $ativo;
     }
 
     public function atualizarHorarioLembreteWhatsapp(string $horario): string

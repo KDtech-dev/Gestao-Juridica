@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Notificacao;
 use App\Exceptions\WhatsAppEnvioFalhouException;
 use App\Services\WhatsAppService;
+use App\Services\ConfiguracaoSistemaService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -31,11 +32,21 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
         return [15, 60, 180];
     }
 
-    public function handle(WhatsAppService $whatsApp): void
+    public function handle(WhatsAppService $whatsApp, ConfiguracaoSistemaService $configuracoes): void
     {
         $notificacao = Notificacao::query()->find($this->notificacaoId);
 
         if (!$notificacao || $notificacao->whatsapp_enviado_em) {
+            return;
+        }
+
+        if (!$configuracoes->lembretesWhatsappAtivos()) {
+            $notificacao->update([
+                'whatsapp_enfileirado_em' => null,
+                'whatsapp_erro' => null,
+                'whatsapp_status' => 'paused',
+            ]);
+
             return;
         }
 

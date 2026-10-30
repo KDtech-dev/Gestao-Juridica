@@ -142,7 +142,7 @@ class NotificacaoService
             ]);
 
             if ($enviarWhatsApp && $tipo === 'COMPROMISSO_HOJE') {
-                $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $mensagem);
+                $this->enviarWhatsAppSeNecessario($notificacao, $compromisso);
             }
 
             return;
@@ -166,6 +166,10 @@ class NotificacaoService
         Notificacao $notificacao,
         Compromisso $compromisso
     ): void {
+        if (!app(ConfiguracaoSistemaService::class)->lembretesWhatsappAtivos()) {
+            return;
+        }
+
         $telefone = $this->resolverTelefone($compromisso->criador);
 
         if (!$telefone) {
@@ -221,6 +225,8 @@ class NotificacaoService
 
     public function listarEnviosWhatsApp(int $limite = 30): array
     {
+        $lembretesAtivos = app(ConfiguracaoSistemaService::class)->lembretesWhatsappAtivos();
+
         return Notificacao::query()
             ->where('tipo', 'COMPROMISSO_HOJE')
             ->where(function ($query): void {
@@ -233,7 +239,7 @@ class NotificacaoService
             ->latest()
             ->limit($limite)
             ->get()
-            ->map(function (Notificacao $notificacao): array {
+            ->map(function (Notificacao $notificacao) use ($lembretesAtivos): array {
                 $telefone = $this->resolverTelefone($notificacao->usuario);
                 $status = $notificacao->whatsapp_status
                     ?? ($telefone ? 'pending' : 'failed');
@@ -250,7 +256,9 @@ class NotificacaoService
                     'id' => $notificacao->id,
                     'titulo' => $notificacao->compromisso?->titulo ?? $notificacao->titulo,
                     'responsavel' => $notificacao->usuario?->name,
-                    'pode_reenviar' => $status === 'failed' && (bool) $telefone,
+                    'pode_reenviar' => $lembretesAtivos
+                        && in_array($status, ['failed', 'paused'], true)
+                        && (bool) $telefone,
                     'status' => $status,
                     'erro_codigo' => $erroCodigo,
                     'criada_em' => $notificacao->created_at?->toISOString(),
@@ -266,7 +274,11 @@ class NotificacaoService
 
     public function reenviarWhatsApp(Notificacao $notificacao): bool
     {
-        if ($notificacao->tipo !== 'COMPROMISSO_HOJE' || $notificacao->whatsapp_status !== 'failed') {
+        if (
+            !app(ConfiguracaoSistemaService::class)->lembretesWhatsappAtivos()
+            || $notificacao->tipo !== 'COMPROMISSO_HOJE'
+            || !in_array($notificacao->whatsapp_status, ['failed', 'paused'], true)
+        ) {
             return false;
         }
 
