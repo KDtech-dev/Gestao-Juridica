@@ -197,7 +197,7 @@ Status: `rascunho`, `publicado`, `arquivado`. Limites e formatos de arquivos est
 | Método | Caminho | Descrição |
 | --- | --- | --- |
 | `GET` | `/api/admin/whatsapp/settings` | Consulta se os lembretes automáticos estão ativos, o horário padrão `HH:MM` e as opções de conteúdo da mensagem. |
-| `PUT` | `/api/admin/whatsapp/settings` | Atualiza `lembretes_ativos`, o horário padrão e os booleanos `mensagem.incluir_nome`, `incluir_tipo`, `incluir_data` e `incluir_hora`. |
+| `PUT` | `/api/admin/whatsapp/settings` | Atualiza `lembretes_ativos`, o horário padrão e os booleanos `mensagem.incluir_nome`, `incluir_tipo`, `incluir_data` e `incluir_hora`. Quando `lembretes_ativos` é `false`, novos lembretes automáticos não são enfileirados e jobs ainda não iniciados são marcados como pausados. O envio manual de teste permanece disponível. |
 | `GET` | `/api/admin/whatsapp/messages` | Lista os últimos 30 lembretes com status, destinatário e horários de envio, entrega ou leitura. |
 | `POST` | `/api/admin/whatsapp/messages/{notificacao}/retry` | Reenfileira um lembrete que falhou, se o responsável tiver celular. |
 | `GET` | `/api/admin/whatsapp/status` | Estado da conexão Baileys e telefone pareado. |

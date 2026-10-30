@@ -72,6 +72,9 @@
       "subtitle": "Conecta la cuenta del despacho para enviar recordatorios desde el sistema.",
       "scheduleTitle": "Horario predeterminado de recordatorios",
       "scheduleHelp": "Los compromisos pendientes del día se enviarán a esta hora, según la zona horaria del sistema.",
+      "remindersEnabled": "Recordatorios automáticos activos",
+      "remindersPaused": "Recordatorios automáticos pausados",
+      "remindersToggleHelp": "Al pausar, no se enviarán nuevos recordatorios automáticos. Los mensajes manuales de prueba seguirán disponibles.",
       "scheduleTime": "Hora de envío",
       "saveSettings": "Guardar configuración",
       "settingsSaving": "Guardando...",
@@ -123,7 +126,8 @@
         "sent": "Enviado",
         "delivered": "Entregado",
         "read": "Leído",
-        "failed": "Fallido"
+        "failed": "Fallido",
+        "paused": "Pausado por la administración"
       },
       "refresh": "Actualizar estado",
       "scanQr": "Escanea este código QR en WhatsApp > Dispositivos vinculados.",

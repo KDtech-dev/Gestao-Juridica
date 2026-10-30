@@ -72,6 +72,9 @@
       "subtitle": "Connect the firm's account to send reminders from the system.",
       "scheduleTitle": "Default reminder time",
       "scheduleHelp": "Pending appointments for the day will be sent at this time, using the system timezone.",
+      "remindersEnabled": "Automatic reminders enabled",
+      "remindersPaused": "Automatic reminders paused",
+      "remindersToggleHelp": "When paused, new automatic reminders will not be sent. Manual test messages remain available.",
       "scheduleTime": "Send time",
       "saveSettings": "Save settings",
       "settingsSaving": "Saving...",
@@ -123,7 +126,8 @@
         "sent": "Sent",
         "delivered": "Delivered",
         "read": "Read",
-        "failed": "Failed"
+        "failed": "Failed",
+        "paused": "Paused by management"
       },
       "refresh": "Refresh status",
       "scanQr": "Scan this QR code in WhatsApp > Linked devices.",

@@ -40,7 +40,7 @@ type WhatsAppMessageRecord = {
   titulo: string;
   responsavel: string | null;
   pode_reenviar: boolean;
-  status: "pending" | "queued" | "sent" | "delivered" | "read" | "failed";
+  status: "pending" | "queued" | "sent" | "delivered" | "read" | "failed" | "paused";
   erro_codigo: "missing_phone" | "not_configured" | "send_failed" | null;
   criada_em: string | null;
   entregue_em: string | null;
@@ -73,6 +73,7 @@ export default function WhatsAppSettingsView() {
   const [sendingTest, setSendingTest] = useState(false);
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState(t("defaultTestMessage"));
+  const [remindersActive, setRemindersActive] = useState(true);
   const [reminderTime, setReminderTime] = useState("07:00");
   const [messageOptions, setMessageOptions] = useState<ReminderMessageOptions>({
     incluir_nome: true,
@@ -116,9 +117,11 @@ export default function WhatsAppSettingsView() {
     try {
       const response = await getAxios().get("/admin/whatsapp/settings");
       const settings = getData<{
+        lembretes_ativos: boolean;
         horario_lembrete: string;
         mensagem: ReminderMessageOptions;
       }>(response);
+      setRemindersActive(settings.lembretes_ativos);
       setReminderTime(settings.horario_lembrete);
       setMessageOptions(settings.mensagem);
     } catch (settingsError) {
@@ -132,6 +135,7 @@ export default function WhatsAppSettingsView() {
     setSavingReminderTime(true);
     try {
       await getAxios().put("/admin/whatsapp/settings", {
+        lembretes_ativos: remindersActive,
         horario_lembrete: reminderTime,
         mensagem: messageOptions,
       });
@@ -223,6 +227,19 @@ export default function WhatsAppSettingsView() {
                     {t("scheduleHelp")}
                   </Typography>
                 </Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={remindersActive}
+                      onChange={(event) => setRemindersActive(event.target.checked)}
+                      disabled={loadingReminderTime || savingReminderTime}
+                    />
+                  }
+                  label={remindersActive ? t("remindersEnabled") : t("remindersPaused")}
+                />
+                <Typography color="text.secondary" variant="body2">
+                  {t("remindersToggleHelp")}
+                </Typography>
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} alignItems={{ sm: "center" }}>
                   <TextField
                     type="time"
@@ -452,9 +469,9 @@ export default function WhatsAppSettingsView() {
                             size="small"
                             label={t(`deliveryStatus.${record.status}`)}
                             color={record.status === "failed" ? "error" : record.status === "read" || record.status === "delivered" ? "success" : "default"}
-                            variant={record.status === "queued" || record.status === "pending" ? "outlined" : "filled"}
+                            variant={record.status === "queued" || record.status === "pending" || record.status === "paused" ? "outlined" : "filled"}
                           />
-                          {record.status === "failed" && record.pode_reenviar && (
+                          {(record.status === "failed" || record.status === "paused") && record.pode_reenviar && (
                             <Button
                               size="small"
                               variant="outlined"

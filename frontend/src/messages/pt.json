@@ -91,6 +91,9 @@
       "subtitle": "Conecte a conta do escritório para enviar lembretes pelo sistema.",
       "scheduleTitle": "Horário padrão dos lembretes",
       "scheduleHelp": "Os compromissos pendentes do dia serão enviados neste horário, no fuso configurado para o sistema.",
+      "remindersEnabled": "Lembretes automáticos ativos",
+      "remindersPaused": "Lembretes automáticos pausados",
+      "remindersToggleHelp": "Ao pausar, novos lembretes automáticos não serão enviados. O envio manual de teste continua disponível.",
       "scheduleTime": "Horário de envio",
       "saveSettings": "Salvar configurações",
       "settingsSaving": "Salvando...",
@@ -142,7 +145,8 @@
         "sent": "Enviada",
         "delivered": "Entregue",
         "read": "Lida",
-        "failed": "Falhou"
+        "failed": "Falhou",
+        "paused": "Pausada pela gestão"
       },
       "refresh": "Atualizar status",
       "scanQr": "Escaneie este QR Code em WhatsApp > Aparelhos conectados.",
