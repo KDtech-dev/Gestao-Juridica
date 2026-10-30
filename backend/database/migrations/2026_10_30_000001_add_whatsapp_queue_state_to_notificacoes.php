@@ -8,9 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('notificacoes', function (Blueprint $table): void {
-            $table->timestamp('whatsapp_enfileirado_em')->nullable()->after('whatsapp_enviado_em');
-            $table->text('whatsapp_erro')->nullable()->after('whatsapp_enfileirado_em');
+        $addEnviadoEm = !Schema::hasColumn('notificacoes', 'whatsapp_enviado_em');
+        $addEnfileiradoEm = !Schema::hasColumn('notificacoes', 'whatsapp_enfileirado_em');
+        $addErro = !Schema::hasColumn('notificacoes', 'whatsapp_erro');
+
+        Schema::table('notificacoes', function (Blueprint $table) use ($addEnviadoEm, $addEnfileiradoEm, $addErro): void {
+            if ($addEnviadoEm) {
+                $table->timestamp('whatsapp_enviado_em')->nullable();
+            }
+
+            if ($addEnfileiradoEm) {
+                $table->timestamp('whatsapp_enfileirado_em')->nullable();
+            }
+
+            if ($addErro) {
+                $table->text('whatsapp_erro')->nullable();
+            }
         });
     }
 
