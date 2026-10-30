@@ -51,7 +51,15 @@ class RolesSeeder extends Seeder
                 $permissoesPapel,
             );
 
-            $papel->givePermissionTo($permissoes->only($nomesPermissoes)->values());
+            $permissoesDoPapel = $permissoes->only($nomesPermissoes)->values();
+
+            if ($nomePapel === 'admin') {
+                // O papel admin sempre recebe todo o catálogo conhecido pelo sistema.
+                // syncPermissions também corrige permissões faltantes em bancos já existentes.
+                $papel->syncPermissions($permissoesDoPapel);
+            } else {
+                $papel->givePermissionTo($permissoesDoPapel);
+            }
         }
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
