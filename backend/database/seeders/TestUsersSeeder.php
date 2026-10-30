@@ -7,6 +7,7 @@ use App\Models\Advogado;
 use App\Models\Categoria;
 use App\Models\Funcionario;
 use App\Models\User;
+use App\Services\ProfileColorService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,24 +15,18 @@ class TestUsersSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::updateOrCreate(
-            ['email' => 'teste@email.com'],
-            [
-                'name'     => 'Administrador Teste',
-                'password' => Hash::make('123456'),
-                'cpf'      => '12345678909',
-            ]
-        );
+        $admin = $this->updateOrCreateDemoUser('teste@email.com', [
+            'name'     => 'Administrador Teste',
+            'password' => Hash::make('123456'),
+            'cpf'      => '12345678909',
+        ]);
         $admin->syncRoles([RoleEnum::ADMIN->value]);
 
-        $advogado = User::updateOrCreate(
-            ['email' => 'advogado@example.com'],
-            [
-                'name'     => 'Advogado Teste',
-                'password' => Hash::make('123456'),
-                'cpf'      => '12345678908',
-            ]
-        );
+        $advogado = $this->updateOrCreateDemoUser('advogado@example.com', [
+            'name'     => 'Advogado Teste',
+            'password' => Hash::make('123456'),
+            'cpf'      => '12345678908',
+        ]);
         $advogado->syncRoles([RoleEnum::ADVOGADO->value]);
 
         $perfil = Advogado::updateOrCreate(
@@ -49,14 +44,11 @@ class TestUsersSeeder extends Seeder
             Categoria::whereIn('nome', ['Direito Civil', 'Direito Trabalhista'])->pluck('id')
         );
 
-        $funcionario = User::updateOrCreate(
-            ['email' => 'funcionario@example.com'],
-            [
-                'name'     => 'Funcionário Teste',
-                'password' => Hash::make('123456'),
-                'cpf'      => '12345678907',
-            ]
-        );
+        $funcionario = $this->updateOrCreateDemoUser('funcionario@example.com', [
+            'name'     => 'Funcionário Teste',
+            'password' => Hash::make('123456'),
+            'cpf'      => '12345678907',
+        ]);
         $funcionario->syncRoles([RoleEnum::FUNCIONARIO->value]);
 
         Funcionario::updateOrCreate(
@@ -169,10 +161,8 @@ class TestUsersSeeder extends Seeder
         ];
 
         foreach ($advogadosData as $item) {
-            $user = User::updateOrCreate(
-                ['email' => $item['user']['email']],
-                $item['user']
-            );
+            $email = $item['user']['email'];
+            $user = $this->updateOrCreateDemoUser($email, $item['user']);
             $user->syncRoles([RoleEnum::ADVOGADO->value]);
 
             $perfil = Advogado::updateOrCreate(
@@ -184,5 +174,21 @@ class TestUsersSeeder extends Seeder
                 Categoria::whereIn('nome', $item['categorias'])->pluck('id')
             );
         }
+    }
+
+    /**
+     * O DatabaseSeeder raiz suprime eventos do modelo; portanto, o evento
+     * creating de User não consegue escolher a cor durante a carga das fixtures.
+     */
+    private function updateOrCreateDemoUser(string $email, array $attributes): User
+    {
+        $attributes['email'] = $email;
+
+        if (! User::query()->where('email', $email)->exists()) {
+            $attributes['cor_perfil'] = app(ProfileColorService::class)->nextAvailable()
+                ?? throw new \RuntimeException('Não há cores de perfil disponíveis para os usuários de demonstração.');
+        }
+
+        return User::updateOrCreate(['email' => $email], $attributes);
     }
 }
