@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Notificacao;
+use App\Exceptions\WhatsAppEnvioFalhouException;
 use App\Services\WhatsAppService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +17,8 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 3;
+    /** Uma tentativa inicial e até três novas tentativas temporárias. */
+    public int $tries = 4;
 
     public function __construct(
         public readonly string $notificacaoId,
@@ -28,7 +30,7 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
 
     public function backoff(): array
     {
-        return [10, 30, 90];
+        return [15, 60, 180];
     }
 
     public function handle(WhatsAppService $whatsApp): void
@@ -39,7 +41,16 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
             return;
         }
 
-        $messageId = $whatsApp->enviar($this->telefone, $this->mensagem);
+        try {
+            $messageId = $whatsApp->enviar($this->telefone, $this->mensagem);
+        } catch (WhatsAppEnvioFalhouException $exception) {
+            if (!$exception->retryable) {
+                $this->fail($exception);
+                return;
+            }
+
+            throw $exception;
+        }
         $notificacao->update([
             'whatsapp_enviado_em' => now(),
             'whatsapp_enfileirado_em' => null,

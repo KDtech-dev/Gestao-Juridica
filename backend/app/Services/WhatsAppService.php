@@ -13,7 +13,7 @@ class WhatsAppService
         $token = (string) config('services.baileys.token');
 
         if ($url === '' || $token === '') {
-            throw new WhatsAppEnvioFalhouException('Serviço Baileys não configurado.');
+            throw new WhatsAppEnvioFalhouException('Serviço Baileys não configurado.', false);
         }
 
         $response = Http::acceptJson()
@@ -26,7 +26,14 @@ class WhatsAppService
             ]);
 
         if ($response->failed()) {
-            throw new WhatsAppEnvioFalhouException($response->json('message') ?? $response->body());
+            $status = $response->status();
+            $temporario = $status === 408 || $status === 425 || $status === 429 || $status >= 500;
+
+            throw new WhatsAppEnvioFalhouException(
+                $response->json('message') ?? $response->body(),
+                $temporario,
+                $status,
+            );
         }
 
         return $response->json('message_id');

@@ -93,6 +93,8 @@ O horário padrão do lembrete WhatsApp é definido na tela administrativa `/adm
 
 O estado do WhatsApp é mantido na notificação: fila, envio, confirmação de entrega/leitura e falha. A tela administrativa lista os envios recentes e permite reenfileirar falhas quando há celular cadastrado. A reivindicação atômica evita que execuções concorrentes enfileirem a mesma notificação.
 
+Falhas temporárias de conexão, HTTP 408, 425, 429 e respostas 5xx recebem até três novas tentativas, após 15 segundos, 1 minuto e 3 minutos. Erros permanentes (outras respostas 4xx e serviço sem configuração) encerram o job imediatamente e ficam disponíveis para reenvio manual depois da correção. O limite é quatro tentativas no total, contando a inicial.
+
 Na mesma tela administrativa, o conteúdo dos lembretes pode incluir ou ocultar o primeiro nome do responsável, o tipo, a data e o horário do compromisso. O título do compromisso e o período do lembrete permanecem na mensagem; a descrição não é enviada.
 
 O comando agendado `php artisan djen:sincronizar` cria uma execução por caso aberto e advogado com OAB válida. A tabela `djen_sync_runs` mantém status, início/fim, data inicial consultada, progresso, contagens e erro da última tentativa. Consulte o estado pela API `GET /api/djen-sync-runs/{id}`.
