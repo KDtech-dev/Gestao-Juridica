@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ConfiguracaoSistema;
+use App\Models\Notificacao;
 use Illuminate\Support\Facades\DB;
 
 class ConfiguracaoSistemaService
@@ -33,10 +34,23 @@ class ConfiguracaoSistemaService
 
     public function atualizarLembretesWhatsappAtivos(bool $ativo): bool
     {
-        ConfiguracaoSistema::query()->updateOrCreate(
-            ['chave' => self::LEMBRETES_WHATSAPP_ATIVOS],
-            ['valor' => $ativo ? '1' : '0'],
-        );
+        DB::transaction(function () use ($ativo): void {
+            ConfiguracaoSistema::query()->updateOrCreate(
+                ['chave' => self::LEMBRETES_WHATSAPP_ATIVOS],
+                ['valor' => $ativo ? '1' : '0'],
+            );
+
+            if (!$ativo) {
+                Notificacao::query()
+                    ->where('whatsapp_status', 'queued')
+                    ->whereNull('whatsapp_enviado_em')
+                    ->update([
+                        'whatsapp_status' => 'paused',
+                        'whatsapp_enfileirado_em' => null,
+                        'whatsapp_erro' => null,
+                    ]);
+            }
+        });
 
         return $ativo;
     }

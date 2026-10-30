@@ -166,10 +166,6 @@ class NotificacaoService
         Notificacao $notificacao,
         Compromisso $compromisso
     ): void {
-        if (!app(ConfiguracaoSistemaService::class)->lembretesWhatsappAtivos()) {
-            return;
-        }
-
         $telefone = $this->resolverTelefone($compromisso->criador);
 
         if (!$telefone) {
@@ -257,7 +253,7 @@ class NotificacaoService
                     'titulo' => $notificacao->compromisso?->titulo ?? $notificacao->titulo,
                     'responsavel' => $notificacao->usuario?->name,
                     'pode_reenviar' => $lembretesAtivos
-                        && in_array($status, ['failed', 'paused'], true)
+                        && $status === 'failed'
                         && (bool) $telefone,
                     'status' => $status,
                     'erro_codigo' => $erroCodigo,
@@ -277,7 +273,7 @@ class NotificacaoService
         if (
             !app(ConfiguracaoSistemaService::class)->lembretesWhatsappAtivos()
             || $notificacao->tipo !== 'COMPROMISSO_HOJE'
-            || !in_array($notificacao->whatsapp_status, ['failed', 'paused'], true)
+            || $notificacao->whatsapp_status !== 'failed'
         ) {
             return false;
         }

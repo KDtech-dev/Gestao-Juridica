@@ -40,6 +40,10 @@ class EnviarNotificacaoWhatsAppJob implements ShouldQueue
             return;
         }
 
+        if ($notificacao->whatsapp_status !== 'queued') {
+            return;
+        }
+
         if (!$configuracoes->lembretesWhatsappAtivos()) {
             $notificacao->update([
                 'whatsapp_enfileirado_em' => null,

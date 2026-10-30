@@ -27,7 +27,7 @@ class WhatsAppController extends Controller
         if (!$notificacoes->reenviarWhatsApp($notificacao)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Esta mensagem não pode ser reenviada. Verifique se está com falha e se o destinatário tem celular cadastrado.',
+                'message' => 'Somente mensagens com falha podem ser reenviadas; os lembretes devem estar ativos e o responsável precisa ter celular cadastrado.',
             ], 409);
         }
 
