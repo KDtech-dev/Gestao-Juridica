@@ -89,6 +89,8 @@ php artisan queue:work --queue=djen,whatsapp,default --tries=3 --timeout=1800
 
 O envio de lembretes usa um serviço Node separado com Baileys. Consulte [`whatsapp/README.md`](whatsapp/README.md) para instalar, iniciar e parear a sessão. Os endpoints administrativos da API exibem o estado e o QR da conexão.
 
+O horário do lembrete WhatsApp de compromissos do dia é configurado por `COMPROMISSO_LEMBRETE_HORARIO` (formato `HH:MM`, padrão `07:00`) e usa o fuso `APP_TIMEZONE`. A sincronização ao abrir a tela de notificações não envia WhatsApp; o envio é disparado pelo comando agendado nesse horário. Em desenvolvimento, mantenha `php artisan schedule:work` e o worker da fila em execução; em produção, configure o cron do Laravel Scheduler para rodar a cada minuto. Depois de alterar a variável, limpe o cache de configuração (`php artisan config:clear`) e reinicie o worker da fila.
+
 O comando agendado `php artisan djen:sincronizar` cria uma execução por caso aberto e advogado com OAB válida. A tabela `djen_sync_runs` mantém status, início/fim, data inicial consultada, progresso, contagens e erro da última tentativa. Consulte o estado pela API `GET /api/djen-sync-runs/{id}`.
 
 O limite padrão é de 20 páginas por consulta (`DJEN_MAX_PAGES`). Se a última página vier cheia, a execução fica `failed`, mostra o limite em `last_error` e preserva o checkpoint para que a sincronização não aparente sucesso parcial. Ajuste o limite conforme o volume esperado. `DB_QUEUE_RETRY_AFTER` deve ficar acima do timeout do worker.

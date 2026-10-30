@@ -21,7 +21,7 @@ class NotificarCompromissosDoDia extends Command
                 $query->where('status', 'PENDENTE')
                     ->whereDate('data', '<=', $fimDaSemana->toDateString());
             })
-            ->each(fn (User $usuario) => $service->sincronizarLembretesCompromissos($usuario));
+            ->each(fn (User $usuario) => $service->sincronizarLembretesCompromissos($usuario, enviarWhatsApp: true));
 
         $this->info('Lembretes sincronizados.');
     }

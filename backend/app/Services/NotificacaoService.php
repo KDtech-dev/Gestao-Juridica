@@ -24,7 +24,7 @@ class NotificacaoService
             ->delete();
     }
 
-    public function sincronizarLembretesCompromissos(User $usuario): void
+    public function sincronizarLembretesCompromissos(User $usuario, bool $enviarWhatsApp = false): void
     {
         $hoje = CarbonImmutable::today();
         $fimDaSemana = $hoje->endOfWeek();
@@ -39,7 +39,7 @@ class NotificacaoService
             ->orderBy('data')
             ->orderBy('hora')
             ->get()
-            ->each(function (Compromisso $compromisso) use ($hoje) {
+            ->each(function (Compromisso $compromisso) use ($hoje, $enviarWhatsApp) {
                 $data = CarbonImmutable::parse($compromisso->data);
 
                 if ($data->isSameDay($hoje)) {
@@ -48,7 +48,8 @@ class NotificacaoService
                         tipo: 'COMPROMISSO_HOJE',
                         titulo: 'Compromisso para hoje',
                         mensagem: $this->formatarMensagemCompromisso($compromisso, 'Você tem um compromisso hoje'),
-                        dados: $this->dadosCompromisso($compromisso, 'hoje')
+                        dados: $this->dadosCompromisso($compromisso, 'hoje'),
+                        enviarWhatsApp: $enviarWhatsApp
                     );
 
                     return;
@@ -59,7 +60,8 @@ class NotificacaoService
                     tipo: 'COMPROMISSO_SEMANA',
                     titulo: 'Compromisso nesta semana',
                     mensagem: $this->formatarMensagemCompromisso($compromisso, 'Você tem um compromisso nesta semana'),
-                    dados: $this->dadosCompromisso($compromisso, 'semana')
+                    dados: $this->dadosCompromisso($compromisso, 'semana'),
+                    enviarWhatsApp: $enviarWhatsApp
                 );
             });
     }
@@ -114,7 +116,8 @@ class NotificacaoService
         string $tipo,
         string $titulo,
         string $mensagem,
-        array $dados
+        array $dados,
+        bool $enviarWhatsApp = false
     ): void {
         $notificacao = Notificacao::query()
             ->where('usuario_id', $compromisso->user_id)
@@ -136,6 +139,10 @@ class NotificacaoService
                 'dados' => $dados,
             ]);
 
+            if ($enviarWhatsApp && $tipo === 'COMPROMISSO_HOJE' && !$notificacao->whatsapp_enviado_em) {
+                $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $mensagem);
+            }
+
             return;
         }
 
@@ -148,7 +155,7 @@ class NotificacaoService
             'dados' => $dados,
         ]);
 
-        if ($tipo === 'COMPROMISSO_HOJE') {
+        if ($enviarWhatsApp && $tipo === 'COMPROMISSO_HOJE') {
             $this->enviarWhatsAppSeNecessario($notificacao, $compromisso, $mensagem);
         }
     }
@@ -173,8 +180,8 @@ class NotificacaoService
 
     private function resolverTelefone(User $usuario): ?string
     {
-        return $usuario->funcionario?->telefone
-            ?? $usuario->advogado?->telefone;
+        return $usuario->funcionario?->celular
+            ?? $usuario->advogado?->celular;
     }
 
     private function dadosCompromisso(Compromisso $compromisso, string $janela): array
