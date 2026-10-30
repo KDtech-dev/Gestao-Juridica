@@ -49,7 +49,7 @@ class NotificacaoService
                         compromisso: $compromisso,
                         tipo: 'COMPROMISSO_HOJE',
                         titulo: 'Compromisso para hoje',
-                        mensagem: $this->formatarMensagemCompromisso($compromisso, 'Você tem um compromisso hoje'),
+                        mensagem: $this->formatarMensagemCompromisso($compromisso, 'hoje'),
                         dados: $this->dadosCompromisso($compromisso, 'hoje'),
                         enviarWhatsApp: $enviarWhatsApp
                     );
@@ -61,7 +61,7 @@ class NotificacaoService
                     compromisso: $compromisso,
                     tipo: 'COMPROMISSO_SEMANA',
                     titulo: 'Compromisso nesta semana',
-                    mensagem: $this->formatarMensagemCompromisso($compromisso, 'Você tem um compromisso nesta semana'),
+                    mensagem: $this->formatarMensagemCompromisso($compromisso, 'nesta semana'),
                     dados: $this->dadosCompromisso($compromisso, 'semana'),
                     enviarWhatsApp: $enviarWhatsApp
                 );
@@ -91,7 +91,7 @@ class NotificacaoService
                 compromisso: $compromisso,
                 tipo: 'COMPROMISSO_HOJE',
                 titulo: 'Compromisso para hoje',
-                mensagem: $this->formatarMensagemCompromisso($compromisso, 'Você tem um compromisso hoje'),
+                mensagem: $this->formatarMensagemCompromisso($compromisso, 'hoje'),
                 dados: $this->dadosCompromisso($compromisso, 'hoje')
             );
 
@@ -102,7 +102,7 @@ class NotificacaoService
             compromisso: $compromisso,
             tipo: 'COMPROMISSO_SEMANA',
             titulo: 'Compromisso nesta semana',
-            mensagem: $this->formatarMensagemCompromisso($compromisso, 'Você tem um compromisso nesta semana'),
+            mensagem: $this->formatarMensagemCompromisso($compromisso, 'nesta semana'),
             dados: $this->dadosCompromisso($compromisso, 'semana')
         );
     }
@@ -279,8 +279,8 @@ class NotificacaoService
                     'mensagem' => $this->formatarMensagemCompromisso(
                         $compromisso,
                         $tipoEsperado === 'COMPROMISSO_HOJE'
-                            ? 'Você tem um compromisso hoje'
-                            : 'Você tem um compromisso nesta semana'
+                            ? 'hoje'
+                            : 'nesta semana'
                     ),
                     'dados' => $this->dadosCompromisso($compromisso, $janelaEsperada),
                 ]);
@@ -309,11 +309,21 @@ class NotificacaoService
         return Compromisso::find($compromissoId);
     }
 
-    private function formatarMensagemCompromisso(Compromisso $compromisso, string $prefixo): string
+    private function formatarMensagemCompromisso(Compromisso $compromisso, string $periodo): string
     {
+        $nome = trim((string) $compromisso->criador?->name);
+        $primeiroNome = $nome !== '' ? explode(' ', $nome)[0] : null;
         $data = CarbonImmutable::parse($compromisso->data)->format('d/m/Y');
-        $hora = $compromisso->hora ? " às {$compromisso->hora}" : '';
+        $hora = $compromisso->hora ? ' às ' . substr((string) $compromisso->hora, 0, 5) : '';
+        $tipo = match ($compromisso->tipo) {
+            'LEMBRETE' => 'um lembrete',
+            'AUDIENCIA' => 'uma audiência',
+            'PRAZO' => 'um prazo',
+            'REUNIAO' => 'uma reunião',
+            default => 'um compromisso',
+        };
+        $saudacao = $primeiroNome ? "Olá, {$primeiroNome}! " : '';
 
-        return "{$prefixo}: {$compromisso->titulo} em {$data}{$hora}.";
+        return "{$saudacao}Lembrete: você tem {$tipo} {$periodo} ({$data}){$hora}: {$compromisso->titulo}.";
     }
 }
