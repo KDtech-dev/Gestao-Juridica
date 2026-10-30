@@ -16,7 +16,10 @@ class WhatsAppController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => ['horario_lembrete' => $configuracoes->horarioLembreteWhatsapp()],
+            'data' => [
+                'horario_lembrete' => $configuracoes->horarioLembreteWhatsapp(),
+                'mensagem' => $configuracoes->opcoesMensagemWhatsapp(),
+            ],
         ]);
     }
 
@@ -24,15 +27,23 @@ class WhatsAppController extends Controller
     {
         $validated = $request->validate([
             'horario_lembrete' => ['required', 'date_format:H:i'],
+            'mensagem' => ['required', 'array'],
+            'mensagem.incluir_nome' => ['required', 'boolean'],
+            'mensagem.incluir_tipo' => ['required', 'boolean'],
+            'mensagem.incluir_data' => ['required', 'boolean'],
+            'mensagem.incluir_hora' => ['required', 'boolean'],
         ]);
+
+        $opcoesMensagem = $configuracoes->atualizarOpcoesMensagemWhatsapp($validated['mensagem']);
 
         return response()->json([
             'success' => true,
-            'message' => 'Horário padrão do lembrete atualizado.',
+            'message' => 'Configurações do WhatsApp atualizadas.',
             'data' => [
                 'horario_lembrete' => $configuracoes->atualizarHorarioLembreteWhatsapp(
                     $validated['horario_lembrete']
                 ),
+                'mensagem' => $opcoesMensagem,
             ],
         ]);
     }

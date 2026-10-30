@@ -196,8 +196,8 @@ Status: `rascunho`, `publicado`, `arquivado`. Limites e formatos de arquivos est
 
 | Método | Caminho | Descrição |
 | --- | --- | --- |
-| `GET` | `/api/admin/whatsapp/settings` | Consulta o horário padrão atual do lembrete, no formato `HH:MM`. |
-| `PUT` | `/api/admin/whatsapp/settings` | Atualiza o horário padrão; corpo `horario_lembrete` no formato `HH:MM`. |
+| `GET` | `/api/admin/whatsapp/settings` | Consulta o horário padrão `HH:MM` e as opções de conteúdo da mensagem. |
+| `PUT` | `/api/admin/whatsapp/settings` | Atualiza o horário padrão e os booleanos `mensagem.incluir_nome`, `incluir_tipo`, `incluir_data` e `incluir_hora`. |
 | `GET` | `/api/admin/whatsapp/status` | Estado da conexão Baileys e telefone pareado. |
 | `GET` | `/api/admin/whatsapp/qr` | QR temporário para parear a sessão; disponível enquanto o serviço aguarda leitura. |
 | `POST` | `/api/admin/whatsapp/test-message` | Envia uma mensagem de teste; corpo `phone` com DDI e DDD e `message` com o texto. |

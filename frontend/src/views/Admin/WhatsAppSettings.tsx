@@ -7,9 +7,11 @@ import {
   Button,
   CircularProgress,
   Container,
+  FormControlLabel,
   InputAdornment,
   Paper,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -24,6 +26,13 @@ type ConnectionState = {
   phone?: string | null;
   last_error?: string | null;
   qr_image?: string | null;
+};
+
+type ReminderMessageOptions = {
+  incluir_nome: boolean;
+  incluir_tipo: boolean;
+  incluir_data: boolean;
+  incluir_hora: boolean;
 };
 
 function getData<T>(response: { data?: { data?: T } & T }): T {
@@ -53,14 +62,24 @@ export default function WhatsAppSettingsView() {
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState(t("defaultTestMessage"));
   const [reminderTime, setReminderTime] = useState("07:00");
+  const [messageOptions, setMessageOptions] = useState<ReminderMessageOptions>({
+    incluir_nome: true,
+    incluir_tipo: true,
+    incluir_data: true,
+    incluir_hora: true,
+  });
   const [loadingReminderTime, setLoadingReminderTime] = useState(true);
   const [savingReminderTime, setSavingReminderTime] = useState(false);
 
   const loadReminderTime = useCallback(async () => {
     try {
       const response = await getAxios().get("/admin/whatsapp/settings");
-      const settings = getData<{ horario_lembrete: string }>(response);
+      const settings = getData<{
+        horario_lembrete: string;
+        mensagem: ReminderMessageOptions;
+      }>(response);
       setReminderTime(settings.horario_lembrete);
+      setMessageOptions(settings.mensagem);
     } catch (settingsError) {
       toast.error(formatToastErrorMessage(settingsError, t("scheduleLoadError")));
     } finally {
@@ -68,19 +87,30 @@ export default function WhatsAppSettingsView() {
     }
   }, [t]);
 
-  const saveReminderTime = async () => {
+  const saveSettings = async () => {
     setSavingReminderTime(true);
     try {
       await getAxios().put("/admin/whatsapp/settings", {
         horario_lembrete: reminderTime,
+        mensagem: messageOptions,
       });
-      toast.success(t("scheduleSaved"));
+      toast.success(t("settingsSaved"));
     } catch (settingsError) {
       toast.error(formatToastErrorMessage(settingsError, t("scheduleSaveError")));
     } finally {
       setSavingReminderTime(false);
     }
   };
+
+  const previewMessage = [
+    messageOptions.incluir_nome ? "Olá, Ana! " : "",
+    "Lembrete: você tem ",
+    messageOptions.incluir_tipo ? "uma audiência" : "um compromisso",
+    " hoje",
+    messageOptions.incluir_data ? ", 30/10/2026" : "",
+    messageOptions.incluir_hora ? ", às 14:30" : "",
+    ". Compromisso: Audiência inicial.",
+  ].join("");
 
   const sendTestMessage = async () => {
     setSendingTest(true);
@@ -160,12 +190,85 @@ export default function WhatsAppSettingsView() {
                   />
                   <Button
                     variant="contained"
-                    onClick={() => void saveReminderTime()}
+                    onClick={() => void saveSettings()}
                     disabled={loadingReminderTime || savingReminderTime || !reminderTime}
                   >
-                    {savingReminderTime ? t("scheduleSaving") : t("scheduleSave")}
+                    {savingReminderTime ? t("settingsSaving") : t("saveSettings")}
                   </Button>
                 </Stack>
+              </Stack>
+            </Paper>
+            <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
+              <Stack spacing={2}>
+                <Box>
+                  <Typography variant="h6" fontWeight={700} color="text.primary">
+                    {t("messageOptionsTitle")}
+                  </Typography>
+                  <Typography color="text.secondary" mt={0.5}>
+                    {t("messageOptionsHelp")}
+                  </Typography>
+                </Box>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  flexWrap="wrap"
+                  columnGap={3}
+                  rowGap={0.5}
+                >
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={messageOptions.incluir_nome}
+                        onChange={(event) => setMessageOptions((current) => ({ ...current, incluir_nome: event.target.checked }))}
+                        disabled={loadingReminderTime || savingReminderTime}
+                      />
+                    }
+                    label={t("includeName")}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={messageOptions.incluir_tipo}
+                        onChange={(event) => setMessageOptions((current) => ({ ...current, incluir_tipo: event.target.checked }))}
+                        disabled={loadingReminderTime || savingReminderTime}
+                      />
+                    }
+                    label={t("includeType")}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={messageOptions.incluir_data}
+                        onChange={(event) => setMessageOptions((current) => ({ ...current, incluir_data: event.target.checked }))}
+                        disabled={loadingReminderTime || savingReminderTime}
+                      />
+                    }
+                    label={t("includeDate")}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={messageOptions.incluir_hora}
+                        onChange={(event) => setMessageOptions((current) => ({ ...current, incluir_hora: event.target.checked }))}
+                        disabled={loadingReminderTime || savingReminderTime}
+                      />
+                    }
+                    label={t("includeAppointmentTime")}
+                  />
+                </Stack>
+                <Box sx={{ p: 2, borderRadius: 2, bgcolor: "action.hover", maxWidth: 760 }}>
+                  <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>
+                    {t("messagePreview")}
+                  </Typography>
+                  <Typography>{previewMessage}</Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  onClick={() => void saveSettings()}
+                  disabled={loadingReminderTime || savingReminderTime || !reminderTime}
+                  sx={{ alignSelf: "flex-start" }}
+                >
+                  {savingReminderTime ? t("settingsSaving") : t("saveSettings")}
+                </Button>
               </Stack>
             </Paper>
             <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
@@ -182,6 +285,7 @@ export default function WhatsAppSettingsView() {
                       label={t("phone")}
                       value={formatBrazilianPhone(connection.phone).replace(/^\+55\s*/, "")}
                       size="small"
+                      disabled
                       InputProps={{
                         readOnly: true,
                         startAdornment: <InputAdornment position="start">+55</InputAdornment>,

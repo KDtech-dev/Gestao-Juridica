@@ -311,10 +311,15 @@ class NotificacaoService
 
     private function formatarMensagemCompromisso(Compromisso $compromisso, string $periodo): string
     {
+        $opcoesMensagem = app(ConfiguracaoSistemaService::class)->opcoesMensagemWhatsapp();
         $nome = trim((string) $compromisso->criador?->name);
-        $primeiroNome = $nome !== '' ? explode(' ', $nome)[0] : null;
+        $primeiroNome = $opcoesMensagem['incluir_nome'] && $nome !== ''
+            ? explode(' ', $nome)[0]
+            : null;
         $data = CarbonImmutable::parse($compromisso->data)->format('d/m/Y');
-        $hora = $compromisso->hora ? ' às ' . substr((string) $compromisso->hora, 0, 5) : '';
+        $hora = $opcoesMensagem['incluir_hora'] && $compromisso->hora
+            ? ', às ' . substr((string) $compromisso->hora, 0, 5)
+            : '';
         $tipo = match ($compromisso->tipo) {
             'LEMBRETE' => 'um lembrete',
             'AUDIENCIA' => 'uma audiência',
@@ -322,8 +327,12 @@ class NotificacaoService
             'REUNIAO' => 'uma reunião',
             default => 'um compromisso',
         };
+        if (!$opcoesMensagem['incluir_tipo']) {
+            $tipo = 'um compromisso';
+        }
+        $dataTexto = $opcoesMensagem['incluir_data'] ? ", {$data}" : '';
         $saudacao = $primeiroNome ? "Olá, {$primeiroNome}! " : '';
 
-        return "{$saudacao}Lembrete: você tem {$tipo} {$periodo} ({$data}){$hora}: {$compromisso->titulo}.";
+        return "{$saudacao}Lembrete: você tem {$tipo} {$periodo}{$dataTexto}{$hora}. Compromisso: {$compromisso->titulo}.";
     }
 }

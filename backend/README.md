@@ -93,6 +93,8 @@ O horário padrão do lembrete WhatsApp é definido na tela administrativa `/adm
 
 O estado do WhatsApp é mantido na notificação: horário de enfileiramento, horário de envio confirmado pelo serviço e erro da última falha. A reivindicação atômica do envio evita que execuções concorrentes enfileirem a mesma notificação; mensagens já enviadas não são repetidas.
 
+Na mesma tela administrativa, o conteúdo dos lembretes pode incluir ou ocultar o primeiro nome do responsável, o tipo, a data e o horário do compromisso. O título do compromisso e o período do lembrete permanecem na mensagem; a descrição não é enviada.
+
 O comando agendado `php artisan djen:sincronizar` cria uma execução por caso aberto e advogado com OAB válida. A tabela `djen_sync_runs` mantém status, início/fim, data inicial consultada, progresso, contagens e erro da última tentativa. Consulte o estado pela API `GET /api/djen-sync-runs/{id}`.
 
 O limite padrão é de 20 páginas por consulta (`DJEN_MAX_PAGES`). Se a última página vier cheia, a execução fica `failed`, mostra o limite em `last_error` e preserva o checkpoint para que a sincronização não aparente sucesso parcial. Ajuste o limite conforme o volume esperado. `DB_QUEUE_RETRY_AFTER` deve ficar acima do timeout do worker.

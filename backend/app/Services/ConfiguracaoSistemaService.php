@@ -3,10 +3,17 @@
 namespace App\Services;
 
 use App\Models\ConfiguracaoSistema;
+use Illuminate\Support\Facades\DB;
 
 class ConfiguracaoSistemaService
 {
     private const HORARIO_LEMBRETE_WHATSAPP = 'compromisso_horario_lembrete_whatsapp';
+    private const OPCOES_MENSAGEM_WHATSAPP = [
+        'incluir_nome' => 'whatsapp_mensagem_incluir_nome',
+        'incluir_tipo' => 'whatsapp_mensagem_incluir_tipo',
+        'incluir_data' => 'whatsapp_mensagem_incluir_data',
+        'incluir_hora' => 'whatsapp_mensagem_incluir_hora',
+    ];
 
     public function horarioLembreteWhatsapp(): string
     {
@@ -24,5 +31,37 @@ class ConfiguracaoSistemaService
         );
 
         return $horario;
+    }
+
+    public function opcoesMensagemWhatsapp(): array
+    {
+        $valores = ConfiguracaoSistema::query()
+            ->whereIn('chave', array_values(self::OPCOES_MENSAGEM_WHATSAPP))
+            ->pluck('valor', 'chave');
+
+        $padroes = config('compromissos.mensagem_whatsapp', []);
+
+        $opcoes = [];
+        foreach (self::OPCOES_MENSAGEM_WHATSAPP as $opcao => $chave) {
+            $opcoes[$opcao] = $valores->has($chave)
+                ? $valores->get($chave) === '1'
+                : (bool) ($padroes[$opcao] ?? true);
+        }
+
+        return $opcoes;
+    }
+
+    public function atualizarOpcoesMensagemWhatsapp(array $opcoes): array
+    {
+        DB::transaction(function () use ($opcoes): void {
+            foreach (self::OPCOES_MENSAGEM_WHATSAPP as $opcao => $chave) {
+                ConfiguracaoSistema::query()->updateOrCreate(
+                    ['chave' => $chave],
+                    ['valor' => $opcoes[$opcao] ? '1' : '0'],
+                );
+            }
+        });
+
+        return $this->opcoesMensagemWhatsapp();
     }
 }
