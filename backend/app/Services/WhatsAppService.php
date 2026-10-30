@@ -9,23 +9,33 @@ class WhatsAppService
 {
     public function enviar(string $telefone, string $mensagem): void
     {
-        $response = Http::withHeaders([
-            'apikey' => config('services.evolution.api_key'),
-        ])->post(
-            config('services.evolution.url') . '/message/sendText/' . config('services.evolution.instance'),
-            [
-                'number' => $this->formatarNumero($telefone),
-                'text' => $mensagem,
-            ]
-        );
+        $url = rtrim((string) config('services.baileys.url'), '/');
+        $token = (string) config('services.baileys.token');
+
+        if ($url === '' || $token === '') {
+            throw new WhatsAppEnvioFalhouException('Serviço Baileys não configurado.');
+        }
+
+        $response = Http::acceptJson()
+            ->withToken($token)
+            ->connectTimeout(5)
+            ->timeout(20)
+            ->post($url . '/messages', [
+                'phone' => $this->formatarNumero($telefone),
+                'message' => $mensagem,
+            ]);
 
         if ($response->failed()) {
-            throw new WhatsAppEnvioFalhouException($response->body());
+            throw new WhatsAppEnvioFalhouException($response->json('message') ?? $response->body());
         }
     }
 
     private function formatarNumero(string $telefone): string
     {
-        return '55' . preg_replace('/\D/', '', $telefone);
+        $numero = preg_replace('/\D/', '', $telefone);
+
+        $informouCodigoPais = str_starts_with(trim($telefone), '+') || str_starts_with($numero, '55');
+
+        return $informouCodigoPais || strlen($numero) > 11 ? $numero : '55' . $numero;
     }
 }

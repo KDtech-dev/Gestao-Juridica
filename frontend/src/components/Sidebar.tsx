@@ -259,6 +259,15 @@ export function SidebarDashboard({ activeKey }: Props) {
     });
   }
 
+  const whatsappItem: NavItem | null = isAdmin
+    ? {
+        key: "admin-whatsapp",
+        label: t("sidebar.items.adminWhatsApp"),
+        icon: "mdi:whatsapp",
+        href: "/admin/whatsapp",
+      }
+    : null;
+
   const sidebarContent = (
     <Box
       sx={{
@@ -359,6 +368,16 @@ export function SidebarDashboard({ activeKey }: Props) {
           ))}
         </Stack>
       </Box>
+
+      {whatsappItem && (
+        <Box sx={{ px: 2, pb: 2.5, pt: 1.5, borderTop: "1px solid", borderColor: sidebarInnerBorder }}>
+          <SidebarItem
+            item={whatsappItem}
+            active={activeKey === whatsappItem.key}
+            onNavigate={() => setMobileOpen(false)}
+          />
+        </Box>
+      )}
     </Box>
   );
 

@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Exceptions\WhatsAppEnvioFalhouException;
+use App\Jobs\EnviarNotificacaoWhatsAppJob;
 use App\Models\Compromisso;
 use App\Models\Notificacao;
 use App\Models\User;
 use Carbon\CarbonImmutable;
-use Illuminate\Support\Facades\Log;
 
 class NotificacaoService
 {
@@ -15,8 +14,6 @@ class NotificacaoService
         'COMPROMISSO_HOJE',
         'COMPROMISSO_SEMANA',
     ];
-
-    public function __construct(protected WhatsAppService $whatsApp) {}
 
     public function registrarCompromissoCriado(Compromisso $compromisso): void
     {
@@ -167,24 +164,11 @@ class NotificacaoService
             return;
         }
 
-        dispatch(function () use ($notificacao, $telefone, $mensagem) {
-            app(NotificacaoService::class)->enviarWhatsAppJob($notificacao, $telefone, $mensagem);
-        })->onQueue('whatsapp');
-    }
-
-    public function enviarWhatsAppJob(Notificacao $notificacao, string $telefone, string $mensagem): void
-    {
-        try {
-            $this->whatsApp->enviar($telefone, $mensagem);
-
-            $notificacao->update(['whatsapp_enviado_em' => now()]);
-        } catch (WhatsAppEnvioFalhouException $e) {
-            Log::warning('Falha ao enviar lembrete de compromisso via WhatsApp', [
-                'notificacao_id' => $notificacao->id,
-                'compromisso_id' => $compromisso->id ?? null,
-                'erro' => $e->getMessage(),
-            ]);
+        if (!config('services.baileys.token')) {
+            return;
         }
+
+        EnviarNotificacaoWhatsAppJob::dispatch($notificacao->id, $telefone, $mensagem);
     }
 
     private function resolverTelefone(User $usuario): ?string

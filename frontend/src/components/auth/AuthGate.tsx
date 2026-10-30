@@ -16,7 +16,7 @@ type RoutePermission = {
 };
 
 function permissionForPath(pathname: string): RoutePermission | null {
-  if (pathname === "/admin/logs") {
+  if (pathname === "/admin/logs" || pathname === "/admin/whatsapp") {
     return { adminOnly: true };
   }
 

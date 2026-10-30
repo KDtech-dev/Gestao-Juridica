@@ -81,11 +81,13 @@ Os testes de DJEN simulam as respostas HTTP e verificam paginação, retry de er
 
 ### Worker DJEN
 
-Com `QUEUE_CONNECTION=database`, mantenha um worker em execução para processar sincronizações e tentativas:
+Com `QUEUE_CONNECTION=database`, mantenha um worker em execução para processar sincronizações, envios WhatsApp e tentativas:
 
 ```bash
-php artisan queue:work --queue=djen,default --tries=3 --timeout=1800
+php artisan queue:work --queue=djen,whatsapp,default --tries=3 --timeout=1800
 ```
+
+O envio de lembretes usa um serviço Node separado com Baileys. Consulte [`whatsapp/README.md`](whatsapp/README.md) para instalar, iniciar e parear a sessão. Os endpoints administrativos da API exibem o estado e o QR da conexão.
 
 O comando agendado `php artisan djen:sincronizar` cria uma execução por caso aberto e advogado com OAB válida. A tabela `djen_sync_runs` mantém status, início/fim, data inicial consultada, progresso, contagens e erro da última tentativa. Consulte o estado pela API `GET /api/djen-sync-runs/{id}`.
 

@@ -41,10 +41,9 @@ return [
         // Optional api key if your provider requires it.
         'key' => env('TRANSLATION_API_KEY', ''),
     ],
-    'evolution' => [
-        'url' => env('EVOLUTION_API_URL'),
-        'api_key' => env('EVOLUTION_API_KEY'),
-        'instance' => env('EVOLUTION_INSTANCE_NAME'),
+    'baileys' => [
+        'url' => env('BAILEYS_SERVICE_URL', 'http://127.0.0.1:3100'),
+        'token' => env('BAILEYS_SERVICE_TOKEN'),
     ],
     'djen' => [
         'base_url' => env('DJEN_BASE_URL', 'https://comunicaapi.pje.jus.br/api/v1'),

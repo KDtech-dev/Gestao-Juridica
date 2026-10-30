@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\AnexoController;
 use App\Http\Controllers\Api\ComunicacaoDjenController;
 use App\Http\Controllers\Api\AccessControlController;
 use App\Http\Controllers\Api\ActivityLogController;
+use App\Http\Controllers\Api\WhatsAppController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Enums\PermissionEnum;
 
@@ -48,6 +49,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/activity-logs', [ActivityLogController::class, 'index'])
         ->middleware('role:admin');
+
+    Route::prefix('admin/whatsapp')->middleware('role:admin')->group(function () {
+        Route::get('/status', [WhatsAppController::class, 'status']);
+        Route::get('/qr', [WhatsAppController::class, 'qr']);
+        Route::post('/test-message', [WhatsAppController::class, 'enviarTeste']);
+    });
 
     Route::prefix('access-control')
         ->middleware('permission.manage')

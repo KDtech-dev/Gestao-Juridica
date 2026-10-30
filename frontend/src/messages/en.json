@@ -67,6 +67,29 @@
     "welcome": "Welcome to the system"
   },
   "internal": {
+    "whatsapp": {
+      "title": "WhatsApp",
+      "subtitle": "Connect the firm's account to send reminders from the system.",
+      "serviceUnavailable": "Could not reach the WhatsApp service. Check that it is running and configured.",
+      "loading": "Checking connection...",
+      "connected": "WhatsApp connected.",
+      "phone": "Connected number",
+      "sendTest": "Send test message",
+      "sendingTest": "Sending...",
+      "testSent": "Test message sent to the entered number.",
+      "testFailed": "Could not send the test message.",
+      "testPhone": "Number to receive the test",
+      "testPhonePlaceholder": "5511999999999",
+      "testPhoneHelp": "Brazil's country code (+55) is fixed. Enter the area code and number.",
+      "testMessage": "Test message",
+      "defaultTestMessage": "System notification test: WhatsApp integration is working.",
+      "testMessageHelp": "Enter the text to send to the number above.",
+      "refresh": "Refresh status",
+      "scanQr": "Scan this QR code in WhatsApp > Linked devices.",
+      "qrAlt": "QR code to connect WhatsApp",
+      "refreshingQr": "The QR code refreshes automatically while waiting for pairing.",
+      "waitingQr": "Waiting for the service to generate a QR code."
+    },
     "activityLogs": {
       "title": "System activity",
       "subtitle": "Review recorded changes and sign-in activity.",
@@ -827,6 +850,7 @@
       "notificacoes": "Notifications",
       "adminUsers": "Users",
       "adminLogs": "Activity",
+      "adminWhatsApp": "WhatsApp",
       "profile": "My Profile",
       "logout": "Logout",
       "perfil": "My Profile",

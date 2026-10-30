@@ -86,6 +86,29 @@
     "welcome": "Bem-vindo ao sistema"
   },
   "internal": {
+    "whatsapp": {
+      "title": "WhatsApp",
+      "subtitle": "Conecte a conta do escritório para enviar lembretes pelo sistema.",
+      "serviceUnavailable": "Não foi possível acessar o serviço de WhatsApp. Verifique se ele está em execução e configurado.",
+      "loading": "Consultando conexão...",
+      "connected": "WhatsApp conectado.",
+      "phone": "Número conectado",
+      "sendTest": "Enviar mensagem de teste",
+      "sendingTest": "Enviando...",
+      "testSent": "Mensagem de teste enviada para o número informado.",
+      "testFailed": "Não foi possível enviar a mensagem de teste.",
+      "testPhone": "Número que receberá o teste",
+      "testPhonePlaceholder": "5511999999999",
+      "testPhoneHelp": "O código do Brasil (+55) está fixo. Digite o DDD e o número.",
+      "testMessage": "Mensagem de teste",
+      "defaultTestMessage": "Teste de notificação: a integração do WhatsApp com o sistema está funcionando.",
+      "testMessageHelp": "Digite o texto que será enviado para o número informado.",
+      "refresh": "Atualizar status",
+      "scanQr": "Escaneie este QR Code em WhatsApp > Aparelhos conectados.",
+      "qrAlt": "QR Code para conectar o WhatsApp",
+      "refreshingQr": "O QR Code é atualizado automaticamente enquanto aguarda o pareamento.",
+      "waitingQr": "Aguardando o serviço gerar um QR Code."
+    },
     "activityLogs": {
       "title": "Movimentações do sistema",
       "subtitle": "Acompanhe alterações e acessos registrados no sistema.",
@@ -850,6 +873,7 @@
       "notificacoes": "Notificações",
       "adminUsers": "Usuários",
       "adminLogs": "Movimentações",
+      "adminWhatsApp": "WhatsApp",
       "profile": "Meu Perfil",
       "logout": "Sair",
       "perfil": "Meu Perfil",

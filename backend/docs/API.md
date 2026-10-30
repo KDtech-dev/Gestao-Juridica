@@ -192,6 +192,16 @@ Status: `rascunho`, `publicado`, `arquivado`. Limites e formatos de arquivos est
 | `PATCH` | `/api/notificacoes/lidas` | Marca todas as notificações próprias como lidas. |
 | `DELETE` | `/api/notificacoes` | Apaga notificações próprias; corpo opcional `ids: string[]`. Sem `ids`, apaga todas as próprias. |
 
+### Integração WhatsApp (somente `admin`)
+
+| Método | Caminho | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/admin/whatsapp/status` | Estado da conexão Baileys e telefone pareado. |
+| `GET` | `/api/admin/whatsapp/qr` | QR temporário para parear a sessão; disponível enquanto o serviço aguarda leitura. |
+| `POST` | `/api/admin/whatsapp/test-message` | Envia uma mensagem de teste; corpo `phone` com DDI e DDD e `message` com o texto. |
+
+Os lembretes de compromisso do dia são enviados ao responsável por meio da fila `whatsapp`. Configure `BAILEYS_SERVICE_URL` e `BAILEYS_SERVICE_TOKEN` no Laravel e no processo Node em `backend/whatsapp`. Instruções para iniciar o serviço e parear a sessão estão em [`whatsapp/README.md`](../whatsapp/README.md).
+
 ### DJEN
 
 | Método | Caminho | Permissão/descrição |
