@@ -163,7 +163,7 @@ Status de caso: `aberto`, `em_andamento`, `encerrado`, `arquivado`. Papéis de c
 | `GET` | `/api/compromissos/{compromisso}/anexo/visualizar` | `compromissos.visualizar`; transmite o arquivo privado. |
 | `GET` | `/api/compromissos/{compromisso}/anexo/download` | `compromissos.visualizar`; baixa o arquivo privado. |
 
-Tipos: `COMPROMISSO`, `LEMBRETE`, `AUDIENCIA`, `PRAZO`, `REUNIAO`. Status: `PENDENTE`, `CONCLUIDO`, `CANCELADO`. A passagem da data ou do horário não altera o status automaticamente: o compromisso permanece pendente até um usuário autorizado marcá-lo como concluído ou cancelado. `starts_at` é aceito em ISO 8601 e preenche `data` e `hora`.
+Tipos: `COMPROMISSO`, `LEMBRETE`, `AUDIENCIA`, `PRAZO`, `REUNIAO`. Status: `PENDENTE`, `CONCLUIDO`, `CANCELADO`. A passagem da data ou do horário não altera o status automaticamente: o compromisso permanece pendente até um usuário com a permissão `compromissos.editar` marcá-lo como concluído ou cancelado. Os lembretes WhatsApp são enviados somente ao usuário definido como responsável no compromisso. `starts_at` é aceito em ISO 8601 e preenche `data` e `hora`.
 
 ### Publicações internas
 
