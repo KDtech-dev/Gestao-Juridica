@@ -31,7 +31,7 @@ class AdvogadosReaisSeeder extends Seeder
             512,
             JSON_THROW_ON_ERROR
         );
-
+ 
         $advogados = [
             'manfrine' => [
                 'name' => 'Manfrine Chaves de Almeida',
