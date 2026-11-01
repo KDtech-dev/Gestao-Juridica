@@ -13,6 +13,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Icon } from "@/components/AppIcon";
 import type { PublicacaoType } from "@/@core/types";
 import { estimateReadTime, formatDate, stripHtml } from "@/@core/format";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type CardPublicacaoInternaProps = {
   publicacao: PublicacaoType;
@@ -135,7 +136,7 @@ export function CardPublicacaoInterna({
         fontSize="0.9rem"
         mb={1.2}
         sx={{ position: "relative", zIndex: 2 }}
-        dangerouslySetInnerHTML={{ __html: getResumo(publicacao) }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(getResumo(publicacao)) }}
       />
 
       <Stack
