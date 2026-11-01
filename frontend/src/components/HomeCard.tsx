@@ -7,7 +7,7 @@ import { homeWhatsappHref } from "@/configs/publicContact";
 export function HomeCard() {
   const t = useTranslations("public.home.hero");
   const whatsappHref = homeWhatsappHref(
-    "Olá, gostaria de falar sobre o Central.",
+    "Olá, gostaria de falar sobre o sistema Central Jurídico.",
   );
 
   return (
