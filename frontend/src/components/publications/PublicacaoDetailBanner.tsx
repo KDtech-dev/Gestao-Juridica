@@ -6,6 +6,7 @@ import { Icon } from "@/components/AppIcon";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
 import { storageUrl } from "@/@core/format";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type PublicacaoDetailBannerProps = {
   publicacao: PublicacaoType;
@@ -67,7 +68,7 @@ export function PublicacaoDetailBanner({
             {publicacao.titulo}
           </Typography>
           <Typography variant="h6" component="div" sx={{ opacity: 0.84, lineHeight: 1.65, "& p": { margin: 0 } }}
-            dangerouslySetInnerHTML={{ __html: publicacao.resumo ?? "" }}>
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(publicacao.resumo) }}>
           </Typography>
 
           <Stack
