@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use App\Models\Role;
 use Tests\TestCase;
 
 class ProfileControllerTest extends TestCase
@@ -52,6 +54,7 @@ class ProfileControllerTest extends TestCase
         $user = User::factory()->create([
             'password' => Hash::make('senha-antiga'),
         ]);
+        $user->createToken('dispositivo-antigo');
 
         $response = $this
             ->actingAs($user, 'sanctum')
@@ -68,5 +71,46 @@ class ProfileControllerTest extends TestCase
         $this->assertTrue(
             Hash::check('senha-nova', $user->fresh()->password)
         );
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
+    public function test_password_reset_revokes_existing_tokens(): void
+    {
+        $user = User::factory()->create();
+        $user->createToken('dispositivo-antigo');
+        $token = Password::createToken($user);
+
+        $this->postJson('/api/auth/reset-password', [
+            'email' => $user->email,
+            'token' => $token,
+            'password' => 'senha-nova123',
+            'password_confirmation' => 'senha-nova123',
+        ])->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertTrue(Hash::check('senha-nova123', $user->fresh()->password));
+        $this->assertDatabaseCount('personal_access_tokens', 0);
+    }
+
+    public function test_admin_password_reset_revokes_existing_tokens(): void
+    {
+        $admin = User::factory()->create([
+            'password' => Hash::make('senha-admin'),
+        ]);
+        $admin->syncRoles([Role::findOrCreate('admin', 'api')]);
+
+        $target = User::factory()->create();
+        $target->createToken('dispositivo-antigo');
+
+        $this->actingAs($admin, 'sanctum')
+            ->putJson("/api/users/{$target->id}/reset-password", [
+                'admin_password' => 'senha-admin',
+                'new_password' => 'senha-nova123',
+                'new_password_confirmation' => 'senha-nova123',
+            ])
+            ->assertOk();
+
+        $this->assertTrue(Hash::check('senha-nova123', $target->fresh()->password));
+        $this->assertDatabaseCount('personal_access_tokens', 0);
     }
 }
