@@ -2,6 +2,7 @@
 
 import { Box, Card, Chip, Divider, Stack, Typography } from "@mui/material";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type Props = {
   publicacao: PublicacaoItem;
@@ -92,7 +93,7 @@ export function PublicacaoConteudo({ publicacao }: Props) {
             "& p": { mb: 1.2 },
           }}
           dangerouslySetInnerHTML={{
-            __html: publicacao.conteudoHtml,
+            __html: sanitizeHtml(publicacao.conteudoHtml),
           }}
         />
       </Box>
