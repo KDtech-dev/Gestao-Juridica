@@ -347,5 +347,6 @@ class UserService
         $alvo->update([
             'password' => Hash::make($novaSenha),
         ]);
+        $alvo->tokens()->delete();
     }
 }
