@@ -844,7 +844,13 @@
         "labor": "Labor Law",
         "civil": "Civil Law",
         "banking": "Banking Law",
-        "legislativeConsulting": "Legislative Consulting"
+        "legislativeConsulting": "Legislative Consulting",
+        "tax": "Tax Law",
+        "business": "Business Law",
+        "digital": "Digital Law",
+        "realEstate": "Real Estate Law",
+        "family": "Family Law",
+        "contracts": "Contracts"
       },
       "customization": {
         "title": "Customization",

@@ -875,7 +875,13 @@
         "labor": "Direito Trabalhista",
         "civil": "Direito Civil",
         "banking": "Direito Bancário",
-        "legislativeConsulting": "Consultoria Legislativa"
+        "legislativeConsulting": "Consultoria Legislativa",
+        "tax": "Direito Tributário",
+        "business": "Direito Empresarial",
+        "digital": "Direito Digital",
+        "realEstate": "Direito Imobiliário",
+        "family": "Direito de Família",
+        "contracts": "Contratos"
       },
       "customization": {
         "title": "Personalização",
