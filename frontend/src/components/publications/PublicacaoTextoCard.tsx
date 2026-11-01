@@ -5,6 +5,7 @@ import { Icon } from "@/components/AppIcon";
 import { useLocale, useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
 import { formatDateByLocale } from "@/@core/format";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type PublicacaoTextoCardProps = {
   publicacao: PublicacaoType;
@@ -23,10 +24,8 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
         minHeight: { xs: "auto", md: "30em" },
       }}
     >
-      <Typography variant="h5"
-        component="div"
-        fontWeight={800} align="center" mb={2}
-        dangerouslySetInnerHTML={{ __html: publicacao.titulo ?? "" }}>
+      <Typography variant="h5" fontWeight={800} align="center" mb={2}>
+        {publicacao.titulo}
       </Typography>
 
       <Stack
@@ -67,7 +66,7 @@ export function PublicacaoTextoCard({ publicacao }: PublicacaoTextoCardProps) {
           "& p": { mb: 2 },
         }}
         dangerouslySetInnerHTML={{
-          __html: publicacao.conteudo ?? "",
+          __html: sanitizeHtml(publicacao.conteudo),
         }}
       />
     </Paper>
