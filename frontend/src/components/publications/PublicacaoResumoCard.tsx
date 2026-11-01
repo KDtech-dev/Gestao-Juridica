@@ -4,6 +4,7 @@ import { Paper, Typography } from "@mui/material";
 import type { PublicacaoItem } from "@/api/publicacoes/types";
 import { useTranslations } from "next-intl";
 import { PublicacaoType } from "@/@core/types";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type PublicacaoResumoCardProps = {
   publicacao: PublicacaoType;
@@ -34,7 +35,7 @@ export function PublicacaoResumoCard({
           lineHeight: 1.8,
           "& p": { mb: 2 },
         }}
-        dangerouslySetInnerHTML={{ __html: publicacao.resumo ?? "" }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(publicacao.resumo) }}
       />
     </Paper>
   );
