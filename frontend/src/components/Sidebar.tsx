@@ -311,7 +311,7 @@ export function SidebarDashboard({ activeKey }: Props) {
             <Box
               component="img"
               src={logoSrc}
-              alt="MCA Advogados"
+              alt="Central Jurídico"
               sx={{
                 width: 45,
                 height: 45,
