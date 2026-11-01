@@ -32,6 +32,7 @@
     "@tiptap/starter-kit": "^3.31.3",
     "axios": "^1.13.6",
     "date-fns": "^4.1.0",
+    "isomorphic-dompurify": "^4.6.0",
     "laravel-echo": "^2.3.4",
     "next": "^16.3.6",
     "next-intl": "^4.11.0",
