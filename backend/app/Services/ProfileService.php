@@ -66,6 +66,7 @@ class ProfileService
         $user->forceFill([
             'password' => Hash::make($data['new_password']),
         ])->save();
+        $user->tokens()->delete();
     }
 
     private function formatProfile(User $user): array
