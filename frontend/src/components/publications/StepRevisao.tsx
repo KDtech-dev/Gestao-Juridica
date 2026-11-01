@@ -5,6 +5,7 @@ import type { PublicacaoAnexo } from "@/api/publicacoes/types";
 import { PublicacaoFormData } from "../../@core/types";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo } from "react";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
 type Props = {
   data: PublicacaoFormData;
@@ -41,7 +42,7 @@ function ReviewHtml({ label, value }: { label: string; value: string }) {
           "& p": { mt: 0, mb: 1 },
           "& p:last-child": { mb: 0 },
         }}
-        dangerouslySetInnerHTML={{ __html: value || "-" }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(value || "-") }}
       />
     </Box>
   );
