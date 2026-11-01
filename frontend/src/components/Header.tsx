@@ -8,8 +8,9 @@ import {
   Stack,
   IconButton,
   Tooltip,
-  Drawer,
+  Menu,
   MenuItem,
+  Divider,
   Select,
   SelectChangeEvent,
 } from "@mui/material";
@@ -48,7 +49,8 @@ export function Header() {
   const { language, setLanguage } = useLanguage();
   const { isAuthenticated, user, loading } = useAuth();
   const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuAnchor, setMobileMenuAnchor] =
+    useState<HTMLElement | null>(null);
   const [floatingOpen, setFloatingOpen] = useState(false);
   const [floatingPosition, setFloatingPosition] = useState({ x: 16, y: 112 });
   const dragRef = useRef({
@@ -59,7 +61,7 @@ export function Header() {
   });
 
   useEffect(() => {
-    setMobileMenuOpen(false);
+    setMobileMenuAnchor(null);
   }, [pathname]);
 
   const isDark = theme.palette.mode === "dark";
@@ -154,7 +156,7 @@ export function Header() {
           <Container
             maxWidth="xl"
             disableGutters
-            sx={{ px: { xs: 1, sm: 0 }, pr: { sm: 3 } }}
+            sx={{ px: { xs: 1.5, sm: 2 } }}
           >
             <Stack
               direction="row"
@@ -170,7 +172,6 @@ export function Header() {
                 sx={{
                   minWidth: 0,
                   width: "auto",
-                  ml: { xs: 0, md: "-18px" },
                 }}
               >
                 <Tooltip title={languageLabel}>
@@ -299,7 +300,6 @@ export function Header() {
                   alignItems="center"
                   sx={{
                     minWidth: 0,
-                    ml: { xs: 0, md: "-5px" },
                     color: "text.primary",
                     textDecoration: "none",
                     flexShrink: 1,
@@ -359,7 +359,7 @@ export function Header() {
                 direction="row"
                 spacing={{ xs: 0.75, sm: 2 }}
                 alignItems="center"
-                justifyContent={{ xs: "space-between", md: "flex-end" }}
+                justifyContent={{ xs: "space-between", lg: "flex-end" }}
                 sx={{ minWidth: 0, width: "auto" }}
               >
                 <Stack
@@ -368,7 +368,7 @@ export function Header() {
                   spacing={{ xs: 0.5, sm: 1 }}
                   alignItems="center"
                   sx={{
-                    display: { xs: "none", md: "flex" },
+                    display: { xs: "none", lg: "flex" },
                     minWidth: 0,
                     overflowX: "auto",
                     scrollbarWidth: "none",
@@ -402,7 +402,7 @@ export function Header() {
                     href={accessHref}
                     variant="contained"
                     sx={{
-                      display: { xs: "none", md: "inline-flex" },
+                      display: { xs: "none", lg: "inline-flex" },
                       bgcolor: "primary.main",
                       borderRadius: "999px",
                       px: { xs: 1.5, sm: 3 },
@@ -419,13 +419,16 @@ export function Header() {
                 <IconButton
                   type="button"
                   aria-label={t("menuOpen")}
-                  aria-expanded={mobileMenuOpen}
+                  aria-expanded={Boolean(mobileMenuAnchor)}
                   aria-controls="public-mobile-navigation"
-                  onClick={() => {
+                  onClick={(event) => {
                     setFloatingOpen(false);
-                    setMobileMenuOpen(true);
+                    setMobileMenuAnchor(event.currentTarget);
                   }}
-                  sx={{ display: { xs: "inline-flex", md: "none" }, color: "text.primary" }}
+                  sx={{
+                    display: { xs: "inline-flex", lg: "none" },
+                    color: "text.primary",
+                  }}
                 >
                   <Icon icon="mdi:menu" width={26} />
                 </IconButton>
@@ -434,69 +437,75 @@ export function Header() {
           </Container>
         </Box>
 
-        <Drawer
-          anchor="right"
-          open={mobileMenuOpen}
-          onClose={() => setMobileMenuOpen(false)}
-          PaperProps={{
-            id: "public-mobile-navigation",
-            sx: {
-              width: "min(320px, 88vw)",
-              bgcolor: "background.paper",
-              color: "text.primary",
-              p: 2.5,
+        <Menu
+          anchorEl={mobileMenuAnchor}
+          open={Boolean(mobileMenuAnchor)}
+          onClose={() => setMobileMenuAnchor(null)}
+          slotProps={{
+            paper: {
+              id: "public-mobile-navigation",
+              sx: {
+                width: 260,
+                maxWidth: "calc(100vw - 24px)",
+                mt: 1.5,
+                borderRadius: 2,
+                overflow: "hidden",
+              },
             },
+            list: { sx: { py: 0.75 } },
           }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Stack spacing={2.5}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6" fontWeight={800}>{t("title")}</Typography>
-              <IconButton
-                type="button"
-                aria-label={t("menuClose")}
-                onClick={() => setMobileMenuOpen(false)}
-                edge="end"
+          <Box
+            component="nav"
+            aria-label={t("menuOpen")}
+            sx={{
+              "& .MuiMenuItem-root": {
+                minHeight: 40,
+                gap: 1.25,
+                px: 2,
+                py: 1.25,
+                fontSize: "0.875rem",
+                fontWeight: 500,
+                lineHeight: 1.3,
+              },
+            }}
+          >
+            {navItems.map((item) => (
+              <MenuItem
+                key={item.href}
+                component={Link}
+                href={item.href}
+                selected={item.active}
+                onClick={() => setMobileMenuAnchor(null)}
               >
-                <Icon icon="mdi:close" width={22} />
-              </IconButton>
-            </Stack>
-            <Stack component="nav" spacing={0.75} aria-label={t("menuOpen")}>
-              {navItems.map((item) => (
-                <Button
-                  key={item.href}
-                  component={Link}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  variant={item.active ? "contained" : "text"}
-                  sx={{
-                    justifyContent: "flex-start",
-                    px: 1.5,
-                    py: 1.1,
-                    textTransform: "none",
-                    fontWeight: 700,
-                  }}
-                >
-                  {item.label}
-                </Button>
-              ))}
-              {!loading && (
-                <Button
+                {item.label}
+              </MenuItem>
+            ))}
+
+            {!loading && (
+              <>
+                <Divider />
+                <MenuItem
                   component={Link}
                   href={accessHref}
-                  onClick={() => setMobileMenuOpen(false)}
-                  variant="contained"
-                  sx={{ mt: 1, borderRadius: "999px", textTransform: "none", fontWeight: 700 }}
+                  onClick={() => setMobileMenuAnchor(null)}
+                  sx={{ color: "primary.main", fontWeight: 700 }}
                 >
                   {isAuthenticated ? t("access") : t("login")}
-                </Button>
-              )}
-            </Stack>
-          </Stack>
-        </Drawer>
+                </MenuItem>
+              </>
+            )}
+          </Box>
+        </Menu>
 
         <Box
           sx={{
-            display: { xs: mobileMenuOpen ? "none" : "block", md: "none" },
+            display: {
+              xs: mobileMenuAnchor ? "none" : "block",
+              lg: "none",
+            },
             position: "fixed",
             left: floatingPosition.x,
             top: floatingPosition.y,
