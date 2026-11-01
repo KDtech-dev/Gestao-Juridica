@@ -17,6 +17,7 @@ import { AdvogadoPublicoType, PublicacaoType } from "@/@core/types";
 import { useTranslations } from "next-intl";
 import SpecialtiesSection from "@/components/SpecialtiesSection";
 import IconifyIcon from "@/@core/components/icon";
+import { logoSrc } from "@/configs/branding";
 
 type HomeViewProps = {
   publicacoes: PublicacaoType[];
@@ -31,11 +32,31 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
       <Header />
       <Box
         sx={{
+          position: "relative",
+          overflow: "hidden",
+          height: { xs: 720, sm: 620, md: 500 },
           background: "linear-gradient(to right, #0f172a, #1e293b, #1e3a8a)",
           color: "#fff",
-          py: 10,
         }}
       >
+        <Box
+          component="img"
+          src={logoSrc}
+          alt=""
+          aria-hidden="true"
+          sx={{
+            position: "absolute",
+            right: { xs: "-12%", md: "8%" },
+            top: "50%",
+            transform: "translateY(-50%)",
+            width: { xs: "72%", sm: "52%", md: "38%" },
+            maxWidth: 480,
+            maxHeight: "90%",
+            objectFit: "contain",
+            opacity: 0.12,
+            pointerEvents: "none",
+          }}
+        />
         <HomeCard />
       </Box>
       <Box
