@@ -53,7 +53,7 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
         bgcolor="background.paper"
       >
         <Container maxWidth="lg">
-          <Grid container spacing={{ xs: 4, md: 6 }} alignItems="flex-start">
+          <Grid container spacing={{ xs: 4, md: 6 }} alignItems="stretch">
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography variant="h4" fontWeight={800} mb={2}>
                 {t("about.title")}
@@ -82,8 +82,7 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
                   border: "1px solid",
                   borderColor: "divider",
                   boxShadow: "0 1px 2px rgba(15,23,42,0.06)",
-                  position: "sticky",
-                  mt: { xs: 0, md: 20 },
+                  height: "100%",
                 }}
               >
                 <Box
@@ -92,7 +91,8 @@ export default function HomeView({ publicacoes, advogados }: HomeViewProps) {
                   src="https://advbox.com.br/blog/wp-content/uploads/2021/11/area-juridica-profissionais.jpg"
                   sx={{
                     width: "100%",
-                    height: { xs: 250, md: 340 },
+                    height: { xs: 250, md: "100%" },
+                    minHeight: { md: 340 },
                     objectFit: "cover",
                     display: "block",
                   }}
