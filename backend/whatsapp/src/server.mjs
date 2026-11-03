@@ -68,7 +68,7 @@ async function connect() {
   state.status = 'connecting';
   state.lastError = null;
   state.qr = null; 
-  
+
   const { state: auth, saveCreds } = await useMultiFileAuthState(authDirectory);
   const sock = makeWASocket({
     auth,
@@ -87,7 +87,7 @@ async function connect() {
     }
   });
   sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
-    if (socket !== sock) return; // evento de um socket antigo
+    if (socket !== sock) return; 
 
     if (qr) state.qr = qr;
     if (connection === 'open') {
