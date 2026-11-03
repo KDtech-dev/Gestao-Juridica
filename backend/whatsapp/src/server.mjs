@@ -127,7 +127,7 @@ async function resetSession() {
     state.lastError = null;
 
     if (current) {
-      // evita que o saveCreds regrave arquivos depois de apagarmos a pasta
+      
       current.ev.removeAllListeners('creds.update');
       current.ev.removeAllListeners('connection.update');
       try {
