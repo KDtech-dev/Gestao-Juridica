@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { timingSafeEqual } from 'node:crypto';
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import makeWASocket, {
   DisconnectReason,
@@ -68,14 +68,15 @@ async function connect() {
   state.lastError = null;
 
   const { state: auth, saveCreds } = await useMultiFileAuthState(authDirectory);
-  socket = makeWASocket({
+  const sock = makeWASocket({
     auth,
     markOnlineOnConnect: false,
     syncFullHistory: false,
   });
+  socket = sock;
 
-  socket.ev.on('creds.update', saveCreds);
-  socket.ev.on('messages.update', (updates) => {
+  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('messages.update', (updates) => {
     for (const { key, update } of updates) {
       const status = Number(update?.status);
       if (key?.fromMe && key.id && [1, 2, 3].includes(status)) {
@@ -83,12 +84,14 @@ async function connect() {
       }
     }
   });
-  socket.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
+  sock.ev.on('connection.update', ({ connection, lastDisconnect, qr }) => {
+    if (socket !== sock) return; // evento de um socket antigo
+
     if (qr) state.qr = qr;
     if (connection === 'open') {
       state.status = 'connected';
       state.qr = null;
-      state.phone = socket.user?.id?.split(':')[0] || null;
+      state.phone = sock.user?.id?.split(':')[0] || null;
       state.lastError = null;
     }
     if (connection === 'close') {
@@ -123,7 +126,7 @@ async function reportMessageStatus(messageId, status) {
       if (response.ok) return;
       if (response.status !== 404 && response.status < 500) break;
     } catch {
-      // Continue retrying transient connection errors.
+      
     }
   }
 
