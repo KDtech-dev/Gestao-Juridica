@@ -67,8 +67,8 @@ async function connect() {
   clearTimeout(reconnectTimer);
   state.status = 'connecting';
   state.lastError = null;
-  state.qr = null; // evita devolver um QR expirado
-
+  state.qr = null; 
+  
   const { state: auth, saveCreds } = await useMultiFileAuthState(authDirectory);
   const sock = makeWASocket({
     auth,
