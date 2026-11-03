@@ -165,7 +165,6 @@ async function reportMessageStatus(messageId, status) {
       if (response.ok) return;
       if (response.status !== 404 && response.status < 500) break;
     } catch {
-      // Continue retrying transient connection errors.
     }
   }
 
