@@ -102,7 +102,7 @@ async function connect() {
       state.lastError = statusCode ? `connection_closed_${statusCode}` : 'connection_closed';
 
       if (statusCode === DisconnectReason.loggedOut) {
-        // desconectado pelo celular: apaga a sessão e gera um QR novo
+        
         state.status = 'logged_out';
         void resetSession();
       } else {
