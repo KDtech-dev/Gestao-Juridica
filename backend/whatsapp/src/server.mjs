@@ -29,6 +29,7 @@ const authDirectory = path.resolve(process.env.BAILEYS_AUTH_DIR || './storage/au
 const state = { status: 'starting', qr: null, phone: null, lastError: null };
 let socket;
 let reconnectTimer;
+let resetting = false;
 
 if (!token) {
   throw new Error('Configure BAILEYS_SERVICE_TOKEN no backend/.env ou exporte a variável antes de iniciar o serviço.');
@@ -66,6 +67,7 @@ async function connect() {
   clearTimeout(reconnectTimer);
   state.status = 'connecting';
   state.lastError = null;
+  state.qr = null; // evita devolver um QR expirado
 
   const { state: auth, saveCreds } = await useMultiFileAuthState(authDirectory);
   const sock = makeWASocket({
@@ -96,14 +98,51 @@ async function connect() {
     }
     if (connection === 'close') {
       const statusCode = lastDisconnect?.error?.output?.statusCode;
-      state.status = statusCode === DisconnectReason.loggedOut ? 'logged_out' : 'disconnected';
       state.phone = null;
       state.lastError = statusCode ? `connection_closed_${statusCode}` : 'connection_closed';
-      if (statusCode !== DisconnectReason.loggedOut) {
+
+      if (statusCode === DisconnectReason.loggedOut) {
+        // desconectado pelo celular: apaga a sessão e gera um QR novo
+        state.status = 'logged_out';
+        void resetSession();
+      } else {
+        state.status = 'disconnected';
         reconnectTimer = setTimeout(() => void connect(), 5_000);
       }
     }
   });
+}
+
+async function resetSession() {
+  if (resetting) return;
+  resetting = true;
+
+  try {
+    clearTimeout(reconnectTimer);
+    const current = socket;
+    socket = undefined;
+    state.status = 'connecting';
+    state.qr = null;
+    state.phone = null;
+    state.lastError = null;
+
+    if (current) {
+      // evita que o saveCreds regrave arquivos depois de apagarmos a pasta
+      current.ev.removeAllListeners('creds.update');
+      current.ev.removeAllListeners('connection.update');
+      try {
+        await current.logout();
+      } catch {
+        try { current.end(undefined); } catch { /* já encerrado */ }
+      }
+    }
+
+    await rm(authDirectory, { recursive: true, force: true });
+    await mkdir(authDirectory, { recursive: true, mode: 0o700 });
+    await connect();
+  } finally {
+    resetting = false;
+  }
 }
 
 async function reportMessageStatus(messageId, status) {
@@ -126,7 +165,7 @@ async function reportMessageStatus(messageId, status) {
       if (response.ok) return;
       if (response.status !== 404 && response.status < 500) break;
     } catch {
-      
+      // Continue retrying transient connection errors.
     }
   }
 
@@ -158,6 +197,17 @@ const server = createServer(async (request, response) => {
       qr: state.qr,
       qr_image: qrImage,
     });
+    return;
+  }
+
+  if (request.method === 'POST' && url.pathname === '/logout') {
+    try {
+      await resetSession();
+      json(response, 200, { success: true, status: state.status });
+    } catch (error) {
+      state.lastError = 'reset_failed';
+      json(response, 500, { success: false, message: error.message || 'Falha ao desconectar.' });
+    }
     return;
   }
 
@@ -195,7 +245,6 @@ const server = createServer(async (request, response) => {
 
 await connect();
 server.listen(port, host, () => {
-  console.log(`Serviço Baileys disponível em http://${host}:${port}`);
 });
 
 for (const signal of ['SIGINT', 'SIGTERM']) {

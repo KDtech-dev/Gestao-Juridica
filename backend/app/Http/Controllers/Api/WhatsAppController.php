@@ -225,4 +225,31 @@ class WhatsAppController extends Controller
 
         return response()->json($data, $response->status())->header('Cache-Control', 'no-store');
     }
+    public function disconnect()
+    {
+        try {
+            $response = Http::withToken(config('services.baileys.token'))
+                ->timeout(20)
+                ->post(rtrim(config('services.baileys.url'), '/') . '/logout');
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Serviço do WhatsApp indisponível.',
+            ], 503);
+        }
+
+        if ($response->failed()) {
+            \Log::warning('Baileys /logout falhou', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Falha ao desconectar o WhatsApp.',
+            ], 502);
+        }
+
+        return response()->json(['success' => true]);
+    }
 }

@@ -86,6 +86,9 @@ export default function WhatsAppSettingsView() {
   const [messageRecords, setMessageRecords] = useState<WhatsAppMessageRecord[]>([]);
   const [loadingMessageRecords, setLoadingMessageRecords] = useState(true);
   const [retryingMessageId, setRetryingMessageId] = useState<string | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
+
+
 
   const loadMessageRecords = useCallback(async (silent = false) => {
     try {
@@ -169,6 +172,21 @@ export default function WhatsAppSettingsView() {
       toast.error(formatToastErrorMessage(sendError, t("testFailed")));
     } finally {
       setSendingTest(false);
+    }
+  };
+  const disconnectNumber = async () => {
+    if (!window.confirm(t("disconnectConfirm"))) return;
+    setDisconnecting(true);
+    try {
+      await getAxios().post("/admin/whatsapp/disconnect");
+      toast.success(t("disconnected"));
+      setConnection(null);
+      setLoading(true);
+      window.setTimeout(() => void refresh(), 1500);
+    } catch (disconnectError) {
+      toast.error(formatToastErrorMessage(disconnectError, t("disconnectError")));
+    } finally {
+      setDisconnecting(false);
     }
   };
 
@@ -389,6 +407,14 @@ export default function WhatsAppSettingsView() {
                     <Button variant="outlined" onClick={() => void refresh()}>
                       {t("refresh")}
                     </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => void disconnectNumber()}
+                      disabled={disconnecting}
+                    >
+                      {disconnecting ? t("disconnecting") : t("disconnectNumber")}
+                    </Button>
                   </Stack>
                 </Stack>
               ) : connection?.qr_image ? (
@@ -396,20 +422,38 @@ export default function WhatsAppSettingsView() {
                   <Alert severity="info" sx={{ width: "100%" }}>{t("scanQr")}</Alert>
                   <Box
                     component="img"
-                    src={connection.qr_image}
+                    src={connection?.qr_image}
                     alt={t("qrAlt")}
                     sx={{ width: 280, height: 280, imageRendering: "pixelated" }}
                   />
                   <Typography color="text.secondary">{t("refreshingQr")}</Typography>
-                </Stack>
-              ) : (
-                <Stack spacing={2}>
-                  <Alert severity="warning">{t("waitingQr")}</Alert>
-                  <Button variant="outlined" onClick={() => void refresh()} sx={{ alignSelf: "flex-start" }}>
-                    {t("refresh")}
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => void disconnectNumber()}
+                    disabled={disconnecting}
+                  >
+                    {disconnecting ? t("disconnecting") : t("disconnectNumber")}
                   </Button>
                 </Stack>
-              )}
+              ) : (
+              <Stack spacing={2}>
+                <Alert severity="warning">{t("waitingQr")}</Alert>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
+                  <Button variant="outlined" onClick={() => void refresh()}>
+                    {t("refresh")}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    onClick={() => void disconnectNumber()}
+                    disabled={disconnecting}
+                  >
+                    {disconnecting ? t("disconnecting") : t("disconnectNumber")}
+                  </Button>
+                </Stack>
+              </Stack>
+)}
             </Paper>
             <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3 }}>
               <Stack spacing={2}>

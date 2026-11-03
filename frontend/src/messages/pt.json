@@ -167,6 +167,11 @@
         "not_configured": "O serviço de WhatsApp não está configurado.",
         "send_failed": "Não foi possível enviar a mensagem. Verifique a conexão e tente novamente."
       },
+      "disconnectNumber": "Desconectar número",
+      "disconnecting": "Desconectando...",
+      "disconnectConfirm": "Isso vai desconectar o número atual e os lembretes deixarão de ser enviados até você escanear um novo QR. Continuar?",
+      "disconnected": "Número desconectado. Escaneie o novo QR code.",
+      "disconnectError": "Não foi possível desconectar o número.",
       "deliveredAt": "Entregue em {date}",
       "readAt": "Lida em {date}",
       "retry": "Tentar novamente",
@@ -691,7 +696,11 @@
         }
       },
       "form": {
-        "title": { "create": "Novo usuário", "edit": "Editar usuário", "view": "Dados do usuário" },
+        "title": {
+          "create": "Novo usuário",
+          "edit": "Editar usuário",
+          "view": "Dados do usuário"
+        },
         "sections": {
           "account": "Dados de acesso",
           "profile": "Dados do perfil profissional",
@@ -710,8 +719,18 @@
           "save": "Aplicar seleção",
           "cancel": "Cancelar"
         },
-        "actions": { "save": "Salvar usuário", "saving": "Salvando...", "cancel": "Cancelar", "back": "Voltar", "edit": "Editar usuário" },
-        "errors": { "load": "Não foi possível carregar o usuário.", "save": "Não foi possível salvar o usuário.", "permissions": "Não foi possível carregar as permissões." }
+        "actions": {
+          "save": "Salvar usuário",
+          "saving": "Salvando...",
+          "cancel": "Cancelar",
+          "back": "Voltar",
+          "edit": "Editar usuário"
+        },
+        "errors": {
+          "load": "Não foi possível carregar o usuário.",
+          "save": "Não foi possível salvar o usuário.",
+          "permissions": "Não foi possível carregar as permissões."
+        }
       },
       "resetPasswordModal": {
         "title": "Redefinir senha de {name}",
@@ -1426,7 +1445,7 @@
     },
     "cpf": {
       "size": "O CPF deve conter exatamente 11 dígitos.",
-      "unique":"Este CPF/CNPJ já está cadastrado."
+      "unique": "Este CPF/CNPJ já está cadastrado."
     },
     "uf": {
       "size": "A UF deve conter 2 letras."
