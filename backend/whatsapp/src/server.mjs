@@ -133,7 +133,7 @@ async function resetSession() {
       try {
         await current.logout();
       } catch {
-        try { current.end(undefined); } catch { /* já encerrado */ }
+        try { current.end(undefined); } catch {  }
       }
     }
 
